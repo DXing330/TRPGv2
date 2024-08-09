@@ -13,6 +13,7 @@ public class HexMapAdjustor : MonoBehaviour
         InitializeTiles();
     }
 
+    [ContextMenu("Initialize")]
     protected virtual void InitializeTiles()
     {
         int tileIndex = 0;

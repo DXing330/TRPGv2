@@ -10,6 +10,12 @@ public class SpriteContainer : ScriptableObject
     public List<string> keys;
     public List<string> values;
 
+    public string SpriteNameByIndex(int index)
+    {
+        if (index < 0 || index >= sprites.Count){return "";}
+        return sprites[index].name;
+    }
+
     public Sprite SpriteDictionary(string spriteName)
     {
         for (int i = 0; i < sprites.Count; i++)

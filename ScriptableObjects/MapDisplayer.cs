@@ -18,6 +18,10 @@ public class MapDisplayer : ScriptableObject
     {
         mapTiles = newTiles;
         gridSize = (int) Mathf.Sqrt(mapTiles.Count);
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].DisableLayers();
+        }
     }
 
     public void SetMapInfo(List<string> newInfo)
@@ -26,6 +30,13 @@ public class MapDisplayer : ScriptableObject
         mapSize = (int) Mathf.Sqrt(mapInfo.Count);
     }
 
+    public void UpdateMapGivenCenter(int centerTile)
+    {
+        int row = mapUtility.ReturnRowFromTile(centerTile, mapSize);
+        int col = mapUtility.ReturnColFromTile(centerTile, mapSize);
+        UpdateMap(row, col);
+    }
+    
     public void UpdateMap(int nextRow, int nextCol)
     {
         // Need to make sure the corner is in the right spot.
