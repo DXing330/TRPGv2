@@ -6,44 +6,26 @@ using UnityEngine;
 public class MapDisplayer : ScriptableObject
 {
     public MapUtility mapUtility;
-    public int mapSize;
     public int gridSize = 9;
     public int layer = 0;
     public List<string> mapInfo;
     public List<int> currentTiles;
-    public List<MapTile> mapTiles;
     public List<SpriteContainer> layerSprites;
 
-    public void SetMapTiles(List<MapTile> newTiles)
+    public void UpdateMapGivenCenter(int centerTile, int size, List<MapTile> mapTiles, List<string> mapInfo)
     {
-        mapTiles = newTiles;
-        gridSize = (int) Mathf.Sqrt(mapTiles.Count);
-        for (int i = 0; i < mapTiles.Count; i++)
-        {
-            mapTiles[i].DisableLayers();
-        }
-    }
-
-    public void SetMapInfo(List<string> newInfo)
-    {
-        mapInfo = newInfo;
-        mapSize = (int) Mathf.Sqrt(mapInfo.Count);
-    }
-
-    public void UpdateMapGivenCenter(int centerTile)
-    {
-        int row = mapUtility.ReturnRowFromTile(centerTile, mapSize);
-        int col = mapUtility.ReturnColFromTile(centerTile, mapSize);
-        UpdateMap(row, col);
+        int row = mapUtility.GetRow(centerTile, size);
+        int col = mapUtility.GetColumn(centerTile, size);
+        UpdateMap(row, col, size, mapTiles, mapInfo);
     }
     
-    public void UpdateMap(int nextRow, int nextCol)
+    protected void UpdateMap(int nextRow, int nextCol, int size, List<MapTile> mapTiles, List<string> mapInfo)
     {
         // Need to make sure the corner is in the right spot.
         currentTiles.Clear();
         int cRow = nextRow;
         int cCol = nextCol;
-        int nextTile = mapUtility.ReturnTileNumberFromRowCol(cRow, cCol, mapSize);
+        int nextTile = mapUtility.ReturnTileNumberFromRowCol(cRow, cCol, size);
         int tileNumber = 0;
         for (int i = 0; i < gridSize; i++)
         {
@@ -60,7 +42,7 @@ public class MapDisplayer : ScriptableObject
                 currentTiles.Add(nextTile);
                 tileNumber++;
                 cCol++;
-                nextTile = mapUtility.ReturnTileNumberFromRowCol(cRow, cCol, mapSize);
+                nextTile = mapUtility.ReturnTileNumberFromRowCol(cRow, cCol, size);
             }
             cCol -= gridSize;
             cRow++;

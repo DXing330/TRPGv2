@@ -9,6 +9,7 @@ public class MapTile : MonoBehaviour
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
     //public Map cMap;
     public List<GameObject> layerObjects;
+    // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
 
     public void DisableLayers()
@@ -21,14 +22,18 @@ public class MapTile : MonoBehaviour
 
     public void UpdateLayerSprite(Sprite newSprite, int layer = 0)
     {
+        if (newSprite == null || layers[layer].sprite == null)
+        {
+            return;
+        }
         if (layer < 0 || layer > layers.Count){return;}
-        layers[layer].sprite = newSprite;
         layerObjects[layer].SetActive(true);
+        layers[layer].sprite = newSprite;
     }
 
     public void ResetLayerSprite(int layer)
     {
-        layerObjects[layer].SetActive(true);
+        layerObjects[layer].SetActive(false);
     }
 
 }
