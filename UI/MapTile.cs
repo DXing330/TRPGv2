@@ -7,7 +7,7 @@ public class MapTile : MonoBehaviour
 {
     public int tileNumber;
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
-    //public Map cMap;
+    public MapManager cMap;
     public List<GameObject> layerObjects;
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
@@ -36,4 +36,8 @@ public class MapTile : MonoBehaviour
         layerObjects[layer].SetActive(false);
     }
 
+    public void ClickTile()
+    {
+        cMap.ClickOnTile(tileNumber);
+    }
 }

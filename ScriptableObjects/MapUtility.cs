@@ -14,7 +14,12 @@ public class MapUtility : ScriptableObject
     public int ReturnTileNumberFromRowCol(int row, int col, int size)
     {
         // Out of bounds.
-        if (row < 0 || col < 0 || row >= size || col >= size){return -1;}
+        if (row < 0 || col < 0 || row >= size || col >= size)
+        {
+            //Debug.Log("Row: "+row);
+            //Debug.Log("Col: "+col);
+            return -1;
+        }
         return (row * size) + col;
     }
 
@@ -113,5 +118,63 @@ public class MapUtility : ScriptableObject
             adjacent.Add(adjacentTile);
         }
         return adjacent;
+    }
+
+    public int RandomPointLeft(int location, int size)
+    {
+        int choice = Random.Range(0, 2);
+        if (choice == 0)
+        {
+            if (DirectionCheck(location, 5, size))
+            {
+                return PointInDirection(location, 5, size);
+            }
+            else if (DirectionCheck(location, 4, size))
+            {
+                return PointInDirection(location, 4, size);
+            }
+            else {return location;}
+        }
+        else
+        {
+            if (DirectionCheck(location, 4, size))
+            {
+                return PointInDirection(location, 4, size);
+            }
+            else if (DirectionCheck(location, 5, size))
+            {
+                return PointInDirection(location, 5, size);
+            }
+            else {return location;}
+        }
+    }
+
+    public int RandomPointRight(int location, int size)
+    {
+        int choice = Random.Range(0, 2);
+        if (choice == 0)
+        {
+            if (DirectionCheck(location, 1, size))
+            {
+                return PointInDirection(location, 1, size);
+            }
+            else if (DirectionCheck(location, 2, size))
+            {
+                return PointInDirection(location, 2, size);
+            }
+            else {return location;}
+        }
+        else
+        {
+            if (DirectionCheck(location, 2, size))
+            {
+                return PointInDirection(location, 2, size);
+            }
+            else if (DirectionCheck(location, 1, size))
+            {
+                return PointInDirection(location, 1, size);
+            }
+            else {return location;}
+        }
     }
 }

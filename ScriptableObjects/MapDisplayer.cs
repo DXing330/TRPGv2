@@ -5,47 +5,21 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MapDisplayer", menuName = "ScriptableObjects/MapDisplayer", order = 1)]
 public class MapDisplayer : ScriptableObject
 {
-    public MapUtility mapUtility;
-    public int gridSize = 9;
     public int layer = 0;
-    public List<string> mapInfo;
-    public List<int> currentTiles;
     public List<SpriteContainer> layerSprites;
-
-    public void UpdateMapGivenCenter(int centerTile, int size, List<MapTile> mapTiles, List<string> mapInfo)
-    {
-        int row = mapUtility.GetRow(centerTile, size);
-        int col = mapUtility.GetColumn(centerTile, size);
-        UpdateMap(row, col, size, mapTiles, mapInfo);
-    }
     
-    protected void UpdateMap(int nextRow, int nextCol, int size, List<MapTile> mapTiles, List<string> mapInfo)
+    public void DisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles)
     {
-        // Need to make sure the corner is in the right spot.
-        currentTiles.Clear();
-        int cRow = nextRow;
-        int cCol = nextCol;
-        int nextTile = mapUtility.ReturnTileNumberFromRowCol(cRow, cCol, size);
-        int tileNumber = 0;
-        for (int i = 0; i < gridSize; i++)
+        int nextTile = -1;
+        for (int i = 0; i < (mapTiles.Count); i++)
         {
-            for (int j = 0; j < gridSize; j++)
+            nextTile = currentTiles[i];
+            if (nextTile < 0)
             {
-                if (nextTile < 0)
-                {
-                    mapTiles[tileNumber].ResetLayerSprite(layer);
-                }
-                else
-                {
-                    mapTiles[tileNumber].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(mapInfo[nextTile]), layer);
-                }
-                currentTiles.Add(nextTile);
-                tileNumber++;
-                cCol++;
-                nextTile = mapUtility.ReturnTileNumberFromRowCol(cRow, cCol, size);
+                mapTiles[i].ResetLayerSprite(layer);
+                continue;
             }
-            cCol -= gridSize;
-            cRow++;
+            mapTiles[i].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(mapInfo[nextTile]), layer);
         }
     }
 }

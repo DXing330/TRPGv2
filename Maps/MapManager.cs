@@ -9,17 +9,19 @@ public class MapManager : MonoBehaviour
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
     public List<string> mapInfo;
-    public List<string> characters;
+    public List<int> currentTiles;
+    public int mapSize;
+    public int gridSize;
     public int centerTile = 0;
 
     void Start()
     {
-        UpdateMapGivenCenter();
+        UpdateMap();
     }
 
-    public List<string> MakeMap()
+    public List<string> MakeRandomMap()
     {
-        return mapMaker.MakeMap();
+        return mapMaker.MakeRandomMap(mapSize);
     }
 
     [ContextMenu("Get New Map")]
@@ -27,8 +29,8 @@ public class MapManager : MonoBehaviour
     {
         // Change this later.
         centerTile = 0;
-        mapInfo = MakeMap();
-        UpdateMapGivenCenter();
+        mapInfo = MakeRandomMap();
+        UpdateMap();
     }
 
     public void MoveMap(int direction)
@@ -36,16 +38,41 @@ public class MapManager : MonoBehaviour
         int newCenter = mapUtility.PointInDirection(centerTile, direction, mapMaker.mapSize);
         if (newCenter < 0 || newCenter == centerTile){return;}
         centerTile = newCenter;
-        UpdateMapGivenCenter();
+        UpdateMap();
     }
 
-    protected void UpdateMapGivenCenter()
+    protected virtual void GetCurrentTiles()
     {
-        mapDisplayers[0].UpdateMapGivenCenter(centerTile, mapMaker.mapSize, mapTiles, mapInfo);
+        currentTiles.Clear();
+        int row = mapUtility.GetRow(centerTile, mapSize);
+        int col = mapUtility.GetColumn(centerTile, mapSize);
+        int nextTile = -1;
+        for (int i = 0; i < gridSize; i++)
+        {
+            for (int j = 0; j < gridSize; j++)
+            {
+                nextTile = mapUtility.ReturnTileNumberFromRowCol(row, col, mapSize);
+                currentTiles.Add(nextTile);
+                col++;
+            }
+            col -= gridSize;
+            row++;
+        }
+    }
+
+    protected virtual void UpdateMap()
+    {
+        GetCurrentTiles();
+        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
         /*for (int i = 0; i < mapDisplayers.Count; i++)
         {
             mapDisplayers[i].UpdateMapGivenCenter(centerTile, mapMaker.mapSize);
         }*/
+    }
+
+    public virtual void ClickOnTile(int tileNumber)
+    {
+        Debug.Log(tileNumber);
     }
 
     [ContextMenu("Move 0")]
