@@ -17,7 +17,7 @@ public class HexMapAdjustor : MonoBehaviour
     protected virtual void InitializeTiles()
     {
         int tileIndex = 0;
-        float scale = 1f/(gridSize);
+        float scale = 1f/(gridSize+1);
         float xPivot = 0f;
         float yCenter = 1f - (1f/(2*gridSize));
         float yPivot = 1f;

@@ -5,10 +5,18 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     public MapUtility mapUtility;
-    public MapCurrentTiles currentTiles;
+    public MapCurrentTiles currentTileManager;
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
+    protected virtual void ResetAllLayers()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].DisableLayers();
+        }
+    }
+    public List<int> currentTiles;
     public List<string> mapInfo;
     public int mapSize;
     public int gridSize;
@@ -28,8 +36,9 @@ public class MapManager : MonoBehaviour
     public void GetNewMap()
     {
         // Change this later.
-        startTile = 0;
+        ResetAllLayers();
         mapInfo = MakeRandomMap();
+        startTile = mapUtility.DetermineCenterTile(mapSize);
         UpdateMap();
     }
 
@@ -41,13 +50,15 @@ public class MapManager : MonoBehaviour
         UpdateMap();
     }
 
+    protected virtual void UpdateCurrentTiles()
+    {
+        currentTiles = currentTileManager.GetCurrentTilesFromCenter(startTile, mapSize, gridSize);
+    }
+
     protected virtual void UpdateMap()
     {
-        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles.GetCurrentTiles(startTile, mapSize, gridSize));
-        /*for (int i = 0; i < mapDisplayers.Count; i++)
-        {
-            mapDisplayers[i].UpdateMapGivenCenter(startTile, mapMaker.mapSize);
-        }*/
+        UpdateCurrentTiles();
+        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
     }
 
     public virtual void ClickOnTile(int tileNumber)

@@ -15,6 +15,8 @@ public class MapMakerTester : MonoBehaviour
     public int testCenter;
     public string testFeature;
     public string testPattern;
+    public List<string> testFeatures;
+    public List<string> testPatterns;
 
     [ContextMenu("Run Multiple Tests")]
     public void MultipleTests()
@@ -31,9 +33,20 @@ public class MapMakerTester : MonoBehaviour
         UpdateMap();
     }
 
+    [ContextMenu("Test Multiple Patterns")]
+    public void TestMultiplePatterns()
+    {
+        mapInfo = mapMaker.MakeBasicMap(testSize);
+        for (int i = 0; i < testFeatures.Count; i++)
+        {
+            mapInfo = mapMaker.AddFeature(mapInfo, testFeatures[i], testPatterns[i]);
+        }
+        UpdateMap();
+    }
+
     protected virtual void UpdateMap()
     {
-        mapDisplayer.DisplayCurrentTiles(mapTiles, mapInfo, currentTiles.GetCurrentTiles(testCenter, testSize, gridSize));
+        mapDisplayer.DisplayCurrentTiles(mapTiles, mapInfo, currentTiles.GetCurrentTilesFromCenter(testCenter, testSize, gridSize));
     }
 
     IEnumerator RunMultipleTests()

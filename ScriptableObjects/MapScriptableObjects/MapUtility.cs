@@ -122,59 +122,52 @@ public class MapUtility : ScriptableObject
 
     public int RandomPointLeft(int location, int size)
     {
+        int leftUp = PointInDirection(location, 5, size);
+        int leftDown = PointInDirection(location, 4, size);
+        // No points.
+        if (leftUp < 0 && leftDown < 0){return location;}
+        if (leftUp >= 0 && leftDown < 0){return leftUp;}
+        if (leftUp < 0 && leftDown >= 0){return leftDown;}
         int choice = Random.Range(0, 2);
-        if (choice == 0)
-        {
-            if (DirectionCheck(location, 5, size))
-            {
-                return PointInDirection(location, 5, size);
-            }
-            else if (DirectionCheck(location, 4, size))
-            {
-                return PointInDirection(location, 4, size);
-            }
-            else {return location;}
-        }
-        else
-        {
-            if (DirectionCheck(location, 4, size))
-            {
-                return PointInDirection(location, 4, size);
-            }
-            else if (DirectionCheck(location, 5, size))
-            {
-                return PointInDirection(location, 5, size);
-            }
-            else {return location;}
-        }
+        if (choice == 0){return leftUp;}
+        return leftDown;
     }
 
     public int RandomPointRight(int location, int size)
     {
+        int up = PointInDirection(location, 1, size);
+        int down = PointInDirection(location, 2, size);
+        // No points.
+        if (up < 0 && down < 0){return location;}
+        if (up >= 0 && down < 0){return up;}
+        if (up < 0 && down >= 0){return down;}
         int choice = Random.Range(0, 2);
-        if (choice == 0)
+        if (choice == 0){return up;}
+        return down;
+    }
+
+    public int RandomPointDown(int location, int size)
+    {
+        int choice = Random.Range(2, 5);
+        int newPoint = PointInDirection(location, choice, size);
+        if (newPoint >= 0){return newPoint;}
+        return location;
+    }
+
+    public int RandomPointUp(int location, int size)
+    {
+        int choice = Random.Range(5, 8)%6;
+        int newPoint = PointInDirection(location, choice, size);
+        if (newPoint >= 0){return newPoint;}
+        return location;
+    }
+    
+    public int DetermineCenterTile(int size)
+    {
+        if (size%2 == 1)
         {
-            if (DirectionCheck(location, 1, size))
-            {
-                return PointInDirection(location, 1, size);
-            }
-            else if (DirectionCheck(location, 2, size))
-            {
-                return PointInDirection(location, 2, size);
-            }
-            else {return location;}
+            return (size*size)/2;
         }
-        else
-        {
-            if (DirectionCheck(location, 2, size))
-            {
-                return PointInDirection(location, 2, size);
-            }
-            else if (DirectionCheck(location, 1, size))
-            {
-                return PointInDirection(location, 1, size);
-            }
-            else {return location;}
-        }
+        return ReturnTileNumberFromRowCol(size/2, size/2, size);
     }
 }

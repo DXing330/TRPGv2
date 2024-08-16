@@ -6,8 +6,6 @@ public class ActorStats : MonoBehaviour
 {
     public List<string> stats;
     public void SetStats(List<string> newStats){stats = newStats;}
-    public string actorName;
-    public string actorSpriteName;
     public int baseHealth;
     public int baseEnergy;
     public int baseAttack;
@@ -15,6 +13,7 @@ public class ActorStats : MonoBehaviour
     public int baseDefense;
     public int moveSpeed;
     public string moveType;
+    public string GetMoveType(){return moveType;}
     public int currentHealth;
     public int GetHealth(){return currentHealth;}
     public int currentEnergy;

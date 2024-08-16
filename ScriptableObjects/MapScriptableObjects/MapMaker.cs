@@ -59,14 +59,21 @@ public class MapMaker : ScriptableObject
 
     public List<string> AddFeature(List<string> originalMap, string featureType, string pattern, string patternSpecifics = "")
     {
-        if (pattern == "River"){return AddRiver(originalMap, featureType, patternSpecifics);}
-        if (pattern == "Forest"){return AddForest(originalMap, featureType, patternSpecifics);}
+        switch (pattern)
+        {
+            case "River":
+            return AddRiver(originalMap, featureType, patternSpecifics);
+            case "Forest":
+            return AddForest(originalMap, featureType, patternSpecifics);
+            case "Wall":
+            return AddWall(originalMap, featureType, patternSpecifics);
+        }
         return originalMap;
     }
 
     protected List<string> AddForest(List<string> originalMap, string featureType, string specifics)
     {
-        int startTile = Random.Range(0, mapSize) * Random.Range(0, mapSize);
+        int startTile = Random.Range(1, mapSize-1) * Random.Range(1, mapSize-1);
         List<int> allTiles = mapUtility.AdjacentTiles(startTile, mapSize);
         allTiles.Add(startTile);
         for (int i = 0; i < allTiles.Count; i++)
@@ -76,15 +83,31 @@ public class MapMaker : ScriptableObject
         return originalMap;
     }
 
+    // Rivers flow from left to right.
     protected List<string> AddRiver(List<string> originalMap, string featureType, string specifics)
     {
         // Pick a starting point.
-        int currentPoint = Random.Range(0, mapSize) * mapSize;
+        int currentPoint = Random.Range(1, mapSize-1) * mapSize;
         int newPoint = -1;
         for (int i = 0; i < mapSize; i++)
         {
             originalMap[currentPoint] = featureType;
             newPoint = mapUtility.RandomPointRight(currentPoint, mapSize);
+            if (newPoint == currentPoint){break;}
+            currentPoint = newPoint;
+        }
+        return originalMap;
+    }
+
+    // Walls can go straight from top to bottom or they can try to curve.
+    protected List<string> AddWall(List<string> originalMap, string featureType, string specifics)
+    {
+        int currentPoint = Random.Range(1, mapSize - 1);
+        int newPoint = -1;
+        for (int i = 0; i < 2*mapSize; i++)
+        {
+            originalMap[currentPoint] = featureType;
+            newPoint = mapUtility.RandomPointDown(currentPoint, mapSize);
             if (newPoint == currentPoint){break;}
             currentPoint = newPoint;
         }
