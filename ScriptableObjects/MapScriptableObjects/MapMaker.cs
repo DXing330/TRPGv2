@@ -60,26 +60,31 @@ public class MapMaker : ScriptableObject
     public List<string> AddFeature(List<string> originalMap, string featureType, string pattern, string patternSpecifics = "")
     {
         if (pattern == "River"){return AddRiver(originalMap, featureType, patternSpecifics);}
+        if (pattern == "Forest"){return AddForest(originalMap, featureType, patternSpecifics);}
         return originalMap;
     }
 
     protected List<string> AddForest(List<string> originalMap, string featureType, string specifics)
     {
-        // Goes from top to bottom or from left to right.
+        int startTile = Random.Range(0, mapSize) * Random.Range(0, mapSize);
+        List<int> allTiles = mapUtility.AdjacentTiles(startTile, mapSize);
+        allTiles.Add(startTile);
+        for (int i = 0; i < allTiles.Count; i++)
+        {
+            originalMap[allTiles[i]] = featureType;
+        }
         return originalMap;
     }
 
     protected List<string> AddRiver(List<string> originalMap, string featureType, string specifics)
     {
-        int size = (int) Mathf.Sqrt(originalMap.Count);
-        // Goes from top to bottom or from left to right.
         // Pick a starting point.
-        int currentPoint = Random.Range(0, size) * size;
+        int currentPoint = Random.Range(0, mapSize) * mapSize;
         int newPoint = -1;
-        for (int i = 0; i < size + 1; i++)
+        for (int i = 0; i < mapSize; i++)
         {
             originalMap[currentPoint] = featureType;
-            newPoint = mapUtility.RandomPointRight(currentPoint, size);
+            newPoint = mapUtility.RandomPointRight(currentPoint, mapSize);
             if (newPoint == currentPoint){break;}
             currentPoint = newPoint;
         }

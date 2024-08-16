@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class MapMakerTester : MonoBehaviour
 {
-    public MapUtility mapUtility;
+    public MapCurrentTiles currentTiles;
     public MapMaker mapMaker;
     public MapDisplayer mapDisplayer;
     public List<MapTile> mapTiles;
     public List<string> mapInfo;
-    public List<int> currentTiles;
     public int testCases;
     public int testSize;
+    public int gridSize = 9;
     public int testCenter;
     public string testFeature;
     public string testPattern;
@@ -31,29 +31,9 @@ public class MapMakerTester : MonoBehaviour
         UpdateMap();
     }
 
-    protected virtual void GetCurrentTiles(int gridSize = 9)
-    {
-        currentTiles.Clear();
-        int row = mapUtility.GetRow(testCenter, testSize);
-        int col = mapUtility.GetColumn(testCenter, testSize);
-        int nextTile = -1;
-        for (int i = 0; i < gridSize; i++)
-        {
-            for (int j = 0; j < gridSize; j++)
-            {
-                nextTile = mapUtility.ReturnTileNumberFromRowCol(row, col, testSize);
-                currentTiles.Add(nextTile);
-                col++;
-            }
-            col -= gridSize;
-            row++;
-        }
-    }
-
     protected virtual void UpdateMap()
     {
-        GetCurrentTiles();
-        mapDisplayer.DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+        mapDisplayer.DisplayCurrentTiles(mapTiles, mapInfo, currentTiles.GetCurrentTiles(testCenter, testSize, gridSize));
     }
 
     IEnumerator RunMultipleTests()

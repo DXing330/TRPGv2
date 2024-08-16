@@ -5,14 +5,14 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     public MapUtility mapUtility;
+    public MapCurrentTiles currentTiles;
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
     public List<string> mapInfo;
-    public List<int> currentTiles;
     public int mapSize;
     public int gridSize;
-    public int centerTile = 0;
+    public int startTile = 0;
 
     void Start()
     {
@@ -28,45 +28,25 @@ public class MapManager : MonoBehaviour
     public void GetNewMap()
     {
         // Change this later.
-        centerTile = 0;
+        startTile = 0;
         mapInfo = MakeRandomMap();
         UpdateMap();
     }
 
     public void MoveMap(int direction)
     {
-        int newCenter = mapUtility.PointInDirection(centerTile, direction, mapMaker.mapSize);
-        if (newCenter < 0 || newCenter == centerTile){return;}
-        centerTile = newCenter;
+        int newCenter = mapUtility.PointInDirection(startTile, direction, mapMaker.mapSize);
+        if (newCenter < 0 || newCenter == startTile){return;}
+        startTile = newCenter;
         UpdateMap();
-    }
-
-    protected virtual void GetCurrentTiles()
-    {
-        currentTiles.Clear();
-        int row = mapUtility.GetRow(centerTile, mapSize);
-        int col = mapUtility.GetColumn(centerTile, mapSize);
-        int nextTile = -1;
-        for (int i = 0; i < gridSize; i++)
-        {
-            for (int j = 0; j < gridSize; j++)
-            {
-                nextTile = mapUtility.ReturnTileNumberFromRowCol(row, col, mapSize);
-                currentTiles.Add(nextTile);
-                col++;
-            }
-            col -= gridSize;
-            row++;
-        }
     }
 
     protected virtual void UpdateMap()
     {
-        GetCurrentTiles();
-        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles.GetCurrentTiles(startTile, mapSize, gridSize));
         /*for (int i = 0; i < mapDisplayers.Count; i++)
         {
-            mapDisplayers[i].UpdateMapGivenCenter(centerTile, mapMaker.mapSize);
+            mapDisplayers[i].UpdateMapGivenCenter(startTile, mapMaker.mapSize);
         }*/
     }
 

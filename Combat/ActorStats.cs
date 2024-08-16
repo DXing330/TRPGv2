@@ -25,4 +25,6 @@ public class ActorStats : MonoBehaviour
     public int GetDefense(){return currentDefense;}
     public int currentSpeed;
     public int GetSpeed(){return currentSpeed;}
+    public List<string> activeSkills;
+    public List<string> passiveSkills;
 }
