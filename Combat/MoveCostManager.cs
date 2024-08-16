@@ -4,19 +4,52 @@ using UnityEngine;
 
 public class MoveCostManager : MonoBehaviour
 {
-    public List<MoveCosts> moveCosts;
-
-    public int ReturnMoveCost(TacticActor actor, string tileType)
+    public int moveTypeIndex;
+    public List<string> mapInfo;
+    public void SetMapInfo(List<string> newInfo)
     {
+        mapInfo = newInfo;
+        actorPathfinder.SetMapSize((int) Mathf.Sqrt(mapInfo.Count));
+    }
+    public List<MoveCosts> moveCosts;
+    public List<int> mapMoveCosts;
+    public List<int> pathCosts;
+    public ActorPathfinder actorPathfinder;
+
+    public int ReturnMoveCost(string tileType)
+    {
+        if (moveTypeIndex < 0){return 1;}
+        int cost = moveCosts[moveTypeIndex].ReturnMoveCost(tileType);
+        // Might be able to change this with character passives later.
+        return cost;
+    }
+
+    protected void DetermineMoveType(TacticActor actor)
+    {
+        moveTypeIndex = -1;
         for (int i = 0; i < moveCosts.Count; i++)
         {
             if (moveCosts[i].moveType == actor.allStats.GetMoveType())
             {
-                int cost = moveCosts[i].ReturnMoveCost(tileType);
-                // Might be able to change this with character passives later.
-                return cost;
+                moveTypeIndex = i;
+                return;
             }
         }
-        return 1;
+    }
+
+    protected void UpdateMoveCosts(TacticActor actor)
+    {
+        DetermineMoveType(actor);
+        mapMoveCosts.Clear();
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            mapMoveCosts.Add(ReturnMoveCost(mapInfo[i]));
+        }
+    }
+
+    public void GetAllMoveCosts(TacticActor actor)
+    {
+        UpdateMoveCosts(actor);
+        pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), mapMoveCosts);
     }
 }

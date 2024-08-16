@@ -38,7 +38,7 @@ public class MapPathfinder : ScriptableObject
         }
     }
 
-    protected int CheckClosestTile()
+    protected virtual int CheckClosestTile()
     {
         int closestTile = heap.Pull();
         List<int> adjacentTiles = mapUtility.AdjacentTiles(closestTile, mapSize);

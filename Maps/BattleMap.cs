@@ -11,7 +11,6 @@ public class BattleMap : MapManager
         UpdateMap();
     }
     public List<string> actorTiles;
-
     protected virtual void GetActorTiles()
     {
         actorTiles.Clear();
@@ -23,6 +22,16 @@ public class BattleMap : MapManager
         {
             actorTiles[battlingActors[i].location] = battlingActors[i].GetSpriteName();
         }
+    }
+
+    [ContextMenu("Clear Actors")]
+    public void ClearActors()
+    {
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            DestroyImmediate(battlingActors[i]);
+        }
+        battlingActors.Clear();
     }
 
     protected override void UpdateMap()

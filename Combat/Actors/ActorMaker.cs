@@ -5,6 +5,7 @@ using UnityEngine;
 public class ActorMaker : MonoBehaviour
 {
     public TacticActor actorPrefab;
+    public StatDatabase actorStats;
 
     [ContextMenu("New Actor")]
     public TacticActor CreateActor()
@@ -16,6 +17,7 @@ public class ActorMaker : MonoBehaviour
     public void SetActorSpriteName(TacticActor actor, string spriteName)
     {
         actor.SetSpriteName(spriteName);
+        actor.allStats.SetStats(actorStats.ReturnStats(spriteName));
     }
 
     public void SetActorLocation(TacticActor actor, int location)

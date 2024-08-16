@@ -33,7 +33,7 @@ public class MapManager : MonoBehaviour
     }
 
     [ContextMenu("Get New Map")]
-    public void GetNewMap()
+    public virtual void GetNewMap()
     {
         // Change this later.
         ResetAllLayers();

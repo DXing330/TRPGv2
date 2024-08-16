@@ -5,7 +5,17 @@ using UnityEngine;
 public class ActorStats : MonoBehaviour
 {
     public List<string> stats;
-    public void SetStats(List<string> newStats){stats = newStats;}
+    public void SetStats(List<string> newStats)
+    {
+        stats = newStats;
+        baseHealth = int.Parse(stats[0]);
+        baseEnergy = int.Parse(stats[1]);
+        baseAttack = int.Parse(stats[2]);
+        attackRange = int.Parse(stats[3]);
+        baseDefense = int.Parse(stats[4]);
+        moveSpeed = int.Parse(stats[5]);
+        moveType = (stats[6]);
+    }
     public int baseHealth;
     public int baseEnergy;
     public int baseAttack;
