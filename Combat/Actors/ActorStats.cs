@@ -22,6 +22,7 @@ public class ActorStats : MonoBehaviour
     public int attackRange;
     public int baseDefense;
     public int moveSpeed;
+    public int GetMoveSpeed(){return moveSpeed;}
     public string moveType;
     public string GetMoveType(){return moveType;}
     public int currentHealth;

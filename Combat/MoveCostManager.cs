@@ -14,6 +14,7 @@ public class MoveCostManager : MonoBehaviour
     public List<MoveCosts> moveCosts;
     public List<int> mapMoveCosts;
     public List<int> pathCosts;
+    public List<int> reachableTiles;
     public ActorPathfinder actorPathfinder;
 
     public int ReturnMoveCost(string tileType)
@@ -51,5 +52,12 @@ public class MoveCostManager : MonoBehaviour
     {
         UpdateMoveCosts(actor);
         pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), mapMoveCosts);
+    }
+
+    public List<int> GetAllReachableTiles(TacticActor actor)
+    {
+        UpdateMoveCosts(actor);
+        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(), mapMoveCosts);
+        return reachableTiles;
     }
 }

@@ -33,6 +33,7 @@ public class MapPathfinder : ScriptableObject
             {
                 distances.Add(0);
                 heap.AddNodeWeight(startTile, 0);
+                continue;
             }
             distances.Add(heap.bigInt);
         }

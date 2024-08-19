@@ -11,13 +11,13 @@ public class BattleMap : MapManager
         UpdateMap();
     }
     public List<string> actorTiles;
+    public List<string> highlightedTiles;
+    public string moveColor;
+    public string attackColor;
     protected virtual void GetActorTiles()
     {
-        actorTiles.Clear();
-        for (int i = 0; i < mapSize * mapSize; i++)
-        {
-            actorTiles.Add("");
-        }
+        if (emptyList.Count < mapSize){InitializeEmptyList();}
+        actorTiles = new List<string>(emptyList);
         for (int i = 0; i < battlingActors.Count; i++)
         {
             actorTiles[battlingActors[i].location] = battlingActors[i].GetSpriteName();
@@ -39,5 +39,18 @@ public class BattleMap : MapManager
         base.UpdateMap();
         GetActorTiles();
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
+    }
+
+    public void UpdateHighlights(List<int> newTiles, bool attack = false)
+    {
+        string color = moveColor;
+        if (attack){color = attackColor;}
+        if (emptyList.Count < mapSize){InitializeEmptyList();}
+        highlightedTiles = new List<string>(emptyList);
+        for (int i = 0; i < newTiles.Count; i++)
+        {
+            highlightedTiles[newTiles[i]] = color;
+        }
+        mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
 }

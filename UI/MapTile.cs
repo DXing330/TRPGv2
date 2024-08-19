@@ -11,6 +11,9 @@ public class MapTile : MonoBehaviour
     public List<GameObject> layerObjects;
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
+    public Color defaultColor;
+    public List<string> colorNames;
+    public List<Color> colors;
 
     public void DisableLayers()
     {
@@ -34,6 +37,23 @@ public class MapTile : MonoBehaviour
     public void ResetLayerSprite(int layer)
     {
         layerObjects[layer].SetActive(false);
+    }
+
+    protected void ResetHighlight(int layer)
+    {
+        layers[layer].color = defaultColor;
+    }
+
+    public void HighlightLayer(int layer, string color = "")
+    {
+        int indexOf = colorNames.IndexOf(color);
+        if (indexOf >= colors.Count || indexOf < 0)
+        {
+            ResetHighlight(layer);
+            return;
+        }
+        layerObjects[layer].SetActive(true);
+        layers[layer].color = colors[indexOf];
     }
 
     public void ClickTile()

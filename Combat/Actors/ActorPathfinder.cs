@@ -8,7 +8,7 @@ public class ActorPathfinder : MapPathfinder
     public List<int> FindPaths(int startIndex, List<int> moveCosts)
     {
         ResetDistances(startIndex);
-        for (int i = 0; i < moveCosts.Count; i++)
+        for (int i = 0; i < moveCosts.Count-1; i++)
         {
             DeepCheckClosestTile(moveCosts);
         }
@@ -31,5 +31,21 @@ public class ActorPathfinder : MapPathfinder
             }
         }
         return closestTile;
+    }
+
+    public List<int> FindTilesInMoveRange(int start, int moveRange, List<int> moveCosts)
+    {
+        List<int> tiles = new List<int>();
+        ResetDistances(start);
+        int distance = 0;
+        for (int i = 0; i < moveCosts.Count-1; i++)
+        {
+            distance = heap.PeekWeight();
+            if (distance > moveRange){break;}
+            tiles.Add(DeepCheckClosestTile(moveCosts));
+        }
+        tiles.RemoveAt(0);
+        tiles.Sort();
+        return tiles;
     }
 }

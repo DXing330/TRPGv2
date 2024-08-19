@@ -18,6 +18,15 @@ public class MapManager : MonoBehaviour
     }
     public List<int> currentTiles;
     public List<string> mapInfo;
+    public List<string> emptyList;
+    protected virtual void InitializeEmptyList()
+    {
+        emptyList.Clear();
+        for (int i = 0; i < mapSize*mapSize; i++)
+        {
+            emptyList.Add("");
+        }
+    }
     public int mapSize;
     public int gridSize;
     public int startTile = 0;
