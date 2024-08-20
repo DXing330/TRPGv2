@@ -6,6 +6,9 @@ public class ActorMaker : MonoBehaviour
 {
     public TacticActor actorPrefab;
     public StatDatabase actorStats;
+    public MapPatternLocations mapPatterns;
+    public int mapSize;
+    public void SetMapSize(int newSize){mapSize = newSize;}
 
     [ContextMenu("New Actor")]
     public TacticActor CreateActor()
@@ -14,24 +17,30 @@ public class ActorMaker : MonoBehaviour
         return newActor;
     }
 
-    public void SetActorSpriteName(TacticActor actor, string spriteName)
+    protected void SetActorSpriteName(TacticActor actor, string spriteName)
     {
         actor.SetSpriteName(spriteName);
         actor.allStats.SetStats(actorStats.ReturnStats(spriteName));
     }
 
-    public void SetActorLocation(TacticActor actor, int location)
-    {
-        actor.SetLocation(location);
-    }
-
-    public TacticActor SpawnActor(int location, string spriteName)
+    public TacticActor SpawnActor(int location, string spriteName, int team = 0)
     {
         TacticActor newActor = CreateActor();
-        SetActorLocation(newActor, location);
+        newActor.SetLocation(location);
         SetActorSpriteName(newActor, spriteName);
+        newActor.SetTeam(team);
         return newActor;
     }
-    
-    // Spawn patterns.
+
+    public List<TacticActor> SpawnTeamInPattern(int pattern, int team, List<string> teamNames)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        // Randomize the team name order to randomize their spawn locations?
+        List<int> patternLocations = mapPatterns.ReturnTilesOfPattern(pattern, teamNames.Count, mapSize);
+        for (int i = 0; i < teamNames.Count; i++)
+        {
+            actors.Add(SpawnActor(patternLocations[i], teamNames[i], team));
+        }
+        return actors;
+    }
 }

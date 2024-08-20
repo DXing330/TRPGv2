@@ -5,13 +5,16 @@ using UnityEngine;
 public class BattleManager : MonoBehaviour
 {
     public BattleMap map;
+    public ActorMaker actorMaker;
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     void Start()
     {
         // Get a new battle map.
         moveManager.SetMapInfo(map.mapInfo);
-        // Spawn actors.
+        actorMaker.SetMapSize(map.mapSize);
+        // Spawn actors in patterns based on teams.
+        // Get initiative order.
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
     }
@@ -120,6 +123,8 @@ public class BattleManager : MonoBehaviour
             return;
         }
         attackManager.ActorAttacksActor(turnActor, selectedActor, map.mapInfo);
+        map.RemoveActorsFromBattle();
+        map.UpdateActors();
     }
     
     protected void StartMoving()

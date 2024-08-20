@@ -41,7 +41,7 @@ public class BattleMap : MapManager
     {
         for (int i = 0; i < battlingActors.Count; i++)
         {
-            DestroyImmediate(battlingActors[i]);
+            battlingActors[i].DestroyActor();
         }
         battlingActors.Clear();
     }
@@ -49,6 +49,7 @@ public class BattleMap : MapManager
     protected override void UpdateMap()
     {
         base.UpdateMap();
+        UpdateActors();
     }
 
     public void UpdateActors()

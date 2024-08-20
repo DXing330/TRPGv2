@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class TacticActor : MonoBehaviour
 {
+    public GameObject actorObject;
+    public void DestroyActor(){DestroyImmediate(actorObject);}
     public ActorStats allStats;
+    public int team;
+    public int GetTeam(){return team;}
+    public void SetTeam(int newTeam){team = newTeam;}
     public int actions;
     public int GetActions(){return actions;}
     public void PayAttackCost()
@@ -55,4 +60,10 @@ public class TacticActor : MonoBehaviour
     public int location;
     public void SetLocation(int newLocation){location = newLocation;}
     public int GetLocation(){return location;}
+    public int initiative;
+    public int GetInitiative(){return initiative;}
+    public void ChangeInitiative(int change){initiative += change;}
+    public int direction;
+    public int GetDirection(){return direction;}
+    public void SetDirection(int newDirection){direction = newDirection;}
 }
