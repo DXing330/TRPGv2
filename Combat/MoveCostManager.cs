@@ -11,6 +11,12 @@ public class MoveCostManager : MonoBehaviour
         mapInfo = newInfo;
         actorPathfinder.SetMapSize((int) Mathf.Sqrt(mapInfo.Count));
     }
+    // You can move through teammates but not enemies?
+    public List<string> teamInfo;
+    public void SetTeamInfo(List<string> newInfo)
+    {
+        teamInfo = newInfo;
+    }
     public List<MoveCosts> moveCosts;
     public List<int> mapMoveCosts;
     public List<int> pathCosts;
@@ -52,6 +58,11 @@ public class MoveCostManager : MonoBehaviour
     {
         UpdateMoveCosts(actor);
         pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), mapMoveCosts);
+    }
+
+    public List<int> GetPrecomputedPath(int startIndex, int endIndex)
+    {
+        return actorPathfinder.GetPrecomputedPath(startIndex, endIndex);
     }
 
     public List<int> GetAllReachableTiles(TacticActor actor)

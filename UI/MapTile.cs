@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MapTile : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class MapTile : MonoBehaviour
     public Color defaultColor;
     public List<string> colorNames;
     public List<Color> colors;
+    public TMP_Text tileText;
+
+    public void UpdateText(string newText = ""){tileText.text = newText;}
 
     public void DisableLayers()
     {
@@ -49,6 +53,7 @@ public class MapTile : MonoBehaviour
         int indexOf = colorNames.IndexOf(color);
         if (indexOf >= colors.Count || indexOf < 0)
         {
+            ResetLayerSprite(layer);
             ResetHighlight(layer);
             return;
         }

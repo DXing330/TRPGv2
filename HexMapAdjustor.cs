@@ -7,11 +7,7 @@ public class HexMapAdjustor : MonoBehaviour
     public int gridSize = 9;
     public List<RectTransform> hexTiles;
     public List<MapTile> mapTiles;
-
-    void Start()
-    {
-        InitializeTiles();
-    }
+    
 
     [ContextMenu("Initialize")]
     protected virtual void InitializeTiles()
@@ -36,11 +32,21 @@ public class HexMapAdjustor : MonoBehaviour
                 }
                 hexTiles[tileIndex].pivot = new Vector2(xPivot, yPivot);
                 mapTiles[tileIndex].SetTileNumber(tileIndex);
+                mapTiles[tileIndex].UpdateText(tileIndex.ToString());
                 //tiles[tileIndex].SetTileText("("+GetHexQ(tileIndex)+","+GetHexR(tileIndex)+","+GetHexS(tileIndex)+")");
                 tileIndex++;
                 xPivot += 1f/(gridSize - 1);
             }
             yCenter -= 1f/(gridSize);
+        }
+    }
+
+    [ContextMenu("ResetText")]
+    public void ResetTileText()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].UpdateText();
         }
     }
 }

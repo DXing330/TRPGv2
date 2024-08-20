@@ -15,6 +15,20 @@ public class ActorPathfinder : MapPathfinder
         return new List<int>(distances);
     }
 
+    public List<int> GetPrecomputedPath(int startIndex, int endIndex)
+    {
+        List<int> path = new List<int>();
+        path.Add(endIndex);
+        int nextTile = -1;
+        for (int i = 0; i < distances.Count; i++)
+        {
+            nextTile = previousTiles[path[i]];
+            if (nextTile == startIndex){break;}
+            path.Add(nextTile);
+        }
+        return path;
+    }
+
     protected int DeepCheckClosestTile(List<int> moveCosts)
     {
         int closestTile = heap.Pull();

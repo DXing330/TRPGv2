@@ -14,7 +14,7 @@ public class MapDisplayer : ScriptableObject
         for (int i = 0; i < (mapTiles.Count); i++)
         {
             nextTile = currentTiles[i];
-            if (nextTile < 0)
+            if (nextTile < 0 || mapInfo[i].Length < 1)
             {
                 mapTiles[i].ResetLayerSprite(layer);
                 continue;
