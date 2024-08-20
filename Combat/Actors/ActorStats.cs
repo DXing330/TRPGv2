@@ -15,11 +15,17 @@ public class ActorStats : MonoBehaviour
         baseDefense = int.Parse(stats[4]);
         moveSpeed = int.Parse(stats[5]);
         moveType = (stats[6]);
+        currentHealth = baseHealth;
+        currentEnergy = baseEnergy;
+        currentAttack = baseAttack;
+        currentDefense = baseDefense;
+        currentSpeed = moveSpeed;
     }
     public int baseHealth;
     public int baseEnergy;
     public int baseAttack;
     public int attackRange;
+    public int GetAttackRange(){return attackRange;}
     public int baseDefense;
     public int moveSpeed;
     public int GetMoveSpeed(){return moveSpeed;}
@@ -27,6 +33,11 @@ public class ActorStats : MonoBehaviour
     public string GetMoveType(){return moveType;}
     public int currentHealth;
     public int GetHealth(){return currentHealth;}
+    public void UpdateHealth(int changeAmount, bool decrease = true)
+    {
+        if (decrease){currentHealth -= changeAmount;}
+        else {currentHealth += changeAmount;}
+    }
     public int currentEnergy;
     public int GetEnergy(){return currentEnergy;}
     public int currentAttack;

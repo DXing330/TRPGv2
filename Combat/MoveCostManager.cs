@@ -18,6 +18,7 @@ public class MoveCostManager : MonoBehaviour
         teamInfo = newInfo;
     }
     public List<MoveCosts> moveCosts;
+    public int moveCost;
     public List<int> mapMoveCosts;
     public List<int> pathCosts;
     public List<int> reachableTiles;
@@ -62,13 +63,25 @@ public class MoveCostManager : MonoBehaviour
 
     public List<int> GetPrecomputedPath(int startIndex, int endIndex)
     {
-        return actorPathfinder.GetPrecomputedPath(startIndex, endIndex);
+        moveCost = 0;
+        List<int> path = actorPathfinder.GetPrecomputedPath(startIndex, endIndex);
+        for (int i = 0; i < path.Count; i++)
+        {
+            moveCost += mapMoveCosts[path[i]];
+        }
+        return path;
     }
 
-    public List<int> GetAllReachableTiles(TacticActor actor)
+    public List<int> GetAllReachableTiles(TacticActor actor, bool current = true)
     {
         UpdateMoveCosts(actor);
-        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(), mapMoveCosts);
+        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(current), mapMoveCosts);
+        return reachableTiles;
+    }
+
+    public List<int> GetAttackableTiles(TacticActor actor)
+    {
+        reachableTiles = actorPathfinder.FindTilesInRange(actor.GetLocation(), actor.allStats.GetAttackRange());
         return reachableTiles;
     }
 }

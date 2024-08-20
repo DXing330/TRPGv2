@@ -32,4 +32,6 @@ public class ActorMaker : MonoBehaviour
         SetActorSpriteName(newActor, spriteName);
         return newActor;
     }
+    
+    // Spawn patterns.
 }

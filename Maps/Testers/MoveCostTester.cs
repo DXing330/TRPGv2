@@ -10,10 +10,8 @@ public class MoveCostTester : MonoBehaviour
     [ContextMenu("Get Move Costs For Tiles")]
     public void GetMoveCosts()
     {
-        //battleMapTester.map.UpdateMap();
         moveCostManager.SetMapInfo(battleMapTester.map.mapInfo);
         moveCostManager.GetAllMoveCosts(battleMapTester.map.battlingActors[0]);
-        //moveCostManager.GetAllReachableTiles(battleMapTester.map.battlingActors[0]);
         battleMapTester.map.UpdateHighlights(moveCostManager.GetAllReachableTiles(battleMapTester.map.battlingActors[0]));
     }
 }

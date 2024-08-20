@@ -12,6 +12,16 @@ public class BattleMap : MapManager
         battlingActors.Add(actor);
         UpdateMap();
     }
+    public void RemoveActorsFromBattle()
+    {
+        for (int i = battlingActors.Count-1; i >= 0; i--)
+        {
+            if (battlingActors[i].allStats.GetHealth() <= 0)
+            {
+                battlingActors.RemoveAt(i);
+            }
+        }
+    }
     public List<string> actorTiles;
     public List<string> highlightedTiles;
     public string moveColor;

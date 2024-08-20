@@ -6,17 +6,53 @@ public class BattleManager : MonoBehaviour
 {
     public BattleMap map;
     public MoveCostManager moveManager;
+    public AttackManager attackManager;
     void Start()
     {
         // Get a new battle map.
         moveManager.SetMapInfo(map.mapInfo);
         // Spawn actors.
+        turnActor = map.battlingActors[turnNumber];
+        turnActor.NewTurn();
     }
     public bool interactable = true;
     public int roundNumber;
-    public int turnNumber;
-    // None, Move/Attack, SkillSelect, SkillTargeting, Viewing
+    public int turnNumber = 0;
+    public TacticActor turnActor;
+    public void NextTurn()
+    {
+        // Remove dead actors.
+        map.RemoveActorsFromBattle();
+        turnNumber++;
+        if (turnNumber >= map.battlingActors.Count)
+        {
+            turnNumber = 0;
+            roundNumber++;
+        }
+        turnActor = map.battlingActors[turnNumber];
+        turnActor.NewTurn();
+        ResetState();
+    }
+    // None, Move, Attack, SkillSelect, SkillTargeting, Viewing
     public string selectedState;
+    public void SetState(string newState)
+    {
+        if (newState == selectedState)
+        {
+            ResetState();
+            return;
+        }
+        selectedState = newState;
+        switch (selectedState)
+        {
+            case "Move":
+            StartMoving();
+            break;
+            case "Attack":
+            StartAttacking();
+            break;
+        }
+    }
     public int selectedTile;
     public TacticActor selectedActor;
 
@@ -38,56 +74,76 @@ public class BattleManager : MonoBehaviour
             ResetState();
             return;
         }
-        // Then pick an actor if you haven't yet.
-        if (selectedActor == null)
+        // Then do something depending on the state.
+        switch (selectedState)
         {
-            SelectActor(selectedTile);
+            case "Move":
+            MoveToTile(selectedTile);
+            break;
+            case "Attack":
+            if (!turnActor.ActionsLeft()){break;}
+            AttackActorOnTile(selectedTile);
+            break;
+            case "":
+            ViewActorOnTile(selectedTile);
+            break;
+        }
+    }
+
+    protected void ViewActorOnTile(int tileNumber)
+    {
+        selectedActor = map.GetActorOnTile(tileNumber);
+        if (selectedActor == null){return;}
+        if (selectedActor == turnActor)
+        {
+            SetState("Move");
             return;
         }
-        // Otherwise do things with the actor you picked.
         else
         {
-            SelectTile(selectedTile);
+            map.UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, false));
+        }
+    }
+
+    protected void StartAttacking()
+    {
+        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor), true);
+    }
+
+    protected void AttackActorOnTile(int tileNumber)
+    {
+        int indexOf = moveManager.reachableTiles.IndexOf(tileNumber);
+        selectedActor = map.GetActorOnTile(tileNumber);
+        if (indexOf < 0 || selectedActor == null)
+        {
+            ResetState();
             return;
         }
+        attackManager.ActorAttacksActor(turnActor, selectedActor, map.mapInfo);
+    }
+    
+    protected void StartMoving()
+    {
+        map.UpdateHighlights(moveManager.GetAllReachableTiles(turnActor));
     }
 
-    protected void SelectActor(int tileNumber)
+    protected void MoveToTile(int tileNumber)
     {
-        selectedActor = map.GetActorOnTile(selectedTile);
-        if (selectedState == "")
+        int indexOf = moveManager.reachableTiles.IndexOf(tileNumber);
+        // For now you can't move into other actors.
+        if (indexOf < 0 || map.GetActorOnTile(tileNumber) != null)
         {
-            if (selectedActor == null)
-            {
-                ResetState();
-                return;
-            }
-            else
-            {
-                selectedState = "Move";
-                map.UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor));
-                return;
-            }
+            ResetState();
+            return;
         }
-    }
-
-    protected void SelectTile(int tileNumber)
-    {
-        if (selectedState == "Move")
+        else
         {
-            int indexOf = moveManager.reachableTiles.IndexOf(tileNumber);
-            // For now you can't move into other actors.
-            if (indexOf < 0 || map.GetActorOnTile(tileNumber) != null)
-            {
-                ResetState();
-                return;
-            }
-            else
-            {
-                List<int> path = moveManager.GetPrecomputedPath(selectedActor.GetLocation(), tileNumber);
-                interactable = false;
-                StartCoroutine(MoveAlongPath(selectedActor, path));
-            }
+            List<int> path = moveManager.GetPrecomputedPath(turnActor.GetLocation(), tileNumber);
+            // Need to get the move cost and pay for it.
+            turnActor.PayMoveCost(moveManager.moveCost);
+            // Need to change the characters direction.
+            interactable = false;
+            StartCoroutine(MoveAlongPath(turnActor, path));
         }
     }
 
@@ -95,7 +151,7 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = path.Count - 1; i >= 0; i--)
         {
-            selectedActor.SetLocation(path[i]);
+            turnActor.SetLocation(path[i]);
             map.UpdateActors();
             yield return new WaitForSeconds(0.1f);
         }
