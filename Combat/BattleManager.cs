@@ -5,16 +5,18 @@ using UnityEngine;
 public class BattleManager : MonoBehaviour
 {
     public BattleMap map;
+    public ActorAI actorAI;
     public ActorMaker actorMaker;
     public MoveCostManager moveManager;
     public AttackManager attackManager;
+    public BattleEndManager battleEndManager;
     void Start()
     {
-        // Get a new battle map.
+            // Get a new battle map.
         moveManager.SetMapInfo(map.mapInfo);
         actorMaker.SetMapSize(map.mapSize);
-        // Spawn actors in patterns based on teams.
-        // Get initiative order.
+            // Spawn actors in patterns based on teams.
+            // Get initiative order.
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
     }
@@ -26,6 +28,11 @@ public class BattleManager : MonoBehaviour
     {
         // Remove dead actors.
         map.RemoveActorsFromBattle();
+        if (battleEndManager.FindWinningTeam(map.battlingActors) >= 0)
+        {
+            // Battle is over.
+            return;
+        }
         turnNumber++;
         if (turnNumber >= map.battlingActors.Count)
         {
@@ -35,6 +42,32 @@ public class BattleManager : MonoBehaviour
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
         ResetState();
+        if (turnActor.GetTeam() > 0)
+        {
+            NPCTurn();
+        }
+    }
+    protected void NPCTurn()
+    {
+        // Get a path and move along it.
+        List<int> path = actorAI.FindPathToClosestEnemy(turnActor, map, moveManager);
+        StartCoroutine(MoveAlongPath(turnActor, path));
+        // Then attack or use skills as needed.
+        if (turnActor.ActionsLeft() && turnActor.TargetAlive() && moveManager.TileInAttackRange(turnActor, turnActor.GetTarget().GetLocation()))
+        {
+            int actionsLeft = turnActor.GetActions();
+            for (int i = 0; i < actionsLeft; i++)
+            {
+                if (!turnActor.TargetAlive()){break;}
+                ActorAttacksActor(turnActor, turnActor.GetTarget(), map.mapInfo);
+            }
+        }
+        StartCoroutine(EndTurn());
+    }
+    IEnumerator EndTurn()
+    {
+        yield return new WaitForSeconds(0.5f);
+        NextTurn();
     }
     // None, Move, Attack, SkillSelect, SkillTargeting, Viewing
     public string selectedState;
@@ -104,7 +137,7 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            map.UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, false));
+            map.UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, map.battlingActors, false));
         }
     }
 
@@ -122,14 +155,20 @@ public class BattleManager : MonoBehaviour
             ResetState();
             return;
         }
-        attackManager.ActorAttacksActor(turnActor, selectedActor, map.mapInfo);
+        ActorAttacksActor(turnActor, selectedActor, map.mapInfo);
+    }
+
+    // Needs to know more than just mapInfo, probably needs the whole battle map for unit positions and a pathfinder to calculate relative positions.
+    protected void ActorAttacksActor(TacticActor attacker, TacticActor defender, List<string> mapInfo)
+    {
+        attackManager.ActorAttacksActor(attacker, defender, mapInfo);
         map.RemoveActorsFromBattle();
         map.UpdateActors();
     }
     
     protected void StartMoving()
     {
-        map.UpdateHighlights(moveManager.GetAllReachableTiles(turnActor));
+        map.UpdateHighlights(moveManager.GetAllReachableTiles(turnActor, map.battlingActors));
     }
 
     protected void MoveToTile(int tileNumber)
@@ -156,7 +195,7 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = path.Count - 1; i >= 0; i--)
         {
-            turnActor.SetLocation(path[i]);
+            actor.SetLocation(path[i]);
             map.UpdateActors();
             yield return new WaitForSeconds(0.1f);
         }

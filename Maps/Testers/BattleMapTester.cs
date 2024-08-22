@@ -35,12 +35,12 @@ public class BattleMapTester : MonoBehaviour
     public void SpawnInPatterns()
     {
         map.ClearActors();
-        List<TacticActor> newActors = actorMaker.SpawnTeamInPattern(patternOne, 1, testTeamOne);
+        List<TacticActor> newActors = actorMaker.SpawnTeamInPattern(patternOne, 0, testTeamOne);
         for (int i = 0; i < newActors.Count; i++)
         {
             map.AddActorToBattle(newActors[i]);
         }
-        newActors = actorMaker.SpawnTeamInPattern(patternTwo, 2, testTeamTwo);
+        newActors = actorMaker.SpawnTeamInPattern(patternTwo, 1, testTeamTwo);
         for (int i = 0; i < newActors.Count; i++)
         {
             map.AddActorToBattle(newActors[i]);

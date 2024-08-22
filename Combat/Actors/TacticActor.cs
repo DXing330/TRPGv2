@@ -66,4 +66,12 @@ public class TacticActor : MonoBehaviour
     public int direction;
     public int GetDirection(){return direction;}
     public void SetDirection(int newDirection){direction = newDirection;}
+    public TacticActor target;
+    public void SetTarget(TacticActor newTarget){target = newTarget;}
+    public TacticActor GetTarget(){return target;}
+    public bool TargetAlive()
+    {
+        if (target == null){return false;}
+        return target.allStats.GetHealth() > 0;
+    }
 }

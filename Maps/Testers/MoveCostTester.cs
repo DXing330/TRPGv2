@@ -11,7 +11,7 @@ public class MoveCostTester : MonoBehaviour
     public void GetMoveCosts()
     {
         moveCostManager.SetMapInfo(battleMapTester.map.mapInfo);
-        moveCostManager.GetAllMoveCosts(battleMapTester.map.battlingActors[0]);
-        battleMapTester.map.UpdateHighlights(moveCostManager.GetAllReachableTiles(battleMapTester.map.battlingActors[0]));
+        moveCostManager.GetAllMoveCosts(battleMapTester.map.battlingActors[0], battleMapTester.map.battlingActors);
+        battleMapTester.map.UpdateHighlights(moveCostManager.GetAllReachableTiles(battleMapTester.map.battlingActors[0], battleMapTester.map.battlingActors));
     }
 }

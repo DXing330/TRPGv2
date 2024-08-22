@@ -45,7 +45,7 @@ public class MoveCostManager : MonoBehaviour
         }
     }
 
-    protected void UpdateMoveCosts(TacticActor actor)
+    protected void UpdateMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
         DetermineMoveType(actor);
         mapMoveCosts.Clear();
@@ -53,12 +53,21 @@ public class MoveCostManager : MonoBehaviour
         {
             mapMoveCosts.Add(ReturnMoveCost(mapInfo[i]));
         }
+        for (int i = 0; i < actors.Count; i++)
+        {
+            mapMoveCosts[actors[i].GetLocation()] = 333;
+        }
     }
 
-    public void GetAllMoveCosts(TacticActor actor)
+    public void GetAllMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
-        UpdateMoveCosts(actor);
+        UpdateMoveCosts(actor, actors);
         pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), mapMoveCosts);
+    }
+
+    public int MoveCostOfTile(int tileIndex)
+    {
+        return mapMoveCosts[tileIndex];
     }
 
     public List<int> GetPrecomputedPath(int startIndex, int endIndex)
@@ -72,9 +81,19 @@ public class MoveCostManager : MonoBehaviour
         return path;
     }
 
-    public List<int> GetAllReachableTiles(TacticActor actor, bool current = true)
+    public int MoveCostOfPath(List<int> path)
     {
-        UpdateMoveCosts(actor);
+        moveCost = 0;
+        for (int i = 0; i < path.Count; i++)
+        {
+            moveCost += mapMoveCosts[path[i]];
+        }
+        return moveCost;
+    }
+
+    public List<int> GetAllReachableTiles(TacticActor actor, List<TacticActor> actors, bool current = true)
+    {
+        UpdateMoveCosts(actor, actors);
         reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(current), mapMoveCosts);
         return reachableTiles;
     }
@@ -83,5 +102,10 @@ public class MoveCostManager : MonoBehaviour
     {
         reachableTiles = actorPathfinder.FindTilesInRange(actor.GetLocation(), actor.allStats.GetAttackRange());
         return reachableTiles;
+    }
+
+    public bool TileInAttackRange(TacticActor actor, int tileIndex)
+    {
+        return actor.allStats.GetAttackRange() >= actorPathfinder.mapUtility.DistanceBetweenTiles(actor.GetLocation(), tileIndex, actorPathfinder.mapSize);
     }
 }
