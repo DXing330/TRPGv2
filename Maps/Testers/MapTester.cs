@@ -67,4 +67,13 @@ public class MapTester : MonoBehaviour
     {
         Debug.Log(mapUtility.GetRowFromQRS(testQ, testR, testS, testSize));
     }
+
+    [ContextMenu("Test Directions")]
+    public void TestDirections()
+    {
+        for (int i = 0; i < testSize*testSize; i++)
+        {
+            Debug.Log("Tile Number: "+i+", Direction: "+mapUtility.DirectionBetweenLocations(testTile, i, testSize));
+        }
+    }
 }

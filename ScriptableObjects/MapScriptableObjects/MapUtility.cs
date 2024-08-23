@@ -106,6 +106,40 @@ public class MapUtility : ScriptableObject
     {
         return (PointInDirection(location, direction, size) >= 0);
     }
+
+    public int DirectionBetweenLocations(int locationOne, int locationTwo, int size)
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            if (PointInDirection(locationOne, i, size) == locationTwo)
+            {
+                return i;
+            }
+        }
+        int q1 = GetHexQ(locationOne, size);
+        int q2 = GetHexQ(locationTwo, size);
+        int r1 = GetHexR(locationOne, size);
+        int r2 = GetHexR(locationTwo, size);
+        int s1 = GetHexS(locationOne, size);
+        int s2 = GetHexS(locationTwo, size);
+        if (q1 == q2)
+        {
+            if (r1 > r2 && s1 < s2){return 0;}
+            else if (r1 < r2 && s1 > s2){return 3;}
+        }
+        // Needs more edge case testing.
+        else if (q1 < q2)
+        {
+            if (r1 <= r2 && s1 > s2){return 2;}
+            else{return 1;}
+        }
+        else if (q1 > q2)
+        {
+            if (r1 < r2 && s1 >= s2){return 4;}
+            else{return 5;}
+        }
+        return -1;
+    }
     
     public List<int> AdjacentTiles(int location, int size)
     {

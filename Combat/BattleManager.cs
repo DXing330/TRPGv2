@@ -143,7 +143,7 @@ public class BattleManager : MonoBehaviour
 
     protected void StartAttacking()
     {
-        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor), true);
+        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.battlingActors), true);
     }
 
     protected void AttackActorOnTile(int tileNumber)
