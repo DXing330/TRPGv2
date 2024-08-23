@@ -120,4 +120,14 @@ public class MoveCostManager : MonoBehaviour
     {
         return actor.allStats.GetAttackRange() >= actorPathfinder.mapUtility.DistanceBetweenTiles(actor.GetLocation(), tileIndex, actorPathfinder.mapSize);
     }
+
+    public int DirectionBetweenActors(TacticActor actor1, TacticActor actor2)
+    {
+        return actorPathfinder.mapUtility.DirectionBetweenLocations(actor1.GetLocation(), actor2.GetLocation(), actorPathfinder.mapSize);
+    }
+
+    public int DirectionBetweenLocations(int loc1, int loc2)
+    {
+        return actorPathfinder.mapUtility.DirectionBetweenLocations(loc1, loc2, actorPathfinder.mapSize);
+    }
 }

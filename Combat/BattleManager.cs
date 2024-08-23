@@ -59,7 +59,7 @@ public class BattleManager : MonoBehaviour
             for (int i = 0; i < actionsLeft; i++)
             {
                 if (!turnActor.TargetAlive()){break;}
-                ActorAttacksActor(turnActor, turnActor.GetTarget(), map.mapInfo);
+                ActorAttacksActor(turnActor, turnActor.GetTarget());
             }
         }
         StartCoroutine(EndTurn());
@@ -155,13 +155,12 @@ public class BattleManager : MonoBehaviour
             ResetState();
             return;
         }
-        ActorAttacksActor(turnActor, selectedActor, map.mapInfo);
+        ActorAttacksActor(turnActor, selectedActor);
     }
 
-    // Needs to know more than just mapInfo, probably needs the whole battle map for unit positions and a pathfinder to calculate relative positions.
-    protected void ActorAttacksActor(TacticActor attacker, TacticActor defender, List<string> mapInfo)
+    protected void ActorAttacksActor(TacticActor attacker, TacticActor defender)
     {
-        attackManager.ActorAttacksActor(attacker, defender, mapInfo);
+        attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         map.RemoveActorsFromBattle();
         map.UpdateActors();
     }
@@ -195,7 +194,9 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = path.Count - 1; i >= 0; i--)
         {
+            actor.SetDirection(moveManager.DirectionBetweenLocations(actor.GetLocation(), path[i]));
             actor.SetLocation(path[i]);
+            // Apply any effects on the tiles being stepped.
             map.UpdateActors();
             yield return new WaitForSeconds(0.1f);
         }

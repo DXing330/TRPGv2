@@ -97,4 +97,9 @@ public class BattleMap : MapManager
         }
         return null;
     }
+
+    public string GetTileInfoOfActor(TacticActor actor)
+    {
+        return mapInfo[actor.GetLocation()];
+    }
 }

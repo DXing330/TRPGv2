@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AttackManager", menuName = "ScriptableObjects/AttackManager", order = 1)]
 public class AttackManager : ScriptableObject
 {
-    public void ActorAttacksActor(TacticActor attacker, TacticActor defender, List<string> mapInfo)
+    public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager)
     {
         int advantage = 0;
         // Determine advantage based on passives/etc.
@@ -16,6 +16,7 @@ public class AttackManager : ScriptableObject
         defender.allStats.UpdateHealth(damage);
         Debug.Log(defender.GetSpriteName()+" takes "+damage+" damage.");
         attacker.PayAttackCost();
+        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
     }
 
     protected int RollAttackDamage(int baseAttack)
