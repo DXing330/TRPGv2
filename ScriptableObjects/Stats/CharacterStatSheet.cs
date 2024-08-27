@@ -44,7 +44,7 @@ public class CharacterStatSheet : ScriptableObject
         return stats;
     }
 
-    public List<string> ReturnALLStats()
+    public List<string> ReturnAllStats()
     {
         List<string> stats = new List<string>();
         stats.Add(maxHealth.ToString());

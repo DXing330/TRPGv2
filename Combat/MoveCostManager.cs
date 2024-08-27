@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class MoveCostManager : MonoBehaviour
 {
+    public PassiveSkill passiveSkill;
+    public StatDatabase passiveData;
     public int moveTypeIndex;
     public List<string> mapInfo;
     public void SetMapInfo(List<string> newInfo)
@@ -24,11 +26,21 @@ public class MoveCostManager : MonoBehaviour
     public List<int> reachableTiles;
     public ActorPathfinder actorPathfinder;
 
-    public int ReturnMoveCost(string tileType)
+    public int ReturnMoveCost(string tileType, TacticActor actor)
     {
         if (moveTypeIndex < 0){return 1;}
         int cost = moveCosts[moveTypeIndex].ReturnMoveCost(tileType);
         // Might be able to change this with character passives later.
+        if (actor.allStats.movingPassives.Count <= 0){return cost;}
+        List<string> passiveInfo = new List<string>();
+        for (int i = 0; i < actor.allStats.movingPassives.Count; i++)
+        {
+            passiveInfo = passiveData.ReturnStats(actor.allStats.movingPassives[i]);
+            if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], tileType))
+            {
+                cost = Mathf.Max(1, passiveSkill.AffectInt(cost, passiveInfo[4], passiveInfo[5]));
+            }
+        }
         return cost;
     }
 
@@ -51,7 +63,7 @@ public class MoveCostManager : MonoBehaviour
         mapMoveCosts.Clear();
         for (int i = 0; i < mapInfo.Count; i++)
         {
-            mapMoveCosts.Add(ReturnMoveCost(mapInfo[i]));
+            mapMoveCosts.Add(ReturnMoveCost(mapInfo[i], actor));
         }
         for (int i = 0; i < actors.Count; i++)
         {

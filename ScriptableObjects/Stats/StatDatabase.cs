@@ -37,4 +37,11 @@ public class StatDatabase : ScriptableObject
         stats = values[indexOf].Split(valueDelimiter).ToList();
         return stats;
     }
+
+    public string ReturnValue(string key)
+    {
+        int indexOf = keys.IndexOf(key);
+        if (indexOf < 0){return "";}
+        return values[indexOf];
+    }
 }

@@ -54,6 +54,9 @@ public class TacticActor : MonoBehaviour
     public string personalName;
     public void SetPersonalName(string newName){personalName = newName;}
     public string GetPersonalName(){return personalName;}
+    public string species;
+    public void SetSpecies(string newSpecies){species = newSpecies;}
+    public string GetSpecies(){return species;}
     public string spriteName;
     public void SetSpriteName(string newName){spriteName = newName;}
     public string GetSpriteName(){return spriteName;}
@@ -73,5 +76,19 @@ public class TacticActor : MonoBehaviour
     {
         if (target == null){return false;}
         return target.allStats.GetHealth() > 0;
+    }
+
+    public void StartTurn()
+    {
+        actions = 2;
+        movement = 0;
+        allStats.ResetStats();
+        // Go through passives.
+        // Go through conditions.
+    }
+
+    public void EndTurn()
+    {
+        // Go through passives.
     }
 }

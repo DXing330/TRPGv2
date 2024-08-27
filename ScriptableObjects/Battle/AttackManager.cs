@@ -12,7 +12,7 @@ public class AttackManager : ScriptableObject
         int damage = attacker.allStats.GetAttack();
         damage = Advantage(damage, advantage);
         // Adjust damage based on passives, terrain effects, direction, etc.
-        damage -= defender.allStats.GetDefense();
+        damage = Mathf.Max(0, damage - defender.allStats.GetDefense());
         defender.allStats.UpdateHealth(damage);
         Debug.Log(defender.GetSpriteName()+" takes "+damage+" damage.");
         attacker.PayAttackCost();
