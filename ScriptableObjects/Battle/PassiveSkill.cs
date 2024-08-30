@@ -6,16 +6,20 @@ using UnityEngine;
 public class PassiveSkill : ScriptableObject
 {
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.
-    public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor targetedActor, TacticActor otherActor = null, int distance = -1, List<string> mapInfo = null)
+    public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor targetedActor, TacticActor otherActor, BattleMap map, MoveCostManager moveManager)
     {
         switch (condition)
         {
             case "Tile":
-            return CheckConditionSpecifics(conditionSpecifics, mapInfo[targetedActor.GetLocation()]);
+            return CheckConditionSpecifics(conditionSpecifics, map.mapInfo[targetedActor.GetLocation()]);
+            case "Adjacent Ally":
+            // Need to check adjacent tiles for allies.
+            return false;
             case "None":
             return true;
             case "Distance":
-            return distance < int.Parse(conditionSpecifics);
+            // Need to get the distance between them.
+            return false;
             case "Sprite":
             return CheckConditionSpecifics(conditionSpecifics, targetedActor.GetSpriteName());
             case "Direction":
@@ -33,11 +37,6 @@ public class PassiveSkill : ScriptableObject
     public bool CheckConditionSpecifics(string conditionSpecifics, string specifics)
     {
         return (conditionSpecifics == specifics);
-    }
-
-    public bool CheckTiming(string timing, string time)
-    {
-        return (timing == time);
     }
 
     public void AffectTarget(TacticActor target, string effect, string effectSpecifics, int level = 1)

@@ -20,28 +20,50 @@ public class MoveCostManager : MonoBehaviour
         teamInfo = newInfo;
     }
     public List<MoveCosts> moveCosts;
+    public List<string> moveTypeTiles;
+    public List<int> moveTypeCosts;
     public int moveCost;
     public List<int> mapMoveCosts;
     public List<int> pathCosts;
     public List<int> reachableTiles;
     public ActorPathfinder actorPathfinder;
 
-    public int ReturnMoveCost(string tileType, TacticActor actor)
+    protected void UpdateTileTypeList()
     {
-        if (moveTypeIndex < 0){return 1;}
-        int cost = moveCosts[moveTypeIndex].ReturnMoveCost(tileType);
-        // Might be able to change this with character passives later.
-        if (actor.allStats.movingPassives.Count <= 0){return cost;}
+        moveTypeTiles.Clear();
+        for (int i = 0; i < moveCosts[moveTypeIndex].tileTypes.Count; i++)
+        {
+            moveTypeTiles.Add(moveCosts[moveTypeIndex].tileTypes[i]);
+        }
+    }
+
+    protected void UpdateMoveCostList(TacticActor actor)
+    {
+        moveTypeCosts.Clear();
+        for (int i = 0; i < moveCosts[moveTypeIndex].moveCosts.Count; i++)
+        {
+            moveTypeCosts.Add(moveCosts[moveTypeIndex].moveCosts[i]);
+        }
         List<string> passiveInfo = new List<string>();
         for (int i = 0; i < actor.allStats.movingPassives.Count; i++)
         {
             passiveInfo = passiveData.ReturnStats(actor.allStats.movingPassives[i]);
-            if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], tileType))
+            for (int j = 0; j < moveTypeTiles.Count; j++)
             {
-                cost = Mathf.Max(1, passiveSkill.AffectInt(cost, passiveInfo[4], passiveInfo[5]));
+                if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], moveTypeTiles[j]))
+                {
+                    moveTypeCosts[j] = Mathf.Max(1, passiveSkill.AffectInt(moveTypeCosts[j], passiveInfo[4], passiveInfo[5]));
+                }
             }
         }
-        return cost;
+    }
+
+    public int ReturnMoveCost(string tileType)
+    {
+        if (moveTypeIndex < 0){return 1;}
+        int indexOf = moveTypeTiles.IndexOf(tileType);
+        if (indexOf < 0){return 1;}
+        return moveTypeCosts[indexOf];
     }
 
     protected void DetermineMoveType(TacticActor actor)
@@ -60,10 +82,12 @@ public class MoveCostManager : MonoBehaviour
     protected void UpdateMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
         DetermineMoveType(actor);
+        UpdateTileTypeList();
+        UpdateMoveCostList(actor);
         mapMoveCosts.Clear();
         for (int i = 0; i < mapInfo.Count; i++)
         {
-            mapMoveCosts.Add(ReturnMoveCost(mapInfo[i], actor));
+            mapMoveCosts.Add(ReturnMoveCost(mapInfo[i]));
         }
         for (int i = 0; i < actors.Count; i++)
         {

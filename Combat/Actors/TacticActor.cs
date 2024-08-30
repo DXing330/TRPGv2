@@ -32,6 +32,7 @@ public class TacticActor : MonoBehaviour
             for (int i = 0; i < maxActions; i++)
             {
                 MoveAction();
+                if (movement >= 0){break;}
             }
         }
     }
@@ -53,7 +54,11 @@ public class TacticActor : MonoBehaviour
     }
     public string personalName;
     public void SetPersonalName(string newName){personalName = newName;}
-    public string GetPersonalName(){return personalName;}
+    public string GetPersonalName()
+    {
+        if (personalName.Length <= 0){return GetSpriteName();}
+        return personalName;
+    }
     public string species;
     public void SetSpecies(string newSpecies){species = newSpecies;}
     public string GetSpecies(){return species;}
