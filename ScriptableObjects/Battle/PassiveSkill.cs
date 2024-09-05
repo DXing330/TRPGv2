@@ -18,20 +18,41 @@ public class PassiveSkill : ScriptableObject
             case "None":
             return true;
             case "Distance":
-            // Need to get the distance between them.
-            return false;
+            return moveManager.DistanceBetweenActors(targetedActor, otherActor) <= int.Parse(conditionSpecifics);
             case "Sprite":
             return CheckConditionSpecifics(conditionSpecifics, targetedActor.GetSpriteName());
             case "Direction":
-            return CheckConditionSpecifics(conditionSpecifics, CheckRelativeDirections(targetedActor.GetDirection(), otherActor.GetDirection()));
+            return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(targetedActor.GetDirection(), otherActor.GetDirection()));
         }
         return false;
     }
 
     public string CheckRelativeDirections(int dir1, int dir2)
     {
-        if (dir1 == dir2){return "Same";}
+        int directionDiff = Mathf.Abs(dir1 - dir2);
+        switch (directionDiff)
+        {
+            case 0:
+            return "Same";
+            case 1:
+            return "Back";
+            case 2:
+            return "Face";
+            case 3:
+            return "Opposite";
+            case 4:
+            return "Face";
+            case 5:
+            return "Back";
+        }
         return "None";
+    }
+
+    public bool CheckDirectionSpecifics(string conditionSpecifics, string specifics)
+    {
+        if (conditionSpecifics == "Back" && specifics == "Same"){return true;}
+        else if (conditionSpecifics == "Face" && specifics == "Opposite"){return true;}
+        return (conditionSpecifics == specifics);
     }
 
     public bool CheckConditionSpecifics(string conditionSpecifics, string specifics)

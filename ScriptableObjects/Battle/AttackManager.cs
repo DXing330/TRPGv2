@@ -9,23 +9,25 @@ public class AttackManager : ScriptableObject
     public StatDatabase passiveData;
     public int baseMultiplier;
     protected int advantage;
+    protected int baseDamage;
     protected int damageMultiplier;
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager)
     {
         advantage = 0;
         damageMultiplier = baseMultiplier;
+        baseDamage = attacker.allStats.GetAttack();
         CheckPassives(attacker.allStats.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.allStats.defendingPassives, defender, attacker, map, moveManager);
-        int damage = attacker.allStats.GetAttack();
         Debug.Log(advantage);
         Debug.Log(damageMultiplier);
-        damage = Advantage(damage, advantage);
-        damage = damageMultiplier * damage / baseMultiplier;
+        Debug.Log(baseDamage);
+        baseDamage = Advantage(baseDamage, advantage);
+        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Adjust damage based on passives, terrain effects, direction, etc.
-        damage = Mathf.Max(0, damage - defender.allStats.GetDefense());
+        baseDamage = Mathf.Max(0, baseDamage - defender.allStats.GetDefense());
         // Check if the passive affects damage.
-        defender.allStats.UpdateHealth(damage);
-        Debug.Log(defender.GetSpriteName()+" takes "+damage+" damage.");
+        defender.allStats.UpdateHealth(baseDamage);
+        Debug.Log(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
         attacker.PayAttackCost();
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
     }
@@ -72,6 +74,9 @@ public class AttackManager : ScriptableObject
                     break;
                     case "Damage":
                     damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
+                    break;
+                    case "BaseDamage":
+                    baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
                     break;
                 }
             }

@@ -162,6 +162,11 @@ public class MoveCostManager : MonoBehaviour
         return actorPathfinder.mapUtility.DirectionBetweenLocations(actor1.GetLocation(), actor2.GetLocation(), actorPathfinder.mapSize);
     }
 
+    public int DistanceBetweenActors(TacticActor actor1, TacticActor actor2)
+    {
+        return actorPathfinder.mapUtility.DistanceBetweenTiles(actor1.GetLocation(), actor2.GetLocation(), actorPathfinder.mapSize);
+    }
+
     public int DirectionBetweenLocations(int loc1, int loc2)
     {
         return actorPathfinder.mapUtility.DirectionBetweenLocations(loc1, loc2, actorPathfinder.mapSize);
