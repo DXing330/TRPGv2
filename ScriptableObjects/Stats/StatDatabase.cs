@@ -19,12 +19,12 @@ public class StatDatabase : ScriptableObject
         GetValues();
     }
 
-    public void GetKeys()
+    public virtual void GetKeys()
     {
         keys = allKeys.Split(keyDelimiter).ToList();
     }
 
-    public void GetValues()
+    public virtual void GetValues()
     {
         values = allValues.Split(keyDelimiter).ToList();
     }
