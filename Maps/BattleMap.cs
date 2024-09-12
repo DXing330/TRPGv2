@@ -12,15 +12,18 @@ public class BattleMap : MapManager
         battlingActors.Add(actor);
         UpdateMap();
     }
-    public void RemoveActorsFromBattle()
+    public int RemoveActorsFromBattle(int turnNumber = -1)
     {
         for (int i = battlingActors.Count-1; i >= 0; i--)
         {
             if (battlingActors[i].allStats.GetHealth() <= 0)
             {
                 battlingActors.RemoveAt(i);
+                // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.
+                if (i <= turnNumber){turnNumber--;}
             }
         }
+        return turnNumber;
     }
     public List<string> actorTiles;
     public List<string> highlightedTiles;

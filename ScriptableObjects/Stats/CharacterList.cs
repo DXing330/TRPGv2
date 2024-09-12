@@ -5,19 +5,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CharacterList", menuName = "ScriptableObjects/DataContainers/CharacterList", order = 1)]
 public class CharacterList : ScriptableObject
 {
-    public List<string> characterNames;
-    public List<string> characterStats;
+    public List<string> characters;
+    public List<string> stats;
 
     public void ResetLists()
     {
-        characterNames.Clear();
-        characterStats.Clear();
+        characters.Clear();
+        stats.Clear();
     }
 
     public void SetLists(List<string> newNames, List<string> newStats = null)
     {
-        characterNames = newNames;
+        characters = newNames;
         if (newStats == null){newStats.Clear();}
-        else {characterStats = newStats;}
+        else {stats = newStats;}
     }
 }

@@ -7,16 +7,27 @@ public class BattleManager : MonoBehaviour
     public BattleMap map;
     public ActorAI actorAI;
     public ActorMaker actorMaker;
+    public BattleMapFeatures battleMapFeatures;
+    public InitiativeTracker initiativeTracker;
+    public CharacterList playerParty;
+    public CharacterList enemyParty;
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
     void Start()
     {
-            // Get a new battle map.
+        // Get a new battle map.
+        map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         moveManager.SetMapInfo(map.mapInfo);
         actorMaker.SetMapSize(map.mapSize);
-            // Spawn actors in patterns based on teams.
-            // Get initiative order.
+        // Spawn actors in patterns based on teams.
+        List<TacticActor> actors = new List<TacticActor>();
+        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters);
+        for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters);
+        for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        // Start the combat.
+        NextRound();
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
     }
@@ -24,28 +35,29 @@ public class BattleManager : MonoBehaviour
     public int roundNumber;
     public int turnNumber = 0;
     public TacticActor turnActor;
+    protected void NextRound()
+    {
+        map.RemoveActorsFromBattle();
+        turnNumber = 0;
+        roundNumber++;
+        // Get initiative order.
+        map.battlingActors = initiativeTracker.SortActors(map.battlingActors);
+    }
     public void NextTurn()
     {
         // Remove dead actors.
-        map.RemoveActorsFromBattle();
+        turnNumber = map.RemoveActorsFromBattle(turnNumber);
         if (battleEndManager.FindWinningTeam(map.battlingActors) >= 0)
         {
             // Battle is over.
             return;
         }
         turnNumber++;
-        if (turnNumber >= map.battlingActors.Count)
-        {
-            turnNumber = 0;
-            roundNumber++;
-        }
+        if (turnNumber >= map.battlingActors.Count){NextRound();}
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
         ResetState();
-        if (turnActor.GetTeam() > 0)
-        {
-            NPCTurn();
-        }
+        if (turnActor.GetTeam() > 0){NPCTurn();}
     }
     protected void NPCTurn()
     {

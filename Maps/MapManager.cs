@@ -51,6 +51,15 @@ public class MapManager : MonoBehaviour
         UpdateMap();
     }
 
+    public virtual void GetNewMapFeatures(MapFeaturesList mapFeatures)
+    {
+        mapInfo = mapMaker.MakeBasicMap(mapSize);
+        for (int i = 0; i < mapFeatures.features.Count; i++)
+        {
+            mapInfo = mapMaker.AddFeature(mapInfo, mapFeatures.features[i], mapFeatures.patterns[i]);
+        }
+    }
+
     public void MoveMap(int direction)
     {
         int newCenter = mapUtility.PointInDirection(startTile, direction, mapMaker.mapSize);
