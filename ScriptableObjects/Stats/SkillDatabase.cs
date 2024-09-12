@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Skills", menuName = "ScriptableObjects/SkillData", order = 1)]
+[CreateAssetMenu(fileName = "Skills", menuName = "ScriptableObjects/DataContainers/SkillData", order = 1)]
 public class SkillDatabase : StatDatabase
 {
     public List<string> timings;

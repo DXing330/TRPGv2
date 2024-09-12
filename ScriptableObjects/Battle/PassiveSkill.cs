@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Passive", menuName = "ScriptableObjects/Passive", order = 1)]
+[CreateAssetMenu(fileName = "Passive", menuName = "ScriptableObjects/BattleLogic/Passive", order = 1)]
 public class PassiveSkill : ScriptableObject
 {
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.

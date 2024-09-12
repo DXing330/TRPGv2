@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CurrentTiles", menuName = "ScriptableObjects/CurrentTiles", order = 1)]
+[CreateAssetMenu(fileName = "CurrentTiles", menuName = "ScriptableObjects/Utility/CurrentTiles", order = 1)]
 public class MapCurrentTiles : ScriptableObject
 {
     public MapUtility mapUtility;

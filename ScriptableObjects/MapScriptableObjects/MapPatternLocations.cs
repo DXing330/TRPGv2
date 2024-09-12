@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MapPatterns", menuName = "ScriptableObjects/MapPatterns", order = 1)]
+[CreateAssetMenu(fileName = "MapPatterns", menuName = "ScriptableObjects/Utility/MapPatterns", order = 1)]
 public class MapPatternLocations : ScriptableObject
 {
     public MapUtility mapUtility;

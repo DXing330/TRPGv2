@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MapMaker", menuName = "ScriptableObjects/MapMaker", order = 1)]
+[CreateAssetMenu(fileName = "MapMaker", menuName = "ScriptableObjects/Utility/MapMaker", order = 1)]
 public class MapMaker : ScriptableObject
 {
     public MapUtility mapUtility;

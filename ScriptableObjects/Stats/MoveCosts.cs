@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MoveCosts", menuName = "ScriptableObjects/MoveCosts", order = 1)]
+[CreateAssetMenu(fileName = "MoveCosts", menuName = "ScriptableObjects/DataContainers/MoveCosts", order = 1)]
 public class MoveCosts : ScriptableObject
 {
     public string moveType;

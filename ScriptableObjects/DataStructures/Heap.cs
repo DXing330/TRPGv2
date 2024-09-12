@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Heap", menuName = "ScriptableObjects/Heap", order = 1)]
+[CreateAssetMenu(fileName = "Heap", menuName = "ScriptableObjects/Utility/Heap", order = 1)]
 public class Heap : ScriptableObject
 {
     public int bigInt = 99999;

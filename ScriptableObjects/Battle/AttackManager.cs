@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AttackManager", menuName = "ScriptableObjects/AttackManager", order = 1)]
+[CreateAssetMenu(fileName = "AttackManager", menuName = "ScriptableObjects/BattleLogic/AttackManager", order = 1)]
 public class AttackManager : ScriptableObject
 {
     public PassiveSkill passive;

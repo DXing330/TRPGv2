@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ActorAI", menuName = "ScriptableObjects/ActorAI", order = 1)]
+[CreateAssetMenu(fileName = "ActorAI", menuName = "ScriptableObjects/BattleLogic/ActorAI", order = 1)]
 public class ActorAI : ScriptableObject
 {
     public string AIType;

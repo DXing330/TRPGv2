@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SpecificStat", menuName = "ScriptableObjects/SpecificStat", order = 1)]
+[CreateAssetMenu(fileName = "SpecificStat", menuName = "ScriptableObjects/DataContainers/SpecificStat", order = 1)]
 public class SpecificStatDatabase : StatDatabase
 {
     public StatDatabase allStats;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Pathfinder", menuName = "ScriptableObjects/Pathfinder", order = 1)]
+[CreateAssetMenu(fileName = "Pathfinder", menuName = "ScriptableObjects/Utility/Pathfinder", order = 1)]
 public class MapPathfinder : ScriptableObject
 {
     public Heap heap;

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ActorPathfinder", menuName = "ScriptableObjects/ActorPathfinder", order = 1)]
+[CreateAssetMenu(fileName = "ActorPathfinder", menuName = "ScriptableObjects/BattleLogic/ActorPathfinder", order = 1)]
 public class ActorPathfinder : MapPathfinder
 {
     public List<int> FindPaths(int startIndex, List<int> moveCosts)

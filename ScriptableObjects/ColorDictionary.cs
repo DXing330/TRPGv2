@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[CreateAssetMenu(fileName = "Colors", menuName = "ScriptableObjects/Colors", order = 1)]
+[CreateAssetMenu(fileName = "Colors", menuName = "ScriptableObjects/DataContainers/Colors", order = 1)]
 public class ColorDictionary : ScriptableObject
 {
     public List<string> colorNames;

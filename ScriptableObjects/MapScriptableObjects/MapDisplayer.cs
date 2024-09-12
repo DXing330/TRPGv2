@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MapDisplayer", menuName = "ScriptableObjects/MapDisplayer", order = 1)]
+[CreateAssetMenu(fileName = "MapDisplayer", menuName = "ScriptableObjects/UI/MapDisplayer", order = 1)]
 public class MapDisplayer : ScriptableObject
 {
     public int layer = 0;

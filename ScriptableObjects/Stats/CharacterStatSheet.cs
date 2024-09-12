@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CharacterSheet", menuName = "ScriptableObjects/CharacterSheet", order = 1)]
+[CreateAssetMenu(fileName = "CharacterSheet", menuName = "ScriptableObjects/DataContainers/CharacterSheet", order = 1)]
 public class CharacterStatSheet : ScriptableObject
 {
     public string resetData;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[CreateAssetMenu(fileName = "SpriteContainer", menuName = "ScriptableObjects/SpriteContainer", order = 1)]
+[CreateAssetMenu(fileName = "SpriteContainer", menuName = "ScriptableObjects/DataContainers/SpriteContainer", order = 1)]
 public class SpriteContainer : ScriptableObject
 {
     public List<Sprite> sprites;

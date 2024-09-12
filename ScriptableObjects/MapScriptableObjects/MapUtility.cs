@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MapUtility", menuName = "ScriptableObjects/MapUtility", order = 1)]
+[CreateAssetMenu(fileName = "MapUtility", menuName = "ScriptableObjects/Utility/MapUtility", order = 1)]
 public class MapUtility : ScriptableObject
 {
     public int DistanceBetweenTiles(int tileOne, int tileTwo, int size)
