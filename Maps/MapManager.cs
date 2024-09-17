@@ -58,6 +58,7 @@ public class MapManager : MonoBehaviour
         {
             mapInfo = mapMaker.AddFeature(mapInfo, mapFeatures.features[i], mapFeatures.patterns[i]);
         }
+        UpdateMap();
     }
 
     public void MoveMap(int direction)

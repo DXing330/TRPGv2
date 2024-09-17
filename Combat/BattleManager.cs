@@ -5,6 +5,7 @@ using UnityEngine;
 public class BattleManager : MonoBehaviour
 {
     public BattleMap map;
+    public SceneMover sceneMover;
     public ActorAI actorAI;
     public ActorMaker actorMaker;
     public BattleMapFeatures battleMapFeatures;
@@ -22,14 +23,15 @@ public class BattleManager : MonoBehaviour
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters);
+        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
-        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters);
+        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
         // Start the combat.
         NextRound();
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
+        if (turnActor.GetTeam() > 0){NPCTurn();}
     }
     public bool interactable = true;
     public int roundNumber;
@@ -49,7 +51,7 @@ public class BattleManager : MonoBehaviour
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
         if (battleEndManager.FindWinningTeam(map.battlingActors) >= 0)
         {
-            // Battle is over.
+            sceneMover.LoadScene("StartBattle");
             return;
         }
         turnNumber++;
@@ -78,7 +80,7 @@ public class BattleManager : MonoBehaviour
     }
     IEnumerator EndTurn()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7f);
         NextTurn();
     }
     // None, Move, Attack, SkillSelect, SkillTargeting, Viewing

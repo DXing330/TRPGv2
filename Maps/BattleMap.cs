@@ -44,6 +44,7 @@ public class BattleMap : MapManager
     {
         for (int i = 0; i < battlingActors.Count; i++)
         {
+            if (battlingActors[i] == null){continue;}
             battlingActors[i].DestroyActor();
         }
         battlingActors.Clear();

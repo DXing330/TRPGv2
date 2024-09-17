@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,10 @@ using UnityEngine;
 public class ActorStats : MonoBehaviour
 {
     public List<string> stats;
+    public void SetStatsFromString(string newStats)
+    {
+        SetStats(newStats.Split("|").ToList());
+    }
     public void SetStats(List<string> newStats)
     {
         stats = newStats;

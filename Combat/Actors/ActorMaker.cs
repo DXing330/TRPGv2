@@ -35,14 +35,19 @@ public class ActorMaker : MonoBehaviour
         return newActor;
     }
 
-    public List<TacticActor> SpawnTeamInPattern(int pattern, int team, List<string> teamNames)
+    public List<TacticActor> SpawnTeamInPattern(int pattern, int team, List<string> teamNames, List<string> teamStats = null)
     {
+        if (teamStats == null){teamStats = new List<string>();}
         List<TacticActor> actors = new List<TacticActor>();
         // Randomize the team name order to randomize their spawn locations?
         List<int> patternLocations = mapPatterns.ReturnTilesOfPattern(pattern, teamNames.Count, mapSize);
         for (int i = 0; i < teamNames.Count; i++)
         {
             actors.Add(SpawnActor(patternLocations[i], teamNames[i], team));
+            if (i < teamStats.Count)
+            {
+                actors[i].allStats.SetStatsFromString(teamStats[i]);
+            }
         }
         return actors;
     }
