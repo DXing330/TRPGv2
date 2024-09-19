@@ -6,11 +6,11 @@ public class ActiveSkill : MonoBehaviour
 {
     public void LoadSkill(List<string> skillData)
     {
-
+        range = skillData[0];
     }
     public TacticActor skillUser;
     // Get all the tiles that are being targeted.
-    public string range;
+    protected string range;
     public int GetRange()
     {
         switch (range)

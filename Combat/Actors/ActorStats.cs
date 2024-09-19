@@ -74,6 +74,11 @@ public class ActorStats : MonoBehaviour
     }
     public List<string> activeSkills;
     public string GetActiveSkill(int index){return activeSkills[index];}
+    public void AddActiveSkill(string skillName)
+    {
+        if (skillName.Length <= 1){return;}
+        activeSkills.Add(skillName);
+    }
     public List<string> passiveSkills;
     public string GetPassiveSkill(int index){return passiveSkills[index];}
     public List<string> startTurnPassives;
