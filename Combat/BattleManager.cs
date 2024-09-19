@@ -27,6 +27,7 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
         actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        // Apply start of battle passives.
         // Start the combat.
         NextRound();
         turnActor = map.battlingActors[turnNumber];

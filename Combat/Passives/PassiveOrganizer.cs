@@ -11,18 +11,22 @@ public class PassiveOrganizer : MonoBehaviour
         OrganizePassives(testPassiveList);
     }
     public StatDatabase passiveTiming;
+    public List<string> startBattlePassives;
     public List<string> startTurnPassives;
     public List<string> endTurnPassives;
     public List<string> attackingPassives;
     public List<string> defendingPassives;
+    public List<string> takeDamagePassives;
     public List<string> movingPassives;
 
     protected void ClearLists()
     {
+        startBattlePassives.Clear();
         startTurnPassives.Clear();
         endTurnPassives.Clear();
         attackingPassives.Clear();
         defendingPassives.Clear();
+        takeDamagePassives.Clear();
         movingPassives.Clear();
     }
 
@@ -54,6 +58,24 @@ public class PassiveOrganizer : MonoBehaviour
             case "Defending":
             defendingPassives.Add(passive);
             break;
+            case "BattleStart":
+            startBattlePassives.Add(passive);
+            break;
+            case "TakeDamage":
+            takeDamagePassives.Add(passive);
+            break;
         }
+    }
+
+    public void OrganizeActorPassives(TacticActor actor)
+    {
+        OrganizePassives(actor.allStats.passiveSkills);
+        actor.allStats.SetStartBattlePassives(startBattlePassives);
+        actor.allStats.SetStartTurnPassives(startTurnPassives);
+        actor.allStats.SetEndTurnPassives(endTurnPassives);
+        actor.allStats.SetAttackingPassives(attackingPassives);
+        actor.allStats.SetDefendingPassives(defendingPassives);
+        actor.allStats.SetTakeDamagePassives(takeDamagePassives);
+        actor.allStats.SetMovingPassives(movingPassives);
     }
 }

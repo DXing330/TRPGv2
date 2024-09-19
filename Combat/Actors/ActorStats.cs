@@ -81,16 +81,26 @@ public class ActorStats : MonoBehaviour
     }
     public List<string> passiveSkills;
     public string GetPassiveSkill(int index){return passiveSkills[index];}
+    public List<string> startBattlePassives;
+    public void SetStartBattlePassives(List<string> passives){startBattlePassives = passives;}
     public List<string> startTurnPassives;
     public void AddStartTurnPassive(string passiveName){startTurnPassives.Add(passiveName);}
+    public void SetStartTurnPassives(List<string> passives){startTurnPassives = passives;}
     public List<string> endTurnPassives;
     public void AddEndTurnPassive(string passiveName){endTurnPassives.Add(passiveName);}
+    public void SetEndTurnPassives(List<string> passives){endTurnPassives = passives;}
     public List<string> attackingPassives;
     public void AddAttackingPassive(string passiveName){attackingPassives.Add(passiveName);}
+    public void SetAttackingPassives(List<string> passives){attackingPassives = passives;}
     public List<string> defendingPassives;
     public void AddDefendingPassive(string passiveName){defendingPassives.Add(passiveName);}
+    public void SetDefendingPassives(List<string> passives){defendingPassives = passives;}
+    public List<string> takeDamagePassives;
+    public void AddTakeDamagePassive(string passiveName){takeDamagePassives.Add(passiveName);}
+    public void SetTakeDamagePassives(List<string> passives){takeDamagePassives = passives;}
     public List<string> movingPassives;
     public void AddMovingPassive(string passiveName){movingPassives.Add(passiveName);}
+    public void SetMovingPassives(List<string> passives){movingPassives = passives;}
     public List<string> conditions;
     public List<int> conditionDurations;
     public void AddCondition(string newCondition, int duration)
