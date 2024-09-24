@@ -41,6 +41,7 @@ public class TacticActor : MonoBehaviour
         // Default is two actions.
         actions = Mathf.Max(actions, 2);
         movement = 0;
+        allStats.ResetStats();
         // Apply status effects and passives.
     }
     public int GetMoveRange(bool current = true)

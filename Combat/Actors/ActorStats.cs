@@ -20,6 +20,8 @@ public class ActorStats : ActorPassives
         baseDefense = int.Parse(stats[4]);
         moveSpeed = int.Parse(stats[5]);
         moveType = (stats[6]);
+        SetPassiveSkills(stats[7].Split(",").ToList());
+        SetActiveSkills(stats[8].Split(",").ToList());
         currentHealth = baseHealth;
         currentEnergy = baseEnergy;
         currentAttack = baseAttack;
@@ -88,6 +90,15 @@ public class ActorStats : ActorPassives
         else{currentSpeed += changeAmount;}
     }
     public List<string> activeSkills;
+    public void SetActiveSkills(List<string> newSkills)
+    {
+        activeSkills = newSkills;
+        if (activeSkills.Count == 0){return;}
+        for (int i = activeSkills.Count - 1; i >= 0; i--)
+        {
+            if (activeSkills[i].Length <= 1){activeSkills.RemoveAt(i);}
+        }
+    }
     public string GetActiveSkill(int index){return activeSkills[index];}
     public void AddActiveSkill(string skillName)
     {

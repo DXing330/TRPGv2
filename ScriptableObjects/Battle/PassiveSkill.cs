@@ -5,6 +5,20 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Passive", menuName = "ScriptableObjects/BattleLogic/Passive", order = 1)]
 public class PassiveSkill : ScriptableObject
 {
+    public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData)
+    {
+        List<string> startBattlePassives = actor.allStats.GetStartBattlePassives();
+        if (startBattlePassives.Count <= 0){return;}
+        string passiveName = "";
+        List<string> passiveData = new List<string>();
+        for (int i = 0; i < startBattlePassives.Count; i++)
+        {
+            passiveName = startBattlePassives[i];
+            if (passiveName.Length <= 1){continue;}
+            passiveData = allData.ReturnStats(passiveName);
+            AffectTarget(actor, passiveData[4], passiveData[5]);
+        }
+    }
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.
     public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor targetedActor, TacticActor otherActor, BattleMap map, MoveCostManager moveManager)
     {
@@ -79,6 +93,7 @@ public class PassiveSkill : ScriptableObject
             break;
             case "BaseHealth":
             target.allStats.UpdateBaseHealth(int.Parse(effectSpecifics)*level, false);
+            target.allStats.UpdateHealth(int.Parse(effectSpecifics)*level, false);
             break;
             case "BaseAttack":
             target.allStats.UpdateBaseAttack(int.Parse(effectSpecifics)*level, false);
