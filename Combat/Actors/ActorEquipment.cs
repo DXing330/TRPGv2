@@ -19,21 +19,21 @@ public class ActorEquipment : ActorPassives
         switch (slot)
         {
             case "Weapon":
-            actor.allStats.AddStartBattlePassives(startBattlePassives);
-            actor.allStats.AddAttackingPassives(attackingPassives);
+            actor.AddStartBattlePassives(startBattlePassives);
+            actor.AddAttackingPassives(attackingPassives);
             break;
             case "Armor":
-            actor.allStats.AddStartBattlePassives(startBattlePassives);
-            actor.allStats.AddDefendingPassives(defendingPassives);
-            actor.allStats.AddTakeDamagePassives(takeDamagePassives);
+            actor.AddStartBattlePassives(startBattlePassives);
+            actor.AddDefendingPassives(defendingPassives);
+            actor.AddTakeDamagePassives(takeDamagePassives);
             break;
             case "Boots":
-            actor.allStats.AddStartBattlePassives(startBattlePassives);
-            actor.allStats.AddMovingPassives(movingPassives);
+            actor.AddStartBattlePassives(startBattlePassives);
+            actor.AddMovingPassives(movingPassives);
             break;
             case "Accessory":
-            actor.allStats.AddStartTurnPassives(startTurnPassives);
-            actor.allStats.AddEndTurnPassives(endTurnPassives);
+            actor.AddStartTurnPassives(startTurnPassives);
+            actor.AddEndTurnPassives(endTurnPassives);
             break;
         }
     }

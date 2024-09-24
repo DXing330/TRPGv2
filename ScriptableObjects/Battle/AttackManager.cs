@@ -15,18 +15,18 @@ public class AttackManager : ScriptableObject
     {
         advantage = 0;
         damageMultiplier = baseMultiplier;
-        baseDamage = attacker.allStats.GetAttack();
-        CheckPassives(attacker.allStats.attackingPassives, defender, attacker, map, moveManager);
-        CheckPassives(defender.allStats.defendingPassives, defender, attacker, map, moveManager);
+        baseDamage = attacker.GetAttack();
+        CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
+        CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         Debug.Log(advantage);
         Debug.Log(damageMultiplier);
         Debug.Log(baseDamage);
         baseDamage = Advantage(baseDamage, advantage);
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Adjust damage based on passives, terrain effects, direction, etc.
-        baseDamage = Mathf.Max(0, baseDamage - defender.allStats.GetDefense());
+        baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
         // Check if the passive affects damage.
-        defender.allStats.UpdateHealth(baseDamage);
+        defender.UpdateHealth(baseDamage);
         Debug.Log(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
         attacker.PayAttackCost();
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));

@@ -45,9 +45,9 @@ public class MoveCostManager : MonoBehaviour
             moveTypeCosts.Add(moveCosts[moveTypeIndex].moveCosts[i]);
         }
         List<string> passiveInfo = new List<string>();
-        for (int i = 0; i < actor.allStats.movingPassives.Count; i++)
+        for (int i = 0; i < actor.movingPassives.Count; i++)
         {
-            passiveInfo = passiveData.ReturnStats(actor.allStats.movingPassives[i]);
+            passiveInfo = passiveData.ReturnStats(actor.movingPassives[i]);
             for (int j = 0; j < moveTypeTiles.Count; j++)
             {
                 if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], moveTypeTiles[j]))
@@ -71,7 +71,7 @@ public class MoveCostManager : MonoBehaviour
         moveTypeIndex = -1;
         for (int i = 0; i < moveCosts.Count; i++)
         {
-            if (moveCosts[i].moveType == actor.allStats.GetMoveType())
+            if (moveCosts[i].moveType == actor.GetMoveType())
             {
                 moveTypeIndex = i;
                 return;
@@ -136,7 +136,7 @@ public class MoveCostManager : MonoBehaviour
 
     public List<int> GetAttackableTiles(TacticActor actor, List<TacticActor> actors)
     {
-        List<int> attackRange = actorPathfinder.FindTilesInRange(actor.GetLocation(), actor.allStats.GetAttackRange());
+        List<int> attackRange = actorPathfinder.FindTilesInRange(actor.GetLocation(), actor.GetAttackRange());
         reachableTiles = new List<int>();
         for (int i = 0; i < attackRange.Count; i++)
         {
@@ -154,7 +154,7 @@ public class MoveCostManager : MonoBehaviour
 
     public bool TileInAttackRange(TacticActor actor, int tileIndex)
     {
-        return actor.allStats.GetAttackRange() >= actorPathfinder.mapUtility.DistanceBetweenTiles(actor.GetLocation(), tileIndex, actorPathfinder.mapSize);
+        return actor.GetAttackRange() >= actorPathfinder.mapUtility.DistanceBetweenTiles(actor.GetLocation(), tileIndex, actorPathfinder.mapSize);
     }
 
     public int DirectionBetweenActors(TacticActor actor1, TacticActor actor2)

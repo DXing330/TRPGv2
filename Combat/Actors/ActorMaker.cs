@@ -23,7 +23,7 @@ public class ActorMaker : MonoBehaviour
     {
         actor.SetSpecies(actorName);
         actor.SetSpriteName(actorSpriteNames.ReturnValue(actorName));
-        actor.allStats.SetStats(actorStats.ReturnStats(actorName));
+        actor.SetStats(actorStats.ReturnStats(actorName));
     }
 
     public TacticActor SpawnActor(int location, string actorName, int team = 0)
@@ -46,9 +46,8 @@ public class ActorMaker : MonoBehaviour
             actors.Add(SpawnActor(patternLocations[i], teamNames[i], team));
             if (i < teamStats.Count)
             {
-                actors[i].allStats.SetStatsFromString(teamStats[i]);
+                actors[i].SetStatsFromString(teamStats[i]);
             }
-            passiveOrganizer.OrganizeActorPassives(actors[i]);
         }
         return actors;
     }

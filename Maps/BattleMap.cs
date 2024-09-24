@@ -16,7 +16,7 @@ public class BattleMap : MapManager
     {
         for (int i = battlingActors.Count-1; i >= 0; i--)
         {
-            if (battlingActors[i].allStats.GetHealth() <= 0)
+            if (battlingActors[i].GetHealth() <= 0)
             {
                 battlingActors.RemoveAt(i);
                 // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.

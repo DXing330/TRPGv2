@@ -5,6 +5,13 @@ using UnityEngine;
 public class ActorPassives : MonoBehaviour
 {
     public List<string> passiveSkills;
+    public void ShowPassives()
+    {
+        for (int i = 0; i < passiveSkills.Count; i++)
+        {
+            Debug.Log(passiveSkills[i]);
+        }
+    }
     public string GetPassiveSkill(int index){return passiveSkills[index];}
     public void SetPassiveSkills(List<string> newSkills)
     {

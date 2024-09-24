@@ -16,9 +16,9 @@ public class ActiveSkill : MonoBehaviour
         switch (range)
         {
             case "Move":
-            return skillUser.allStats.GetMoveSpeed();
+            return skillUser.GetMoveSpeed();
             case "AttackRange":
-            return skillUser.allStats.GetAttackRange();
+            return skillUser.GetAttackRange();
         }
         return int.Parse(range);
     }

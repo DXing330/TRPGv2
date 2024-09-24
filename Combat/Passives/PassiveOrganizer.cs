@@ -69,7 +69,14 @@ public class PassiveOrganizer : MonoBehaviour
 
     public void OrganizeActorPassives(TacticActor actor)
     {
-        OrganizePassives(actor.allStats);
+        OrganizePassivesList(actor.passiveSkills);
+        actor.SetStartBattlePassives(startBattlePassives);
+        actor.SetStartTurnPassives(startTurnPassives);
+        actor.SetEndTurnPassives(endTurnPassives);
+        actor.SetAttackingPassives(attackingPassives);
+        actor.SetDefendingPassives(defendingPassives);
+        actor.SetTakeDamagePassives(takeDamagePassives);
+        actor.SetMovingPassives(movingPassives);
     }
 
     public void OrganizePassives(ActorPassives passives)

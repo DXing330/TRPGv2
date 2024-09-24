@@ -11,7 +11,7 @@ public class ActorAI : ScriptableObject
     {
         int originalLocation = currentActor.GetLocation();
         moveManager.GetAllMoveCosts(currentActor, map.battlingActors);
-        if (currentActor.GetTarget() == null || currentActor.GetTarget().allStats.GetHealth() <= 0)
+        if (currentActor.GetTarget() == null || currentActor.GetTarget().GetHealth() <= 0)
         {
             currentActor.SetTarget(GetClosestEnemy(map.battlingActors, currentActor, moveManager));
         }

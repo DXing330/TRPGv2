@@ -7,7 +7,7 @@ public class PassiveSkill : ScriptableObject
 {
     public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData)
     {
-        List<string> startBattlePassives = actor.allStats.GetStartBattlePassives();
+        List<string> startBattlePassives = actor.GetStartBattlePassives();
         if (startBattlePassives.Count <= 0){return;}
         string passiveName = "";
         List<string> passiveData = new List<string>();
@@ -79,34 +79,34 @@ public class PassiveSkill : ScriptableObject
         switch (effect)
         {
             case "Status":
-            target.allStats.AddCondition(effectSpecifics, level);
+            target.AddCondition(effectSpecifics, level);
             break;
             // Default is increasing health.
             case "Health":
-            target.allStats.UpdateHealth(int.Parse(effectSpecifics)*level, false);
+            target.UpdateHealth(int.Parse(effectSpecifics)*level, false);
             break;
             case "Attack":
-            target.allStats.UpdateAttack(int.Parse(effectSpecifics)*level, false);
+            target.UpdateAttack(int.Parse(effectSpecifics)*level, false);
             break;
             case "Defense":
-            target.allStats.UpdateDefense(int.Parse(effectSpecifics)*level, false);
+            target.UpdateDefense(int.Parse(effectSpecifics)*level, false);
             break;
             case "BaseHealth":
-            target.allStats.UpdateBaseHealth(int.Parse(effectSpecifics)*level, false);
-            target.allStats.UpdateHealth(int.Parse(effectSpecifics)*level, false);
+            target.UpdateBaseHealth(int.Parse(effectSpecifics)*level, false);
+            target.UpdateHealth(int.Parse(effectSpecifics)*level, false);
             break;
             case "BaseAttack":
-            target.allStats.UpdateBaseAttack(int.Parse(effectSpecifics)*level, false);
+            target.UpdateBaseAttack(int.Parse(effectSpecifics)*level, false);
             break;
             case "BaseDefense":
-            target.allStats.UpdateBaseDefense(int.Parse(effectSpecifics)*level, false);
+            target.UpdateBaseDefense(int.Parse(effectSpecifics)*level, false);
             break;
             case "Skill":
             // Add an active skill.
             string[] newSkills = effectSpecifics.Split(",");
             for (int i = 0; i < newSkills.Length; i++)
             {
-                target.allStats.AddActiveSkill(newSkills[i]);
+                target.AddActiveSkill(newSkills[i]);
             }
             break;
         }

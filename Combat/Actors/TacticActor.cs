@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TacticActor : MonoBehaviour
+public class TacticActor : ActorStats
 {
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
-    public ActorStats allStats;
+    //public ActorStats allStats;
     public int team;
     public int GetTeam(){return team;}
     public void SetTeam(int newTeam){team = newTeam;}
@@ -21,7 +21,7 @@ public class TacticActor : MonoBehaviour
     protected void MoveAction()
     {
         actions--;
-        movement += allStats.GetMoveSpeed();
+        movement += GetMoveSpeed();
     }
     public void PayMoveCost(int cost)
     {
@@ -41,17 +41,17 @@ public class TacticActor : MonoBehaviour
         // Default is two actions.
         actions = Mathf.Max(actions, 2);
         movement = 0;
-        allStats.ResetStats();
+        ResetStats();
         // Apply status effects and passives.
     }
     public int GetMoveRange(bool current = true)
     {
         if (current)
         {
-            return (movement + (allStats.GetMoveSpeed()*actions));
+            return (movement + (GetMoveSpeed()*actions));
         }
         // Default is two actions.
-        return allStats.GetMoveSpeed()*2;
+        return GetMoveSpeed()*2;
     }
     public string personalName;
     public void SetPersonalName(string newName){personalName = newName;}
@@ -81,14 +81,14 @@ public class TacticActor : MonoBehaviour
     public bool TargetAlive()
     {
         if (target == null){return false;}
-        return target.allStats.GetHealth() > 0;
+        return target.GetHealth() > 0;
     }
 
     public void StartTurn()
     {
         actions = 2;
         movement = 0;
-        allStats.ResetStats();
+        ResetStats();
         // Go through passives.
         // Go through conditions.
     }

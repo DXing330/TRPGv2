@@ -25,12 +25,15 @@ public class BattleManager : MonoBehaviour
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats);
-        // Apply start of battle passives.
-        for (int i = 0; i < actors.Count; i++){passive.ApplyStartBattlePassives(actors[i], passiveData);}
-        for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
         actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats);
+        for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        // Apply start of battle passives.
+        for (int i = 0; i < map.battlingActors.Count; i++)
+        {
+            passive.ApplyStartBattlePassives(map.battlingActors[i], passiveData);
+        }
         // Start the combat.
         NextRound();
         turnActor = map.battlingActors[turnNumber];

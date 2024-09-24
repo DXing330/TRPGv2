@@ -11,18 +11,18 @@ public class SpecificStatDatabase : StatDatabase
 
     public override void GetKeys()
     {
-        keys = allStats.allKeys.Split(allStats.keyDelimiter).ToList();
+        keys = allKeys.Split(keyDelimiter).ToList();
     }
 
     public override void GetValues()
     {
-        allStats.GetValues();
-        List<string> allValues = new List<string>(allStats.values);
+        GetValues();
+        List<string> allValues = new List<string>(values);
         values.Clear();
         string[] specificValues = new string[0];
         for (int i = 0; i < allValues.Count; i++)
         {
-            specificValues = allValues[i].Split(allStats.valueDelimiter);
+            specificValues = allValues[i].Split(valueDelimiter);
             values.Add(specificValues[specificIndex]);
         }
     }
