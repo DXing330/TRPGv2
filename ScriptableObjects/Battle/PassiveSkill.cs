@@ -71,6 +71,21 @@ public class PassiveSkill : ScriptableObject
             case "Health":
             target.allStats.UpdateHealth(int.Parse(effectSpecifics)*level, false);
             break;
+            case "Attack":
+            target.allStats.UpdateAttack(int.Parse(effectSpecifics)*level, false);
+            break;
+            case "Defense":
+            target.allStats.UpdateDefense(int.Parse(effectSpecifics)*level, false);
+            break;
+            case "BaseHealth":
+            target.allStats.UpdateBaseHealth(int.Parse(effectSpecifics)*level, false);
+            break;
+            case "BaseAttack":
+            target.allStats.UpdateBaseAttack(int.Parse(effectSpecifics)*level, false);
+            break;
+            case "BaseDefense":
+            target.allStats.UpdateBaseDefense(int.Parse(effectSpecifics)*level, false);
+            break;
             case "Skill":
             // Add an active skill.
             string[] newSkills = effectSpecifics.Split(",");
