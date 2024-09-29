@@ -11,11 +11,12 @@ public class ActiveSkill : SkillEffect
     }
     public void LoadSkill(List<string> skillData)
     {
-        range = skillData[0];
+        range = skillData[3];
+        rangeShape = skillData[4];
     }
     public TacticActor skillUser;
     // Get all the tiles that are being targeted.
-    protected string range;
+    public string range;
     public int GetRange()
     {
         switch (range)
@@ -27,8 +28,11 @@ public class ActiveSkill : SkillEffect
         }
         return int.Parse(range);
     }
+    public string rangeShape;
+    public string GetRangeShape(){return rangeShape;}
     public int targetTile;
     public string shape;
+    public string GetShape(){return shape;}
     public int span;
     List<int> targetedTiles;
     public void SetTargetedTiles(List<int> newTiles){targetedTiles = newTiles;}
