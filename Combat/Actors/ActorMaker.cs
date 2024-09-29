@@ -48,6 +48,7 @@ public class ActorMaker : MonoBehaviour
             {
                 actors[i].SetStatsFromString(teamStats[i]);
             }
+            passiveOrganizer.OrganizeActorPassives(actors[i]);
         }
         return actors;
     }

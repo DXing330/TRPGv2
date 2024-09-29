@@ -34,7 +34,7 @@ public class ActorPassives : MonoBehaviour
     }
     public void SetStartBattlePassives(List<string> passives)
     {
-        startBattlePassives = passives;
+        startBattlePassives = new List<string>(passives);
     }
     public List<string> startTurnPassives;
     public List<string> GetStartTurnPassives(){return startTurnPassives;}
@@ -47,7 +47,7 @@ public class ActorPassives : MonoBehaviour
             AddStartTurnPassive(newSkills[i]);
         }
     }
-    public void SetStartTurnPassives(List<string> passives){startTurnPassives = passives;}
+    public void SetStartTurnPassives(List<string> passives){startTurnPassives = new List<string>(passives);}
     public List<string> endTurnPassives;
     public List<string> GetEndTurnPassives(){return endTurnPassives;}
     public void AddEndTurnPassive(string passiveName){endTurnPassives.Add(passiveName);}
@@ -59,7 +59,7 @@ public class ActorPassives : MonoBehaviour
             AddEndTurnPassive(newSkills[i]);
         }
     }
-    public void SetEndTurnPassives(List<string> passives){endTurnPassives = passives;}
+    public void SetEndTurnPassives(List<string> passives){endTurnPassives = new List<string>(passives);}
     public List<string> attackingPassives;
     public List<string> GetAttackingPassives(){return attackingPassives;}
     public void AddAttackingPassive(string passiveName){attackingPassives.Add(passiveName);}
@@ -71,7 +71,7 @@ public class ActorPassives : MonoBehaviour
             AddAttackingPassive(newSkills[i]);
         }
     }
-    public void SetAttackingPassives(List<string> passives){attackingPassives = passives;}
+    public void SetAttackingPassives(List<string> passives){attackingPassives = new List<string>(passives);}
     public List<string> defendingPassives;
     public List<string> GetDefendingPassives(){return defendingPassives;}
     public void AddDefendingPassive(string passiveName){defendingPassives.Add(passiveName);}
@@ -83,7 +83,7 @@ public class ActorPassives : MonoBehaviour
             AddDefendingPassive(newSkills[i]);
         }
     }
-    public void SetDefendingPassives(List<string> passives){defendingPassives = passives;}
+    public void SetDefendingPassives(List<string> passives){defendingPassives = new List<string>(passives);}
     public List<string> takeDamagePassives;
     public List<string> GetTakeDamagePassives(){return takeDamagePassives;}
     public void AddTakeDamagePassive(string passiveName){takeDamagePassives.Add(passiveName);}
@@ -95,7 +95,7 @@ public class ActorPassives : MonoBehaviour
             AddTakeDamagePassive(newSkills[i]);
         }
     }
-    public void SetTakeDamagePassives(List<string> passives){takeDamagePassives = passives;}
+    public void SetTakeDamagePassives(List<string> passives){takeDamagePassives = new List<string>(passives);}
     public List<string> movingPassives;
     public List<string> GetMovingPassives(){return movingPassives;}
     public void AddMovingPassive(string passiveName){movingPassives.Add(passiveName);}
@@ -107,5 +107,5 @@ public class ActorPassives : MonoBehaviour
             AddMovingPassive(newSkills[i]);
         }
     }
-    public void SetMovingPassives(List<string> passives){movingPassives = passives;}
+    public void SetMovingPassives(List<string> passives){movingPassives = new List<string>(passives);}
 }
