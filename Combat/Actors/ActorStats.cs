@@ -20,8 +20,9 @@ public class ActorStats : ActorPassives
         baseDefense = int.Parse(stats[4]);
         moveSpeed = int.Parse(stats[5]);
         moveType = (stats[6]);
-        SetPassiveSkills(stats[7].Split(",").ToList());
-        SetActiveSkills(stats[8].Split(",").ToList());
+        weight = int.Parse(stats[7]);
+        SetPassiveSkills(stats[8].Split(",").ToList());
+        SetActiveSkills(stats[9].Split(",").ToList());
         currentHealth = baseHealth;
         currentEnergy = baseEnergy;
         currentAttack = baseAttack;
@@ -33,6 +34,7 @@ public class ActorStats : ActorPassives
         currentAttack = baseAttack;
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
+        currentWeight = weight;
     }
     public int baseHealth;
     public void UpdateBaseHealth(int changeAmount, bool decrease = true)
@@ -42,23 +44,21 @@ public class ActorStats : ActorPassives
     }
     public int baseEnergy;
     public int baseAttack;
-    public void UpdateBaseAttack(int changeAmount, bool decrease = true)
-    {
-        if (decrease){baseAttack -= changeAmount;}
-        else {baseAttack += changeAmount;}
-    }
+    public int GetBaseAttack(){return baseAttack;}
+    public void UpdateBaseAttack(int changeAmount){baseAttack += changeAmount;}
     public int attackRange;
     public int GetAttackRange(){return attackRange;}
     public int baseDefense;
-    public void UpdateBaseDefense(int changeAmount, bool decrease = true)
-    {
-        if (decrease){baseDefense -= changeAmount;}
-        else {baseDefense += changeAmount;}
-    }
+    public int GetBaseDefense(){return baseDefense;}
+    public void UpdateBaseDefense(int changeAmount){baseDefense += changeAmount;}
     public int moveSpeed;
     public int GetMoveSpeed(){return moveSpeed;}
     public string moveType;
     public string GetMoveType(){return moveType;}
+    public int weight;
+    public int currentWeight;
+    public void UpdateWeight(int changeAmount){currentWeight += changeAmount;}
+    public int GetWeight(){return currentWeight;}
     public int currentHealth;
     public int GetHealth(){return currentHealth;}
     public void UpdateHealth(int changeAmount, bool decrease = true)
@@ -66,29 +66,18 @@ public class ActorStats : ActorPassives
         if (decrease){currentHealth -= changeAmount;}
         else {currentHealth += changeAmount;}
     }
+    public void TakeDamage(int damage){UpdateHealth(damage);}
     public int currentEnergy;
     public int GetEnergy(){return currentEnergy;}
     public int currentAttack;
     public int GetAttack(){return currentAttack;}
-    public void UpdateAttack(int changeAmount, bool decrease = true)
-    {
-        if (decrease){currentAttack -= changeAmount;}
-        else{currentAttack += changeAmount;}
-    }
+    public void UpdateAttack(int changeAmount){currentAttack += changeAmount;}
     public int currentDefense;
     public int GetDefense(){return currentDefense;}
-    public void UpdateDefense(int changeAmount, bool decrease = true)
-    {
-        if (decrease){currentDefense -= changeAmount;}
-        else{currentDefense += changeAmount;}
-    }
+    public void UpdateDefense(int changeAmount){currentDefense += changeAmount;}
     public int currentSpeed;
     public int GetSpeed(){return currentSpeed;}
-    public void UpdateSpeed(int changeAmount, bool decrease = true)
-    {
-        if (decrease){currentSpeed -= changeAmount;}
-        else{currentSpeed += changeAmount;}
-    }
+    public void UpdateSpeed(int changeAmount){currentSpeed += changeAmount;}
     public List<string> activeSkills;
     public void SetActiveSkills(List<string> newSkills)
     {

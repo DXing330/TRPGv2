@@ -13,6 +13,7 @@ public class ActiveSkill : SkillEffect
     {
         range = skillData[3];
         rangeShape = skillData[4];
+        span = skillData[5];
     }
     public TacticActor skillUser;
     // Get all the tiles that are being targeted.
@@ -33,7 +34,12 @@ public class ActiveSkill : SkillEffect
     public int targetTile;
     public string shape;
     public string GetShape(){return shape;}
-    public int span;
+    public string span;
+    public int GetSpan()
+    {
+        if (span.Length <= 0){return 0;}
+        return int.Parse(span);
+    }
     List<int> targetedTiles;
     public void SetTargetedTiles(List<int> newTiles){targetedTiles = newTiles;}
     // Return a list of actors on those tiles.

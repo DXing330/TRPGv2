@@ -41,6 +41,22 @@ public class PassiveSkill : SkillEffect
         return false;
     }
 
+    public bool CheckTakeDamageCondition(string condition, string conditionSpecifics, int damageAmount, string damageType)
+    {
+        switch (condition)
+        {
+            case "None":
+            return true;
+            case "Type":
+            return conditionSpecifics == damageType;
+            case "<":
+            return int.Parse(conditionSpecifics) < damageAmount;
+            case ">":
+            return int.Parse(conditionSpecifics) > damageAmount;
+        }
+        return false;
+    }
+    
     public string CheckRelativeDirections(int dir1, int dir2)
     {
         int directionDiff = Mathf.Abs(dir1 - dir2);
@@ -86,10 +102,10 @@ public class PassiveSkill : SkillEffect
             affected -= power;
             break;
             case "Increase%":
-            affected += power * affected / 10;
+            affected += power * affected / basicDenominator;
             break;
             case "Decrease%":
-            affected -= power * affected / 10;
+            affected -= power * affected / basicDenominator;
             break;
         }
         return affected;

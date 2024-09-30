@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SkillEffect : ScriptableObject
 {
+    public int basicDenominator = 10;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1)
     {
         switch (effect)
@@ -16,20 +17,26 @@ public class SkillEffect : ScriptableObject
             target.UpdateHealth(int.Parse(effectSpecifics)*level, false);
             break;
             case "Attack":
-            target.UpdateAttack(int.Parse(effectSpecifics)*level, false);
+            target.UpdateAttack(int.Parse(effectSpecifics)*level);
             break;
             case "Defense":
-            target.UpdateDefense(int.Parse(effectSpecifics)*level, false);
+            target.UpdateDefense(int.Parse(effectSpecifics)*level);
             break;
             case "BaseHealth":
             target.UpdateBaseHealth(int.Parse(effectSpecifics)*level, false);
             target.UpdateHealth(int.Parse(effectSpecifics)*level, false);
             break;
             case "BaseAttack":
-            target.UpdateBaseAttack(int.Parse(effectSpecifics)*level, false);
+            target.UpdateBaseAttack(int.Parse(effectSpecifics)*level);
             break;
             case "BaseDefense":
-            target.UpdateBaseDefense(int.Parse(effectSpecifics)*level, false);
+            target.UpdateBaseDefense(int.Parse(effectSpecifics)*level);
+            break;
+            case "Attack%":
+            target.UpdateAttack(level*int.Parse(effectSpecifics)*target.GetBaseAttack()/basicDenominator);
+            break;
+            case "Defense%":
+            target.UpdateDefense(level*int.Parse(effectSpecifics)*target.GetBaseDefense()/basicDenominator);
             break;
             case "Skill":
             // Add an active skill.

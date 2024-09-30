@@ -26,7 +26,7 @@ public class AttackManager : ScriptableObject
         // Adjust damage based on passives, terrain effects, direction, etc.
         baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
         // Check if the passive affects damage.
-        defender.UpdateHealth(baseDamage);
+        defender.TakeDamage(baseDamage);
         Debug.Log(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
         attacker.PayAttackCost();
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
@@ -81,5 +81,19 @@ public class AttackManager : ScriptableObject
                 }
             }
         }
+    }
+
+    protected int CheckTakeDamagePassives(List<string> passives, int damage, string damageType)
+    {
+        int originalDamage = damage;
+        for (int i = 0; i < passives.Count; i++)
+        {
+            List<string> passiveStats = passiveData.ReturnStats(passives[i]);
+            if (passive.CheckTakeDamageCondition(passiveStats[1], passiveStats[2], originalDamage, damageType))
+            {
+                damage = passive.AffectInt(damage, passiveStats[4], passiveStats[5]);
+            }
+        }
+        return damage;
     }
 }
