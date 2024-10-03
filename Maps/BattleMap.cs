@@ -62,7 +62,7 @@ public class BattleMap : MapManager
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
     }
 
-    public void UpdateHighlights(List<int> newTiles, bool attack = false)
+    public void UpdateHighlights(List<int> newTiles, bool attack = false, int layer = 3)
     {
         string color = moveColor;
         if (attack){color = attackColor;}
@@ -72,7 +72,7 @@ public class BattleMap : MapManager
         {
             highlightedTiles[newTiles[i]] = color;
         }
-        mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+        mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
 
     [ContextMenu("Reset Highlights")]

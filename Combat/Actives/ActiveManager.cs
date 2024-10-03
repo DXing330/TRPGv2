@@ -6,6 +6,10 @@ public class ActiveManager : MonoBehaviour
 {
     public ActiveSkill active;
     public StatDatabase activeData;
+    // 0 = off, 1 = on
+    public int state;
+    public List<int> targetableTiles;
+    public List<int> targetedTiles;
 
     public void SetSkillFromName(string skillName)
     {
@@ -17,30 +21,42 @@ public class ActiveManager : MonoBehaviour
         active.LoadSkill(activeData.ReturnStats(actor.activeSkills[skillIndex]));
     }
 
+    protected void ResetTargetableTiles()
+    {
+        targetableTiles.Clear();
+        targetedTiles.Clear();
+    }
+
     public List<int> GetTargetableTiles(int start, MapPathfinder pathfinder)
     {
-        List<int> tiles = new List<int>(GetTiles(start, active.GetRangeShape(), pathfinder));
-        Debug.Log(tiles.Count);
-        if (tiles.Count <= 0){tiles.Add(start);}
-        return tiles;
+        targetableTiles = new List<int>(GetTiles(start, active.GetRangeShape(), pathfinder));
+        if (targetableTiles.Count <= 0){targetableTiles.Add(start);}
+        return targetableTiles;
     }
+
+    public List<int> ReturnTargetableTiles(){return targetableTiles;}
+
+    protected void ResetTargetedTiles(){targetedTiles.Clear();}
 
     public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder)
     {
-        List<int> tiles = new List<int>(GetTiles(start, active.GetShape(), pathfinder));
-        Debug.Log(tiles.Count);
-        if (tiles.Count <= 0){tiles.Add(start);}
-        return tiles;
+        targetedTiles = new List<int>(GetTiles(start, active.GetShape(), pathfinder, false));
+        targetedTiles.Add(start);
+        return targetedTiles;
     }
 
-    protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder)
+    public List<int> ReturnTargetedTiles(){return targetedTiles;}
+
+    protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder, bool targetable = true)
     {
+        int range = active.GetRange();
+        if (!targetable){range = active.GetSpan();}
         switch (shape)
         {
             case "Circle":
-            return pathfinder.FindTilesInRange(startTile, active.GetRange());
+            return pathfinder.FindTilesInRange(startTile, range);
             case "Line":
-            return pathfinder.GetTilesInLineRange(startTile, active.GetRange());
+            return pathfinder.GetTilesInLineRange(startTile, range);
         }
         return new List<int>();
     }

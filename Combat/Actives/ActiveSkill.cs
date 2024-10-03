@@ -13,7 +13,8 @@ public class ActiveSkill : SkillEffect
     {
         range = skillData[3];
         rangeShape = skillData[4];
-        span = skillData[5];
+        shape = skillData[5];
+        span = skillData[6];
     }
     public TacticActor skillUser;
     // Get all the tiles that are being targeted.
