@@ -73,7 +73,7 @@ public class MapMaker : ScriptableObject
 
     protected List<string> AddForest(List<string> originalMap, string featureType, string specifics)
     {
-        int startTile = Random.Range(1, mapSize-1) * Random.Range(1, mapSize-1);
+        int startTile = (Random.Range(1, mapSize-1)*mapSize)+Random.Range(1, mapSize-1);
         List<int> allTiles = mapUtility.AdjacentTiles(startTile, mapSize);
         allTiles.Add(startTile);
         for (int i = 0; i < allTiles.Count; i++)
