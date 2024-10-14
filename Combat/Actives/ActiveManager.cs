@@ -5,6 +5,8 @@ using UnityEngine;
 public class ActiveManager : MonoBehaviour
 {
     public ActiveSkill active;
+    public TacticActor skillUser;
+    public void SetSkillUser(TacticActor user){skillUser = user;}
     public StatDatabase activeData;
     // 0 = off, 1 = on
     public int state;
@@ -49,7 +51,7 @@ public class ActiveManager : MonoBehaviour
 
     protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder, bool targetable = true)
     {
-        int range = active.GetRange();
+        int range = active.GetRange(skillUser);
         if (!targetable){range = active.GetSpan();}
         switch (shape)
         {
@@ -59,5 +61,16 @@ public class ActiveManager : MonoBehaviour
             return pathfinder.GetTilesInLineRange(startTile, range);
         }
         return new List<int>();
+    }
+
+    public void ActivateSkill(BattleManager battle)
+    {
+        switch (active.effect)
+        {
+            case "Move":
+            return;
+        }
+        // Set Targeted Actors.
+        active.AffectActors();
     }
 }

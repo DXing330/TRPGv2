@@ -28,6 +28,9 @@ public class ActiveSelectList : SelectList
         base.Select(index);
         IncrementState();
         ShowSelected();
+        activeManager.SetSkillFromName(selected);
+        activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
+        battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
     }
 
     public void Deselect()
@@ -48,11 +51,14 @@ public class ActiveSelectList : SelectList
         SetState(newState);
     }
 
+    public void ResetState(){SetState(0);}
+
     public void StartSelecting()
     {
-        if (battle.turnActor.ActiveSkillCount() <= 0){return;}
+        if (battle.GetTurnActor().ActiveSkillCount() <= 0){return;}
         IncrementState();
-        SetSelectables(battle.turnActor.GetActiveSkills());
+        SetSelectables(battle.GetTurnActor().GetActiveSkills());
+        activeManager.SetSkillUser(battle.GetTurnActor());
         StartingPage();
     }
 }

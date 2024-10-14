@@ -14,6 +14,7 @@ public class BattleManager : MonoBehaviour
     public CharacterList enemyParty;
     public PassiveSkill passive;
     public StatDatabase passiveData;
+    public ActiveManager activeManager;
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
@@ -44,6 +45,7 @@ public class BattleManager : MonoBehaviour
     public int roundNumber;
     public int turnNumber = 0;
     public TacticActor turnActor;
+    public TacticActor GetTurnActor(){return turnActor;}
     protected void NextRound()
     {
         map.RemoveActorsFromBattle();
@@ -108,6 +110,9 @@ public class BattleManager : MonoBehaviour
             case "Attack":
             StartAttacking();
             break;
+            case "Skill":
+            map.ResetHighlights();
+            break;
         }
     }
     public int selectedTile;
@@ -143,6 +148,11 @@ public class BattleManager : MonoBehaviour
             break;
             case "":
             ViewActorOnTile(selectedTile);
+            break;
+            case "Skill":
+            // Target the tile and update the targeted tiles.
+            activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
+            map.UpdateHighlights(activeManager.targetedTiles, true, 4);
             break;
         }
     }

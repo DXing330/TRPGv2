@@ -16,16 +16,18 @@ public class ActiveSkill : SkillEffect
         shape = skillData[5];
         span = skillData[6];
     }
-    public TacticActor skillUser;
     // Get all the tiles that are being targeted.
     public string range;
-    public int GetRange()
+    public int GetRange(TacticActor skillUser = null)
     {
+        if (range == ""){return 0;}
         switch (range)
         {
             case "Move":
+            if (skillUser == null){return 0;}
             return skillUser.GetMoveSpeed();
             case "AttackRange":
+            if (skillUser == null){return 0;}
             return skillUser.GetAttackRange();
         }
         return int.Parse(range);
