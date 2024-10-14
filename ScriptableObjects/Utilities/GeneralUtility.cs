@@ -32,4 +32,12 @@ public class GeneralUtility : ScriptableObject
         }
         return strings;
     }
+
+    public void DisableGameObjects(List<GameObject> objects)
+    {
+        for (int i = 0; i < objects.Count; i++)
+        {
+            objects[i].SetActive(false);
+        }
+    }
 }

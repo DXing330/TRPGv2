@@ -9,6 +9,9 @@ public class SelectList : MonoBehaviour
 {
     public GeneralUtility utility;
     public List<string> selectable;
+    public string selected;
+    public TMP_Text selectedText;
+    public void ShowSelected(){selectedText.text = selected;}
     public void SetSelectables(List<string> newList)
     {
         selectable = new List<string>(newList);
@@ -18,6 +21,24 @@ public class SelectList : MonoBehaviour
     public List<GameObject> textObjects;
     public List<TMP_Text> textList;
     public int currentPage;
+    [ContextMenu("0")]
+    public void Select0()
+    {
+        Select(0);
+        Debug.Log(selected);
+    }
+    [ContextMenu("1")]
+    public void Select1()
+    {
+        Select(1);
+        Debug.Log(selected);
+    }
+    [ContextMenu("2")]
+    public void Select2()
+    {
+        Select(2);
+        Debug.Log(selected);
+    }
     [ContextMenu("Right")]
     public void ChangeRight(){ChangePage();}
     [ContextMenu("Left")]
@@ -37,6 +58,12 @@ public class SelectList : MonoBehaviour
         }
     }
 
+    public void StartingPage()
+    {
+        currentPage = 0;
+        UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
+    }
+
     protected void UpdateCurrentPage(List<string> newPageStrings)
     {
         ResetPage();
@@ -49,6 +76,6 @@ public class SelectList : MonoBehaviour
 
     public virtual void Select(int index)
     {
-
+        selected = selectable[currentPage*textObjects.Count + index];
     }
 }

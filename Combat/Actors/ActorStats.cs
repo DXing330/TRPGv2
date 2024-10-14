@@ -79,6 +79,16 @@ public class ActorStats : ActorPassives
     public int GetSpeed(){return currentSpeed;}
     public void UpdateSpeed(int changeAmount){currentSpeed += changeAmount;}
     public List<string> activeSkills;
+    public int ActiveSkillCount()
+    {
+        int count = 0;
+        for (int i = 0; i < activeSkills.Count; i++)
+        {
+            if (activeSkills[i].Length <= 0){continue;}
+            count++;
+        }
+        return count;
+    }
     public void SetActiveSkills(List<string> newSkills)
     {
         activeSkills = newSkills;
@@ -89,6 +99,7 @@ public class ActorStats : ActorPassives
         }
     }
     public string GetActiveSkill(int index){return activeSkills[index];}
+    public List<string> GetActiveSkills(){return activeSkills;}
     public void AddActiveSkill(string skillName)
     {
         if (skillName.Length <= 1){return;}

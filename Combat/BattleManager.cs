@@ -12,7 +12,6 @@ public class BattleManager : MonoBehaviour
     public InitiativeTracker initiativeTracker;
     public CharacterList playerParty;
     public CharacterList enemyParty;
-    public ActiveManager activeManager;
     public PassiveSkill passive;
     public StatDatabase passiveData;
     public MoveCostManager moveManager;
