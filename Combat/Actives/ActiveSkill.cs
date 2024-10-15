@@ -11,10 +11,25 @@ public class ActiveSkill : SkillEffect
     }
     public void LoadSkill(List<string> skillData)
     {
+        energyCost = skillData[1];
+        actionCost = skillData[2];
         range = skillData[3];
         rangeShape = skillData[4];
         shape = skillData[5];
         span = skillData[6];
+        effect = skillData[7];
+        specifics = skillData[8];
+        power = skillData[9];
+    }
+    public string energyCost;
+    public int GetEnergyCost()
+    {
+        return int.Parse(energyCost);
+    }
+    public string actionCost;
+    public int GetActionCost()
+    {
+        return int.Parse(actionCost);
     }
     // Get all the tiles that are being targeted.
     public string range;
@@ -50,12 +65,21 @@ public class ActiveSkill : SkillEffect
     public void SetTargetedActors(List<TacticActor> newTargets){targetedActors = newTargets;}
     public string effect;
     public string specifics;
-    public int power;
+    public string power;
+    public int GetPower()
+    {
+        switch (power)
+        {
+            case "":
+            break;
+        }
+        return int.Parse(power);
+    }
     public void AffectActors()
     {
         for (int i = 0; i < targetedActors.Count; i++)
         {
-            AffectActor(targetedActors[i], effect, specifics, power);
+            AffectActor(targetedActors[i], effect, specifics, GetPower());
         }
     }
 }

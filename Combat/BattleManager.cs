@@ -151,6 +151,7 @@ public class BattleManager : MonoBehaviour
             break;
             case "Skill":
             // Target the tile and update the targeted tiles.
+            if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
             activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
             map.UpdateHighlights(activeManager.targetedTiles, true, 4);
             break;

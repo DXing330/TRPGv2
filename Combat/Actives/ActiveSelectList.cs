@@ -29,6 +29,15 @@ public class ActiveSelectList : SelectList
         IncrementState();
         ShowSelected();
         activeManager.SetSkillFromName(selected);
+        // Check cost here.
+        if (!activeManager.CheckSkillCost())
+        {
+            // Show an error message instead of just returning?
+            if (!activeManager.CheckActionCost()){errorText.text = errorMessages[0];}
+            else {errorText.text = errorMessages[1];}
+            ErrorMessage();
+            return;
+        }
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
         battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
     }
@@ -36,6 +45,7 @@ public class ActiveSelectList : SelectList
     public void Deselect()
     {
         DecrementState();
+        battle.map.ResetHighlights();
         StartingPage();
     }
 
@@ -55,7 +65,7 @@ public class ActiveSelectList : SelectList
 
     public void StartSelecting()
     {
-        if (battle.GetTurnActor().ActiveSkillCount() <= 0){return;}
+        if (battle.GetTurnActor().ActiveSkillCount() <= 0 || battle.GetTurnActor().GetActions() <= 0){return;}
         IncrementState();
         SetSelectables(battle.GetTurnActor().GetActiveSkills());
         activeManager.SetSkillUser(battle.GetTurnActor());

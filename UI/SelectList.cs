@@ -8,6 +8,10 @@ using TMPro;
 public class SelectList : MonoBehaviour
 {
     public GeneralUtility utility;
+    public GameObject errorMsgPanel;
+    public void ErrorMessage(bool show = true){errorMsgPanel.SetActive(show);}
+    public TMP_Text errorText;
+    public List<string> errorMessages;
     public List<string> selectable;
     public string selected;
     public TMP_Text selectedText;

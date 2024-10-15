@@ -81,6 +81,7 @@ public class BattleMap : MapManager
         if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
         highlightedTiles = new List<string>(emptyList);
         mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+        mapDisplayers[4].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
 
     public override void ClickOnTile(int tileNumber)

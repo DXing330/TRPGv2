@@ -73,4 +73,19 @@ public class ActiveManager : MonoBehaviour
         // Set Targeted Actors.
         active.AffectActors();
     }
+
+    public bool CheckSkillCost()
+    {
+        return (CheckActionCost() && CheckEnergyCost());
+    }
+
+    public bool CheckActionCost()
+    {
+        return (skillUser.GetActions() >= active.GetActionCost());
+    }
+
+    public bool CheckEnergyCost()
+    {
+        return (skillUser.GetEnergy() >= active.GetEnergyCost());
+    }
 }
