@@ -36,6 +36,14 @@ public class ActorStats : ActorPassives
         currentSpeed = moveSpeed;
         currentWeight = weight;
     }
+    public List<string> ReturnStats()
+    {
+        List<string> stats = new List<string>();
+        stats.Add(GetHealth().ToString());
+        stats.Add(GetAttack().ToString());
+        stats.Add(GetDefense().ToString());
+        return stats;
+    }
     public int baseHealth;
     public void UpdateBaseHealth(int changeAmount, bool decrease = true)
     {

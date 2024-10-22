@@ -18,6 +18,7 @@ public class TacticActor : ActorStats
     }
     public bool ActionsLeft(){return actions > 0;}
     public int movement;
+    public int GetMovement(){return movement;}
     protected void MoveAction()
     {
         actions--;
@@ -96,5 +97,14 @@ public class TacticActor : ActorStats
     public void EndTurn()
     {
         // Go through passives.
+    }
+
+    public List<string> ReturnSpendableStats()
+    {
+        List<string> stats = new List<string>();
+        stats.Add(GetActions().ToString());
+        stats.Add(GetEnergy().ToString());
+        stats.Add(GetMovement().ToString());
+        return stats;
     }
 }

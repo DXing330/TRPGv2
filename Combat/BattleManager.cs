@@ -18,6 +18,7 @@ public class BattleManager : MonoBehaviour
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
+    public BattleStats statSheet;
     void Start()
     {
         // Get a new battle map.
@@ -37,8 +38,7 @@ public class BattleManager : MonoBehaviour
         }
         // Start the combat.
         NextRound();
-        turnActor = map.battlingActors[turnNumber];
-        turnActor.NewTurn();
+        ChangeTurn();
         if (turnActor.GetTeam() > 0){NPCTurn();}
     }
     public bool interactable = true;
@@ -54,6 +54,13 @@ public class BattleManager : MonoBehaviour
         // Get initiative order.
         map.battlingActors = initiativeTracker.SortActors(map.battlingActors);
     }
+    // Updates stats UI inbetween turns.
+    protected void ChangeTurn()
+    {
+        turnActor = map.battlingActors[turnNumber];
+        turnActor.NewTurn();
+        statSheet.SetActor(turnActor);
+    }
     public void NextTurn()
     {
         // Remove dead actors.
@@ -65,8 +72,7 @@ public class BattleManager : MonoBehaviour
         }
         turnNumber++;
         if (turnNumber >= map.battlingActors.Count){NextRound();}
-        turnActor = map.battlingActors[turnNumber];
-        turnActor.NewTurn();
+        ChangeTurn();
         ResetState();
         if (turnActor.GetTeam() > 0){NPCTurn();}
     }
@@ -108,6 +114,11 @@ public class BattleManager : MonoBehaviour
             StartMoving();
             break;
             case "Attack":
+            if (!turnActor.ActionsLeft())
+            {
+                ResetState();
+                return;
+            }
             StartAttacking();
             break;
             case "Skill":
@@ -156,6 +167,7 @@ public class BattleManager : MonoBehaviour
             map.UpdateHighlights(activeManager.targetedTiles, true, 4);
             break;
         }
+        statSheet.UpdateSpendableStats();
     }
 
     protected void ViewActorOnTile(int tileNumber)

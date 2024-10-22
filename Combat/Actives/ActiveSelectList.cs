@@ -61,7 +61,11 @@ public class ActiveSelectList : SelectList
         SetState(newState);
     }
 
-    public void ResetState(){SetState(0);}
+    public void ResetState()
+    {
+        SetState(0);
+        ErrorMessage(false);
+    }
 
     public void StartSelecting()
     {
