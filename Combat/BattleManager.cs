@@ -18,7 +18,7 @@ public class BattleManager : MonoBehaviour
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
-    public BattleStats statSheet;
+    public BattleUIManager UI;
     void Start()
     {
         // Get a new battle map.
@@ -44,6 +44,7 @@ public class BattleManager : MonoBehaviour
     public bool interactable = true;
     public int roundNumber;
     public int turnNumber = 0;
+    public int GetTurnIndex(){return turnNumber;}
     public TacticActor turnActor;
     public TacticActor GetTurnActor(){return turnActor;}
     protected void NextRound()
@@ -59,7 +60,8 @@ public class BattleManager : MonoBehaviour
     {
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
-        statSheet.SetActor(turnActor);
+        UI.battleStats.SetActor(turnActor);
+        UI.UpdateTurnOrder(this);
     }
     public void NextTurn()
     {
@@ -167,7 +169,7 @@ public class BattleManager : MonoBehaviour
             map.UpdateHighlights(activeManager.targetedTiles, true, 4);
             break;
         }
-        statSheet.UpdateSpendableStats();
+        UI.battleStats.UpdateSpendableStats();
     }
 
     protected void ViewActorOnTile(int tileNumber)

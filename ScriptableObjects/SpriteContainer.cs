@@ -37,4 +37,9 @@ public class SpriteContainer : ScriptableObject
         if (indexOf < 0){return null;}
         return SpriteDictionary(values[indexOf]);
     }
+
+    public Sprite GetSprite(string spriteName)
+    {
+        return SpriteDictionary(spriteName);
+    }
 }
