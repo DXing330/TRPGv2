@@ -76,7 +76,17 @@ public class ActorStats : ActorPassives
     }
     public void TakeDamage(int damage){UpdateHealth(damage);}
     public int currentEnergy;
+    public void LoseEnergy(int amount){currentEnergy -= amount;}
     public int GetEnergy(){return currentEnergy;}
+    public bool SpendEnergy(int energyCost)
+    {
+        if (GetEnergy() >= energyCost)
+        {
+            LoseEnergy(energyCost);
+            return true;
+        }
+        return false;
+    }
     public int currentAttack;
     public int GetAttack(){return currentAttack;}
     public void UpdateAttack(int changeAmount){currentAttack += changeAmount;}

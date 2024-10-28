@@ -107,4 +107,18 @@ public class BattleMap : MapManager
     {
         return mapInfo[actor.GetLocation()];
     }
+
+    public List<TacticActor> GetActorsOnTiles(List<int> tiles)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            TacticActor testActor = GetActorOnTile(tiles[i]);
+            if (testActor != null)
+            {
+                actors.Add(testActor);
+            }
+        }
+        return actors;
+    }
 }

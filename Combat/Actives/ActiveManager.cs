@@ -38,7 +38,7 @@ public class ActiveManager : MonoBehaviour
 
     public List<int> ReturnTargetableTiles(){return targetableTiles;}
 
-    protected void ResetTargetedTiles(){targetedTiles.Clear();}
+    public void ResetTargetedTiles(){targetedTiles.Clear();}
 
     public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder)
     {
@@ -48,6 +48,8 @@ public class ActiveManager : MonoBehaviour
     }
 
     public List<int> ReturnTargetedTiles(){return targetedTiles;}
+
+    public bool ExistTargetedTiles(){return targetedTiles.Count > 0;}
 
     protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder, bool targetable = true)
     {
@@ -65,12 +67,19 @@ public class ActiveManager : MonoBehaviour
 
     public void ActivateSkill(BattleManager battle)
     {
+        skillUser.SpendEnergy(active.GetEnergyCost());
+        skillUser.PayActionCost(active.GetActionCost());
         switch (active.effect)
         {
             case "Move":
+            // Move actor to targeted tile if possible.
+            // Need to check if tile is occupied.
+            // Teleport is different than move.
+            // Moving makes them gain movespeed, TP makes them move directly to a tile.
             return;
         }
         // Set Targeted Actors.
+        active.SetTargetedActors(battle.map.GetActorsOnTiles(targetedTiles));
         active.AffectActors();
     }
 

@@ -209,6 +209,7 @@ public class BattleManager : MonoBehaviour
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         map.RemoveActorsFromBattle();
         map.UpdateActors();
+        UI.UpdateTurnOrder(this);
     }
     
     protected void StartMoving()
@@ -248,5 +249,11 @@ public class BattleManager : MonoBehaviour
         }
         interactable = true;
         ResetState();
+    }
+
+    public void ActivateSkill()
+    {
+        map.ResetHighlights();
+        UI.battleStats.UpdateSpendableStats();
     }
 }

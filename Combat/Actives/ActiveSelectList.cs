@@ -39,6 +39,7 @@ public class ActiveSelectList : SelectList
             return;
         }
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
+        activeManager.ResetTargetedTiles();
         battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
     }
 
@@ -73,6 +74,20 @@ public class ActiveSelectList : SelectList
         IncrementState();
         SetSelectables(battle.GetTurnActor().GetActiveSkills());
         activeManager.SetSkillUser(battle.GetTurnActor());
+        activeManager.ResetTargetedTiles();
         StartingPage();
+    }
+    public void ActivateSkill()
+    {
+        // Don't do anything unless a target has been selected.
+        if (!activeManager.ExistTargetedTiles())
+        {
+            errorText.text = errorMessages[2];
+            ErrorMessage();
+            return;
+        }
+        activeManager.ActivateSkill(battle);
+        battle.ActivateSkill();
+        ResetState();
     }
 }

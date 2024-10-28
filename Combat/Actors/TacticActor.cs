@@ -17,6 +17,7 @@ public class TacticActor : ActorStats
         actions--;
     }
     public bool ActionsLeft(){return actions > 0;}
+    public void PayActionCost(int cost){actions -= cost;}
     public int movement;
     public int GetMovement(){return movement;}
     protected void MoveAction()
