@@ -77,10 +77,11 @@ public class ActiveManager : MonoBehaviour
             // Teleport is different than move.
             // Moving makes them gain movespeed, TP makes them move directly to a tile.
             return;
+            case "Displace":
+            battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.specifics, active.GetPower(), battle.map);
+            return;
         }
-        // Set Targeted Actors.
-        active.SetTargetedActors(battle.map.GetActorsOnTiles(targetedTiles));
-        active.AffectActors();
+        active.AffectActors(battle.map.GetActorsOnTiles(targetedTiles));
     }
 
     public bool CheckSkillCost()

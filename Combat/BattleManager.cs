@@ -253,7 +253,7 @@ public class BattleManager : MonoBehaviour
 
     public void ActivateSkill()
     {
-        map.ResetHighlights();
+        ResetState();
         UI.battleStats.UpdateSpendableStats();
     }
 }

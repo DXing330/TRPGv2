@@ -46,6 +46,12 @@ public class SkillEffect : ScriptableObject
                 target.AddActiveSkill(newSkills[i]);
             }
             break;
+            case "Speed":
+            target.UpdateSpeed(int.Parse(effectSpecifics)*level);
+            break;
+            case "Movement":
+            target.GainMovement(level*int.Parse(effectSpecifics)*target.GetSpeed());
+            break;
         }
     }
 }

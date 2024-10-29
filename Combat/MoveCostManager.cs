@@ -171,4 +171,51 @@ public class MoveCostManager : MonoBehaviour
     {
         return actorPathfinder.mapUtility.DirectionBetweenLocations(loc1, loc2, actorPathfinder.mapSize);
     }
+
+    public void DisplaceSkill(TacticActor displacer, List<int> targetedTiles, string displaceType, int force, BattleMap map)
+    {
+        int relativeForce = force;
+        TacticActor displaced = null;
+        switch (displaceType)
+        {
+            case "Pull":
+            for (int i = 0; i < targetedTiles.Count; i++)
+            {
+                displaced = map.GetActorOnTile(targetedTiles[i]);
+                if (displaced == null){continue;}
+                relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                Debug.Log(relativeForce);
+                Debug.Log(displaced.GetLocation());
+                DisplaceActor(displaced, DirectionBetweenActors(displaced, displacer), relativeForce, map);
+            }
+            break;
+            case "Push":
+            for (int i = 0; i < targetedTiles.Count; i++)
+            {
+                displaced = map.GetActorOnTile(targetedTiles[i]);
+                if (displaced == null){continue;}
+                relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                Debug.Log(relativeForce);
+                Debug.Log(displaced.GetLocation());
+                DisplaceActor(displaced, DirectionBetweenActors(displacer, displaced), relativeForce, map);
+            }
+            break;
+        }
+        map.UpdateActors();
+    }
+
+    protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
+    {
+        int nextTile = actor.GetLocation();
+        for (int i = 0; i < force; i++)
+        {
+            nextTile = actorPathfinder.mapUtility.PointInDirection(nextTile, direction, actorPathfinder.mapSize);
+            // Tiles are passable if no one is occupying them.
+            if (map.GetActorOnTile(nextTile) == null)
+            {
+                actor.SetLocation(nextTile);
+            }
+            else {break;}
+        }
+    }
 }

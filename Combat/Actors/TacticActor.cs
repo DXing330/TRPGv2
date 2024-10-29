@@ -25,6 +25,7 @@ public class TacticActor : ActorStats
         actions--;
         movement += GetMoveSpeed();
     }
+    public void GainMovement(int amount){movement += amount;}
     public void PayMoveCost(int cost)
     {
         movement -= cost;

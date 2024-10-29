@@ -75,11 +75,11 @@ public class ActiveSkill : SkillEffect
         }
         return int.Parse(power);
     }
-    public void AffectActors()
+    public void AffectActors(List<TacticActor> actors)
     {
-        for (int i = 0; i < targetedActors.Count; i++)
+        for (int i = 0; i < actors.Count; i++)
         {
-            AffectActor(targetedActors[i], effect, specifics, GetPower());
+            AffectActor(actors[i], effect, specifics, GetPower());
         }
     }
 }
