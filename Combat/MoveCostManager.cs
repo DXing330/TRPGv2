@@ -184,8 +184,6 @@ public class MoveCostManager : MonoBehaviour
                 displaced = map.GetActorOnTile(targetedTiles[i]);
                 if (displaced == null){continue;}
                 relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
-                Debug.Log(relativeForce);
-                Debug.Log(displaced.GetLocation());
                 DisplaceActor(displaced, DirectionBetweenActors(displaced, displacer), relativeForce, map);
             }
             break;
@@ -195,8 +193,6 @@ public class MoveCostManager : MonoBehaviour
                 displaced = map.GetActorOnTile(targetedTiles[i]);
                 if (displaced == null){continue;}
                 relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
-                Debug.Log(relativeForce);
-                Debug.Log(displaced.GetLocation());
                 DisplaceActor(displaced, DirectionBetweenActors(displacer, displaced), relativeForce, map);
             }
             break;

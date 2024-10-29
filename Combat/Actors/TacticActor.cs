@@ -46,6 +46,7 @@ public class TacticActor : ActorStats
         movement = 0;
         ResetStats();
         // Apply status effects and passives.
+        StartTurn();
     }
     public int GetMoveRange(bool current = true)
     {
@@ -89,9 +90,6 @@ public class TacticActor : ActorStats
 
     public void StartTurn()
     {
-        actions = 2;
-        movement = 0;
-        ResetStats();
         // Go through passives.
         // Go through conditions.
     }
