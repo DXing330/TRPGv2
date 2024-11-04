@@ -69,6 +69,7 @@ public class ActiveManager : MonoBehaviour
     {
         skillUser.SpendEnergy(active.GetEnergyCost());
         skillUser.PayActionCost(active.GetActionCost());
+        List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         switch (active.effect)
         {
             case "Move":
@@ -77,11 +78,21 @@ public class ActiveManager : MonoBehaviour
             // Teleport is different than move.
             // Moving makes them gain movespeed, TP makes them move directly to a tile.
             return;
+            case "Attack":
+            if (targets.Count <= 0){return;}
+            for (int i = 0; i < targets.Count; i++)
+            {
+                for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                }
+            }
+            return;
             case "Displace":
-            battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.specifics, active.GetPower(), battle.map);
+            battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
             return;
         }
-        active.AffectActors(battle.map.GetActorsOnTiles(targetedTiles));
+        active.AffectActors(targets);
     }
 
     public bool CheckSkillCost()

@@ -76,10 +76,12 @@ public class BattleManager : MonoBehaviour
         if (turnNumber >= map.battlingActors.Count){NextRound();}
         ChangeTurn();
         ResetState();
+        UI.PlayerTurn();
         if (turnActor.GetTeam() > 0){NPCTurn();}
     }
     protected void NPCTurn()
     {
+        UI.NPCTurn();
         int actionsLeft = turnActor.GetActions();
         if (actionsLeft <= 0){StartCoroutine(EndTurn());}
         StartCoroutine(NPCAction(actionsLeft));
@@ -102,6 +104,11 @@ public class BattleManager : MonoBehaviour
         switch (selectedState)
         {
             case "Move":
+            if (!turnActor.ActionsLeft() && turnActor.GetMovement() <= 0)
+            {
+                ResetState();
+                return;
+            }
             StartMoving();
             break;
             case "Attack":
@@ -113,6 +120,11 @@ public class BattleManager : MonoBehaviour
             StartAttacking();
             break;
             case "Skill":
+            if (!turnActor.ActionsLeft())
+            {
+                ResetState();
+                return;
+            }
             map.ResetHighlights();
             break;
         }
@@ -195,6 +207,7 @@ public class BattleManager : MonoBehaviour
 
     protected void ActorAttacksActor(TacticActor attacker, TacticActor defender)
     {
+        attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         map.RemoveActorsFromBattle();
         map.UpdateActors();
@@ -243,6 +256,7 @@ public class BattleManager : MonoBehaviour
             {
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
+                if (turnActor.GetActions() <= 0){break;}
             }
             yield return new WaitForSeconds(0.5f);
         }

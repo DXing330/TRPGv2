@@ -6,6 +6,17 @@ public class BattleUIManager : MonoBehaviour
 {
     public BattleStats battleStats;
     public DisplayTurnOrder turnOrder;
+    public GameObject playerChoicesPanel;
+
+    public void NPCTurn()
+    {
+        playerChoicesPanel.SetActive(false);
+    }
+
+    public void PlayerTurn()
+    {
+        playerChoicesPanel.SetActive(true);
+    }
 
     public void UpdateStatSheet(TacticActor actor)
     {
