@@ -72,11 +72,14 @@ public class ActiveManager : MonoBehaviour
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         switch (active.effect)
         {
-            case "Move":
-            // Move actor to targeted tile if possible.
-            // Need to check if tile is occupied.
-            // Teleport is different than move.
-            // Moving makes them gain movespeed, TP makes them move directly to a tile.
+            case "Teleport":
+            // Check if selected tile is free.
+            int target = targetedTiles[0];
+            if (battle.map.GetActorOnTile(target) == null)
+            {
+                skillUser.SetLocation(target);
+                battle.map.UpdateActors();
+            }
             return;
             case "Attack":
             if (targets.Count <= 0){return;}
