@@ -80,20 +80,9 @@ public class BattleManager : MonoBehaviour
     }
     protected void NPCTurn()
     {
-        // Get a path and move along it.
-        List<int> path = actorAI.FindPathToClosestEnemy(turnActor, map, moveManager);
-        StartCoroutine(MoveAlongPath(turnActor, path));
-        // Then attack or use skills as needed.
-        if (turnActor.ActionsLeft() && turnActor.TargetAlive() && moveManager.TileInAttackRange(turnActor, turnActor.GetTarget().GetLocation()))
-        {
-            int actionsLeft = turnActor.GetActions();
-            for (int i = 0; i < actionsLeft; i++)
-            {
-                if (!turnActor.TargetAlive()){break;}
-                ActorAttacksActor(turnActor, turnActor.GetTarget());
-            }
-        }
-        StartCoroutine(EndTurn());
+        int actionsLeft = turnActor.GetActions();
+        if (actionsLeft <= 0){StartCoroutine(EndTurn());}
+        StartCoroutine(NPCAction(actionsLeft));
     }
     IEnumerator EndTurn()
     {
@@ -237,6 +226,29 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    IEnumerator NPCAction(int actionsLeft)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
+            {
+                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+                turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
+            }
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
+            {
+                ActorAttacksActor(turnActor, turnActor.GetTarget());
+            }
+            else
+            {
+                List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+                StartCoroutine(MoveAlongPath(turnActor, path));
+            }
+            yield return new WaitForSeconds(0.5f);
+        }
+        StartCoroutine(EndTurn());
+    }
+    
     IEnumerator MoveAlongPath(TacticActor actor, List<int> path)
     {
         for (int i = path.Count - 1; i >= 0; i--)

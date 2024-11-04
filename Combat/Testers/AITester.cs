@@ -13,7 +13,7 @@ public class AITester : MonoBehaviour
     [ContextMenu("Test Find Path")]
     public void FindPath()
     {
-        List<int> path = actorAI.FindPathToClosestEnemy(map.battlingActors[testTurnIndex], map, moveManager);
+        List<int> path = actorAI.FindPathToTarget(map.battlingActors[testTurnIndex], map, moveManager);
         Debug.Log(path.Count);
         for (int i = 0; i < path.Count; i++)
         {

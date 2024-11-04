@@ -7,7 +7,7 @@ public class ActorAI : ScriptableObject
 {
     public string AIType;
 
-    public List<int> FindPathToClosestEnemy(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
+    public List<int> FindPathToTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
         int originalLocation = currentActor.GetLocation();
         moveManager.GetAllMoveCosts(currentActor, map.battlingActors);
@@ -40,7 +40,7 @@ public class ActorAI : ScriptableObject
         return path;
     }
 
-    protected TacticActor GetClosestEnemy(List<TacticActor> battlingActors, TacticActor currentActor, MoveCostManager moveManager)
+    public TacticActor GetClosestEnemy(List<TacticActor> battlingActors, TacticActor currentActor, MoveCostManager moveManager)
     {
         List<TacticActor> enemies = new List<TacticActor>();
         for (int i = 0; i < battlingActors.Count; i++)
@@ -74,6 +74,8 @@ public class ActorAI : ScriptableObject
     
     public bool EnemyInAttackRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
     {
+        if (target == null){return false;}
+        if (target.GetHealth() <= 0){return false;}
         return moveManager.TileInAttackRange(currentActor, target.GetLocation());
     }
 

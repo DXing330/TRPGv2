@@ -21,8 +21,9 @@ public class ActorStats : ActorPassives
         moveSpeed = int.Parse(stats[5]);
         moveType = (stats[6]);
         weight = int.Parse(stats[7]);
-        SetPassiveSkills(stats[8].Split(",").ToList());
-        SetActiveSkills(stats[9].Split(",").ToList());
+        initiative = int.Parse(stats[8]);
+        SetPassiveSkills(stats[9].Split(",").ToList());
+        SetActiveSkills(stats[10].Split(",").ToList());
         currentHealth = baseHealth;
         currentEnergy = baseEnergy;
         currentAttack = baseAttack;
@@ -67,6 +68,9 @@ public class ActorStats : ActorPassives
     public int currentWeight;
     public void UpdateWeight(int changeAmount){currentWeight += changeAmount;}
     public int GetWeight(){return currentWeight;}
+    public int initiative;
+    public int GetInitiative(){return initiative;}
+    public void ChangeInitiative(int change){initiative += change;}
     public int currentHealth;
     public int GetHealth(){return currentHealth;}
     public void UpdateHealth(int changeAmount, bool decrease = true)

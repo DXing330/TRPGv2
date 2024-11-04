@@ -73,9 +73,6 @@ public class TacticActor : ActorStats
     public int location;
     public void SetLocation(int newLocation){location = newLocation;}
     public int GetLocation(){return location;}
-    public int initiative;
-    public int GetInitiative(){return initiative;}
-    public void ChangeInitiative(int change){initiative += change;}
     public int direction;
     public int GetDirection(){return direction;}
     public void SetDirection(int newDirection){direction = newDirection;}
