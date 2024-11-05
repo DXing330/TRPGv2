@@ -12,8 +12,7 @@ public class BattleManager : MonoBehaviour
     public InitiativeTracker initiativeTracker;
     public CharacterList playerParty;
     public CharacterList enemyParty;
-    public PassiveSkill passive;
-    public StatDatabase passiveData;
+    public EffectManager effectManager;
     public ActiveManager activeManager;
     public MoveCostManager moveManager;
     public AttackManager attackManager;
@@ -34,7 +33,7 @@ public class BattleManager : MonoBehaviour
         // Apply start of battle passives.
         for (int i = 0; i < map.battlingActors.Count; i++)
         {
-            passive.ApplyStartBattlePassives(map.battlingActors[i], passiveData);
+            effectManager.StartBattle(map.battlingActors[i]);
         }
         // Start the combat.
         NextRound();
@@ -60,6 +59,8 @@ public class BattleManager : MonoBehaviour
     {
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
+        // Apply Conditions/Passives.
+        effectManager.StartTurn(turnActor);
         UI.battleStats.SetActor(turnActor);
         UI.UpdateTurnOrder(this);
     }

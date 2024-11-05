@@ -91,6 +91,14 @@ public class ActiveManager : MonoBehaviour
                 }
             }
             return;
+            case "Attack+Displace":
+            if (targets.Count <= 0){return;}
+            for (int i = 0; i < targets.Count; i++)
+            {
+                battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+            }
+            battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
+            return;
             case "Displace":
             battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
             return;

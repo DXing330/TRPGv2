@@ -11,6 +11,8 @@ public class TacticActor : ActorStats
     public int GetTeam(){return team;}
     public void SetTeam(int newTeam){team = newTeam;}
     public int actions;
+    // AAA
+    public void AdjustActionAmount(int change){actions += change;}
     public int GetActions(){return actions;}
     public void PayAttackCost()
     {
@@ -45,8 +47,6 @@ public class TacticActor : ActorStats
         actions = Mathf.Max(actions, 2);
         movement = 0;
         ResetStats();
-        // Apply status effects and passives.
-        StartTurn();
     }
     public int GetMoveRange(bool current = true)
     {
@@ -88,12 +88,13 @@ public class TacticActor : ActorStats
     public void StartTurn()
     {
         // Go through passives.
-        // Go through conditions.
+        // Go through conditions, some conditions will apply at the start of turn.
     }
 
     public void EndTurn()
     {
         // Go through passives.
+        // Go through conditions, some conditions will apply at the end of turn.
     }
 
     public List<string> ReturnSpendableStats()

@@ -46,6 +46,7 @@ public class ActorStats : ActorPassives
         return stats;
     }
     public int baseHealth;
+    public int GetBaseHealth(){return baseHealth;}
     public void UpdateBaseHealth(int changeAmount, bool decrease = true)
     {
         if (decrease){baseHealth -= changeAmount;}
@@ -128,6 +129,7 @@ public class ActorStats : ActorPassives
         activeSkills.Add(skillName);
     }
     public List<string> conditions;
+    public List<string> GetConditions(){return conditions;}
     public List<int> conditionDurations;
     public void AddCondition(string newCondition, int duration)
     {
