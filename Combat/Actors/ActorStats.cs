@@ -128,20 +128,37 @@ public class ActorStats : ActorPassives
         if (skillName.Length <= 1){return;}
         activeSkills.Add(skillName);
     }
-    public List<string> conditions;
-    public List<string> GetConditions(){return conditions;}
-    public List<int> conditionDurations;
-    public void AddCondition(string newCondition, int duration)
+    public List<string> statuses;
+    public List<string> GetStatuses(){return statuses;}
+    public List<int> statusDurations;
+    public void AddStatus(string newCondition, int duration)
     {
-        int indexOf = conditions.IndexOf(newCondition);
+        int indexOf = statuses.IndexOf(newCondition);
         if (indexOf < 0)
         {
-            conditions.Add(newCondition);
-            conditionDurations.Add(duration);
+            statuses.Add(newCondition);
+            statusDurations.Add(duration);
         }
         else
         {
-            conditionDurations[indexOf] = conditionDurations[indexOf] + duration;
+            statusDurations[indexOf] = statusDurations[indexOf] + duration;
+        }
+    }
+
+    public void AdjustStatusDuration(int index, int amount = -1)
+    {
+        statusDurations[index] = statusDurations[index] + amount;
+    }
+
+    public void CheckStatusDuration()
+    {
+        for (int i = statuses.Count - 1; i >= 0; i--)
+        {
+            if (statusDurations[i] == 0)
+            {
+                statuses.RemoveAt(i);
+                statusDurations.RemoveAt(i);
+            }
         }
     }
 }

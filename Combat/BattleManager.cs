@@ -66,6 +66,8 @@ public class BattleManager : MonoBehaviour
     }
     public void NextTurn()
     {
+        effectManager.EndTurn(turnActor);
+        turnActor.EndTurn();
         // Remove dead actors.
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
         if (battleEndManager.FindWinningTeam(map.battlingActors) >= 0)

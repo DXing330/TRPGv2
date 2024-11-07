@@ -22,6 +22,6 @@ public class EffectManager : MonoBehaviour
 
     public void EndTurn(TacticActor actor)
     {
-
+        status.ApplyEffects(actor, statusData, "End");
     }
 }

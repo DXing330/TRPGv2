@@ -10,7 +10,7 @@ public class SkillEffect : ScriptableObject
         switch (effect)
         {
             case "Status":
-            target.AddCondition(effectSpecifics, level);
+            target.AddStatus(effectSpecifics, level);
             break;
             // Default is increasing health.
             case "Health":

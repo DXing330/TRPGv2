@@ -93,8 +93,7 @@ public class TacticActor : ActorStats
 
     public void EndTurn()
     {
-        // Go through passives.
-        // Go through conditions, some conditions will apply at the end of turn.
+        CheckStatusDuration();
     }
 
     public List<string> ReturnSpendableStats()
