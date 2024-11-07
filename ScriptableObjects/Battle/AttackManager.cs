@@ -75,6 +75,12 @@ public class AttackManager : ScriptableObject
                     case "BaseDamage":
                     baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
                     break;
+                    case "Target":
+                    passive.AffectActor(target, passiveStats[4], passiveStats[5]);
+                    break;
+                    case "Self":
+                    passive.AffectActor(other, passiveStats[4], passiveStats[5]);
+                    break;
                 }
             }
         }
