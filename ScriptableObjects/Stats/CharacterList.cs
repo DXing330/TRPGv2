@@ -20,4 +20,15 @@ public class CharacterList : ScriptableObject
         if (newStats == null){newStats.Clear();}
         else {stats = newStats;}
     }
+
+    public void SplitAndSetLists(List<string> newParty, string delimiter = "=")
+    {
+        ResetLists();
+        for (int i = 0; i < newParty.Count; i++)
+        {
+            string[] data = newParty[i].Split(delimiter);
+            characters.Add(data[0]);
+            stats.Add(data[1]);
+        }
+    }
 }

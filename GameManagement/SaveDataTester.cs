@@ -9,9 +9,11 @@ public class SaveDataTester : MonoBehaviour
 {
     public SavedData savedData;
     public TMP_Text text;
+    bool showText = false;
 
     public void UpdateText()
     {
+        if (!showText){return;}
         if (savedData.dataList.Count == 0){return;}
         text.text = savedData.dataList[0];
     }

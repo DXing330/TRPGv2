@@ -102,6 +102,12 @@ public class ActiveManager : MonoBehaviour
             case "Displace":
             battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
             return;
+            case "Taunt":
+            for (int i = 0; i < targets.Count; i++)
+            {
+                targets[i].SetTarget(skillUser);
+            }
+            return;
         }
         active.AffectActors(targets);
     }

@@ -18,10 +18,12 @@ public class EffectManager : MonoBehaviour
     public void StartTurn(TacticActor actor)
     {
         status.ApplyEffects(actor, statusData, "Start");
+        passive.ApplyPassives(actor, passiveData, "Start");
     }
 
     public void EndTurn(TacticActor actor)
     {
         status.ApplyEffects(actor, statusData, "End");
+        passive.ApplyPassives(actor, passiveData, "End");
     }
 }
