@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "SkillEffect", menuName = "ScriptableObjects/BattleLogic/SkillEffect", order = 1)]
 public class SkillEffect : ScriptableObject
 {
     public int basicDenominator = 10;
@@ -11,6 +12,9 @@ public class SkillEffect : ScriptableObject
         {
             case "Status":
             target.AddStatus(effectSpecifics, level);
+            break;
+            case "RemoveStatus":
+            target.RemoveStatus(effectSpecifics);
             break;
             // Default is increasing health.
             case "Health":

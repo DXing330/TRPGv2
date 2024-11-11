@@ -146,11 +146,21 @@ public class ActorStats : ActorPassives
         }
     }
 
+    public void RemoveStatus(string statusName)
+    {
+        for (int i = statuses.Count - 1; i >= 0; i--)
+        {
+            if (statuses[i] == statusName)
+            {
+                statuses.RemoveAt(i);
+                statusDurations.RemoveAt(i);
+            }
+        }
+    }
     public void AdjustStatusDuration(int index, int amount = -1)
     {
         statusDurations[index] = statusDurations[index] + amount;
     }
-
     public void CheckStatusDuration()
     {
         for (int i = statuses.Count - 1; i >= 0; i--)

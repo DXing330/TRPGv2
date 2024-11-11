@@ -108,6 +108,12 @@ public class ActiveManager : MonoBehaviour
                 targets[i].SetTarget(skillUser);
             }
             return;
+            case "TerrainEffect":
+            for (int i = 0; i < targetedTiles.Count; i++)
+            {
+                battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
+            }
+            return;
         }
         active.AffectActors(targets);
     }

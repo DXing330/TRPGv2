@@ -67,6 +67,7 @@ public class BattleManager : MonoBehaviour
     public void NextTurn()
     {
         effectManager.EndTurn(turnActor);
+        map.ApplyEndTileEffect(turnActor);
         turnActor.EndTurn();
         // Remove dead actors.
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
@@ -272,7 +273,7 @@ public class BattleManager : MonoBehaviour
         {
             actor.SetDirection(moveManager.DirectionBetweenLocations(actor.GetLocation(), path[i]));
             actor.SetLocation(path[i]);
-            // Apply any effects on the tiles being stepped.
+            map.ApplyMovingTileEffect(actor, path[i]);
             map.UpdateActors();
             yield return new WaitForSeconds(0.1f);
         }

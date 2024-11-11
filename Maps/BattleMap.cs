@@ -5,6 +5,15 @@ using UnityEngine;
 // Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
+    public StatDatabase terrainEffectData;
+    public SkillEffect effect;
+
+    protected override void Start()
+    {
+        InitializeEmptyList();
+        terrainEffectTiles = new List<string>(emptyList);
+        base.Start();
+    }
     public BattleManager battleManager;
     public List<TacticActor> battlingActors;
     public void AddActorToBattle(TacticActor actor)
@@ -26,6 +35,20 @@ public class BattleMap : MapManager
         return turnNumber;
     }
     public List<string> actorTiles;
+    public List<string> terrainEffectTiles;
+    public void ChangeTerrain(int tileNumer, string change)
+    {
+        // Probably need a table for this.
+    }
+    public void ChangeTerrainEffect(int tileNumber, string effect)
+    {
+        terrainEffectTiles[tileNumber] = effect;
+        UpdateMap();
+    }
+    protected void UpdateTerrain()
+    {
+        mapDisplayers[2].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
+    }
     public List<string> highlightedTiles;
     public string moveColor;
     public string attackColor;
@@ -54,6 +77,7 @@ public class BattleMap : MapManager
     {
         base.UpdateMap();
         UpdateActors();
+        UpdateTerrain();
     }
 
     public void UpdateActors()
@@ -120,5 +144,23 @@ public class BattleMap : MapManager
             }
         }
         return actors;
+    }
+
+    public void ApplyMovingTileEffect(TacticActor actor, int tileNumber)
+    {
+        // Get the terrain info.
+        string terrainEffect = terrainEffectTiles[tileNumber];
+        if (terrainEffect.Length < 1){return;}
+        // Apply the terrain effect.
+        List<string> data = terrainEffectData.ReturnStats(terrainEffect);
+        effect.AffectActor(actor, data[0], data[1]);
+    }
+
+    public void ApplyEndTileEffect(TacticActor actor)
+    {
+        string terrainEffect = terrainEffectTiles[actor.GetLocation()];
+        if (terrainEffect.Length < 1){return;}
+        List<string> data = terrainEffectData.ReturnStats(terrainEffect);
+        effect.AffectActor(actor, data[2], data[3]);
     }
 }

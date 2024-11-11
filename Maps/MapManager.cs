@@ -31,7 +31,7 @@ public class MapManager : MonoBehaviour
     public int gridSize;
     public int startTile = 0;
 
-    void Start()
+    protected virtual void Start()
     {
         UpdateMap();
     }

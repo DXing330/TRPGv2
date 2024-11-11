@@ -210,6 +210,7 @@ public class MoveCostManager : MonoBehaviour
             if (map.GetActorOnTile(nextTile) == null)
             {
                 actor.SetLocation(nextTile);
+                map.ApplyMovingTileEffect(actor, nextTile);
             }
             else {break;}
         }
