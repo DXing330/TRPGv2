@@ -73,7 +73,7 @@ public class BattleManager : MonoBehaviour
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
         if (battleEndManager.FindWinningTeam(map.battlingActors) >= 0)
         {
-            sceneMover.LoadScene("StartBattle");
+            sceneMover.ReturnFromBattle();
             return;
         }
         turnNumber++;

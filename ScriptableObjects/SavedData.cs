@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SavedData", menuName = "ScriptableObjects/DataContainers/SavedData", order = 1)]
+[CreateAssetMenu(fileName = "SavedData", menuName = "ScriptableObjects/DataContainers/SavedData/SavedData", order = 1)]
 public class SavedData : ScriptableObject
 {
     protected string dataPath;
@@ -12,6 +12,7 @@ public class SavedData : ScriptableObject
     public string newGameData;
     public string allData;
     public List<string> dataList;
+    public List<string> GetData(){return dataList;}
     public string delimiter;
 
     public virtual void Save()

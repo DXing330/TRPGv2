@@ -13,23 +13,69 @@ public class ActorStats : ActorPassives
     public void SetStats(List<string> newStats)
     {
         stats = newStats;
-        baseHealth = int.Parse(stats[0]);
-        baseEnergy = int.Parse(stats[1]);
-        baseAttack = int.Parse(stats[2]);
-        attackRange = int.Parse(stats[3]);
-        baseDefense = int.Parse(stats[4]);
-        moveSpeed = int.Parse(stats[5]);
-        moveType = (stats[6]);
-        weight = int.Parse(stats[7]);
-        initiative = int.Parse(stats[8]);
-        SetPassiveSkills(stats[9].Split(",").ToList());
-        SetActiveSkills(stats[10].Split(",").ToList());
-        currentHealth = baseHealth;
+        for (int i = 0; i < stats.Count; i++)
+        {
+            SetStat(stats[i], i);
+        }
+        if (currentHealth <= 0){currentHealth = GetBaseHealth();}
+        else if (currentHealth > GetBaseHealth()){currentHealth = GetBaseHealth();}
         currentEnergy = baseEnergy;
         currentAttack = baseAttack;
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
     }
+
+    protected void SetStat(string newStat, int index)
+    {
+        switch (index)
+        {
+            case 0:
+            SetBaseHealth(int.Parse(newStat));
+            break;
+            case 1:
+            SetBaseEnergy(int.Parse(newStat));
+            break;
+            case 2:
+            SetBaseAttack(int.Parse(newStat));
+            break;
+            case 3:
+            SetAttackRange(int.Parse(newStat));
+            break;
+            case 4:
+            SetBaseDefense(int.Parse(newStat));
+            break;
+            case 5:
+            SetMoveSpeed(int.Parse(newStat));
+            break;
+            case 6:
+            SetMoveType(newStat);
+            break;
+            case 7:
+            SetWeight(int.Parse(newStat));
+            break;
+            case 8:
+            SetInitiative(int.Parse(newStat));
+            break;
+            case 9:
+            SetPassiveSkills(newStat.Split(",").ToList());
+            break;
+            case 10:
+            SetActiveSkills(newStat.Split(",").ToList());
+            break;
+            case 11:
+            SetCurrentHealth(int.Parse(newStat));
+            break;
+            case 12:
+            // If they were kept then they must have had infinite duration.
+            List<string> curses = newStat.Split(",").ToList();
+            for (int i = 0; i < curses.Count; i++)
+            {
+                AddStatus(curses[i], -1);
+            }
+            break;
+        }
+    }
+
     public void ResetStats()
     {
         currentAttack = baseAttack;
@@ -46,6 +92,7 @@ public class ActorStats : ActorPassives
         return stats;
     }
     public int baseHealth;
+    public void SetBaseHealth(int newHealth){baseHealth = newHealth;}
     public int GetBaseHealth(){return baseHealth;}
     public void UpdateBaseHealth(int changeAmount, bool decrease = true)
     {
@@ -53,26 +100,35 @@ public class ActorStats : ActorPassives
         else {baseHealth += changeAmount;}
     }
     public int baseEnergy;
+    public void SetBaseEnergy(int newEnergy){baseEnergy = newEnergy;}
     public int baseAttack;
+    public void SetBaseAttack(int newAttack){baseAttack = newAttack;}
     public int GetBaseAttack(){return baseAttack;}
     public void UpdateBaseAttack(int changeAmount){baseAttack += changeAmount;}
     public int attackRange;
+    public void SetAttackRange(int newRange){attackRange = newRange;}
     public int GetAttackRange(){return attackRange;}
     public int baseDefense;
+    public void SetBaseDefense(int newDefense){baseDefense = newDefense;}
     public int GetBaseDefense(){return baseDefense;}
     public void UpdateBaseDefense(int changeAmount){baseDefense += changeAmount;}
     public int moveSpeed;
+    public void SetMoveSpeed(int newMoveSpeed){moveSpeed = newMoveSpeed;}
     public int GetMoveSpeed(){return moveSpeed;}
     public string moveType;
+    public void SetMoveType(string newMoveType){moveType = newMoveType;}
     public string GetMoveType(){return moveType;}
     public int weight;
+    public void SetWeight(int newWeight){weight = newWeight;}
     public int currentWeight;
     public void UpdateWeight(int changeAmount){currentWeight += changeAmount;}
     public int GetWeight(){return currentWeight;}
     public int initiative;
+    public void SetInitiative(int newInitiative){initiative = newInitiative;}
     public int GetInitiative(){return initiative;}
     public void ChangeInitiative(int change){initiative += change;}
     public int currentHealth;
+    public void SetCurrentHealth(int newHealth){currentHealth = newHealth;}
     public int GetHealth(){return currentHealth;}
     public void UpdateHealth(int changeAmount, bool decrease = true)
     {
@@ -145,7 +201,6 @@ public class ActorStats : ActorPassives
             statusDurations[indexOf] = statusDurations[indexOf] + duration;
         }
     }
-
     public void RemoveStatus(string statusName)
     {
         for (int i = statuses.Count - 1; i >= 0; i--)
