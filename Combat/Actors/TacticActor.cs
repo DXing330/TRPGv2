@@ -104,4 +104,12 @@ public class TacticActor : ActorStats
         stats.Add(GetMovement().ToString());
         return stats;
     }
+
+    public string ReturnCurrentStats()
+    {
+        string healthString = GetHealth().ToString();
+        string curses = GetCurseString();
+        if (curses.Length <= 0){return healthString;}
+        return healthString + "|" + curses;
+    }
 }

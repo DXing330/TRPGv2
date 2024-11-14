@@ -196,6 +196,18 @@ public class ActorStats : ActorPassives
         }
         return curses;
     }
+    public string GetCurseString()
+    {
+        List<string> curses = GetCurses();
+        string curseString = "";
+        if (curses.Count <= 0){return curseString;}
+        for (int i = 0; i < curses.Count; i++)
+        {
+            curseString += curses[i];
+            if (i < curses.Count - 1){curseString += "|";}
+        }
+        return curseString;
+    }
     public List<int> statusDurations;
     public void AddStatus(string newCondition, int duration)
     {

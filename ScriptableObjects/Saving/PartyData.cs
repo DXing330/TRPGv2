@@ -21,6 +21,10 @@ public class PartyData : SavedData
     public List<string> partybaseStats;
     // Equipment goes here?
     public List<string> partyCurrentStats;
+    public void SetCurrentStats(string newStats, int index)
+    {
+        partyCurrentStats[index] = newStats;
+    }
 
     public void ClearAllStats()
     {
@@ -36,6 +40,20 @@ public class PartyData : SavedData
         for (int i = 0; i < partybaseStats.Count; i++)
         {
             partyCurrentStats.Add("");
+        }
+    }
+
+    public void RemoveDefeatedMembers()
+    {
+        for (int i = partyCurrentStats.Count - 1; i >= 0; i--)
+        {
+            if (partyCurrentStats[i].Length < 1)
+            {
+                partyCurrentStats.RemoveAt(i);
+                partybaseStats.RemoveAt(i);
+                partyNames.RemoveAt(i);
+                partySpriteNames.RemoveAt(i);
+            }
         }
     }
 
@@ -73,8 +91,8 @@ public class PartyData : SavedData
             tempData += partybaseStats[i];
             if (i < partybaseStats.Count - 1){tempData += delimiterTwo;}
         }
-        tempData = "";
         allData += tempData + delimiter;
+        tempData = "";
         for (int i = 0; i < partyCurrentStats.Count; i++)
         {
             tempData += partyCurrentStats[i];
@@ -84,12 +102,26 @@ public class PartyData : SavedData
         File.WriteAllText(dataPath, allData);
     }
 
+    public void NewGame()
+    {
+        allData = newGameData;
+        if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
+        else{return;}
+        partyNames = dataList[0].Split(delimiterTwo).ToList();
+        partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
+        partybaseStats = dataList[2].Split(delimiterTwo).ToList();
+        partyCurrentStats = dataList[3].Split(delimiterTwo).ToList();
+        Save();
+        Load();
+    }
+
     public override void Load()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else{allData = newGameData;}
-        dataList = allData.Split(delimiter).ToList();
+        if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
+        else{return;}
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
         partybaseStats = dataList[2].Split(delimiterTwo).ToList();

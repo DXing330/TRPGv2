@@ -11,6 +11,7 @@ public class CharacterList : ScriptableObject
 
     public void ResetLists()
     {
+        characterNames.Clear();
         characters.Clear();
         stats.Clear();
     }
