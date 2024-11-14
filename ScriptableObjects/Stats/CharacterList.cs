@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CharacterList", menuName = "ScriptableObjects/DataContainers/CharacterList", order = 1)]
 public class CharacterList : ScriptableObject
 {
+    public List<string> characterNames;
     public List<string> characters;
     public List<string> stats;
 
@@ -14,21 +15,19 @@ public class CharacterList : ScriptableObject
         stats.Clear();
     }
 
-    public void SetLists(List<string> newNames, List<string> newStats = null)
+    public void SetLists(List<string> newCharacters, List<string> newStats = null, List<string> newNames = null)
     {
-        characters = newNames;
-        if (newStats == null){newStats.Clear();}
+        characters = newCharacters;
+        if (newStats == null){stats.Clear();}
         else {stats = newStats;}
+        if (newNames == null){characterNames.Clear();}
+        else {characterNames = newNames;}
     }
 
-    public void SplitAndSetLists(List<string> newParty, string delimiter = "=")
+    public void AddToParty(List<string> newMembers, List<string> newStats, List<string> newNames)
     {
-        ResetLists();
-        for (int i = 0; i < newParty.Count; i++)
-        {
-            string[] data = newParty[i].Split(delimiter);
-            characters.Add(data[0]);
-            stats.Add(data[1]);
-        }
+        characterNames.AddRange(newNames);
+        characters.AddRange(newMembers);
+        stats.AddRange(newStats);
     }
 }

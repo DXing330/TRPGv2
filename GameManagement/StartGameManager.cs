@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class StartGameManager : MonoBehaviour
 {
-    public CharacterList party;
     public SavedData savedData;
+
+    public void Start()
+    {
+        savedData.Load();
+    }
 
     public void StartGame()
     {
         savedData.Load();
-        party.SplitAndSetLists(savedData.dataList);
     }
 }

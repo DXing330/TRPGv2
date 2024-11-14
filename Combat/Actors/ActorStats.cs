@@ -187,6 +187,15 @@ public class ActorStats : ActorPassives
     }
     public List<string> statuses;
     public List<string> GetStatuses(){return statuses;}
+    public List<string> GetCurses()
+    {
+        List<string> curses = new List<string>();
+        for (int i = 0; i < statuses.Count; i++)
+        {
+            if (statusDurations[i] < 0){curses.Add(statuses[i]);}
+        }
+        return curses;
+    }
     public List<int> statusDurations;
     public void AddStatus(string newCondition, int duration)
     {

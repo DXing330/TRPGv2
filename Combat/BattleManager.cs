@@ -67,6 +67,7 @@ public class BattleManager : MonoBehaviour
     public void NextTurn()
     {
         effectManager.EndTurn(turnActor);
+        // This allows for a one turn grace period for immunities to have a chance.
         map.ApplyEndTileEffect(turnActor);
         turnActor.EndTurn();
         // Remove dead actors.

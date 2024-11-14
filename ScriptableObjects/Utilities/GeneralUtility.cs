@@ -40,4 +40,16 @@ public class GeneralUtility : ScriptableObject
             objects[i].SetActive(false);
         }
     }
+
+    public List<string> RemoveEmptyListItems(List<string> stringList, int minLength = 0)
+    {
+        for (int i = stringList.Count - 1; i >= 0; i--)
+        {
+            if (stringList[i].Length <= minLength)
+            {
+                stringList.RemoveAt(i);
+            }
+        }
+        return stringList;
+    }
 }
