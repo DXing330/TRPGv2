@@ -27,21 +27,21 @@ public class PartyDataManager : MonoBehaviour
         for (int i = 0; i < allParties.Count; i++){allParties[i].NewGame();}
     }
 
-    public void UpdatePartyAfterBattle(List<TacticActor> actors)
+    public void UpdatePartyAfterBattle(List<string> names, List<string> stats)
     {
         for (int i = 0; i < allParties.Count; i++){allParties[i].ClearCurrentStats();}
-        string actorName = "";
         int partyIndex = -1;
         int memberIndex = -1;
-        for (int i = 0; i < actors.Count; i++)
+        for (int i = 0; i < names.Count; i++)
         {
             partyIndex = -1;
             memberIndex = -1;
             // Check which party they are in.
-            actorName = actors[i].GetPersonalName();
-            for (int j = 0; j < allParties.Count; i++)
+            for (int j = 0; j < allParties.Count; j++)
             {
-                memberIndex = allParties[j].PartyMemberIndex(actorName);
+                memberIndex = allParties[j].PartyMemberIndex(names[i]);
+                Debug.Log(names[i]);
+                Debug.Log(memberIndex);
                 if (memberIndex >= 0)
                 {
                     partyIndex = j;
@@ -51,7 +51,7 @@ public class PartyDataManager : MonoBehaviour
             // Update their health if applicable.
             if (partyIndex >= 0)
             {
-                allParties[partyIndex].SetCurrentStats(actors[i].ReturnCurrentStats(), memberIndex);
+                allParties[partyIndex].SetCurrentStats(stats[i], memberIndex);
             }
         }
         tempPartyData.RemoveDefeatedMembers();

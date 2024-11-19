@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BattleEndManager : MonoBehaviour
 {
+    public PartyDataManager partyData;
+
     public int FindWinningTeam(List<TacticActor> actors)
     {
         int winningTeam = -1;
@@ -17,5 +19,27 @@ public class BattleEndManager : MonoBehaviour
         }
         if (teams.Count == 1){return teams[0];}
         return winningTeam;
+    }
+
+    public void UpdatePartyAfterBattle(List<TacticActor> actors, int winningTeam = 0)
+    {
+        if (winningTeam != 0)
+        {
+            PartyDefeated();
+            return;
+        }
+        List<string> names = new List<string>();
+        List<string> stats = new List<string>();
+        for (int i = 0; i < actors.Count; i++)
+        {
+            names.Add(actors[i].GetPersonalName());
+            stats.Add(actors[i].ReturnCurrentStats());
+        }
+        partyData.UpdatePartyAfterBattle(names, stats);
+    }
+
+    public void PartyDefeated()
+    {
+        partyData.PartyDefeated();
     }
 }

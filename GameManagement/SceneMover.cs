@@ -9,11 +9,11 @@ public class SceneMover : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
-        sceneTracker.SetPreviousScene(sceneName);
+        sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
         StartCoroutine(LoadAsyncScene(sceneName));
     }
 
-    public void ReturnFromBattle()
+    public void ReturnFromBattle(int victory = 0)
     {
         StartCoroutine(LoadAsyncScene(sceneTracker.GetPreviousScene()));
     }

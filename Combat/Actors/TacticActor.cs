@@ -105,11 +105,11 @@ public class TacticActor : ActorStats
         return stats;
     }
 
-    public string ReturnCurrentStats()
+    public string ReturnCurrentStats(string delimiter = "|")
     {
         string healthString = GetHealth().ToString();
         string curses = GetCurseString();
         if (curses.Length <= 0){return healthString;}
-        return healthString + "|" + curses;
+        return healthString + delimiter + curses;
     }
 }

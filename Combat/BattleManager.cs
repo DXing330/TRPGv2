@@ -28,7 +28,7 @@ public class BattleManager : MonoBehaviour
         List<TacticActor> actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
-        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats);
+        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
         // Apply start of battle passives.
         for (int i = 0; i < map.battlingActors.Count; i++)
@@ -72,9 +72,11 @@ public class BattleManager : MonoBehaviour
         turnActor.EndTurn();
         // Remove dead actors.
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        if (battleEndManager.FindWinningTeam(map.battlingActors) >= 0)
+        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        if (winningTeam >= 0)
         {
-            sceneMover.ReturnFromBattle();
+            battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
+            sceneMover.ReturnFromBattle(winningTeam);
             return;
         }
         turnNumber++;
