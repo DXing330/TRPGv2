@@ -5,6 +5,7 @@ using UnityEngine;
 public class PartyDataManager : MonoBehaviour
 {
     // This is the one that the battle will actually read.
+    public StatDatabase actorStats;
     public CharacterList fullParty;
     public List<PartyData> allParties;
     public PartyData permanentPartyData;
@@ -27,6 +28,13 @@ public class PartyDataManager : MonoBehaviour
         for (int i = 0; i < allParties.Count; i++){allParties[i].NewGame();}
     }
 
+    public void AddTempPartyMember(string name)
+    {
+        // Don't need stats, just grab base stats.
+        tempPartyData.AddMember(name, actorStats.ReturnValue(name), name);
+        SetFullParty();
+    }
+
     public void UpdatePartyAfterBattle(List<string> names, List<string> stats)
     {
         for (int i = 0; i < allParties.Count; i++){allParties[i].ClearCurrentStats();}
@@ -40,8 +48,6 @@ public class PartyDataManager : MonoBehaviour
             for (int j = 0; j < allParties.Count; j++)
             {
                 memberIndex = allParties[j].PartyMemberIndex(names[i]);
-                Debug.Log(names[i]);
-                Debug.Log(memberIndex);
                 if (memberIndex >= 0)
                 {
                     partyIndex = j;

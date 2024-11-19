@@ -152,4 +152,13 @@ public class PartyData : SavedData
         int indexOf = partyNames.IndexOf(memberName);
         return indexOf;
     }
+
+    public void AddMember(string spriteName, string stats, string personalName = "")
+    {
+        partySpriteNames.Add(spriteName);
+        partybaseStats.Add(stats);
+        partyNames.Add(personalName);
+        string[] blocks = stats.Split("|");
+        partyCurrentStats.Add(blocks[0]);
+    }
 }

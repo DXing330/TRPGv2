@@ -19,7 +19,7 @@ public class ActorSpriteHPList : MonoBehaviour
         UpdateList();
     }
 
-    protected void UpdateList()
+    public void UpdateList()
     {
         utility.DisableGameObjects(objects);
         actorNames = utility.GetCurrentPageStrings(page, objects, savedData.characters);
