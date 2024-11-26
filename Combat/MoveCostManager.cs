@@ -152,9 +152,21 @@ public class MoveCostManager : MonoBehaviour
         return reachableTiles;
     }
 
+    public List<int> GetTilesInAttackRange(TacticActor actor, bool current = true)
+    {
+        List<int> tiles = actorPathfinder.FindTilesInAttackRange(actor, mapMoveCosts, current);
+        return tiles;
+    }
+
     public bool TileInAttackRange(TacticActor actor, int tileIndex)
     {
         return actor.GetAttackRange() >= actorPathfinder.mapUtility.DistanceBetweenTiles(actor.GetLocation(), tileIndex, actorPathfinder.mapSize);
+    }
+
+    public bool TileInAttackableRange(TacticActor actor, int tileIndex)
+    {
+        List<int> attackableTiles = GetTilesInAttackRange(actor);
+        return (attackableTiles.IndexOf(tileIndex) >= 0);
     }
 
     public int DirectionBetweenActors(TacticActor actor1, TacticActor actor2)

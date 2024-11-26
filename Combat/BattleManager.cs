@@ -255,12 +255,20 @@ public class BattleManager : MonoBehaviour
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
             }
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
+            if (actorAI.EnemyInAttackableRange(turnActor, turnActor.GetTarget(), moveManager))
             {
+                if (!actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
+                {
+                    List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+                    StartCoroutine(MoveAlongPath(turnActor, path));
+                }
                 ActorAttacksActor(turnActor, turnActor.GetTarget());
             }
             else
             {
+                // If target is out of range, first try to get a new target in range.
+                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+                turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
                 if (turnActor.GetActions() <= 0){break;}

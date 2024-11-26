@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -61,5 +62,33 @@ public class ActorPathfinder : MapPathfinder
         tiles.RemoveAt(0);
         tiles.Sort();
         return tiles;
+    }
+
+    public List<int> FindTilesInAttackRange(TacticActor actor, List<int> moveCosts, bool current = true)
+    {
+        int start = actor.GetLocation();
+        int moveRange = actor.GetMoveRangeWhileAttacking(current);
+        int attackRange = actor.GetAttackRange();
+        List<int> attackableTiles = new List<int>();
+        List<int> tiles = new List<int>();
+        if (attackRange <= 0){return tiles;}
+        ResetDistances(start);
+        // Check what tiles you can move to.
+        int distance = 0;
+        for (int i = 0; i < moveCosts.Count-1; i++)
+        {
+            distance = heap.PeekWeight();
+            if (distance > moveRange){break;}
+            tiles.Add(DeepCheckClosestTile(moveCosts));
+        }
+        // Check what tiles you can attack based on the tiles you can move to.
+        // O(n).
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            List<int> adjacentTiles = mapUtility.AdjacentTiles(tiles[i], mapSize);
+            attackableTiles.AddRange(adjacentTiles.Except(attackableTiles));
+        }
+        attackableTiles.Remove(start);
+        return attackableTiles;
     }
 }

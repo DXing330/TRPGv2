@@ -57,6 +57,14 @@ public class TacticActor : ActorStats
         // Default is two actions.
         return GetMoveSpeed()*2;
     }
+    public int GetMoveRangeWhileAttacking(bool current = true)
+    {
+        if (current)
+        {
+            return (movement + (GetMoveSpeed()*actions-1));
+        }
+        return GetMoveSpeed();
+    }
     public string personalName;
     public void SetPersonalName(string newName){personalName = newName;}
     public string GetPersonalName()

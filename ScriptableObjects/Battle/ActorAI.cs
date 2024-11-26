@@ -72,6 +72,13 @@ public class ActorAI : ScriptableObject
         return enemies[possibleIndices[Random.Range(0, possibleIndices.Count)]];
     }
     
+    public bool EnemyInAttackableRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
+    {
+        if (target == null){return false;}
+        if (target.GetHealth() <= 0){return false;}
+        return moveManager.TileInAttackableRange(currentActor, target.GetLocation());
+    }
+
     public bool EnemyInAttackRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
     {
         if (target == null){return false;}
