@@ -60,12 +60,15 @@ public class ActorStats : ActorPassives
             SetPassiveSkills(newStat.Split(",").ToList());
             break;
             case 10:
-            SetActiveSkills(newStat.Split(",").ToList());
+            SetPassiveLevels(newStat.Split(",").ToList());
             break;
             case 11:
-            SetCurrentHealth(int.Parse(newStat));
+            SetActiveSkills(newStat.Split(",").ToList());
             break;
             case 12:
+            SetCurrentHealth(int.Parse(newStat));
+            break;
+            case 13:
             // If they were kept then they must have had infinite duration.
             List<string> curses = newStat.Split(",").ToList();
             for (int i = 0; i < curses.Count; i++)
@@ -159,6 +162,17 @@ public class ActorStats : ActorPassives
     public int GetSpeed(){return currentSpeed;}
     public void UpdateSpeed(int changeAmount){currentSpeed += changeAmount;}
     public List<string> activeSkills;
+    public void AddActiveSkill(string skillName)
+    {
+        if (skillName.Length <= 1){return;}
+        activeSkills.Add(skillName);
+    }
+    public List<string> tempActives;
+    public void AddTempActive(string skillName)
+    {
+        if (skillName.Length <= 1){return;}
+        tempActives.Add(skillName);
+    }
     public int ActiveSkillCount()
     {
         int count = 0;
@@ -179,12 +193,13 @@ public class ActorStats : ActorPassives
         }
     }
     public string GetActiveSkill(int index){return activeSkills[index];}
-    public List<string> GetActiveSkills(){return activeSkills;}
-    public void AddActiveSkill(string skillName)
+    public List<string> GetActiveSkills()
     {
-        if (skillName.Length <= 1){return;}
-        activeSkills.Add(skillName);
+        List<string> allActives = new List<string>(activeSkills);
+        allActives.AddRange(tempActives);
+        return allActives;
     }
+    
     public List<string> statuses;
     public List<string> GetStatuses(){return statuses;}
     public List<string> GetCurses()

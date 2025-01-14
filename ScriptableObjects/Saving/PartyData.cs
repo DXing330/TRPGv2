@@ -57,6 +57,7 @@ public class PartyData : SavedData
         }
     }
 
+    // This basically acts as full heal, setting all current healths to base healths.
     public void ResetCurrentStats()
     {
         ClearCurrentStats();
@@ -102,7 +103,7 @@ public class PartyData : SavedData
         File.WriteAllText(dataPath, allData);
     }
 
-    public void NewGame()
+    public override void NewGame()
     {
         allData = newGameData;
         if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}

@@ -15,6 +15,12 @@ public class SavedData : ScriptableObject
     public List<string> GetData(){return dataList;}
     public string delimiter;
 
+    public virtual void NewGame()
+    {
+        allData = newGameData;
+        Save();
+    }
+
     public virtual void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;

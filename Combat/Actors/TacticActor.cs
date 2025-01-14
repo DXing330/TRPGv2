@@ -113,7 +113,7 @@ public class TacticActor : ActorStats
         return stats;
     }
 
-    public string ReturnCurrentStats(string delimiter = "|")
+    public string ReturnPersistentStats(string delimiter = "|")
     {
         string healthString = GetHealth().ToString();
         string curses = GetCurseString();

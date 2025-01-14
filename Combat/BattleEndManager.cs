@@ -33,7 +33,7 @@ public class BattleEndManager : MonoBehaviour
         for (int i = 0; i < actors.Count; i++)
         {
             names.Add(actors[i].GetPersonalName());
-            stats.Add(actors[i].ReturnCurrentStats());
+            stats.Add(actors[i].ReturnPersistentStats());
         }
         partyData.UpdatePartyAfterBattle(names, stats);
     }

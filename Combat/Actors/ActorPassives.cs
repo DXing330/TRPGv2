@@ -5,14 +5,6 @@ using UnityEngine;
 public class ActorPassives : MonoBehaviour
 {
     public List<string> passiveSkills;
-    public void ShowPassives()
-    {
-        for (int i = 0; i < passiveSkills.Count; i++)
-        {
-            Debug.Log(passiveSkills[i]);
-        }
-    }
-    public string GetPassiveSkill(int index){return passiveSkills[index];}
     public void SetPassiveSkills(List<string> newSkills)
     {
         passiveSkills = newSkills;
@@ -22,6 +14,24 @@ public class ActorPassives : MonoBehaviour
             if (passiveSkills[i].Length <= 1){passiveSkills.RemoveAt(i);}
         }
     }
+    public List<string> passiveLevels;
+    public void SetPassiveLevels(List<string> newLevels)
+    {
+        passiveLevels = newLevels;
+        if (passiveLevels.Count == 0){return;}
+        for (int i = passiveLevels.Count - 1; i >= 0; i--)
+        {
+            if (passiveLevels[i].Length < 1){passiveLevels.RemoveAt(i);}
+        }
+    }
+    public void ShowPassives()
+    {
+        for (int i = 0; i < passiveSkills.Count; i++)
+        {
+            Debug.Log(passiveSkills[i]);
+        }
+    }
+    public string GetPassiveSkill(int index){return passiveSkills[index];}    
     public List<string> startBattlePassives;
     public List<string> GetStartBattlePassives(){return startBattlePassives;}
     public void AddStartBattlePassives(List<string> newSkills)

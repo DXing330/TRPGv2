@@ -11,27 +11,45 @@ public class PartyDataManager : MonoBehaviour
     public PartyData permanentPartyData;
     public PartyData mainPartyData;
     public PartyData tempPartyData;
+    public List<SavedData> otherPartyData;
+    public Inventory inventory;
 
     public void Save()
     {
         for (int i = 0; i < allParties.Count; i++){allParties[i].Save();}
+        for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].Save();}
     }
 
     public void Load()
     {
         for (int i = 0; i < allParties.Count; i++){allParties[i].Load();}
+        for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].Load();}
         SetFullParty();
     }
 
     public void NewGame()
     {
         for (int i = 0; i < allParties.Count; i++){allParties[i].NewGame();}
+        for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].NewGame();}
     }
 
     public void AddTempPartyMember(string name)
     {
         // Don't need stats, just grab base stats.
         tempPartyData.AddMember(name, actorStats.ReturnValue(name), name);
+        SetFullParty();
+    }
+
+    public int ReturnHealthingCost()
+    {
+        return 0;
+    }
+
+    public void HealParty()
+    {
+        permanentPartyData.ResetCurrentStats();
+        mainPartyData.ResetCurrentStats();
+        tempPartyData.ResetCurrentStats();
         SetFullParty();
     }
 

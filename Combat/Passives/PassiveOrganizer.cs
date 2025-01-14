@@ -5,11 +5,13 @@ using UnityEngine;
 public class PassiveOrganizer : MonoBehaviour
 {
     public List<string> testPassiveList;
+    public List<string> testPassiveLevels;
     [ContextMenu("Test Sorting")]
     public void TestSorting()
     {
-        OrganizePassivesList(testPassiveList);
+        OrganizePassivesList(testPassiveList, testPassiveLevels);
     }
+    public MultiKeyStatDatabase passiveNameLevels;
     public StatDatabase passiveTiming;
     public List<string> startBattlePassives;
     public List<string> startTurnPassives;
@@ -30,12 +32,14 @@ public class PassiveOrganizer : MonoBehaviour
         movingPassives.Clear();
     }
 
-    public void OrganizePassivesList(List<string> passives)
+    public void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
     {
         ClearLists();
+        string passiveName = "";
         for (int i = 0; i < passives.Count; i++)
         {
-            SortPassive(passives[i], passiveTiming.ReturnValue(passives[i]));
+            passiveName = passiveNameLevels.GetMultiKeyValue(passives[i], passiveLevels[i]);
+            SortPassive(passiveName, passiveTiming.ReturnValue(passiveName));
         }
     }
 
@@ -69,7 +73,7 @@ public class PassiveOrganizer : MonoBehaviour
 
     public void OrganizeActorPassives(TacticActor actor)
     {
-        OrganizePassivesList(actor.passiveSkills);
+        OrganizePassivesList(actor.passiveSkills, actor.passiveLevels);
         actor.SetStartBattlePassives(startBattlePassives);
         actor.SetStartTurnPassives(startTurnPassives);
         actor.SetEndTurnPassives(endTurnPassives);
@@ -77,17 +81,5 @@ public class PassiveOrganizer : MonoBehaviour
         actor.SetDefendingPassives(defendingPassives);
         actor.SetTakeDamagePassives(takeDamagePassives);
         actor.SetMovingPassives(movingPassives);
-    }
-
-    public void OrganizePassives(ActorPassives passives)
-    {
-        OrganizePassivesList(passives.passiveSkills);
-        passives.SetStartBattlePassives(startBattlePassives);
-        passives.SetStartTurnPassives(startTurnPassives);
-        passives.SetEndTurnPassives(endTurnPassives);
-        passives.SetAttackingPassives(attackingPassives);
-        passives.SetDefendingPassives(defendingPassives);
-        passives.SetTakeDamagePassives(takeDamagePassives);
-        passives.SetMovingPassives(movingPassives);
     }
 }
