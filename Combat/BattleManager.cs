@@ -174,7 +174,7 @@ public class BattleManager : MonoBehaviour
             // Target the tile and update the targeted tiles.
             if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
             activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
-            map.UpdateHighlights(activeManager.targetedTiles, true, 4);
+            map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
         }
         UI.battleStats.UpdateSpendableStats();
@@ -191,13 +191,13 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            map.UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, map.battlingActors, false));
+            map.UpdateMovingHighlights(selectedActor, moveManager, false);
         }
     }
 
     protected void StartAttacking()
     {
-        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.battlingActors), true);
+        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.battlingActors), "Attack");
     }
 
     protected void AttackActorOnTile(int tileNumber)
@@ -223,7 +223,8 @@ public class BattleManager : MonoBehaviour
     
     protected void StartMoving()
     {
-        map.UpdateHighlights(moveManager.GetAllReachableTiles(turnActor, map.battlingActors));
+        map.UpdateMovingHighlights(turnActor, moveManager);
+        moveManager.GetAllReachableTiles(turnActor, map.battlingActors);
     }
 
     protected void MoveToTile(int tileNumber)

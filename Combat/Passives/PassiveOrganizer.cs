@@ -38,8 +38,11 @@ public class PassiveOrganizer : MonoBehaviour
         string passiveName = "";
         for (int i = 0; i < passives.Count; i++)
         {
-            passiveName = passiveNameLevels.GetMultiKeyValue(passives[i], passiveLevels[i]);
-            SortPassive(passiveName, passiveTiming.ReturnValue(passiveName));
+            for (int j = 1; j <= int.Parse(passiveLevels[i]); j++)
+            {
+                passiveName = passiveNameLevels.GetMultiKeyValue(passives[i], j.ToString());
+                SortPassive(passiveName, passiveTiming.ReturnValue(passiveName));
+            }
         }
     }
 

@@ -50,8 +50,8 @@ public class BattleMap : MapManager
         mapDisplayers[2].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
     }
     public List<string> highlightedTiles;
-    public string moveColor;
-    public string attackColor;
+    public ColorDictionary colorDictionary;
+
     protected virtual void GetActorTiles()
     {
         if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
@@ -86,15 +86,37 @@ public class BattleMap : MapManager
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
     }
 
-    public void UpdateHighlights(List<int> newTiles, bool attack = false, int layer = 3)
+    public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)
     {
-        string color = moveColor;
-        if (attack){color = attackColor;}
+        if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
+        highlightedTiles = new List<string>(emptyList);
+        int maxActions = 2;
+        if (current){maxActions = selectedActor.GetActions();}
+        for (int i = maxActions; i >= 0; i--)
+        {
+            UpdateHighlightsWithoutReseting(moveManager.GetReachableTilesBasedOnActions(selectedActor, battlingActors, i), colorDictionary.keys[i+1]);
+        }
+        //UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, battlingActors, current));
+    }
+
+    protected void UpdateHighlightsWithoutReseting(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)
+    {
+        string colorName = colorDictionary.GetColorNameByKey(colorKey);
+        for (int i = 0; i < newTiles.Count; i++)
+        {
+            highlightedTiles[newTiles[i]] = colorName;
+        }
+        mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+    }
+
+    public void UpdateHighlights(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)
+    {
+        string colorName = colorDictionary.GetColorNameByKey(colorKey);
         if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
         highlightedTiles = new List<string>(emptyList);
         for (int i = 0; i < newTiles.Count; i++)
         {
-            highlightedTiles[newTiles[i]] = color;
+            highlightedTiles[newTiles[i]] = colorName;
         }
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }

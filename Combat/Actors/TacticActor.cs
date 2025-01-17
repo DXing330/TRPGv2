@@ -48,6 +48,12 @@ public class TacticActor : ActorStats
         movement = 0;
         ResetStats();
     }
+
+    public int GetMoveRangeBasedOnActions(int actionCount)
+    {
+        return (movement + (GetMoveSpeed()*actionCount));
+    }
+
     public int GetMoveRange(bool current = true)
     {
         if (current)
@@ -101,6 +107,7 @@ public class TacticActor : ActorStats
 
     public void EndTurn()
     {
+        movement = 0;
         CheckStatusDuration();
     }
 
