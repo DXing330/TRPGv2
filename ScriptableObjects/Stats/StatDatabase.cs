@@ -13,10 +13,20 @@ public class StatDatabase : ScriptableObject
     public List<string> keys;
     public List<string> values;
 
-    public void Initialize()
+    public virtual void Initialize()
     {
         GetKeys();
         GetValues();
+    }
+
+    public void SetAllKeys(string newKeys)
+    {
+        allKeys = newKeys;
+    }
+
+    public void SetValues(string newValues)
+    {
+        allValues = newValues;
     }
 
     public virtual void GetKeys()

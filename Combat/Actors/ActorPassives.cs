@@ -4,6 +4,21 @@ using UnityEngine;
 
 public class ActorPassives : MonoBehaviour
 {
+    // Usually only get new passives based on equipment at the start of battle, before you start organizing passives.
+    public void AddPassiveSkill(string skillName, string skillLevel)
+    {
+        int indexOf = passiveSkills.IndexOf(skillName);
+        if (indexOf < 0)
+        {
+            passiveSkills.Add(skillName);
+            passiveLevels.Add(skillLevel);
+        }
+        else
+        {
+            int newLevel = int.Parse(passiveLevels[indexOf])+int.Parse(skillLevel);
+            passiveLevels[indexOf] = newLevel.ToString();
+        }
+    }
     public List<string> passiveSkills;
     public void SetPassiveSkills(List<string> newSkills)
     {

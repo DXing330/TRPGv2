@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillEffect", menuName = "ScriptableObjects/BattleLogic/SkillEffect", order = 1)]
 public class SkillEffect : ScriptableObject
 {
-    public int basicDenominator = 10;
+    public int basicDenominator = 100;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1)
     {
         switch (effect)
@@ -57,7 +57,8 @@ public class SkillEffect : ScriptableObject
             target.UpdateSpeed(int.Parse(effectSpecifics)*level);
             break;
             case "Movement":
-            target.GainMovement(level*int.Parse(effectSpecifics)*target.GetSpeed());
+            //target.GainMovement(level*int.Parse(effectSpecifics)*target.GetSpeed());
+            target.GainMovement(level*int.Parse(effectSpecifics));
             break;
             case "Actions":
             target.AdjustActionAmount(level*int.Parse(effectSpecifics));

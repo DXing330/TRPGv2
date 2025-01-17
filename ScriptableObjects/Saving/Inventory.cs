@@ -12,6 +12,18 @@ public class Inventory : SavedData
     public List<string> items;
     public List<string> quantities;
 
+    public override void NewGame()
+    {
+        allData = newGameData;
+        if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
+        else{return;}
+        items = dataList[0].Split(delimiterTwo).ToList();
+        quantities = dataList[1].Split(delimiterTwo).ToList();
+        items = utility.RemoveEmptyListItems(items);
+        quantities = utility.RemoveEmptyListItems(quantities);
+        Save();
+    }
+
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
@@ -38,6 +50,7 @@ public class Inventory : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else{allData = newGameData;}
+        Debug.Log(allData);
         if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
         else{return;}
         items = dataList[0].Split(delimiterTwo).ToList();

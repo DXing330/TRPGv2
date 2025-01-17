@@ -12,6 +12,16 @@ public class MultiKeyStatDatabase : StatDatabase
     public List<string> secondKeys;
     public List<string> thirdKeys;
 
+    public void SetAllSecondKeys(string newKeys)
+    {
+        allSecondKeys = newKeys;
+    }
+
+    public void SetAllThirdKeys(string newKeys)
+    {
+        allThirdKeys = newKeys;
+    }
+
     public override void GetKeys()
     {
         keys = allKeys.Split(keyDelimiter).ToList();
