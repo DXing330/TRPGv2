@@ -58,12 +58,12 @@ public class AttackManager : ScriptableObject
         return damage - disadvantage;
     }
 
-    protected void CheckPassives(List<string> characterPassives, TacticActor target, TacticActor other, BattleMap map, MoveCostManager moveManager)
+    protected void CheckPassives(List<string> characterPassives, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
         for (int i = 0; i < characterPassives.Count; i++)
         {
             List<string> passiveStats = passiveData.ReturnStats(characterPassives[i]);
-            if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, other, map, moveManager))
+            if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
             {
                 switch (passiveStats[3])
                 {
@@ -79,8 +79,8 @@ public class AttackManager : ScriptableObject
                     case "Target":
                     passive.AffectActor(target, passiveStats[4], passiveStats[5]);
                     break;
-                    case "Self":
-                    passive.AffectActor(other, passiveStats[4], passiveStats[5]);
+                    case "Attacker":
+                    passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
                     break;
                 }
             }

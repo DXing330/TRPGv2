@@ -50,7 +50,6 @@ public class Inventory : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else{allData = newGameData;}
-        Debug.Log(allData);
         if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
         else{return;}
         items = dataList[0].Split(delimiterTwo).ToList();

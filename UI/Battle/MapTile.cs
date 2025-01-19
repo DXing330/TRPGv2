@@ -12,6 +12,7 @@ public class MapTile : MonoBehaviour
     public List<GameObject> layerObjects;
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
+    public List<GameObject> directionObjects;
     public ColorDictionary colorDictionary;
     public TMP_Text tileText;
 
@@ -22,6 +23,20 @@ public class MapTile : MonoBehaviour
         for (int i = 0; i < layers.Count; i++)
         {
             layerObjects[i].SetActive(false);
+        }
+    }
+
+    public void UpdateDirectionArrow(string direction)
+    {
+        for (int i = 0; i < directionObjects.Count; i++)
+        {
+            directionObjects[i].SetActive(false);
+        }
+        if (direction == ""){return;}
+        int dirInt = int.Parse(direction);
+        if (dirInt >= 0 && dirInt < directionObjects.Count)
+        {
+            directionObjects[dirInt].SetActive(true);
         }
     }
 

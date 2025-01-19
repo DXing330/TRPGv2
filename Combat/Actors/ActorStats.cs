@@ -226,6 +226,13 @@ public class ActorStats : ActorPassives
     public List<int> statusDurations;
     public void AddStatus(string newCondition, int duration)
     {
+        // Permanent statuses can stack up infinitely and are a win condition.
+        if (duration < 0)
+        {
+            statuses.Add(newCondition);
+            statusDurations.Add(duration);
+            return;
+        }
         int indexOf = statuses.IndexOf(newCondition);
         if (indexOf < 0)
         {

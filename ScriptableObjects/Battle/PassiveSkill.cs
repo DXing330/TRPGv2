@@ -39,27 +39,60 @@ public class PassiveSkill : SkillEffect
             passiveName = passives[i];
             if (passiveName.Length <= 1){continue;}
             passiveData = allData.ReturnStats(passiveName);
+            if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor)){continue;}
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
     }
+    
+    // Start/End passives only depend on the passive user.
+    public bool CheckStartEndCondition(string condition, string conditionSpecifics, TacticActor actor)
+    {
+        switch (condition)
+        {
+            case "None":
+            return true;
+            case "Health":
+            return CheckHealthConditions(conditionSpecifics, actor);
+        }
+        // Most of them have no condition.
+        return true;
+    }
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.
-    public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor targetedActor, TacticActor otherActor, BattleMap map, MoveCostManager moveManager)
+    public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
         switch (condition)
         {
             case "Tile":
-            return CheckConditionSpecifics(conditionSpecifics, map.mapInfo[targetedActor.GetLocation()]);
+            return CheckConditionSpecifics(conditionSpecifics, map.mapInfo[target.GetLocation()]);
             case "Adjacent Ally":
             // Need to check adjacent tiles for allies.
             return false;
             case "None":
             return true;
             case "Distance":
-            return moveManager.DistanceBetweenActors(targetedActor, otherActor) <= int.Parse(conditionSpecifics);
+            return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
             case "Sprite":
-            return CheckConditionSpecifics(conditionSpecifics, targetedActor.GetSpriteName());
+            return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
             case "Direction":
-            return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(targetedActor.GetDirection(), otherActor.GetDirection()));
+            return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
+            case "Health":
+            return CheckHealthConditions(conditionSpecifics, target);
+        }
+        return false;
+    }
+
+    public bool CheckHealthConditions(string conditionSpecifics, TacticActor target)
+    {
+        int maxHealth = target.GetBaseHealth();
+        int currentHealth = target.GetHealth();
+        switch (conditionSpecifics)
+        {
+            case "<Half":
+            return (currentHealth * 2) < maxHealth;
+            case ">Half":
+            return (currentHealth * 2) > maxHealth;
+            case "Full":
+            return currentHealth >= maxHealth;
         }
         return false;
     }

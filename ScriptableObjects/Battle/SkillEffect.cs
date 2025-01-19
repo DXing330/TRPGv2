@@ -11,7 +11,18 @@ public class SkillEffect : ScriptableObject
         switch (effect)
         {
             case "Status":
-            target.AddStatus(effectSpecifics, level);
+            int duration = 2;
+            // Some statuses don't naturally wear off and are permanent.
+            switch (effectSpecifics)
+            {
+                case "Poison":
+                duration = -1;
+                break;
+                case "Burn":
+                duration = -1;
+                break;
+            }
+            target.AddStatus(effectSpecifics, duration);
             break;
             case "RemoveStatus":
             target.RemoveStatus(effectSpecifics);
@@ -40,7 +51,7 @@ public class SkillEffect : ScriptableObject
             target.UpdateHealth(level*int.Parse(effectSpecifics)*target.GetBaseHealth()/basicDenominator, false);
             break;
             case "Attack%":
-            target.UpdateAttack(level*int.Parse(effectSpecifics)*target.GetBaseAttack()/basicDenominator);
+            target.UpdateAttack(level*(int.Parse(effectSpecifics)*target.GetBaseAttack())/basicDenominator);
             break;
             case "Defense%":
             target.UpdateDefense(level*int.Parse(effectSpecifics)*target.GetBaseDefense()/basicDenominator);

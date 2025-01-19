@@ -34,7 +34,10 @@ public class BattleMap : MapManager
         }
         return turnNumber;
     }
+    // List of actor names on tiles.
     public List<string> actorTiles;
+    // List of actor directions on tiles.
+    public List<string> actorDirections;
     public List<string> terrainEffectTiles;
     public void ChangeTerrain(int tileNumer, string change)
     {
@@ -56,9 +59,11 @@ public class BattleMap : MapManager
     {
         if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
         actorTiles = new List<string>(emptyList);
+        actorDirections = new List<string>(emptyList);
         for (int i = 0; i < battlingActors.Count; i++)
         {
             actorTiles[battlingActors[i].location] = battlingActors[i].GetSpriteName();
+            actorDirections[battlingActors[i].location] = battlingActors[i].GetDirection().ToString();
         }
     }
 
@@ -83,7 +88,7 @@ public class BattleMap : MapManager
     public void UpdateActors()
     {
         GetActorTiles();
-        mapDisplayers[1].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
+        mapDisplayers[1].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles, true, actorDirections);
     }
 
     public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)

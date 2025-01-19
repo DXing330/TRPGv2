@@ -8,7 +8,7 @@ public class MapDisplayer : ScriptableObject
     public int layer = 0;
     public List<SpriteContainer> layerSprites;
     
-    public void DisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles)
+    public void DisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles, bool updateDirections = false, List<string> actorDirections = null)
     {
         int nextTile = -1;
         for (int i = 0; i < (mapTiles.Count); i++)
@@ -20,6 +20,13 @@ public class MapDisplayer : ScriptableObject
                 continue;
             }
             mapTiles[i].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(mapInfo[nextTile]), layer);
+        }
+        if (updateDirections)
+        {
+            for (int i = 0; i < (mapTiles.Count); i++)
+            {
+                mapTiles[i].UpdateDirectionArrow((actorDirections[currentTiles[i]]));
+            }
         }
     }
 
