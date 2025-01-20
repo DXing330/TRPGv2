@@ -91,7 +91,7 @@ public class BattleManager : MonoBehaviour
         UI.NPCTurn();
         int actionsLeft = turnActor.GetActions();
         if (actionsLeft <= 0){StartCoroutine(EndTurn());}
-        StartCoroutine(NPCAction(actionsLeft));
+        else {StartCoroutine(NPCAction(actionsLeft));}
     }
     IEnumerator EndTurn()
     {
@@ -272,9 +272,9 @@ public class BattleManager : MonoBehaviour
                 turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
-                if (turnActor.GetActions() <= 0){break;}
             }
             yield return new WaitForSeconds(0.5f);
+            if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
     }
