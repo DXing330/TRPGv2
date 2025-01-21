@@ -6,7 +6,7 @@ public class TacticActor : ActorStats
 {
     public string weaponType;
     public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
-    public string GetWeaponType(){return weaponType}
+    public string GetWeaponType(){return weaponType;}
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
     //public ActorStats allStats;

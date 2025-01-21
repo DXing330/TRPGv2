@@ -12,8 +12,8 @@ public class Equipment : MonoBehaviour
         string[] dataBlocks = allStats.Split("|");
         slot = dataBlocks[1];
         type = dataBlocks[2];
-        passives = dataBlocks[3].Split(",");
-        passiveLevels = dataBlocks[4].Split(",");
+        passives = dataBlocks[3].Split(",").ToList();
+        passiveLevels = dataBlocks[4].Split(",").ToList();
         maxLevel = dataBlocks[5];
     }
     public string slot;
