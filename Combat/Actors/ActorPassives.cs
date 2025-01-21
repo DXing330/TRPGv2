@@ -29,6 +29,8 @@ public class ActorPassives : MonoBehaviour
             if (passiveSkills[i].Length <= 1){passiveSkills.RemoveAt(i);}
         }
     }
+    public List<string> GetPassiveSkills(){return passiveSkills;}
+    
     public List<string> passiveLevels;
     public void SetPassiveLevels(List<string> newLevels)
     {
@@ -39,6 +41,7 @@ public class ActorPassives : MonoBehaviour
             if (passiveLevels[i].Length < 1){passiveLevels.RemoveAt(i);}
         }
     }
+    public List<string> GetPassiveLevels(){return passiveLevels;}
     public void ShowPassives()
     {
         for (int i = 0; i < passiveSkills.Count; i++)

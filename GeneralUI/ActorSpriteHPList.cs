@@ -5,11 +5,12 @@ using UnityEngine;
 public class ActorSpriteHPList : MonoBehaviour
 {
     public GeneralUtility utility;
-    int page = 0;
+    public int page = 0;
     public StatDatabase actorSpriteNames;
     public List<GameObject> objects;
-    public List<ActorSpriteAndHP> actors;
+    public List<ActorSprite> actors;
     public TacticActor dummyActor;
+    public int selectedIndex;
     public CharacterList savedData;
     public List<string> actorNames;
     public List<string> actorData;
@@ -27,10 +28,20 @@ public class ActorSpriteHPList : MonoBehaviour
         for (int i = 0; i < actorNames.Count; i++)
         {
             objects[i].SetActive(true);
-            dummyActor.SetSpecies(actorNames[i]);
+            dummyActor.SetPersonalName(actorNames[i]);
             dummyActor.SetSpriteName(actorSpriteNames.ReturnValue(actorNames[i]));
             dummyActor.SetStatsFromString(actorData[i]);
-            actors[i].ShowActorSpriteAndHP(dummyActor);
+            actors[i].ShowActorInfo(dummyActor);
         }
+    }
+
+    public void SelectActor(int index)
+    {
+        selectedIndex = index + (page * objects.Count);
+    }
+
+    public int GetSelected()
+    {
+        return selectedIndex;
     }
 }

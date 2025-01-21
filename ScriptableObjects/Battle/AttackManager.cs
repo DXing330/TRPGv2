@@ -22,8 +22,9 @@ public class AttackManager : ScriptableObject
         baseDamage = Advantage(baseDamage, advantage);
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Adjust damage based on passives, terrain effects, direction, etc.
-        baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
         // Check if the passive affects damage.
+        baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
+        baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         Debug.Log(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
@@ -70,7 +71,7 @@ public class AttackManager : ScriptableObject
                     case "Advantage":
                     advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
                     break;
-                    case "Damage":
+                    case "Damage%":
                     damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
                     break;
                     case "BaseDamage":

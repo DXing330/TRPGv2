@@ -20,6 +20,9 @@ public class PartyData : SavedData
     public List<string> GetSpriteNames(){return partySpriteNames;}
     public List<string> partybaseStats;
     // Equipment goes here?
+    public List<string> partyWeapons;
+    public List<string> partyArmors;
+    public List<string> partyCharms;
     public List<string> partyCurrentStats;
     public void SetCurrentStats(string newStats, int index)
     {
@@ -31,6 +34,9 @@ public class PartyData : SavedData
         partyNames.Clear();
         partySpriteNames.Clear();
         partybaseStats.Clear();
+        partyWeapons.Clear();
+        partyArmors.Clear();
+        partyCharms.Clear();
         partyCurrentStats.Clear();
     }
 
@@ -94,6 +100,27 @@ public class PartyData : SavedData
         }
         allData += tempData + delimiter;
         tempData = "";
+        for (int i = 0; i < partyWeapons.Count; i++)
+        {
+            tempData += partyWeapons[i];
+            if (i < partyWeapons.Count - 1){tempData += delimiterTwo;}
+        }
+        allData += tempData + delimiter;
+        tempData = "";
+        for (int i = 0; i < partyArmors.Count; i++)
+        {
+            tempData += partyArmors[i];
+            if (i < partyArmors.Count - 1){tempData += delimiterTwo;}
+        }
+        allData += tempData + delimiter;
+        tempData = "";
+        for (int i = 0; i < partyCharms.Count; i++)
+        {
+            tempData += partyCharms[i];
+            if (i < partyCharms.Count - 1){tempData += delimiterTwo;}
+        }
+        allData += tempData + delimiter;
+        tempData = "";
         for (int i = 0; i < partyCurrentStats.Count; i++)
         {
             tempData += partyCurrentStats[i];
@@ -111,7 +138,10 @@ public class PartyData : SavedData
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
         partybaseStats = dataList[2].Split(delimiterTwo).ToList();
-        partyCurrentStats = dataList[3].Split(delimiterTwo).ToList();
+        partyWeapons = dataList[3].Split(delimiterTwo).ToList();
+        partyArmors = dataList[4].Split(delimiterTwo).ToList();
+        partyCharms = dataList[5].Split(delimiterTwo).ToList();
+        partyCurrentStats = dataList[6].Split(delimiterTwo).ToList();
         Save();
         Load();
     }
@@ -126,7 +156,11 @@ public class PartyData : SavedData
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
         partybaseStats = dataList[2].Split(delimiterTwo).ToList();
-        partyCurrentStats = dataList[3].Split(delimiterTwo).ToList();
+        partyWeapons = dataList[3].Split(delimiterTwo).ToList();
+        partyArmors = dataList[4].Split(delimiterTwo).ToList();
+        Debug.Log(dataList[5]);
+        partyCharms = dataList[5].Split(delimiterTwo).ToList();
+        partyCurrentStats = dataList[6].Split(delimiterTwo).ToList();
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
         partybaseStats = utility.RemoveEmptyListItems(partybaseStats);

@@ -4,15 +4,25 @@ using UnityEngine;
 
 public class ArmoryUI : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public SelectStatTextList actorStats;
+    public SelectStatTextList actorPassives;
+    public ActorSpriteHPList allActors;
+    public TacticActor selectedActor;
+    public string selectedPassive;
+    public string selectedPassiveLevel;
+    public PassiveDetailViewer detailViewer;
+
+    public void UpdateSelectedActor()
     {
-        
+        selectedActor.SetStatsFromString(allActors.actorData[allActors.GetSelected()]);
+        actorStats.UpdateActorStatTexts(selectedActor);
+        actorPassives.UpdateActorPassiveTexts(selectedActor);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ViewPassiveDetails()
     {
-        
+        selectedPassive = actorPassives.stats[actorPassives.GetSelected()];
+        selectedPassiveLevel = actorPassives.data[actorPassives.GetSelected()];
+        detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
     }
 }

@@ -4,15 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class ActorSpriteAndHP : MonoBehaviour
+public class ActorSpriteAndHP : ActorSprite
 {
-    public SpriteContainer actorSprites;
-    public Image actorSprite;
     public TMP_Text actorHealth;
     public GameObject healthBar;
 
-    public void ShowActorSpriteAndHP(TacticActor actor)
+    public override void ShowActorInfo(TacticActor actor)
     {
+        ShowActorSprite(actor);
         actorSprite.sprite = actorSprites.GetSprite(actor.GetSpriteName());
         int cHP = actor.GetHealth();
         int mHP = actor.GetBaseHealth();

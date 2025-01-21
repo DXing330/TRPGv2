@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class TacticActor : ActorStats
 {
+    public string weaponType;
+    public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
+    public string GetWeaponType(){return weaponType}
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
     //public ActorStats allStats;
@@ -48,12 +51,10 @@ public class TacticActor : ActorStats
         movement = 0;
         ResetStats();
     }
-
     public int GetMoveRangeBasedOnActions(int actionCount)
     {
         return (movement + (GetMoveSpeed()*actionCount));
     }
-
     public int GetMoveRange(bool current = true)
     {
         if (current)

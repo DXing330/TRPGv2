@@ -33,6 +33,17 @@ public class GeneralUtility : ScriptableObject
         return strings;
     }
 
+    public List<int> GetCurrentPageIndices(int currentPage, List<GameObject> pageLength, List<string> dataList)
+    {
+        List<int> indices = new List<int>();
+        int start = currentPage * pageLength.Count;
+        for (int i = start; i < Mathf.Min(start + pageLength.Count, dataList.Count); i++)
+        {
+            indices.Add(i);
+        }
+        return indices;
+    }
+
     public void DisableGameObjects(List<GameObject> objects)
     {
         for (int i = 0; i < objects.Count; i++)
