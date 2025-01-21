@@ -28,7 +28,7 @@ public class BattleManager : MonoBehaviour
         List<TacticActor> actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
-        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames);
+        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
         // Apply start of battle passives.
         for (int i = 0; i < map.battlingActors.Count; i++)

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ActorMaker : MonoBehaviour
 {
+    public Equipment equipmentPrefab;
     public TacticActor actorPrefab;
     public StatDatabase actorStats;
     public StatDatabase actorSpriteNames;
@@ -56,7 +57,12 @@ public class ActorMaker : MonoBehaviour
             }
             if (i < teamEquipment.Count)
             {
-                
+                string[] equipData = teamEquipment[i].Split("#");
+                for (int j = 0; j < equipData.Length; j++)
+                {
+                    equipmentPrefab.SetAllStats(equipData[j]);
+                    equipmentPrefab.EquipToActor(actors[i]);
+                }
             }
             passiveOrganizer.OrganizeActorPassives(actors[i]);
             actors[i].ResetStats();

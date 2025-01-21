@@ -158,7 +158,6 @@ public class PartyData : SavedData
         partybaseStats = dataList[2].Split(delimiterTwo).ToList();
         partyWeapons = dataList[3].Split(delimiterTwo).ToList();
         partyArmors = dataList[4].Split(delimiterTwo).ToList();
-        Debug.Log(dataList[5]);
         partyCharms = dataList[5].Split(delimiterTwo).ToList();
         partyCurrentStats = dataList[6].Split(delimiterTwo).ToList();
         partyNames = utility.RemoveEmptyListItems(partyNames);
@@ -173,6 +172,16 @@ public class PartyData : SavedData
         for (int i = 0; i < partybaseStats.Count; i++)
         {
             stats.Add(partybaseStats[i]+joiner+partyCurrentStats[i]);
+        }
+        return stats;
+    }
+
+    public List<string> GetEquipmentStats(string joiner = "#")
+    {
+        List<string> stats = new List<string>();
+        for (int i = 0; i < partybaseStats.Count; i++)
+        {
+            stats.Add(partyWeapons[i]+joiner+partyArmors[i]+joiner+partyCharms[i]);
         }
         return stats;
     }

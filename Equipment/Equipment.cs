@@ -9,6 +9,7 @@ public class Equipment : MonoBehaviour
     public void SetAllStats(string newStats)
     {
         allStats = newStats;
+        if (allStats.Length < 6){return;}
         string[] dataBlocks = allStats.Split("|");
         slot = dataBlocks[1];
         type = dataBlocks[2];
@@ -24,6 +25,7 @@ public class Equipment : MonoBehaviour
 
     public void EquipToActor(TacticActor actor)
     {
+        if (allStats.Length < 6){return;}
         if (slot == "Weapon")
         {
             actor.SetWeaponType(type);

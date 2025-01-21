@@ -13,6 +13,7 @@ public class PartyDataManager : MonoBehaviour
     public PartyData tempPartyData;
     public List<SavedData> otherPartyData;
     public Inventory inventory;
+    public EquipmentInventory equipmentInventory;
 
     public void Save()
     {
@@ -93,8 +94,8 @@ public class PartyDataManager : MonoBehaviour
     public void SetFullParty()
     {
         fullParty.ResetLists();
-        fullParty.AddToParty(permanentPartyData.GetNames(), permanentPartyData.GetStats(), permanentPartyData.GetSpriteNames());
-        fullParty.AddToParty(mainPartyData.GetNames(), mainPartyData.GetStats(), mainPartyData.GetSpriteNames());
-        fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames());
+        fullParty.AddToParty(permanentPartyData.GetNames(), permanentPartyData.GetStats(), permanentPartyData.GetSpriteNames(), permanentPartyData.GetEquipmentStats());
+        fullParty.AddToParty(mainPartyData.GetNames(), mainPartyData.GetStats(), mainPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats());
+        fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats());
     }
 }
