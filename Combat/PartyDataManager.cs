@@ -41,7 +41,45 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
-    public int ReturnHealthingCost()
+    public string EquipToPartyMember(string equip, int selected, Equipment dummy)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            return permanentPartyData.EquipToMember(equip, selected, dummy);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            return mainPartyData.EquipToMember(equip, selected - permanentCount, dummy);
+        }
+        else
+        {
+            return tempPartyData.EquipToMember(equip, selected - permanentCount - mainCount, dummy);
+        }
+    }
+
+    public string ReturnPartyMemberEquipFromIndex(int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            return permanentPartyData.partyEquipment[selected];
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            return mainPartyData.partyEquipment[selected - permanentCount];
+        }
+        else
+        {
+            return tempPartyData.partyEquipment[selected - permanentCount - mainCount];
+        }
+    }
+
+    public int ReturnHealingCost()
     {
         return 0;
     }

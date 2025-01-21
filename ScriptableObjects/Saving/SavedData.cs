@@ -18,7 +18,7 @@ public class SavedData : ScriptableObject
     public virtual void NewGame()
     {
         allData = newGameData;
-        dataList = allData.Split(delimiter);
+        dataList = allData.Split(delimiter).ToList();
         Save();
     }
 

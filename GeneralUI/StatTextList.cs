@@ -19,15 +19,17 @@ public class StatTextList : GameObjectTextList
         utility.DisableGameObjects(changePageObjects);
     }
     public List<string> stats;
+    public TMP_Text title;
+    public void SetTitle(string newTitle){title.text = newTitle;}
     public List<StatTextText> statTexts;
-    protected override void UpdateCurrentPage(List<int> newPageIndexes)
+    protected override void UpdateCurrentPage()
     {
         ResetPage();
-        for (int i = 0; i < newPageIndexes.Count; i++)
+        List<int> newPageIndices = new List<int>(utility.GetCurrentPageIndices(page, objects, data));
+        for (int i = 0; i < newPageIndices.Count; i++)
         {
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);
-            statTexts[i].SetText(data[i]);
         }
     }
     protected override void ResetPage()

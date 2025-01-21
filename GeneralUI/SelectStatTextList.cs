@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class SelectStatTextList : StatTextList
 {
+    public Equipment equipment;
     public int selectedIndex;
+    public void ResetSelected(){selectedIndex = -1;}
     public void Select(int index)
     {
         selectedIndex = index + (page*objects.Count);
@@ -33,7 +35,7 @@ public class SelectStatTextList : StatTextList
         }
     }
 
-    public void UpdateActorPassiveTexts(TacticActor actor)
+    public void UpdateActorPassiveTexts(TacticActor actor, string currentlyEquipped)
     {
         page = 0;
         stats.Clear();
@@ -47,5 +49,46 @@ public class SelectStatTextList : StatTextList
             statTexts[i].SetText(data[i]);
         }
         if (stats.Count > objects.Count){EnableChangePage();}
+    }
+
+    public void UpdateActorEquipmentTexts(string selectedActorEquipment)
+    {
+        page = 0;
+        data.Clear();
+        // 3 types of equipment, weapon, armor, charm
+        for (int i = 0; i < 3; i++)
+        {
+            statTexts[i].SetText("None");
+        }
+        string[] dataBlocks = selectedActorEquipment.Split("@");
+        for (int i = 0; i < dataBlocks.Length; i++)
+        {
+            equipment.SetAllStats(dataBlocks[i]);
+            switch (equipment.GetSlot())
+            {
+                case "Weapon":
+                statTexts[0].SetText(equipment.GetName());
+                break;
+                case "Armor":
+                statTexts[1].SetText(equipment.GetName());
+                break;
+                case "Charm":
+                statTexts[2].SetText(equipment.GetName());
+                break;
+            }
+        }
+    }
+
+    // raw data is full equip stats, just extract the names.
+    public void UpdateEquipNames()
+    {
+        stats.Clear();
+        for (int i = 0; i < data.Count; i++)
+        {
+            string[] splitData = data[i].Split("|");
+            stats.Add(splitData[0]);
+        }
+        page = 0;
+        UpdateCurrentPage();
     }
 }

@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,20 +8,73 @@ using UnityEngine;
 public class EquipmentInventory : SavedData
 {
     public StatDatabase equipData;
-    public void AddEquipment(string newEquipment)
+    public void AddEquipmentByName(string newEquipment)
     {
         dataList.Add(equipData.ReturnValue(newEquipment));
         SortEquipment();
     }
-    public List<string> allWeapons;
-    public List<string> allArmor;
-    public List<string> allCharms;
-
-    public override void NewGame()
+    public void AddEquipmentByStats(string newStats)
     {
-        allData = newGameData;
-        dataList = allData.Split(delimiter);
-        Save();
+        if (newStats.Length < 6){return;}
+        dataList.Add(newStats);
+        SortEquipment();
+    }
+    public void RemoveEquipment(int index)
+    {
+        dataList.RemoveAt(index);
+        SortEquipment();
+    }
+    public string TakeEquipment(int index, int slot)
+    {
+        switch (slot)
+        {
+            case 0:
+            return TakeWeapon(index);
+            case 1:
+            return TakeArmor(index);
+            case 2:
+            return TakeCharm(index);
+        }
+        return "";
+    }
+    public string TakeWeapon(int otherIndex)
+    {
+        string data = allWeapons[otherIndex];
+        int indexOf = dataList.IndexOf(allWeapons[otherIndex]);
+        allWeapons.RemoveAt(otherIndex);
+        RemoveEquipment(indexOf);
+        return data;
+    }
+    public string TakeArmor(int otherIndex)
+    {
+        string data = allArmor[otherIndex];
+        int indexOf = dataList.IndexOf(allArmor[otherIndex]);
+        allArmor.RemoveAt(otherIndex);
+        RemoveEquipment(indexOf);
+        return data;
+    }
+    public string TakeCharm(int otherIndex)
+    {
+        string data = allCharms[otherIndex];
+        int indexOf = dataList.IndexOf(allCharms[otherIndex]);
+        allCharms.RemoveAt(otherIndex);
+        RemoveEquipment(indexOf);
+        return data;
+    }
+    public List<string> allWeapons;
+    public int WeaponCount(){return allWeapons.Count;}
+    public List<string> GetWeapons(){return allWeapons;}
+    public List<string> allArmor;
+    public int ArmorCount(){return allArmor.Count;}
+    public List<string> GetArmor(){return allArmor;}
+    public List<string> allCharms;
+    public int CharmCount(){return allCharms.Count;}
+    public List<string> GetCharms(){return allCharms;}
+
+    public override void Load()
+    {
+        base.Load();
+        SortEquipment();
     }
 
     public void SortEquipment()
@@ -27,9 +82,11 @@ public class EquipmentInventory : SavedData
         allWeapons.Clear();
         allArmor.Clear();
         allCharms.Clear();
+        if (dataList.Count <= 0){return;}
         string[] dataBlocks = dataList[0].Split("|");
         for (int i = 0; i < dataList.Count; i++)
         {
+            if (dataList[i].Length < 6){continue;}
             dataBlocks = dataList[i].Split("|");
             switch (dataBlocks[1])
             {

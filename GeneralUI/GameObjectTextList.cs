@@ -8,7 +8,10 @@ public class GameObjectTextList : MonoBehaviour
     public GeneralUtility utility;
     public List<GameObject> objects;
     public List<string> data;
-    public void SetData(List<string> newData){data = new List<string>(newData);}
+    public void SetData(List<string> newData)
+    {
+        data = new List<string>(newData);
+    }
     [ContextMenu("Right")]
     public void ChangeRight(){ChangePage();}
     [ContextMenu("Left")]
@@ -16,12 +19,13 @@ public class GameObjectTextList : MonoBehaviour
     public void ChangePage(bool right = true)
     {
         page = utility.ChangePage(page, right, objects, data);
-        UpdateCurrentPage(utility.GetCurrentPageIndices(page, objects, data));
+        UpdateCurrentPage();
     }
-    protected virtual void UpdateCurrentPage(List<int> newPageIndexes)
+    protected virtual void UpdateCurrentPage()
     {
         ResetPage();
-        for (int i = 0; i < newPageIndexes.Count; i++)
+        List<int> newPageIndices = utility.GetCurrentPageIndices(page, objects, data);
+        for (int i = 0; i < newPageIndices.Count; i++)
         {
             objects[i].SetActive(true);
         }

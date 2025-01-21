@@ -10,7 +10,7 @@ public class ActorSpriteHPList : MonoBehaviour
     public List<GameObject> objects;
     public List<ActorSprite> actors;
     public TacticActor dummyActor;
-    public int selectedIndex;
+    public int selectedIndex = -1;
     public CharacterList savedData;
     public List<string> actorNames;
     public List<string> actorData;

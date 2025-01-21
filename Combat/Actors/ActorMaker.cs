@@ -57,7 +57,7 @@ public class ActorMaker : MonoBehaviour
             }
             if (i < teamEquipment.Count)
             {
-                string[] equipData = teamEquipment[i].Split("#");
+                string[] equipData = teamEquipment[i].Split("@");
                 for (int j = 0; j < equipData.Length; j++)
                 {
                     equipmentPrefab.SetAllStats(equipData[j]);
