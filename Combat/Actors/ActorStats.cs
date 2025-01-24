@@ -111,6 +111,7 @@ public class ActorStats : ActorPassives
     public int attackRange;
     public void SetAttackRange(int newRange){attackRange = newRange;}
     public int GetAttackRange(){return attackRange;}
+    public void UpdateAttackRange(int changeAmount){attackRange += changeAmount;}
     public int baseDefense;
     public void SetBaseDefense(int newDefense){baseDefense = newDefense;}
     public int GetBaseDefense(){return baseDefense;}

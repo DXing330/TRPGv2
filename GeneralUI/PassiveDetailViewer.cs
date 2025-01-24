@@ -131,10 +131,6 @@ public class PassiveDetailViewer : MonoBehaviour
             return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "BaseHealth":
             return " increase maximum health by "+specifics;
-            case "BaseAttack":
-            return " increase base attack by "+specifics;
-            case "BaseDefense":
-            return " increase base defense by "+specifics;
             case "Movement":
             return " gain "+specifics+" movement";
             case "Skill":
@@ -147,16 +143,12 @@ public class PassiveDetailViewer : MonoBehaviour
             return " regain up to "+specifics+" health";
             case "Health%":
             return " regain up to "+specifics+"% health";
-            case "Attack":
-            return " increase attack by "+specifics;
             case "Attack%":
             return " increase attack by "+specifics+"%";
-            case "Defense":
-            return " increase defense by "+specifics;
             case "Defense%":
             return " increase defense by "+specifics+"%";
         }
-        return "";
+        return " increase "+effect+" by "+specifics;
     }
 
     protected string IncreaseDecreaseTargetSpecifics(string effect, string specifics, string target)
