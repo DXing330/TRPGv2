@@ -53,7 +53,7 @@ public class SelectList : MonoBehaviour
         UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
     }
 
-    protected void ResetPage()
+    protected virtual void ResetPage()
     {
         for (int i = 0; i < textObjects.Count; i++)
         {

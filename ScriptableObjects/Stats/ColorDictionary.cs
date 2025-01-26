@@ -17,6 +17,16 @@ public class ColorDictionary : ScriptableObject
         return colorNames.Contains(colorName);
     }
 
+    public Color GetColor(string thing)
+    {
+        int indexOf = colorNames.IndexOf(thing);
+        if (indexOf < 0)
+        {
+            return GetColorByKey(thing);
+        }
+        return colors[indexOf];
+    }
+
     public Color GetColorByName(string colorName)
     {
         int indexOf = colorNames.IndexOf(colorName);

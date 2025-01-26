@@ -63,4 +63,80 @@ public class GeneralUtility : ScriptableObject
         }
         return stringList;
     }
+
+    public List<string> QuickSortIntStringList(List<string> intStrings, int left, int right)
+    {
+        int i = left;
+        int j = right;
+        int pivot = int.Parse(intStrings[left]);
+        while (i <= j)
+        {
+            while (int.Parse(intStrings[i]) > pivot)
+            {
+                i++;
+            }
+            while (int.Parse(intStrings[j]) < pivot)
+            {
+                j--;
+            }
+            if (i <= j)
+            {
+                string temp = (intStrings[i]);
+                intStrings[i] = intStrings[j];
+                intStrings[j] = temp;
+                /*TacticActor tempActor = actors[i];
+                actors[i] = actors[j];
+                actors[j] = tempActor;*/
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+        {
+            QuickSortIntStringList(intStrings, left, j);
+        }
+        if (i < right)
+        {
+            QuickSortIntStringList(intStrings, i, right);
+        }
+        return intStrings;
+    }
+
+    public List<string> QuickSortByIntStringList(List<string> toSort, List<string> intStrings, int left, int right)
+    {
+        int i = left;
+        int j = right;
+        int pivot = int.Parse(intStrings[left]);
+        while (i <= j)
+        {
+            while (int.Parse(intStrings[i]) > pivot)
+            {
+                i++;
+            }
+            while (int.Parse(intStrings[j]) < pivot)
+            {
+                j--;
+            }
+            if (i <= j)
+            {
+                string temp = (intStrings[i]);
+                intStrings[i] = intStrings[j];
+                intStrings[j] = temp;
+                temp = toSort[i];
+                toSort[i] = toSort[j];
+                toSort[j] = temp;
+                i++;
+                j--;
+            }
+        }
+        if (left < j)
+        {
+            QuickSortByIntStringList(toSort, intStrings, left, j);
+        }
+        if (i < right)
+        {
+            QuickSortByIntStringList(toSort, intStrings, i, right);
+        }
+        return toSort;
+    }
 }

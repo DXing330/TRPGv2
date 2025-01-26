@@ -18,4 +18,10 @@ public class StatTextText : MonoBehaviour
         text.text = "";
         statText.text = "";
     }
+
+    public void SetColor(Color newColor)
+    {
+        text.color = newColor;
+        statText.color = newColor;
+    }
 }
