@@ -16,6 +16,7 @@ public class PassiveSkill : SkillEffect
             passiveName = startBattlePassives[i];
             if (passiveName.Length <= 1){continue;}
             passiveData = allData.ReturnStats(passiveName);
+            if (!CheckStartBattleCondition(passiveData[1], passiveData[2], actor)){continue;}
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
     }
@@ -42,6 +43,17 @@ public class PassiveSkill : SkillEffect
             if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor)){continue;}
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
+    }
+
+    // Start Battle passives only depend on passive user/equipment.
+    public bool CheckStartBattleCondition(string condition, string specifics, TacticActor actor)
+    {
+        switch (condition)
+        {
+            case "Weapon":
+            return specifics == actor.GetWeaponType();
+        }
+        return true;
     }
     
     // Start/End passives only depend on the passive user.

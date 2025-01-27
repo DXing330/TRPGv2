@@ -30,9 +30,10 @@ public class ArmoryUI : MonoBehaviour
 
     public void ViewPassiveDetails()
     {
+        // TODO: make this see the potential passives when selecting equipment
         if (allActors.GetSelected() < 0){return;}
-        selectedPassive = actorPassives.stats[actorPassives.GetSelected()];
-        selectedPassiveLevel = actorPassives.data[actorPassives.GetSelected()];
+        selectedPassive = actorPassives.statTexts[actorPassives.GetSelected()].GetStatText();
+        selectedPassiveLevel = actorPassives.statTexts[actorPassives.GetSelected()].GetText();
         detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
     }
 
@@ -69,6 +70,7 @@ public class ArmoryUI : MonoBehaviour
         selectedActor.SetStatsFromString(allActors.actorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+        actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
     }
 
     public void PreviewEquippedPassives()

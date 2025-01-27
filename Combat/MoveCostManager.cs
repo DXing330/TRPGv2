@@ -219,6 +219,27 @@ public class MoveCostManager : MonoBehaviour
         map.UpdateActors();
     }
 
+    public void MoveSkill(TacticActor mover, string moveDirection, int distance, BattleMap map)
+    {
+        int currentLocation = mover.GetLocation();
+        int moveSkillDirection = mover.GetDirection();
+        switch (moveDirection)
+        {
+            case "Back":
+            moveSkillDirection = (moveSkillDirection + 3)%6;
+            break;
+        }
+        // Get the tile to move to.
+        int nextLocation = actorPathfinder.GetTileByDirectionDistance(currentLocation, moveSkillDirection, distance);
+        // Check if it is availabe.
+        if (map.GetActorOnTile(nextLocation) == null)
+        {
+            // Move to the tile.
+            mover.SetLocation(nextLocation);
+            map.UpdateActors();
+        }
+    }
+
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
         int nextTile = actor.GetLocation();

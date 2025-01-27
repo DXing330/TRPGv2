@@ -6,6 +6,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StatData", menuName = "ScriptableObjects/DataContainers/StatData", order = 1)]
 public class StatDatabase : ScriptableObject
 {
+    public bool inputKeysAndValues = false;
+    public string allKeysAndValues;
+    public string keyValueDelimiter;
     public string keyDelimiter;
     public string valueDelimiter;
     public string allKeys;
@@ -15,6 +18,12 @@ public class StatDatabase : ScriptableObject
 
     public virtual void Initialize()
     {
+        if (inputKeysAndValues)
+        {
+            string[] keysAndValues = allKeysAndValues.Split(keyValueDelimiter);
+            SetAllKeys(keysAndValues[0]);
+            SetValues(keysAndValues[1]);
+        }
         GetKeys();
         GetValues();
     }

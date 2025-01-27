@@ -137,6 +137,7 @@ public class SelectStatTextList : StatTextList
         actor.SetPassiveSkills(basePassives);
         actor.SetPassiveLevels(baseLevels);
         equipment.SetAllStats(newEquipment);
+        equipment.EquipToActor(actor);
         string slot = equipment.GetSlot();
         // Replace the equipment in the specified slot with the new equipment.
         for (int i = 0; i < allEquipped.Length; i++)
@@ -144,7 +145,7 @@ public class SelectStatTextList : StatTextList
             equipment.SetAllStats(allEquipped[i]);
             if (slot == equipment.GetSlot())
             {
-                equipment.SetAllStats(newEquipment);
+                continue;
             }
             equipment.EquipToActor(actor);
         }
@@ -166,6 +167,7 @@ public class SelectStatTextList : StatTextList
                 continue;
             }
             allPassiveLevels.Add(potentialLevels[indexOf]);
+            
         }
         // Sort the list by passive levels.
         allPassives = utility.QuickSortByIntStringList(allPassives, allPassiveLevels, 0, allPassives.Count - 1);
@@ -176,6 +178,7 @@ public class SelectStatTextList : StatTextList
         int currentLevel = 0;
         for (int i = 0; i < allPassives.Count; i++)
         {
+            
             passiveName = allPassives[i];
             indexOf = currentPassives.IndexOf(passiveName);
             if ((indexOf < 0))
@@ -202,6 +205,7 @@ public class SelectStatTextList : StatTextList
         ResetPage();
         for (int i = 0; i < allPassives.Count; i++)
         {
+            
             objects[i].SetActive(true);
             statTexts[i].SetStatText(allPassives[i]);
             statTexts[i].SetText(allPassiveLevels[i]);

@@ -11,7 +11,9 @@ public class StatTextText : MonoBehaviour
 
 
     public void SetStatText(string statName){statText.text = statName;}
+    public string GetStatText(){return statText.text;}
     public void SetText(string newText){text.text = newText;}
+    public string GetText(){return text.text;}
 
     public void Reset()
     {

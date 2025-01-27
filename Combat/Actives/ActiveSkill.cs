@@ -44,6 +44,9 @@ public class ActiveSkill : SkillEffect
             case "AttackRange":
             if (skillUser == null){return 0;}
             return skillUser.GetAttackRange();
+            case "AttackRange+":
+            if (skillUser == null){return 0;}
+            return (skillUser.GetAttackRange()+1);
         }
         return int.Parse(range);
     }
