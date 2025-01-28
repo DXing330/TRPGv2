@@ -177,6 +177,7 @@ public class BattleManager : MonoBehaviour
             map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
         }
+        UI.battleStats.UpdateBasicStats();
         UI.battleStats.UpdateSpendableStats();
     }
 
@@ -285,6 +286,7 @@ public class BattleManager : MonoBehaviour
         {
             actor.SetDirection(moveManager.DirectionBetweenLocations(actor.GetLocation(), path[i]));
             actor.SetLocation(path[i]);
+            moveManager.ApplyMovePassiveEffects(actor, map);
             map.ApplyMovingTileEffect(actor, path[i]);
             map.UpdateActors();
             yield return new WaitForSeconds(0.1f);
@@ -296,6 +298,7 @@ public class BattleManager : MonoBehaviour
     public void ActivateSkill()
     {
         ResetState();
+        UI.battleStats.UpdateBasicStats();
         UI.battleStats.UpdateSpendableStats();
     }
 }

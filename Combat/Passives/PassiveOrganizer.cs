@@ -20,6 +20,7 @@ public class PassiveOrganizer : MonoBehaviour
     public List<string> defendingPassives;
     public List<string> takeDamagePassives;
     public List<string> movingPassives;
+    public List<string> deathPassives;
 
     protected void ClearLists()
     {
@@ -30,6 +31,7 @@ public class PassiveOrganizer : MonoBehaviour
         defendingPassives.Clear();
         takeDamagePassives.Clear();
         movingPassives.Clear();
+        deathPassives.Clear();
     }
 
     public void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
@@ -71,6 +73,9 @@ public class PassiveOrganizer : MonoBehaviour
             case "TakeDamage":
             takeDamagePassives.Add(passive);
             break;
+            case "Death":
+            deathPassives.Add(passive);
+            break;
         }
     }
 
@@ -84,5 +89,7 @@ public class PassiveOrganizer : MonoBehaviour
         actor.SetDefendingPassives(defendingPassives);
         actor.SetTakeDamagePassives(takeDamagePassives);
         actor.SetMovingPassives(movingPassives);
+        // TODO: implement death passive effects
+        actor.SetDeathPassives(deathPassives);
     }
 }

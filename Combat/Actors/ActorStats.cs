@@ -118,6 +118,7 @@ public class ActorStats : ActorPassives
     public void UpdateBaseDefense(int changeAmount){baseDefense += changeAmount;}
     public int moveSpeed;
     public void SetMoveSpeed(int newMoveSpeed){moveSpeed = newMoveSpeed;}
+    public void UpdateBaseSpeed(int changeAmount){moveSpeed += changeAmount;}
     public int GetMoveSpeed(){return moveSpeed;}
     public string moveType;
     public void SetMoveType(string newMoveType){moveType = newMoveType;}

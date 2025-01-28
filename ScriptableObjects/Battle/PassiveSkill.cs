@@ -45,6 +45,12 @@ public class PassiveSkill : SkillEffect
         }
     }
 
+    // Moving passives usually depend on the tile moved over.
+    public bool CheckMovingCondition(string specifics, string tileType)
+    {
+        return specifics == tileType;
+    }
+
     // Start Battle passives only depend on passive user/equipment.
     public bool CheckStartBattleCondition(string condition, string specifics, TacticActor actor)
     {

@@ -136,4 +136,16 @@ public class ActorPassives : MonoBehaviour
         }
     }
     public void SetMovingPassives(List<string> passives){movingPassives = new List<string>(passives);}
+    public List<string> deathPassives;
+    public List<string> GetDeathPassives(){return deathPassives;}
+    public void AddDeathPassive(string passiveName){deathPassives.Add(passiveName);}
+    public void AddDeathPassives(List<string> newSkills)
+    {
+        for (int i = 0; i < newSkills.Count; i++)
+        {
+            if (newSkills[i].Length <= 1){continue;}
+            AddDeathPassive(newSkills[i]);
+        }
+    }
+    public void SetDeathPassives(List<string> passives){deathPassives = new List<string>(passives);}
 }

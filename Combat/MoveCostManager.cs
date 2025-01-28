@@ -39,15 +39,16 @@ public class MoveCostManager : MonoBehaviour
 
     protected void UpdateMoveCostList(TacticActor actor)
     {
+        List<string> movingPassives = actor.GetMovingPassives();
         moveTypeCosts.Clear();
         for (int i = 0; i < moveCosts[moveTypeIndex].moveCosts.Count; i++)
         {
             moveTypeCosts.Add(moveCosts[moveTypeIndex].moveCosts[i]);
         }
         List<string> passiveInfo = new List<string>();
-        for (int i = 0; i < actor.movingPassives.Count; i++)
+        for (int i = 0; i < movingPassives.Count; i++)
         {
-            passiveInfo = passiveData.ReturnStats(actor.movingPassives[i]);
+            passiveInfo = passiveData.ReturnStats(movingPassives[i]);
             for (int j = 0; j < moveTypeTiles.Count; j++)
             {
                 if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], moveTypeTiles[j]))
@@ -236,6 +237,7 @@ public class MoveCostManager : MonoBehaviour
         {
             // Move to the tile.
             mover.SetLocation(nextLocation);
+            map.ApplyMovingTileEffect(mover, nextLocation);
             map.UpdateActors();
         }
     }
@@ -253,6 +255,23 @@ public class MoveCostManager : MonoBehaviour
                 map.ApplyMovingTileEffect(actor, nextTile);
             }
             else {break;}
+        }
+    }
+
+    public void ApplyMovePassiveEffects(TacticActor mover, BattleMap map)
+    {
+        List<string> movingPassives = mover.GetMovingPassives();
+        List<string> passiveInfo = new List<string>();
+        int location = mover.GetLocation();
+        for (int i = 0; i < movingPassives.Count; i++)
+        {
+            passiveInfo = passiveData.ReturnStats(movingPassives[i]);
+            // Only apply passives that affect the user.
+            if (passiveInfo[3] != "Self"){continue;}
+            if (passiveSkill.CheckMovingCondition(passiveInfo[2], map.mapInfo[location]))
+            {
+                passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
+            }
         }
     }
 }

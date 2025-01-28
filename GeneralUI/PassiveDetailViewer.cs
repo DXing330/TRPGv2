@@ -147,6 +147,8 @@ public class PassiveDetailViewer : MonoBehaviour
             return " increase attack by "+specifics+"%";
             case "Defense%":
             return " increase defense by "+specifics+"%";
+            case "MoveType":
+            return " change movement type to "+specifics;
         }
         return " increase "+effect+" by "+specifics;
     }
