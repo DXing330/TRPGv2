@@ -238,7 +238,7 @@ public class MoveCostManager : MonoBehaviour
             // Move to the tile.
             mover.SetLocation(nextLocation);
             map.ApplyMovingTileEffect(mover, nextLocation);
-            ApplyMovePassiveEffects(actor, map);
+            ApplyMovePassiveEffects(mover, map);
             map.UpdateActors();
         }
     }

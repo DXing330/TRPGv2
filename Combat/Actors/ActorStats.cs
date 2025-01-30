@@ -110,6 +110,10 @@ public class ActorStats : ActorPassives
     public void UpdateBaseAttack(int changeAmount){baseAttack += changeAmount;}
     public int attackRange;
     public void SetAttackRange(int newRange){attackRange = newRange;}
+    public void SetAttackRangeMax(int newRange)
+    {
+        attackRange = Mathf.Max(attackRange, newRange);
+    }
     public int GetAttackRange(){return attackRange;}
     public void UpdateAttackRange(int changeAmount){attackRange += changeAmount;}
     public int baseDefense;

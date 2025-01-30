@@ -48,7 +48,7 @@ public class SkillEffect : ScriptableObject
             target.UpdateBaseDefense(int.Parse(effectSpecifics)*level);
             break;
             case "AttackRange":
-            target.UpdateAttackRange(int.Parse(effectSpecifics)*level);
+            target.SetAttackRangeMax(int.Parse(effectSpecifics));
             break;
             case "Health%":
             target.UpdateHealth(level*int.Parse(effectSpecifics)*target.GetBaseHealth()/basicDenominator, false);

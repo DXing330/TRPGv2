@@ -75,6 +75,8 @@ public class PassiveDetailViewer : MonoBehaviour
             return "When receiving damage";
             case "End":
             return "At the end of each turn";
+            case "Death":
+            return "Upon death";
         }
         return "";
     }
@@ -149,6 +151,8 @@ public class PassiveDetailViewer : MonoBehaviour
             return " increase defense by "+specifics+"%";
             case "MoveType":
             return " change movement type to "+specifics;
+            case "AttackRange":
+            return " increase Attack Range by up to "+specifics;
         }
         return " increase "+effect+" by "+specifics;
     }
