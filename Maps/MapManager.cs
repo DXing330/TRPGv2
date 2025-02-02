@@ -29,7 +29,8 @@ public class MapManager : MonoBehaviour
     }
     public int mapSize;
     public int gridSize;
-    public int startTile = 0;
+    public int startTile;
+    public int centerTile;
 
     protected virtual void Start()
     {
@@ -47,7 +48,7 @@ public class MapManager : MonoBehaviour
         // Change this later.
         ResetAllLayers();
         mapInfo = MakeRandomMap();
-        startTile = mapUtility.DetermineCenterTile(mapSize);
+        centerTile = mapUtility.DetermineCenterTile(mapSize);
         UpdateMap();
     }
 
@@ -61,17 +62,18 @@ public class MapManager : MonoBehaviour
         UpdateMap();
     }
 
+    // Probably never use this. Moving the map should happen automatically as the player icon moves.
     public void MoveMap(int direction)
     {
-        int newCenter = mapUtility.PointInDirection(startTile, direction, mapMaker.mapSize);
-        if (newCenter < 0 || newCenter == startTile){return;}
-        startTile = newCenter;
+        int prevCenter = centerTile;
+        centerTile = mapUtility.PointInDirection(centerTile, direction, mapMaker.mapSize);
+        if (centerTile < 0 || centerTile == prevCenter){return;}
         UpdateMap();
     }
 
     protected virtual void UpdateCurrentTiles()
     {
-        currentTiles = currentTileManager.GetCurrentTilesFromCenter(startTile, mapSize, gridSize);
+        currentTiles = currentTileManager.GetCurrentTilesFromCenter(centerTile, mapSize, gridSize);
     }
 
     protected virtual void UpdateMap()

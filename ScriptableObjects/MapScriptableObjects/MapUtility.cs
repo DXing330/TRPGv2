@@ -16,8 +16,6 @@ public class MapUtility : ScriptableObject
         // Out of bounds.
         if (row < 0 || col < 0 || row >= size || col >= size)
         {
-            //Debug.Log("Row: "+row);
-            //Debug.Log("Col: "+col);
             return -1;
         }
         return (row * size) + col;

@@ -18,6 +18,12 @@ public class SpriteContainer : ScriptableObject
 
     public Sprite SpriteDictionary(string spriteName)
     {
+        // Maybe try using a key first.
+        int indexOf = keys.IndexOf(spriteName);
+        if (indexOf >= 0)
+        {
+            spriteName = values[indexOf];
+        }
         for (int i = 0; i < sprites.Count; i++)
         {
             if (sprites[i].name == spriteName){return sprites[i];}
