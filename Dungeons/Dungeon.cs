@@ -34,16 +34,24 @@ public class Dungeon : ScriptableObject
             partyLocations[allEnemies[i].GetLocation()] = allEnemies[i].GetSpriteName();
         }
         // Hardcoded KEK.
-        partyLocations[partyLocation] = "Player";
+        partyLocations[partyLocation] = partySprite;
     }
     public List<DungeonEnemy> allEnemies;
     public List<DungeonTreasure> allTreasure;
     public int currentStairsDown;
     public int currentStairsUp;
     public int partyLocation;
+    public string partySprite = "Player";
     public int GetPartyLocation(){return partyLocation;}
     public void SetPartyLocation(int newLocation)
     {
+        partyLocation = newLocation;
+    }
+    public void MovePartyLocation(int newLocation)
+    {
+        // Remove the old location.
+        partyLocations[partyLocation] = "";
+        partyLocations[newLocation] = partySprite;
         partyLocation = newLocation;
     }
 

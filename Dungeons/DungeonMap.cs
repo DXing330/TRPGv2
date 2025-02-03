@@ -16,6 +16,7 @@ public class DungeonMap : MapManager
         dungeon.SetFloorTiles(MakeRandomMap());
         // Spawn point should be the ladder up location.
         dungeon.SetPartyLocation(mapUtility.DetermineCenterTile(mapSize));
+        dungeon.UpdatePartyLocations();
         UpdateMap();
     }
 
@@ -25,7 +26,7 @@ public class DungeonMap : MapManager
         {
             centerTile = newTile;
         }
-        dungeon.SetPartyLocation(newTile);
+        dungeon.MovePartyLocation(newTile);
         UpdateMap();
     }
 
@@ -39,7 +40,6 @@ public class DungeonMap : MapManager
     public void UpdateActors()
     {
         // Get party/enemies from dungeon.
-        dungeon.UpdatePartyLocations();
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, dungeon.partyLocations, currentTiles);
     }
 

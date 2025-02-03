@@ -7,6 +7,21 @@ public class MapDisplayer : ScriptableObject
 {
     public int layer = 0;
     public List<SpriteContainer> layerSprites;
+
+    public void DebugDisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles)
+    {
+        int nextTile = -1;
+        for (int i = 0; i < (mapTiles.Count); i++)
+        {
+            nextTile = currentTiles[i];
+            if (nextTile < 0 || mapInfo[nextTile].Length < 1)
+            {
+                mapTiles[i].ResetLayerSprite(layer);
+                continue;
+            }
+            mapTiles[i].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(mapInfo[nextTile]), layer);
+        }
+    }
     
     public void DisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles, bool updateDirections = false, List<string> actorDirections = null)
     {
@@ -14,7 +29,7 @@ public class MapDisplayer : ScriptableObject
         for (int i = 0; i < (mapTiles.Count); i++)
         {
             nextTile = currentTiles[i];
-            if (nextTile < 0 || mapInfo[i].Length < 1)
+            if (nextTile < 0 || mapInfo[nextTile].Length < 1)
             {
                 mapTiles[i].ResetLayerSprite(layer);
                 continue;
