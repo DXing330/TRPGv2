@@ -7,16 +7,21 @@ public class DungeonMap : MapManager
     public int maxDistanceFromCenter = 3;
     public Dungeon dungeon;
     // 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
+    protected override void Start()
+    {
+        GenerateDungeonMap();
+    }
 
     public void GenerateDungeonMap()
     {
+        // Need a specialize dungeon map maker or get it from excel.
+        dungeon.MakeDungeon();
+        mapSize = dungeon.GetDungeonSize();
         InitializeEmptyList();
         dungeon.UpdateEmptyTiles(emptyList);
-        // Need a specialize dungeon map maker or get it from excel.
-        dungeon.SetFloorTiles(MakeRandomMap());
+        //dungeon.SetFloorTiles(MakeRandomMap());
         // Spawn point should be the ladder up location.
-        dungeon.SetPartyLocation(mapUtility.DetermineCenterTile(mapSize));
-        dungeon.UpdatePartyLocations();
+        centerTile = dungeon.GetPartyLocation();
         UpdateMap();
     }
 
@@ -26,14 +31,20 @@ public class DungeonMap : MapManager
         {
             centerTile = newTile;
         }
-        dungeon.MovePartyLocation(newTile);
+        if (dungeon.stairsDownLocation(newTile))
+        {
+            dungeon.MoveFloors();
+            // This doesn't update the center when moving between dungeons for some reason.
+            centerTile = dungeon.GetPartyLocation();
+        }
+        else{dungeon.MovePartyLocation(newTile);}
         UpdateMap();
     }
 
     public void MoveInDirection(int direction)
     {
         int newTile = mapUtility.PointInDirection(dungeon.GetPartyLocation(), direction, mapSize);
-        if (newTile < 0 || newTile == dungeon.GetPartyLocation()){return;}
+        if (newTile < 0 || newTile == dungeon.GetPartyLocation() || !dungeon.TilePassable(newTile)){return;}
         MoveToTile(newTile);
     }
 

@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -138,5 +141,20 @@ public class GeneralUtility : ScriptableObject
             QuickSortByIntStringList(toSort, intStrings, i, right);
         }
         return toSort;
+    }
+
+    public string ConvertIntListToString(List<int> int_list, string delimiter = "|")
+    {
+        List<string> string_list = new List<string>();
+        for (int i = 0; i < int_list.Count; i++)
+        {
+            string_list.Add(int_list[i].ToString());
+        }
+        return ConvertListToString(string_list, delimiter);
+    }
+
+    public string ConvertListToString(List<string> string_list, string delimiter = "|")
+    {
+        return String.Join(delimiter, string_list);
     }
 }

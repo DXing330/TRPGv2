@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,9 +6,33 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Dungeon", menuName = "ScriptableObjects/Dungeons/Dungeon", order = 1)]
 public class Dungeon : ScriptableObject
 {
+    public DungeonGenerator dungeonGenerator;
+    public int dungeonSize;
+    public int GetDungeonSize(){return dungeonSize;}
+    public void MakeDungeon()
+    {
+        List<string> newDungeon = dungeonGenerator.GenerateDungeon();
+        dungeonSize = dungeonGenerator.GetSize();
+        currentFloorTiles = newDungeon[0].Split("|").ToList();
+        for (int i = 0; i < currentFloorTiles.Count; i++)
+        {
+            if (currentFloorTiles[i] == "1")
+            {
+                currentFloorTiles[i] = type;
+            }
+            else
+            {
+                currentFloorTiles[i] = passableTileType;
+            }
+        }
+        partyLocation = int.Parse(newDungeon[1]);
+        stairsDown = int.Parse(newDungeon[2]);
+        UpdatePartyLocations();
+    }
     // List of dungeons and their stats.
     //public StatDatabase dungeonData;
-    public string type;
+    public string type = "Forest";
+    public string passableTileType = "Plains";
     public int maxFloors;
     public int currentFloor;
     // QUESTS and other stuff.
@@ -33,13 +58,18 @@ public class Dungeon : ScriptableObject
         {
             partyLocations[allEnemies[i].GetLocation()] = allEnemies[i].GetSpriteName();
         }
-        // Hardcoded KEK.
         partyLocations[partyLocation] = partySprite;
+        partyLocations[stairsDown] = stairsDownSprite;
     }
     public List<DungeonEnemy> allEnemies;
     public List<DungeonTreasure> allTreasure;
-    public int currentStairsDown;
-    public int currentStairsUp;
+    public int stairsDown;
+    public bool stairsDownLocation(int nextTile)
+    {
+        return nextTile == stairsDown;
+    }
+    public string stairsDownSprite = "LadderDown";
+    public int stairsUp;
     public int partyLocation;
     public string partySprite = "Player";
     public int GetPartyLocation(){return partyLocation;}
@@ -53,11 +83,32 @@ public class Dungeon : ScriptableObject
         partyLocations[partyLocation] = "";
         partyLocations[newLocation] = partySprite;
         partyLocation = newLocation;
+        if (newLocation == stairsDown){MoveFloors();}
+    }
+
+    public bool TilePassable(int tileNumber)
+    {
+        return currentFloorTiles[tileNumber] == passableTileType;
     }
 
     public void SpawnEnemy(){}
 
-    public void MoveFloors(bool increase = true){}
+    public void MoveFloors(bool increase = true)
+    {
+        if (increase)
+        {
+            currentFloor++;
+            if (currentFloor > maxFloors)
+            {
+                CompleteDungeon();
+                return;
+            }
+        }
+        MakeDungeon();
+    }
 
-    public void CompleteDungeon(){}
+    public void CompleteDungeon()
+    {
+        // move to dungeon reward scene.
+    }
 }
