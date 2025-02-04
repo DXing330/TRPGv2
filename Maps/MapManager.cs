@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
+    public LoadingScreen loadingScreen;
     public MapUtility mapUtility;
     public MapCurrentTiles currentTileManager;
     public MapMaker mapMaker;

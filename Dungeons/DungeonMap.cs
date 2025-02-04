@@ -36,9 +36,13 @@ public class DungeonMap : MapManager
             dungeon.MoveFloors();
             // This doesn't update the center when moving between dungeons for some reason.
             centerTile = dungeon.GetPartyLocation();
+            StartCoroutine(MoveFloors());
         }
-        else{dungeon.MovePartyLocation(newTile);}
-        UpdateMap();
+        else
+        {
+            dungeon.MovePartyLocation(newTile);
+            UpdateMap();
+        }
     }
 
     public void MoveInDirection(int direction)
@@ -59,5 +63,25 @@ public class DungeonMap : MapManager
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, dungeon.currentFloorTiles, currentTiles);
         UpdateActors();
+    }
+
+    IEnumerator MoveFloors()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (i == 0)
+            {
+                loadingScreen.StartLoadingScreen();
+            }
+            if (i == 1)
+            {
+                UpdateMap();
+            }
+            if (i == 2)
+            {
+                loadingScreen.FinishLoadingScreen();
+            }
+            yield return new WaitForSeconds(loadingScreen.totalFadeTime);
+        }
     }
 }
