@@ -35,6 +35,7 @@ public class DungeonGenerator : ScriptableObject
         int end = GetRandomPointInRoom(Random.Range(0, roomDetails.Count));
         // Get treasure locations.
             // Inside 1+ randomly selected room(s).
+        ConnectPoints(start, end);
         int treasure = GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end);
         // Put traps inside rooms.
             // Explosives, poison, fire, spikes, etc.

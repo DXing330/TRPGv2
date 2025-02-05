@@ -12,7 +12,7 @@ public class BattleMap : MapManager
     {
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
-        base.Start();
+        //base.Start();
     }
     public BattleManager battleManager;
     public List<TacticActor> battlingActors;

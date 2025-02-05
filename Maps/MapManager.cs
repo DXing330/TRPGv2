@@ -30,7 +30,6 @@ public class MapManager : MonoBehaviour
     }
     public int mapSize;
     public int gridSize;
-    public int startTile;
     public int centerTile;
 
     protected virtual void Start()

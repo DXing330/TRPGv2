@@ -22,6 +22,14 @@ public class MapDisplayer : ScriptableObject
             mapTiles[i].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(mapInfo[nextTile]), layer);
         }
     }
+
+    public void ResetCurrentTiles(List<MapTile> mapTiles)
+    {
+        for (int i = 0; i < (mapTiles.Count); i++)
+        {
+            mapTiles[i].ResetLayerSprite(layer);
+        }
+    }
     
     public void DisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles, bool updateDirections = false, List<string> actorDirections = null)
     {

@@ -9,6 +9,6 @@ public class DungeonMapTester : MonoBehaviour
     [ContextMenu("Make Test Dungeon")]
     public void MakeTestDungeon()
     {
-        dungeonMap.GenerateDungeonMap();
+        //dungeonMap.GenerateDungeonMap();
     }
 }

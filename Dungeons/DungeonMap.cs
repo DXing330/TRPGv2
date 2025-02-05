@@ -7,7 +7,7 @@ public class DungeonMap : MapManager
     public int maxDistanceFromCenter = 3;
     public Dungeon dungeon;
     // 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
-    protected override void Start()
+    /*protected override void Start()
     {
         GenerateDungeonMap();
     }
@@ -21,6 +21,15 @@ public class DungeonMap : MapManager
         dungeon.UpdateEmptyTiles(emptyList);
         //dungeon.SetFloorTiles(MakeRandomMap());
         // Spawn point should be the ladder up location.
+        centerTile = dungeon.GetPartyLocation();
+        UpdateMap();
+    }*/
+
+    protected override void Start()
+    {
+        mapSize = dungeon.GetDungeonSize();
+        InitializeEmptyList();
+        dungeon.UpdateEmptyTiles(emptyList);
         centerTile = dungeon.GetPartyLocation();
         UpdateMap();
     }
@@ -55,6 +64,7 @@ public class DungeonMap : MapManager
     public void UpdateActors()
     {
         // Get party/enemies from dungeon.
+        mapDisplayers[1].ResetCurrentTiles(mapTiles);
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, dungeon.partyLocations, currentTiles);
     }
 

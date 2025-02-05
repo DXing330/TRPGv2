@@ -10,6 +10,11 @@ public class LoadingScreen : MonoBehaviour
     public int fadeFrames = 6;
     public float totalFadeTime = 1.0f;
 
+    protected virtual void Start()
+    {
+        StartCoroutine(FadeFromBlack());
+    }
+
     public void SetTransparent()
     {
         int i = 0;

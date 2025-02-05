@@ -9,7 +9,10 @@ public class SceneTracker : SavedData
 {
     public List<string> sceneNames;
     public string previousScene;
-    public void SetPreviousScene(string sceneName){previousScene = sceneName;}
+    public void SetPreviousScene(string sceneName)
+    {
+        previousScene = sceneName;
+    }
     public string GetPreviousScene(){return previousScene;}
     public string defaultScene;
     public void SetDefaultScene(string sceneName){defaultScene = sceneName;}

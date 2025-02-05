@@ -11,9 +11,14 @@ public class DungeonEnemy : MonoBehaviour
     public bool chasing = false;
     public void StartChasing(){chasing = true;}
     public string spriteName;
+    public void SetSpriteName(string enemyName){spriteName = enemyName;}
     public string GetSpriteName(){return spriteName;}
     public List<string> enemies;
-    public void AddEnemy(string enemyName){enemies.Add(enemyName);}
+    public void AddEnemy(string enemyName)
+    {
+        if (GetSpriteName().Length < 2){SetSpriteName(enemyName);}
+        enemies.Add(enemyName);
+    }
 
     public void SetStatsFromString(string newStats)
     {

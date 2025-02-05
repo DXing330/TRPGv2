@@ -67,6 +67,8 @@ public class MapMaker : ScriptableObject
             return AddForest(originalMap, featureType, patternSpecifics);
             case "Wall":
             return AddWall(originalMap, featureType, patternSpecifics);
+            case "Border":
+            return AddBorder(originalMap, featureType, patternSpecifics);
         }
         return originalMap;
     }
@@ -110,6 +112,38 @@ public class MapMaker : ScriptableObject
             newPoint = mapUtility.RandomPointDown(currentPoint, mapSize);
             if (newPoint == currentPoint){break;}
             currentPoint = newPoint;
+        }
+        return originalMap;
+    }
+
+    // Borders are along the edges of the map.
+    protected List<string> AddBorder(List<string> originalMap, string featureType, string specifics)
+    {
+        int currentPoint = 0;
+        originalMap[currentPoint] = featureType;
+        // Top
+        for (int i = 0; i < mapSize-1; i++)
+        {
+            currentPoint++;
+            originalMap[currentPoint] = featureType;
+        }
+        // Right
+        for (int i = 0; i < mapSize-1; i++)
+        {
+            currentPoint += mapSize;
+            originalMap[currentPoint] = featureType;
+        }
+        // Bottom
+        for (int i = 0; i < mapSize-1; i++)
+        {
+            currentPoint--;
+            originalMap[currentPoint] = featureType;
+        }
+        // Left
+        for (int i = 0; i < mapSize-1; i++)
+        {
+            currentPoint -= mapSize;
+            originalMap[currentPoint] = featureType;
         }
         return originalMap;
     }
