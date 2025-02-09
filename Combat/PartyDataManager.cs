@@ -117,7 +117,12 @@ public class PartyDataManager : MonoBehaviour
                 allParties[partyIndex].SetCurrentStats(stats[i], memberIndex);
             }
         }
+        // Main/Permanent Parties Members Survive With 1 HP, Main Character Power Style
+        permanentPartyData.ReviveDefeatedMembers();
+        mainPartyData.ReviveDefeatedMembers();
         tempPartyData.RemoveDefeatedMembers();
+        // TODO: This isn't working inside the dungeon, party health isn't being tracked.
+        SetFullParty();
     }
 
     public void PartyDefeated()

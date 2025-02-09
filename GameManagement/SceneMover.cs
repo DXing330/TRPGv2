@@ -22,8 +22,38 @@ public class SceneMover : MonoBehaviour
         }
     }
 
+    public void MoveToBattle()
+    {
+        sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        if (loadingRequired)
+        {
+            StartCoroutine(LoadingScreenMoveScene("BattleScene"));
+        }
+        else
+        {
+            StartCoroutine(LoadAsyncScene("BattleScene"));
+        }
+    }
+
+    public void ReturnFromDungeon(bool clear = true)
+    {
+        // TODO: Go to victory screen.
+        // For now just go back to hub.
+        if (loadingRequired)
+        {
+            StartCoroutine(LoadingScreenMoveScene("Hub"));
+        }
+        else
+        {
+            StartCoroutine(LoadAsyncScene("Hub"));
+        }
+    }
+
     public void ReturnFromBattle(int victory = 0)
     {
+        // If you lose go somewhere else.
+        //if (victory != 0)
+        //else
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(sceneTracker.GetPreviousScene()));

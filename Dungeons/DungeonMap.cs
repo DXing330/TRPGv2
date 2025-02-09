@@ -6,24 +6,8 @@ public class DungeonMap : MapManager
 {
     public int maxDistanceFromCenter = 3;
     public Dungeon dungeon;
-    // 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
-    /*protected override void Start()
-    {
-        GenerateDungeonMap();
-    }
-
-    public void GenerateDungeonMap()
-    {
-        // Need a specialize dungeon map maker or get it from excel.
-        dungeon.MakeDungeon();
-        mapSize = dungeon.GetDungeonSize();
-        InitializeEmptyList();
-        dungeon.UpdateEmptyTiles(emptyList);
-        //dungeon.SetFloorTiles(MakeRandomMap());
-        // Spawn point should be the ladder up location.
-        centerTile = dungeon.GetPartyLocation();
-        UpdateMap();
-    }*/
+    public SceneMover sceneMover;
+    // layers: 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
 
     protected override void Start()
     {
@@ -40,12 +24,20 @@ public class DungeonMap : MapManager
         {
             centerTile = newTile;
         }
-        if (dungeon.stairsDownLocation(newTile))
+        if (dungeon.StairsDownLocation(newTile))
         {
             dungeon.MoveFloors();
             // This doesn't update the center when moving between dungeons for some reason.
             centerTile = dungeon.GetPartyLocation();
             StartCoroutine(MoveFloors());
+        }
+        else if (dungeon.EnemyLocation(newTile))
+        {
+            dungeon.PrepareBattle(newTile);
+            dungeon.MovePartyLocation(newTile);
+            // Move to battle scene.
+            sceneMover.MoveToBattle();
+            // TODO ISSUES when returning from battle
         }
         else
         {

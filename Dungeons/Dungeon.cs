@@ -8,7 +8,7 @@ using UnityEngine;
 public class Dungeon : ScriptableObject
 {
     public DungeonGenerator dungeonGenerator;
-    public DungeonEnemy enemyPrefab;
+    public CharacterList enemyList;
     public int dungeonSize;
     public int GetDungeonSize(){return dungeonSize;}
     public void MakeDungeon()
@@ -39,6 +39,7 @@ public class Dungeon : ScriptableObject
         string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
         currentFloor = 0;
         spawnCounter = 0;
+        ResetAllEnemies();
         maxFloors = int.Parse(dungeonInfo[0]);
         type = dungeonInfo[1];
         possibleEnemies = dungeonInfo[2].Split(",").ToList();
@@ -74,18 +75,35 @@ public class Dungeon : ScriptableObject
     {
         // Make a new list.
         partyLocations = new List<string>(allEmptyTiles);
-        for (int i = 0; i < allEnemies.Count; i++)
+        for (int i = 0; i < allEnemyLocations.Count; i++)
         {
-            partyLocations[allEnemies[i].GetLocation()] = allEnemies[i].GetSpriteName();
+            partyLocations[allEnemyLocations[i]] = allEnemySprites[i];
         }
         partyLocations[partyLocation] = partySprite;
         partyLocations[stairsDown] = stairsDownSprite;
     }
-    public List<DungeonEnemy> allEnemies;
-    public List<string> allEnemyStrings;
+    protected void ResetAllEnemies()
+    {
+        allEnemySprites.Clear();
+        allEnemyParties.Clear();
+        allEnemyLocations.Clear();
+    }
+    protected void RemoveEnemyAtIndex(int indexOf)
+    {
+        allEnemySprites.RemoveAt(indexOf);
+        allEnemyParties.RemoveAt(indexOf);
+        allEnemyLocations.RemoveAt(indexOf);
+    }
+    public List<string> allEnemySprites;
+    public List<string> allEnemyParties;
+    public List<int> allEnemyLocations;
+    public bool EnemyLocation(int nextTile)
+    {
+        return allEnemyLocations.Contains(nextTile);
+    }
     public List<DungeonTreasure> allTreasure;
     public int stairsDown;
-    public bool stairsDownLocation(int nextTile)
+    public bool StairsDownLocation(int nextTile)
     {
         return nextTile == stairsDown;
     }
@@ -107,6 +125,20 @@ public class Dungeon : ScriptableObject
         TryToSpawnEnemy();
         if (newLocation == stairsDown){MoveFloors();}
     }
+    public void PrepareBattle(int tileLocation)
+    {
+        // Determine which enemy party to use.
+        int indexOf = allEnemyLocations.IndexOf(tileLocation);
+        if (indexOf == -1){return;}
+        // Use that enemy to determine the enemy party.
+        enemyList.SetLists(allEnemyParties[indexOf].Split("|").ToList());
+        // Remove the enemy on that location.
+        RemoveEnemyAtIndex(indexOf);
+    }
+    public void EnemyBeginsBattle(int enemyIndex)
+    {
+
+    }
     public bool TilePassable(int tileNumber)
     {
         return currentFloorTiles[tileNumber] == passableTileType;
@@ -114,7 +146,8 @@ public class Dungeon : ScriptableObject
     public void TryToSpawnEnemy()
     {
         spawnCounter++;
-        int spawnCheck = Random.Range(0, dungeonSize);
+        // If you're lucky enemies will never spawn.
+        int spawnCheck = Random.Range(0, dungeonSize + spawnCounter);
         if (spawnCheck < spawnCounter)
         {
             SpawnEnemy();
@@ -125,15 +158,19 @@ public class Dungeon : ScriptableObject
     {
         int spawnLocation = FindEmptyTile();
         if (spawnLocation == -1){return;}
-        DungeonEnemy newEnemy = Instantiate(enemyPrefab, new Vector3(0,0,0), new Quaternion(0, 0, 0, 0));
         int enemyCount = Random.Range(minEnemies, maxEnemies + 1);
+        string enemyString = "";
         for (int i = 0; i < enemyCount; i++)
         {
-            newEnemy.AddEnemy(possibleEnemies[Random.Range(0, possibleEnemies.Count)]);
+            enemyString += possibleEnemies[Random.Range(0, possibleEnemies.Count)];
+            // The first one is the sprite.
+            if (i < enemyCount - 1){enemyString += "|";}
         }
-        newEnemy.SetLocation(spawnLocation);
-        partyLocations[spawnLocation] = newEnemy.GetSpriteName();
-        allEnemies.Add(newEnemy);
+        string[] allEnemies = enemyString.Split("|");
+        allEnemySprites.Add(allEnemies[0]);
+        allEnemyLocations.Add(spawnLocation);
+        allEnemyParties.Add(enemyString);
+        partyLocations[spawnLocation] = allEnemySprites[allEnemySprites.Count - 1];
     }
     protected int FindEmptyTile()
     {
@@ -159,7 +196,7 @@ public class Dungeon : ScriptableObject
             }
         }
         MakeDungeon();
-        allEnemies.Clear();
+        ResetAllEnemies();
         spawnCounter = 0;
         UpdatePartyLocations();
     }

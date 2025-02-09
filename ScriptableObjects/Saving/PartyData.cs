@@ -46,6 +46,20 @@ public class PartyData : SavedData
         }
     }
 
+    public void ReviveDefeatedMembers()
+    {
+        for (int i = 0; i < partybaseStats.Count; i++)
+        {
+            // Don't keep track of empty members.
+            if (partybaseStats[i].Length < 1){continue;}
+            if (partyCurrentStats[i].Length < 1)
+            {
+                partyCurrentStats[i] = "1";
+                continue;
+            }
+        }
+    }
+
     public void RemoveDefeatedMembers()
     {
         for (int i = partyCurrentStats.Count - 1; i >= 0; i--)
@@ -143,7 +157,7 @@ public class PartyData : SavedData
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
         partybaseStats = utility.RemoveEmptyListItems(partybaseStats);
-        partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
+        //partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
     }
 
     public List<string> GetStats(string joiner = "|")

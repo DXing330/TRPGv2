@@ -31,9 +31,13 @@ public class CharacterList : ScriptableObject
 
     public void AddToParty(List<string> newMembers, List<string> newStats, List<string> newNames, List<string> newEquipment)
     {
-        characterNames.AddRange(newNames);
-        characters.AddRange(newMembers);
-        stats.AddRange(newStats);
-        equipment.AddRange(newEquipment);
+        for (int i = 0; i < newMembers.Count; i++)
+        {
+            if (newMembers[i].Length < 1){continue;}
+            characterNames.Add(newMembers[i]);
+            characters.Add(newMembers[i]);
+            stats.Add(newStats[i]);
+            equipment.Add(newEquipment[i]);
+        }
     }
 }
