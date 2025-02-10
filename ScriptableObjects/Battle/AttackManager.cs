@@ -33,7 +33,7 @@ public class AttackManager : ScriptableObject
 
     protected int RollAttackDamage(int baseAttack)
     {
-        return Random.Range(0, baseAttack) + baseAttack/2;
+        return baseAttack + Random.Range(-baseAttack/3, baseAttack/3);
     }
 
     protected int Advantage(int baseAttack, int advantage)
