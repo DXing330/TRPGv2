@@ -216,6 +216,37 @@ public class PartyData : SavedData
         return oldEquip;
     }
 
+    public string UnequipFromMember(int memberIndex, string slot, Equipment dummyEquip)
+    {
+        Debug.Log("Before Unequipping");
+        Debug.Log(partyEquipment[memberIndex]);
+        string oldEquip = "";
+        List<string> currentEquipment = partyEquipment[memberIndex].Split("@").ToList();
+        for (int i = 0; i < currentEquipment.Count; i++)
+        {
+            if (currentEquipment[i].Length < 6){continue;}
+            dummyEquip.SetAllStats(currentEquipment[i]);
+            if (slot == dummyEquip.GetSlot())
+            {
+                oldEquip = currentEquipment[i];
+                currentEquipment.RemoveAt(i);
+                break;
+            }
+        }
+        partyEquipment[memberIndex] = "";
+        for (int i = 0; i < currentEquipment.Count; i++)
+        {
+            partyEquipment[memberIndex] += currentEquipment[i];
+            if (i < currentEquipment.Count - 1)
+            {
+                partyEquipment[memberIndex] += "@";
+            }
+        }
+        Debug.Log("After Unequipping");
+        Debug.Log(partyEquipment[memberIndex]);
+        return oldEquip;
+    }
+
     public bool PartyMemberIncluded(string memberName)
     {
         return (partyNames.Contains(memberName));

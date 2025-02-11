@@ -60,6 +60,25 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public string UnequipFromPartyMember(int selected, string slot, Equipment dummy)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            return permanentPartyData.UnequipFromMember(selected, slot, dummy);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            return mainPartyData.UnequipFromMember(selected - permanentCount, slot, dummy);
+        }
+        else
+        {
+            return tempPartyData.UnequipFromMember(selected - permanentCount - mainCount, slot, dummy);
+        }
+    }
+
     public string ReturnPartyMemberEquipFromIndex(int selected)
     {
         int permanentCount = permanentPartyData.PartyCount();

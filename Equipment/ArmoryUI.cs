@@ -26,6 +26,7 @@ public class ArmoryUI : MonoBehaviour
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+        actorEquipment.ResetSelected();
     }
 
     public void ViewPassiveDetails()
@@ -40,6 +41,7 @@ public class ArmoryUI : MonoBehaviour
     public void BeginSelectingEquipment()
     {
         if (allActors.GetSelected() < 0){return;}
+        if (actorEquipment.GetSelected() < 0){return;}
         switch (actorEquipment.GetSelected())
         {
             case 0:
@@ -91,6 +93,29 @@ public class ArmoryUI : MonoBehaviour
         // get the old equip back and pass it to the equip inventory
         equipmentInventory.AddEquipmentByStats(oldEquip);
         // close the screen.
+        EndSelectingEquipment();
+    }
+
+    public void UnequipSelected()
+    {
+        if (allActors.GetSelected() < 0){return;}
+        if (actorEquipment.GetSelected() < 0){return;}
+        string slot = "";
+        switch (actorEquipment.GetSelected())
+        {
+            case 0:
+            slot = "Weapon";
+            break;
+            case 1:
+            slot = "Armor";
+            break;
+            case 2:
+            slot = "Charm";
+            break;
+        }
+        string oldEquip = partyData.UnequipFromPartyMember(allActors.GetSelected(), slot, dummyEquip);
+        equipmentInventory.AddEquipmentByStats(oldEquip);
+        actorEquipment.ResetSelected();
         EndSelectingEquipment();
     }
 }

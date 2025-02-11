@@ -24,8 +24,18 @@ public class SelectStatTextList : StatTextList
     {
         statTexts[index].SetColor(colors.GetColor(color));
     }
+    public void HighlightSelected(string color = "Highlight")
+    {
+        ResetHighlights();
+        if (GetSelected() < 0){return;}
+        statTexts[GetSelected()].SetColor(colors.GetColor(color));
+    }
     public int selectedIndex;
-    public void ResetSelected(){selectedIndex = -1;}
+    public void ResetSelected()
+    {
+        selectedIndex = -1;
+        ResetHighlights();
+    }
     public void Select(int index)
     {
         selectedIndex = index + (page*objects.Count);
