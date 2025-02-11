@@ -20,6 +20,7 @@ public class ActorPathfinder : MapPathfinder
     {
         List<int> path = new List<int>();
         path.Add(endIndex);
+        if (startIndex == endIndex){return path;}
         int nextTile = -1;
         for (int i = 0; i < distances.Count; i++)
         {

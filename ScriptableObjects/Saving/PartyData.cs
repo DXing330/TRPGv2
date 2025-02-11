@@ -157,7 +157,7 @@ public class PartyData : SavedData
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
         partybaseStats = utility.RemoveEmptyListItems(partybaseStats);
-        //partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
+        partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
     }
 
     public List<string> GetStats(string joiner = "|")

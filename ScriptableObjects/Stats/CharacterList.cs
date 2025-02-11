@@ -40,4 +40,14 @@ public class CharacterList : ScriptableObject
             equipment.Add(newEquipment[i]);
         }
     }
+
+    public void AddCharacters(List<string> newCharacters, List<string> newStats = null, List<string> newNames = null, List<string> newEquipment = null)
+    {
+        for (int i = 0; i < newCharacters.Count; i++)
+        {
+            if (newCharacters[i].Length < 1){continue;}
+            characters.Add(newCharacters[i]);
+            // Add the other stuff later in harder dungeons/fights.
+        }
+    }
 }

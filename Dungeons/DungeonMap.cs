@@ -26,6 +26,11 @@ public class DungeonMap : MapManager
         }
         if (dungeon.StairsDownLocation(newTile))
         {
+            if (dungeon.FinalFloor())
+            {
+                sceneMover.ReturnFromDungeon();
+                return;
+            }
             dungeon.MoveFloors();
             // This doesn't update the center when moving between dungeons for some reason.
             centerTile = dungeon.GetPartyLocation();
@@ -37,11 +42,19 @@ public class DungeonMap : MapManager
             dungeon.MovePartyLocation(newTile);
             // Move to battle scene.
             sceneMover.MoveToBattle();
-            // TODO ISSUES when returning from battle
         }
         else
         {
             dungeon.MovePartyLocation(newTile);
+            // Check if any enemies moved onto the player.
+            if (dungeon.EnemyLocation(newTile))
+            {
+                // Move to battle if they did.
+                dungeon.EnemyBeginsBattle();
+                UpdateMap();
+                sceneMover.MoveToBattle();
+                return;
+            }
             UpdateMap();
         }
     }
