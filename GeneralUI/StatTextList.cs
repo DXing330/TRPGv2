@@ -22,6 +22,31 @@ public class StatTextList : GameObjectTextList
     public TMP_Text title;
     public void SetTitle(string newTitle){title.text = newTitle;}
     public List<StatTextText> statTexts;
+
+    public void SetStatsAndData(List<string> newStats, List<string> newData)
+    {
+        stats = newStats;
+        data = newData;
+        page = 0;
+        if (stats.Count > statTexts.Count)
+        {
+            EnableChangePage();
+        }
+        UpdateCurrentPageStatTexts();
+    }
+
+    protected void UpdateCurrentPageStatTexts()
+    {
+        ResetPage();
+        List<int> newPageIndices = new List<int>(utility.GetCurrentPageIndices(page, objects, data));
+        for (int i = 0; i < newPageIndices.Count; i++)
+        {
+            objects[i].SetActive(true);
+            statTexts[i].SetStatText(stats[newPageIndices[i]]);
+            statTexts[i].SetText(data[newPageIndices[i]]);
+        }
+    }
+
     protected override void UpdateCurrentPage()
     {
         ResetPage();
@@ -29,7 +54,8 @@ public class StatTextList : GameObjectTextList
         for (int i = 0; i < newPageIndices.Count; i++)
         {
             objects[i].SetActive(true);
-            statTexts[i].SetStatText(stats[i]);
+            statTexts[i].SetStatText(stats[newPageIndices[i]]);
+
         }
     }
     protected override void ResetPage()

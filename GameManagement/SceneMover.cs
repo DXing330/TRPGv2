@@ -38,14 +38,28 @@ public class SceneMover : MonoBehaviour
     public void ReturnFromDungeon(bool clear = true)
     {
         // TODO: Go to victory screen.
-        // For now just go back to hub.
-        if (loadingRequired)
+        if (clear)
         {
-            StartCoroutine(LoadingScreenMoveScene("Hub"));
+            if (loadingRequired)
+            {
+                StartCoroutine(LoadingScreenMoveScene("DungeonRewards"));
+            }
+            else
+            {
+                StartCoroutine(LoadAsyncScene("DungeonRewards"));
+            }
         }
         else
         {
-            StartCoroutine(LoadAsyncScene("Hub"));
+            // For now just go back to hub.
+            if (loadingRequired)
+            {
+                StartCoroutine(LoadingScreenMoveScene("Hub"));
+            }
+            else
+            {
+                StartCoroutine(LoadAsyncScene("Hub"));
+            }
         }
     }
 

@@ -14,6 +14,7 @@ public class Dungeon : ScriptableObject
     public int GetDungeonSize(){return dungeonSize;}
     public void MakeDungeon()
     {
+        dungeonGenerator.SetTreasureCount(1+(currentFloor/2));
         List<string> newDungeon = dungeonGenerator.GenerateDungeon();
         dungeonSize = dungeonGenerator.GetSize();
         pathfinder.SetMapSize(dungeonSize);
@@ -35,6 +36,11 @@ public class Dungeon : ScriptableObject
         }
         SetPartyLocation(int.Parse(newDungeon[1]));
         stairsDown = int.Parse(newDungeon[2]);
+        List<string> tLoc = newDungeon[3].Split("|").ToList();
+        for (int i = 0; i < tLoc.Count; i++)
+        {
+            treasureLocations.Add(int.Parse(tLoc[i]));
+        }
     }
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
@@ -44,6 +50,7 @@ public class Dungeon : ScriptableObject
         dungeonName = newName;
         string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
         currentFloor = 0;
+        treasuresAcquired = 0;
         spawnCounter = 0;
         ResetAllEnemies();
         maxFloors = int.Parse(dungeonInfo[0]);
@@ -51,8 +58,11 @@ public class Dungeon : ScriptableObject
         possibleEnemies = dungeonInfo[2].Split(",").ToList();
         minEnemies = int.Parse(dungeonInfo[3]);
         maxEnemies = int.Parse(dungeonInfo[4]);
+        treasures = dungeonInfo[5].Split(",").ToList();
+        maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
     }
     public List<string> treasures;
+    public List<string> maxPossibleTreasureQuantities;
     public List<string> possibleEnemies;
     public bool fastSpawn = false;
     public int minEnemies;
@@ -61,6 +71,8 @@ public class Dungeon : ScriptableObject
     public string passableTileType = "Plains";
     public int maxFloors;
     public int currentFloor;
+    public int treasuresAcquired;
+    public int GetTreasuresAcquired(){return treasuresAcquired;}
     public int spawnCounter;
     // QUESTS and other stuff.
     // Store all the floors, incase you can go up or down floors?
@@ -83,6 +95,10 @@ public class Dungeon : ScriptableObject
     {
         // Make a new list.
         partyLocations = new List<string>(allEmptyTiles);
+        for (int i = 0; i < treasureLocations.Count; i++)
+        {
+            partyLocations[treasureLocations[i]] = treasureSprite;
+        }
         for (int i = 0; i < allEnemyLocations.Count; i++)
         {
             partyLocations[allEnemyLocations[i]] = allEnemySprites[i];
@@ -109,7 +125,23 @@ public class Dungeon : ScriptableObject
     {
         return allEnemyLocations.Contains(nextTile);
     }
-    public List<DungeonTreasure> allTreasure;
+    public List<int> treasureLocations;
+    public bool TreasureLocation(int nextTile)
+    {
+        return treasureLocations.Contains(nextTile);
+    }
+    public void ClaimTreasure()
+    {
+        for (int i = treasureLocations.Count- 1; i >= 0; i--)
+        {
+            if (treasureLocations[i] == partyLocation)
+            {
+                treasureLocations.RemoveAt(i);
+                treasuresAcquired++;
+            }
+        }
+    }
+    public string treasureSprite;
     public int stairsDown;
     public bool StairsDownLocation(int nextTile)
     {
@@ -134,6 +166,10 @@ public class Dungeon : ScriptableObject
         partyLocations[partyLocation] = "";
         partyLocation = newLocation;
         partyLocations[partyLocation] = partySprite;
+        if (TreasureLocation(partyLocation))
+        {
+            ClaimTreasure();
+        }
         MoveEnemies();
         TryToSpawnEnemy();
         if (partyLocation == stairsDown){MoveFloors();}

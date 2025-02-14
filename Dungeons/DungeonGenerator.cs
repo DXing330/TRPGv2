@@ -8,6 +8,8 @@ public class DungeonGenerator : ScriptableObject
 {
     public GeneralUtility utility;
     public MapUtility mapUtility;
+    public int treasureCount = 1;
+    public void SetTreasureCount(int newAmount){treasureCount = newAmount;}
     public int size;
     public int GetSize(){return size;}
     protected int minSize = 36;
@@ -36,7 +38,11 @@ public class DungeonGenerator : ScriptableObject
         // Get treasure locations.
             // Inside 1+ randomly selected room(s).
         ConnectPoints(start, end);
-        int treasure = GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end);
+        List<int> treasureLocations = new List<int>();
+        for (int i = 0; i < treasureCount; i++)
+        {
+            treasureLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, treasureLocations));
+        }
         // Put traps inside rooms.
             // Explosives, poison, fire, spikes, etc.
         // Get enemies.
@@ -45,15 +51,22 @@ public class DungeonGenerator : ScriptableObject
         dungeonData.Add(utility.ConvertIntListToString(allTiles));
         dungeonData.Add(start.ToString());
         dungeonData.Add(end.ToString());
-        dungeonData.Add(treasure.ToString());
+        dungeonData.Add(utility.ConvertIntListToString(treasureLocations));
         return dungeonData;
     }
 
-    protected int GetRandomPointInRoom(int roomNum, int except = -1)
+    protected int GetRandomPointInRoom(int roomNum, int except = -1, List<int> otherExceptions = null)
     {
         List<int> roomTiles = GetRoomTiles(roomDetails[roomNum]);
         int start = roomTiles[Random.Range(0, roomTiles.Count)];
-        if (start == except){return GetRandomPointInRoom(roomNum, except);}
+        if (start == except){return GetRandomPointInRoom(roomNum, except, otherExceptions);}
+        if (otherExceptions != null)
+        {
+            if (otherExceptions.Contains(start))
+            {
+                return (GetRandomPointInRoom(roomNum, except, otherExceptions));
+            }
+        }
         allTiles[start] = 0;
         return start;
     }
@@ -89,9 +102,10 @@ public class DungeonGenerator : ScriptableObject
         // Otherwise try to connect all the room.
         else
         {
+            int centerRoom = Random.Range(0, roomDetails.Count);
             for (int i = 1; i < roomDetails.Count; i++)
             {
-                ConnectRooms(0, i);
+                ConnectRooms(centerRoom, i);
                 ConnectRooms(Random.Range(0, roomDetails.Count), Random.Range(0, roomDetails.Count));
             }
         }
