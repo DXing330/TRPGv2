@@ -259,6 +259,7 @@ public class BattleManager : MonoBehaviour
             }
             if (actorAI.EnemyInAttackableRange(turnActor, turnActor.GetTarget(), moveManager))
             {
+                Debug.Log("EnemyInAttackableRange");
                 if (!actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
                 {
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);

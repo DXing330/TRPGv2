@@ -70,6 +70,19 @@ public class Inventory : SavedData
         return ReturnQuantityOfItem(itemName) > 0;
     }
 
+    public bool QuantityExists(int quantity, string itemName = "Gold")
+    {
+        return ReturnQuantityOfItem(itemName) >= quantity;
+    }
+
+    // Should only be called after confirming that the quantity exists.
+    public void RemoveItemQuantity(int quantity, string itemName = "Gold")
+    {
+        int indexOf = items.IndexOf(itemName);
+        int currentQuantity = int.Parse(quantities[indexOf]);
+        quantities[indexOf] = (currentQuantity - quantity).ToString();
+    }
+
     public void AddItemQuantity(string itemName, int quantity = 1)
     {
         int indexOf = items.IndexOf(itemName);
@@ -83,10 +96,5 @@ public class Inventory : SavedData
             int currentQuantity = int.Parse(quantities[indexOf]);
             quantities[indexOf] = (currentQuantity + quantity).ToString();
         }
-    }
-
-    public bool QuantityExists(string itemName, int quantity)
-    {
-        return ReturnQuantityOfItem(itemName) > quantity;
     }
 }

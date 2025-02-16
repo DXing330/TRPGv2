@@ -102,4 +102,14 @@ public class EquipmentInventory : SavedData
             }
         }
     }
+
+    public int ReturnEquipmentQuantity(string equipmentName)
+    {
+        int quantity = 0;
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            if (dataList[i].StartsWith(equipmentName)){quantity++;}
+        }
+        return quantity;
+    }
 }

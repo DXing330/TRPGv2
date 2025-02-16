@@ -68,7 +68,7 @@ public class TacticActor : ActorStats
     {
         if (current)
         {
-            return (movement + (GetMoveSpeed()*actions-1));
+            return (movement + (GetMoveSpeed()*(actions-1)));
         }
         return GetMoveSpeed();
     }
