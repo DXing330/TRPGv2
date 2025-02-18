@@ -63,4 +63,10 @@ public class StatDatabase : ScriptableObject
         if (indexOf < 0){return "";}
         return values[indexOf];
     }
+
+    public string ReturnRandomValue()
+    {
+        int index = Random.Range(0, values.Count);
+        return values[index];
+    }
 }

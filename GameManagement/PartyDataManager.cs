@@ -8,8 +8,11 @@ public class PartyDataManager : MonoBehaviour
     public StatDatabase actorStats;
     public CharacterList fullParty;
     public List<PartyData> allParties;
+    // For player + familiar.
     public PartyData permanentPartyData;
+    // For hirelings + allies.
     public PartyData mainPartyData;
+    // For quest party members (rescue/escort/etc)
     public PartyData tempPartyData;
     public List<SavedData> otherPartyData;
     public Inventory inventory;
@@ -38,6 +41,12 @@ public class PartyDataManager : MonoBehaviour
     {
         // Don't need stats, just grab base stats.
         tempPartyData.AddMember(name, actorStats.ReturnValue(name), name);
+        SetFullParty();
+    }
+
+    public void HireMember(string name, string stats, string personalName)
+    {
+        mainPartyData.AddMember(name, stats, personalName);
         SetFullParty();
     }
 
@@ -100,7 +109,8 @@ public class PartyDataManager : MonoBehaviour
 
     public int ReturnHealingCost()
     {
-        return 0;
+        int healCost = 0;
+        return healCost;
     }
 
     public void HealParty()
@@ -136,9 +146,9 @@ public class PartyDataManager : MonoBehaviour
                 allParties[partyIndex].SetCurrentStats(stats[i], memberIndex);
             }
         }
-        // Main/Permanent Parties Members Survive With 1 HP, Main Character Power Style
+        // Permanent Parties Members Survive With 1 HP, Main Character Power.
         permanentPartyData.ReviveDefeatedMembers();
-        mainPartyData.ReviveDefeatedMembers();
+        mainPartyData.RemoveDefeatedMembers();
         tempPartyData.RemoveDefeatedMembers();
         // TODO: This isn't working inside the dungeon, party health isn't being tracked.
         SetFullParty();

@@ -8,6 +8,7 @@ using UnityEngine;
 public class PartyData : SavedData
 {
     public GeneralUtility utility;
+    public TacticActor dummyActor;
     public string delimiterTwo;
     public List<string> partyNames;
     public int PartyCount(){return partyNames.Count;}
@@ -27,7 +28,6 @@ public class PartyData : SavedData
     {
         partyCurrentStats[index] = newStats;
     }
-
     public void ClearAllStats()
     {
         partyNames.Clear();
@@ -36,7 +36,6 @@ public class PartyData : SavedData
         partyEquipment.Clear();
         partyCurrentStats.Clear();
     }
-
     public void ClearCurrentStats()
     {
         partyCurrentStats.Clear();
@@ -45,7 +44,6 @@ public class PartyData : SavedData
             partyCurrentStats.Add("");
         }
     }
-
     public void ReviveDefeatedMembers()
     {
         for (int i = 0; i < partybaseStats.Count; i++)
@@ -59,7 +57,6 @@ public class PartyData : SavedData
             }
         }
     }
-
     public void RemoveDefeatedMembers()
     {
         for (int i = partyCurrentStats.Count - 1; i >= 0; i--)
@@ -74,7 +71,6 @@ public class PartyData : SavedData
             }
         }
     }
-
     // This basically acts as full heal, setting all current healths to base healths.
     public void ResetCurrentStats()
     {
@@ -85,7 +81,6 @@ public class PartyData : SavedData
             partyCurrentStats[i] = (splitData[0]);
         }
     }
-
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
@@ -127,7 +122,6 @@ public class PartyData : SavedData
         allData += tempData + delimiter;
         File.WriteAllText(dataPath, allData);
     }
-
     public override void NewGame()
     {
         allData = newGameData;
@@ -141,7 +135,6 @@ public class PartyData : SavedData
         Save();
         Load();
     }
-
     public override void Load()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
@@ -159,7 +152,6 @@ public class PartyData : SavedData
         partybaseStats = utility.RemoveEmptyListItems(partybaseStats);
         partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
     }
-
     public List<string> GetStats(string joiner = "|")
     {
         List<string> stats = new List<string>();
@@ -169,7 +161,6 @@ public class PartyData : SavedData
         }
         return stats;
     }
-
     public List<string> GetEquipmentStats(string joiner = "@")
     {
         /*List<string> stats = new List<string>();
@@ -180,7 +171,6 @@ public class PartyData : SavedData
         return stats;*/
         return partyEquipment;
     }
-
     // Give back the old equipment.
     public string EquipToMember(string equip, int memberIndex, Equipment dummyEquip)
     {
@@ -215,7 +205,6 @@ public class PartyData : SavedData
         Debug.Log(partyEquipment[memberIndex]);
         return oldEquip;
     }
-
     public string UnequipFromMember(int memberIndex, string slot, Equipment dummyEquip)
     {
         string oldEquip = "";
@@ -242,18 +231,15 @@ public class PartyData : SavedData
         }
         return oldEquip;
     }
-
     public bool PartyMemberIncluded(string memberName)
     {
         return (partyNames.Contains(memberName));
     }
-
     public int PartyMemberIndex(string memberName)
     {
         int indexOf = partyNames.IndexOf(memberName);
         return indexOf;
     }
-
     public void AddMember(string spriteName, string stats, string personalName = "")
     {
         partySpriteNames.Add(spriteName);
