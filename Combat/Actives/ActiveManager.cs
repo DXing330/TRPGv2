@@ -72,6 +72,15 @@ public class ActiveManager : MonoBehaviour
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         switch (active.effect)
         {
+            case "Summon":
+            // Check if selected tile is free.
+            int summonLocation = targetedTiles[0];
+            if (battle.map.GetActorOnTile(summonLocation) == null)
+            {
+                // Create a new actor on that location on the same team.
+                battle.SpawnAndAddActor(summonLocation, active.GetSpecifics(), skillUser.GetTeam());
+            }
+            return;
             case "Teleport":
             // Check if selected tile is free.
             int target = targetedTiles[0];

@@ -104,6 +104,7 @@ public class ActorStats : ActorPassives
     }
     public int baseEnergy;
     public void SetBaseEnergy(int newEnergy){baseEnergy = newEnergy;}
+    public int GetBaseEnergy(){return baseEnergy;}
     public int baseAttack;
     public void SetBaseAttack(int newAttack){baseAttack = newAttack;}
     public int GetBaseAttack(){return baseAttack;}
@@ -122,6 +123,10 @@ public class ActorStats : ActorPassives
     public void UpdateBaseDefense(int changeAmount){baseDefense += changeAmount;}
     public int moveSpeed;
     public void SetMoveSpeed(int newMoveSpeed){moveSpeed = newMoveSpeed;}
+    public void SetMoveSpeedMax(int newMax)
+    {
+        moveSpeed = Mathf.Max(moveSpeed, newMax);
+    }
     public void UpdateBaseSpeed(int changeAmount){moveSpeed += changeAmount;}
     public int GetMoveSpeed(){return moveSpeed;}
     public string moveType;

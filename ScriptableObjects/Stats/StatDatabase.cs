@@ -7,6 +7,7 @@ using UnityEngine;
 public class StatDatabase : ScriptableObject
 {
     public bool inputKeysAndValues = false;
+    public bool inputBothv2 = false;
     public string allKeysAndValues;
     public string keyValueDelimiter;
     public string keyDelimiter;

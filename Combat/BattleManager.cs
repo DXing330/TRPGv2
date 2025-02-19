@@ -40,6 +40,10 @@ public class BattleManager : MonoBehaviour
         ChangeTurn();
         if (turnActor.GetTeam() > 0){NPCTurn();}
     }
+    public void SpawnAndAddActor(int location, string actorName, int team = 0)
+    {
+        map.AddActorToBattle(actorMaker.SpawnActor(location, actorName, team));
+    }
     public bool interactable = true;
     public int roundNumber;
     public int turnNumber = 0;
@@ -259,7 +263,6 @@ public class BattleManager : MonoBehaviour
             }
             if (actorAI.EnemyInAttackableRange(turnActor, turnActor.GetTarget(), moveManager))
             {
-                Debug.Log("EnemyInAttackableRange");
                 if (!actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
                 {
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);

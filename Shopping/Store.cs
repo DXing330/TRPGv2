@@ -29,6 +29,20 @@ public class Store : MonoBehaviour
     public List<TMP_Text> equipmentOwned;
     public SelectStatTextList equipmentDisplay;
     public SelectStatTextList itemsDisplay;
+    public bool buyingEquipment = false;
+    public void ClickOnEquipment()
+    {
+        buyingEquipment = true;
+        buyingItems = false;
+        itemsDisplay.ResetSelected();
+    }
+    public bool buyingItems = false;
+    public void ClickOnItem()
+    {
+        buyingEquipment = false;
+        buyingItems = true;
+        equipmentDisplay.ResetSelected();
+    }
     protected void UpdateDisplay()
     {
         equipmentDisplay.SetStatsAndData(equipmentSold, equipmentPrices);
@@ -85,5 +99,17 @@ public class Store : MonoBehaviour
         partyData.equipmentInventory.AddEquipmentByName(equipmentSold[index]);
         UpdateQuantityOwned();
         inventoryUI.UpdateKeyValues();
+    }
+
+    public void TryToBuy()
+    {
+        if (buyingEquipment)
+        {
+            TryToBuyEquipment();
+        }
+        else if (buyingItems)
+        {
+            TryToBuyItem();
+        }
     }
 }

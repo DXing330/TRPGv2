@@ -39,6 +39,7 @@ public class SelectStatTextList : StatTextList
     public void Select(int index)
     {
         selectedIndex = index + (page*objects.Count);
+        HighlightSelected();
     }
     public int GetSelected(){return selectedIndex;}
     // This is more specialized but placed here for now.
@@ -51,12 +52,14 @@ public class SelectStatTextList : StatTextList
         stats.Add("Health");
         stats.Add("Attack");
         stats.Add("Defense");
+        stats.Add("Energy");
         stats.Add("Move Speed");
         data.Add(actor.GetBaseHealth().ToString());
         data.Add(actor.GetBaseAttack().ToString());
         data.Add(actor.GetBaseDefense().ToString());
+        data.Add(actor.GetBaseEnergy().ToString());
         data.Add(actor.GetMoveSpeed().ToString());
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);

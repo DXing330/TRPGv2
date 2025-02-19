@@ -71,7 +71,7 @@ public class SkillEffect : ScriptableObject
             target.UpdateSpeed(int.Parse(effectSpecifics)*level);
             break;
             case "BaseSpeed":
-            target.UpdateBaseSpeed(int.Parse(effectSpecifics));
+            target.SetMoveSpeedMax(int.Parse(effectSpecifics));
             break;
             case "Movement":
             //target.GainMovement(level*int.Parse(effectSpecifics)*target.GetSpeed());
@@ -82,6 +82,9 @@ public class SkillEffect : ScriptableObject
             break;
             case "MoveType":
             target.SetMoveType(effectSpecifics);
+            break;
+            case "Initiative":
+            target.ChangeInitiative(int.Parse(effectSpecifics));
             break;
         }
     }

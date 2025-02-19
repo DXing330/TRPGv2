@@ -153,6 +153,8 @@ public class PassiveDetailViewer : MonoBehaviour
             return " change movement type to "+specifics;
             case "AttackRange":
             return " increase Attack Range by up to "+specifics;
+            case "BaseSpeed":
+            return " increase Base Speed by up to "+specifics;
         }
         return " increase "+effect+" by "+specifics;
     }
