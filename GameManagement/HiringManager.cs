@@ -8,6 +8,7 @@ public class HiringManager : MonoBehaviour
     void Start()
     {
         GenerateHirelings();
+        hirelingList.ResetSelected();
     }
     public StatDatabase firstNames;
     public StatDatabase lastNames;
@@ -18,6 +19,7 @@ public class HiringManager : MonoBehaviour
     public StatDatabase actorData;
     public TacticActor dummyActor;
     public PartyDataManager partyData;
+    public Inventory inventory;
     // Classes
     public List<string> hireableActors;
     public List<string> basePrices;
@@ -43,10 +45,49 @@ public class HiringManager : MonoBehaviour
         hirelingList.SetStatsAndData(currentHirelingClasses, currentHirelingNames);
     }
 
+    protected string GetPrice()
+    {
+        int index = hirelingList.GetSelected();
+        string className = currentHirelingClasses[index];
+        string price = basePrices[hireableActors.IndexOf(className)];
+        return price;
+    }
+
     public void ViewStats()
     {
         int index = hirelingList.GetSelected();
         if (index == -1){return;}
         string className = currentHirelingClasses[index];
+        string price = GetPrice();
+        dummyActor.SetStats(actorData.ReturnStats(className));
+        List<string> stats = new List<string>();
+        List<string> data = new List<string>();
+        stats.Add("Price");
+        stats.Add("Health");
+        stats.Add("Attack");
+        stats.Add("Defense");
+        stats.Add("Energy");
+        stats.Add("Move Speed");
+        stats.Add("Initiative");
+        data.Add(price);
+        data.Add(dummyActor.GetBaseHealth().ToString());
+        data.Add(dummyActor.GetBaseAttack().ToString());
+        data.Add(dummyActor.GetBaseDefense().ToString());
+        data.Add(dummyActor.GetBaseEnergy().ToString());
+        data.Add(dummyActor.GetMoveSpeed().ToString());
+        data.Add(dummyActor.GetInitiative().ToString());
+        hirelingStats.SetStatsAndData(stats, data);
+    }
+
+    public void TryToHire()
+    {
+        if (hirelingList.GetSelected() < 0){return;}
+        int price = int.Parse(GetPrice());
+        if (inventory.QuantityExists(price))
+        {
+            string className = currentHirelingClasses[hirelingList.GetSelected()];
+            inventory.RemoveItemQuantity(price);
+            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[hirelingList.GetSelected()], price.ToString(), (price*10).ToString());
+        }
     }
 }

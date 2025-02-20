@@ -7,6 +7,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PartyData", menuName = "ScriptableObjects/DataContainers/SavedData/PartyData", order = 1)]
 public class PartyData : SavedData
 {
+    public bool hiringFees = false;
+    public int totalFee = 0;
+    public void ResetFee(){totalFee = 0;}
+    public int GetFee(){return totalFee;}
     public GeneralUtility utility;
     public TacticActor dummyActor;
     public string delimiterTwo;
@@ -24,6 +28,16 @@ public class PartyData : SavedData
     // Equipment goes here?
     public List<string> partyEquipment;
     public List<string> partyCurrentStats;
+    // Hiring costs go here.
+    // Might change with promotions.
+    public List<string> battleFees;
+    // Fixed upon hiring, encouraging upgrading units you already hired.
+    public List<string> workersComp;
+    public void ApplyWorkerComp(int index)
+    {
+        totalFee += int.Parse(workersComp[index]);
+        workersComp.RemoveAt(index);
+    }
     public void SetCurrentStats(string newStats, int index)
     {
         partyCurrentStats[index] = newStats;
@@ -35,6 +49,13 @@ public class PartyData : SavedData
         partybaseStats.Clear();
         partyEquipment.Clear();
         partyCurrentStats.Clear();
+        if (hiringFees)
+        {
+            for (int i = 0; i < workersComp.Count; i++)
+            {
+                ApplyWorkerComp(i);
+            }
+        }
     }
     public void ClearCurrentStats()
     {
@@ -68,6 +89,7 @@ public class PartyData : SavedData
                 partyNames.RemoveAt(i);
                 partyEquipment.RemoveAt(i);
                 partySpriteNames.RemoveAt(i);
+                ApplyWorkerComp(i);
             }
         }
     }
@@ -120,6 +142,23 @@ public class PartyData : SavedData
             if (i < partyCurrentStats.Count - 1){tempData += delimiterTwo;}
         }
         allData += tempData + delimiter;
+        if (hiringFees)
+        {
+            tempData = "";
+            for (int i = 0; i < battleFees.Count; i++)
+            {
+                tempData += battleFees[i];
+                if (i < battleFees.Count - 1){tempData += delimiterTwo;}
+            }
+            allData += tempData + delimiter;
+            tempData = "";
+            for (int i = 0; i < workersComp.Count; i++)
+            {
+                tempData += workersComp[i];
+                if (i < workersComp.Count - 1){tempData += delimiterTwo;}
+            }
+            allData += tempData + delimiter;
+        }
         File.WriteAllText(dataPath, allData);
     }
     public override void NewGame()
@@ -147,10 +186,18 @@ public class PartyData : SavedData
         partybaseStats = dataList[2].Split(delimiterTwo).ToList();
         partyEquipment = dataList[3].Split(delimiterTwo).ToList();
         partyCurrentStats = dataList[4].Split(delimiterTwo).ToList();
+        if (hiringFees && dataList.Count > 6)
+        {
+            battleFees = dataList[5].Split(delimiterTwo).ToList();
+            workersComp = dataList[6].Split(delimiterTwo).ToList();
+        }
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
         partybaseStats = utility.RemoveEmptyListItems(partybaseStats);
         partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
+        //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
+        battleFees = utility.RemoveEmptyListItems(battleFees);
+        workersComp = utility.RemoveEmptyListItems(workersComp);
     }
     public List<string> GetStats(string joiner = "|")
     {
@@ -245,7 +292,16 @@ public class PartyData : SavedData
         partySpriteNames.Add(spriteName);
         partybaseStats.Add(stats);
         partyNames.Add(personalName);
+        partyEquipment.Add("");
         string[] blocks = stats.Split("|");
         partyCurrentStats.Add(blocks[0]);
+    }
+    public void AddBattleFee(string fee)
+    {
+        battleFees.Add(fee);
+    }
+    public void AddWorkerComp(string comp)
+    {
+        workersComp.Add(comp);
     }
 }

@@ -25,6 +25,7 @@ public class StatTextList : GameObjectTextList
 
     public void SetStatsAndData(List<string> newStats, List<string> newData)
     {
+        DisableChangePage();
         stats = newStats;
         data = newData;
         page = 0;

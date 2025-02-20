@@ -18,9 +18,9 @@ public class CharacterList : ScriptableObject
         equipment.Clear();
     }
 
-    public void SetLists(List<string> newCharacters, List<string> newStats = null, List<string> newNames = null, List<string> newEquipment = null)
+    public void SetLists(List<string> newSpriteNames, List<string> newStats = null, List<string> newNames = null, List<string> newEquipment = null)
     {
-        characters = newCharacters;
+        characters = newSpriteNames;
         if (newStats == null){stats.Clear();}
         else {stats = newStats;}
         if (newNames == null){characterNames.Clear();}
@@ -29,14 +29,19 @@ public class CharacterList : ScriptableObject
         else {equipment = newEquipment;}
     }
 
-    public void AddToParty(List<string> newMembers, List<string> newStats, List<string> newNames, List<string> newEquipment)
+    public void AddToParty(List<string> newNames, List<string> newStats, List<string> newSpriteNames, List<string> newEquipment)
     {
-        for (int i = 0; i < newMembers.Count; i++)
+        for (int i = 0; i < newSpriteNames.Count; i++)
         {
-            if (newMembers[i].Length < 1){continue;}
-            characterNames.Add(newMembers[i]);
-            characters.Add(newMembers[i]);
+            if (newSpriteNames[i].Length < 1){continue;}
+            characterNames.Add(newNames[i]);
+            characters.Add(newSpriteNames[i]);
             stats.Add(newStats[i]);
+            if (i >= newEquipment.Count)
+            {
+                equipment.Add("");
+                continue;
+            }
             equipment.Add(newEquipment[i]);
         }
     }

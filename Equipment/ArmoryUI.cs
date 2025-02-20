@@ -22,7 +22,7 @@ public class ArmoryUI : MonoBehaviour
     {
         EndSelectingEquipment();
         detailViewer.DisablePanel();
-        selectedActor.SetStatsFromString(allActors.actorData[allActors.GetSelected()]);
+        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
@@ -69,7 +69,7 @@ public class ArmoryUI : MonoBehaviour
     {
         selectEquipment.ResetSelected();
         selectEquipObject.SetActive(false);
-        selectedActor.SetStatsFromString(allActors.actorData[allActors.GetSelected()]);
+        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
@@ -79,7 +79,7 @@ public class ArmoryUI : MonoBehaviour
     {
         selectEquipment.ResetHighlights();
         selectEquipment.HighlightIndex(selectEquipment.GetSelected());
-        selectedActor.SetStatsFromString(allActors.actorData[allActors.GetSelected()]);
+        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorPassives.UpdatePotentialPassives(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()), selectEquipment.data[selectEquipment.GetSelected()]);
     }
 

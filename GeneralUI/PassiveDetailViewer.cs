@@ -32,7 +32,8 @@ public class PassiveDetailViewer : MonoBehaviour
         passiveNames.Clear();
         passiveInfo.Clear();
         passiveDescription.Clear();
-        for (int i = 1; i < level+1; i++)
+        // Max level for a passive is 4.
+        for (int i = 1; i < Mathf.Min(5, level+1); i++)
         {
             passiveNames.Add(passiveNameLevels.GetMultiKeyValue(passiveGroupName, i.ToString()));
             passiveInfo.Add(allPassives.ReturnValue(passiveNames[i-1]));

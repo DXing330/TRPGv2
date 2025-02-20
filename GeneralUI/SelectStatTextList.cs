@@ -30,7 +30,7 @@ public class SelectStatTextList : StatTextList
         if (GetSelected() < 0){return;}
         statTexts[GetSelected()].SetColor(colors.GetColor(color));
     }
-    public int selectedIndex;
+    public int selectedIndex = -1;
     public void ResetSelected()
     {
         selectedIndex = -1;
@@ -54,12 +54,14 @@ public class SelectStatTextList : StatTextList
         stats.Add("Defense");
         stats.Add("Energy");
         stats.Add("Move Speed");
+        stats.Add("Initiative");
         data.Add(actor.GetBaseHealth().ToString());
         data.Add(actor.GetBaseAttack().ToString());
         data.Add(actor.GetBaseDefense().ToString());
         data.Add(actor.GetBaseEnergy().ToString());
         data.Add(actor.GetMoveSpeed().ToString());
-        for (int i = 0; i < 5; i++)
+        data.Add(actor.GetInitiative().ToString());
+        for (int i = 0; i < 6; i++)
         {
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);

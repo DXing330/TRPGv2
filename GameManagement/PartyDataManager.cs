@@ -44,9 +44,11 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
-    public void HireMember(string name, string stats, string personalName)
+    public void HireMember(string name, string stats, string personalName, string fee, string comp)
     {
         mainPartyData.AddMember(name, stats, personalName);
+        mainPartyData.AddBattleFee(fee);
+        mainPartyData.AddWorkerComp(comp);
         SetFullParty();
     }
 
