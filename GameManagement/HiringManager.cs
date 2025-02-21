@@ -28,19 +28,34 @@ public class HiringManager : MonoBehaviour
     public SelectStatTextList hirelingList;
     public StatTextList hirelingStats;
     // As you perform you can hire more/better hirelings.
-    public int minHirelings = 3;
+    public int minHirelings = 2;
 
     public List<string> currentHirelingClasses;
     public List<string> currentHirelingNames;
 
+    protected void UpdateGuildCardHirelings()
+    {
+        partyData.guildCard.SetNewHireClasses(currentHirelingClasses);
+        partyData.guildCard.SetNewHireNames(currentHirelingNames);
+    }
+
     protected void GenerateHirelings()
     {
-        currentHirelingClasses.Clear();
-        currentHirelingNames.Clear();
-        for (int i = 0; i < minHirelings; i++)
+        if (!partyData.guildCard.RefreshHireables())
         {
-            currentHirelingClasses.Add(hireableActors[Random.Range(0, hireableActors.Count)]);
-            currentHirelingNames.Add(GenerateRandomName());
+            currentHirelingClasses = partyData.guildCard.GetNewHireClasses();
+            currentHirelingNames = partyData.guildCard.GetNewHireNames();
+        }
+        else
+        {
+            currentHirelingClasses.Clear();
+            currentHirelingNames.Clear();
+            for (int i = 0; i < minHirelings+partyData.guildCard.GetGuildRank(); i++)
+            {
+                currentHirelingClasses.Add(hireableActors[Random.Range(0, hireableActors.Count)]);
+                currentHirelingNames.Add(GenerateRandomName());
+            }
+            UpdateGuildCardHirelings();
         }
         hirelingList.SetStatsAndData(currentHirelingClasses, currentHirelingNames);
     }
@@ -81,13 +96,25 @@ public class HiringManager : MonoBehaviour
 
     public void TryToHire()
     {
-        if (hirelingList.GetSelected() < 0){return;}
+        if (!partyData.OpenSlots())
+        {
+            Debug.Log("You aren't allowed to hire any more hirelings.");
+            Debug.Log("Rank up more in order to be trusted with more men.");
+            return;
+        }
+        int selected = hirelingList.GetSelected();
+        if (selected < 0){return;}
         int price = int.Parse(GetPrice());
         if (inventory.QuantityExists(price))
         {
-            string className = currentHirelingClasses[hirelingList.GetSelected()];
+            string className = currentHirelingClasses[selected];
             inventory.RemoveItemQuantity(price);
-            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[hirelingList.GetSelected()], price.ToString(), (price*10).ToString());
+            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[selected], price.ToString(), (price*10).ToString());
+            currentHirelingClasses.RemoveAt(selected);
+            currentHirelingNames.RemoveAt(selected);
+            hirelingList.ResetSelected();
+            hirelingList.SetStatsAndData(currentHirelingClasses, currentHirelingNames);
+            UpdateGuildCardHirelings();
         }
     }
 }

@@ -8,9 +8,6 @@ using UnityEngine;
 public class PartyData : SavedData
 {
     public bool hiringFees = false;
-    public int totalFee = 0;
-    public void ResetFee(){totalFee = 0;}
-    public int GetFee(){return totalFee;}
     public GeneralUtility utility;
     public TacticActor dummyActor;
     public string delimiterTwo;
@@ -31,13 +28,11 @@ public class PartyData : SavedData
     // Hiring costs go here.
     // Might change with promotions.
     public List<string> battleFees;
+    public List<string> GetBattleFees(){return battleFees;}
     // Fixed upon hiring, encouraging upgrading units you already hired.
     public List<string> workersComp;
-    public void ApplyWorkerComp(int index)
-    {
-        totalFee += int.Parse(workersComp[index]);
-        workersComp.RemoveAt(index);
-    }
+    public List<string> GetWorkersCompensations(){return workersComp;}
+
     public void SetCurrentStats(string newStats, int index)
     {
         partyCurrentStats[index] = newStats;
@@ -49,13 +44,8 @@ public class PartyData : SavedData
         partybaseStats.Clear();
         partyEquipment.Clear();
         partyCurrentStats.Clear();
-        if (hiringFees)
-        {
-            for (int i = 0; i < workersComp.Count; i++)
-            {
-                ApplyWorkerComp(i);
-            }
-        }
+        battleFees.Clear();
+        workersComp.Clear();
     }
     public void ClearCurrentStats()
     {
@@ -89,7 +79,8 @@ public class PartyData : SavedData
                 partyNames.RemoveAt(i);
                 partyEquipment.RemoveAt(i);
                 partySpriteNames.RemoveAt(i);
-                ApplyWorkerComp(i);
+                battleFees.RemoveAt(i);
+                workersComp.RemoveAt(i);
             }
         }
     }
@@ -108,6 +99,7 @@ public class PartyData : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
         string tempData = "";
+        // Use partyNames to count for everything, as they should always be the same count, if this causes an error then thats a problem.
         for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyNames[i];
@@ -115,28 +107,28 @@ public class PartyData : SavedData
         }
         allData += tempData + delimiter;
         tempData = "";
-        for (int i = 0; i < partySpriteNames.Count; i++)
+        for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partySpriteNames[i];
             if (i < partySpriteNames.Count - 1){tempData += delimiterTwo;}
         }
         allData += tempData + delimiter;
         tempData = "";
-        for (int i = 0; i < partybaseStats.Count; i++)
+        for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partybaseStats[i];
             if (i < partybaseStats.Count - 1){tempData += delimiterTwo;}
         }
         allData += tempData + delimiter;
         tempData = "";
-        for (int i = 0; i < partyEquipment.Count; i++)
+        for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyEquipment[i];
             if (i < partyEquipment.Count - 1){tempData += delimiterTwo;}
         }
         allData += tempData + delimiter;
         tempData = "";
-        for (int i = 0; i < partyCurrentStats.Count; i++)
+        for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyCurrentStats[i];
             if (i < partyCurrentStats.Count - 1){tempData += delimiterTwo;}
@@ -145,14 +137,14 @@ public class PartyData : SavedData
         if (hiringFees)
         {
             tempData = "";
-            for (int i = 0; i < battleFees.Count; i++)
+            for (int i = 0; i < partyNames.Count; i++)
             {
                 tempData += battleFees[i];
                 if (i < battleFees.Count - 1){tempData += delimiterTwo;}
             }
             allData += tempData + delimiter;
             tempData = "";
-            for (int i = 0; i < workersComp.Count; i++)
+            for (int i = 0; i < partyNames.Count; i++)
             {
                 tempData += workersComp[i];
                 if (i < workersComp.Count - 1){tempData += delimiterTwo;}

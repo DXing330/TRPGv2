@@ -17,6 +17,7 @@ public class PartyDataManager : MonoBehaviour
     public List<SavedData> otherPartyData;
     public Inventory inventory;
     public EquipmentInventory equipmentInventory;
+    public GuildCard guildCard;
 
     public void Save()
     {
@@ -42,6 +43,12 @@ public class PartyDataManager : MonoBehaviour
         // Don't need stats, just grab base stats.
         tempPartyData.AddMember(name, actorStats.ReturnValue(name), name);
         SetFullParty();
+    }
+
+    public bool OpenSlots()
+    {
+        // Default is 2 party members, plus 2 permanent for the classic 4?
+        return mainPartyData.PartyCount() < guildCard.GetGuildRank() + 2;
     }
 
     public void HireMember(string name, string stats, string personalName, string fee, string comp)
