@@ -82,6 +82,8 @@ public class PassiveSkill : SkillEffect
         {
             case "Tile":
             return CheckConditionSpecifics(conditionSpecifics, map.mapInfo[target.GetLocation()]);
+            case "Tile<>":
+            return !CheckConditionSpecifics(conditionSpecifics, map.mapInfo[target.GetLocation()]);
             case "Adjacent Ally":
             // Need to check adjacent tiles for allies.
             return false;
@@ -89,6 +91,8 @@ public class PassiveSkill : SkillEffect
             return true;
             case "Distance":
             return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
+            case "Distance>":
+            return moveManager.DistanceBetweenActors(target, attacker) >= int.Parse(conditionSpecifics);
             case "Sprite":
             return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
             case "Direction":

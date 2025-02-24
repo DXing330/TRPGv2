@@ -116,6 +116,25 @@ public class ActiveManager : MonoBehaviour
             }
             battle.moveManager.MoveSkill(skillUser, active.GetSpecifics(), active.GetPower(), battle.map);
             return;
+            case "Move+Attack":
+            // Move to the tile selected.
+            int prevTile = skillUser.GetLocation();
+            int targetTile = targetedTiles[0];
+            if (battle.map.GetActorOnTile(targetTile) == null)
+            {
+                skillUser.SetLocation(targetTile);
+                // Update the direction to the moving direction.
+                skillUser.SetDirection(battle.moveManager.DirectionBetweenLocations(prevTile, targetTile));
+                battle.map.UpdateActors();
+            }
+            else{return;}
+            // Check if an actor is on the specified tile(s).
+            int attackTargetTile = battle.moveManager.PointInDirection(skillUser.GetLocation(), skillUser.GetDirection());
+            if (battle.map.GetActorOnTile(attackTargetTile) != null)
+            {
+                battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(attackTargetTile), battle.map, battle.moveManager);
+            }
+            return;
             case "Displace":
             battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
             return;

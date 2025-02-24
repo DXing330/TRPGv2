@@ -7,6 +7,7 @@ public class AttackManager : ScriptableObject
 {
     public PassiveSkill passive;
     public StatDatabase passiveData;
+    public TerrainPassivesList terrainPassives;
     public int baseMultiplier;
     protected int advantage;
     protected int baseDamage;
@@ -16,7 +17,9 @@ public class AttackManager : ScriptableObject
         advantage = 0;
         if (attackMultiplier < 0){damageMultiplier = baseMultiplier;}
         else {damageMultiplier = attackMultiplier;}
+        // Forests/other cover will reduce ranged damage greatly.
         baseDamage = attacker.GetAttack();
+        CheckTerrainPassives(defender, attacker, map, moveManager);
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
@@ -63,27 +66,45 @@ public class AttackManager : ScriptableObject
     {
         for (int i = 0; i < characterPassives.Count; i++)
         {
-            List<string> passiveStats = passiveData.ReturnStats(characterPassives[i]);
-            if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
+            ApplyPassiveEffect(characterPassives[i], target, attacker, map, moveManager);
+        }
+    }
+
+    protected void ApplyPassiveEffect(string passiveName, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    {
+        List<string> passiveStats = passiveData.ReturnStats(passiveName);
+        if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
+        {
+            Debug.Log(passiveName);
+            switch (passiveStats[3])
             {
-                switch (passiveStats[3])
-                {
-                    case "Advantage":
-                    advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
-                    break;
-                    case "Damage%":
-                    damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
-                    break;
-                    case "BaseDamage":
-                    baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
-                    break;
-                    case "Target":
-                    passive.AffectActor(target, passiveStats[4], passiveStats[5]);
-                    break;
-                    case "Attacker":
-                    passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
-                    break;
-                }
+                case "Advantage":
+                Debug.Log("Advantage");
+                Debug.Log(advantage);
+                Debug.Log(">");
+                advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
+                Debug.Log(advantage);
+                break;
+                case "Damage%":
+                Debug.Log("Damage%");
+                Debug.Log(damageMultiplier);
+                Debug.Log(">");
+                damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
+                Debug.Log(damageMultiplier);
+                break;
+                case "BaseDamage":
+                Debug.Log("BaseDamage");
+                Debug.Log(baseDamage);
+                Debug.Log(">");
+                baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
+                Debug.Log(baseDamage);
+                break;
+                case "Target":
+                passive.AffectActor(target, passiveStats[4], passiveStats[5]);
+                break;
+                case "Attacker":
+                passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
+                break;
             }
         }
     }
@@ -100,5 +121,27 @@ public class AttackManager : ScriptableObject
             }
         }
         return damage;
+    }
+
+    protected void CheckTerrainPassives(TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    {
+        string targetTile = map.mapInfo[target.GetLocation()];
+        string attackingTile = map.mapInfo[attacker.GetLocation()];
+        if (terrainPassives.TerrainPassivesExist(targetTile))
+        {
+            string defendingPassive = terrainPassives.ReturnTerrainPassive(targetTile).GetDefendingPassive();
+            if (defendingPassive.Length > 1)
+            {
+                ApplyPassiveEffect(defendingPassive, target, attacker, map, moveManager);
+            }
+        }
+        if (terrainPassives.TerrainPassivesExist(attackingTile))
+        {
+            string attackingPassive = terrainPassives.ReturnTerrainPassive(attackingTile).GetAttackingPassive();
+            if (attackingPassive.Length > 1)
+            {
+                ApplyPassiveEffect(attackingPassive, target, attacker, map, moveManager);
+            }
+        }
     }
 }

@@ -243,12 +243,17 @@ public class MoveCostManager : MonoBehaviour
         }
     }
 
+    public int PointInDirection(int current, int direction)
+    {
+        return actorPathfinder.mapUtility.PointInDirection(current, direction, actorPathfinder.mapSize);
+    }
+
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
         int nextTile = actor.GetLocation();
         for (int i = 0; i < force; i++)
         {
-            nextTile = actorPathfinder.mapUtility.PointInDirection(nextTile, direction, actorPathfinder.mapSize);
+            nextTile = PointInDirection(nextTile, direction);
             // Tiles are passable if no one is occupying them.
             if (map.GetActorOnTile(nextTile) == null)
             {
