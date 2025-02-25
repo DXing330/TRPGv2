@@ -73,31 +73,28 @@ public class AttackManager : ScriptableObject
     protected void ApplyPassiveEffect(string passiveName, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
         List<string> passiveStats = passiveData.ReturnStats(passiveName);
+        string passiveEffectString = "";
         if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
         {
-            Debug.Log(passiveName);
             switch (passiveStats[3])
             {
                 case "Advantage":
-                Debug.Log("Advantage");
-                Debug.Log(advantage);
-                Debug.Log(">");
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+advantage+"->";
                 advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
-                Debug.Log(advantage);
+                passiveEffectString += advantage;
+                Debug.Log(passiveEffectString);
                 break;
                 case "Damage%":
-                Debug.Log("Damage%");
-                Debug.Log(damageMultiplier);
-                Debug.Log(">");
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+damageMultiplier+"->";
                 damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
-                Debug.Log(damageMultiplier);
+                passiveEffectString += damageMultiplier;
+                Debug.Log(passiveEffectString);
                 break;
                 case "BaseDamage":
-                Debug.Log("BaseDamage");
-                Debug.Log(baseDamage);
-                Debug.Log(">");
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+baseDamage+"->";
                 baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
-                Debug.Log(baseDamage);
+                passiveEffectString += baseDamage;
+                Debug.Log(passiveEffectString);
                 break;
                 case "Target":
                 passive.AffectActor(target, passiveStats[4], passiveStats[5]);

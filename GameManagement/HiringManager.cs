@@ -109,7 +109,7 @@ public class HiringManager : MonoBehaviour
         {
             string className = currentHirelingClasses[selected];
             inventory.RemoveItemQuantity(price);
-            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[selected], price.ToString(), (price*10).ToString());
+            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[selected], price.ToString());
             currentHirelingClasses.RemoveAt(selected);
             currentHirelingNames.RemoveAt(selected);
             hirelingList.ResetSelected();

@@ -13,4 +13,9 @@ public class ActorSpriteAndName : ActorSprite
         ShowActorSprite(actor);
         actorName.text = actor.GetPersonalName();
     }
+
+    public override void ChangeTextColor(Color newColor)
+    {
+        actorName.color = newColor;
+    }
 }

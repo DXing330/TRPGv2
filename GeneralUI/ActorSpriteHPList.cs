@@ -5,11 +5,31 @@ using UnityEngine;
 public class ActorSpriteHPList : MonoBehaviour
 {
     public GeneralUtility utility;
+    public ColorDictionary colors;
     public int page = 0;
     public void ChangePage(bool right = true)
     {
         page = utility.ChangePage(page, right, objects, allActorNames);
+        ResetSelected();
         UpdateList();
+    }
+    protected void ResetSelected()
+    {
+        selectedIndex = -1;
+        ResetHighlights();
+    }
+    protected void ResetHighlights()
+    {
+        for (int i = 0; i < actors.Count; i++)
+        {
+            actors[i].ChangeTextColor(colors.GetColor("Default"));
+        }
+    }
+    protected void HighlightSelected()
+    {
+        ResetHighlights();
+        if (GetSelected() < 0){return;}
+        actors[GetSelected()%objects.Count].ChangeTextColor(colors.GetColor("Highlight"));
     }
     public StatDatabase actorSpriteNames;
     public List<GameObject> objects;
@@ -26,6 +46,7 @@ public class ActorSpriteHPList : MonoBehaviour
     {
         allActorNames = new List<string>(savedData.characters);
         allActorData = new List<string>(savedData.stats);
+        ResetSelected();
         UpdateList();
     }
 
@@ -47,6 +68,7 @@ public class ActorSpriteHPList : MonoBehaviour
     public void SelectActor(int index)
     {
         selectedIndex = index + (page * objects.Count);
+        HighlightSelected();
     }
 
     public int GetSelected()

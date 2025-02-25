@@ -21,7 +21,7 @@ public class PartyData : SavedData
     public List<string> GetNames(){return partyNames;}
     public List<string> partySpriteNames;
     public List<string> GetSpriteNames(){return partySpriteNames;}
-    public List<string> partybaseStats;
+    public List<string> partyBaseStats;
     // Equipment goes here?
     public List<string> partyEquipment;
     public List<string> partyCurrentStats;
@@ -29,9 +29,6 @@ public class PartyData : SavedData
     // Might change with promotions.
     public List<string> battleFees;
     public List<string> GetBattleFees(){return battleFees;}
-    // Fixed upon hiring, encouraging upgrading units you already hired.
-    public List<string> workersComp;
-    public List<string> GetWorkersCompensations(){return workersComp;}
 
     public void SetCurrentStats(string newStats, int index)
     {
@@ -41,26 +38,45 @@ public class PartyData : SavedData
     {
         partyNames.Clear();
         partySpriteNames.Clear();
-        partybaseStats.Clear();
+        partyBaseStats.Clear();
         partyEquipment.Clear();
         partyCurrentStats.Clear();
         battleFees.Clear();
-        workersComp.Clear();
+    }
+    public List<string> GetStatsAtIndex(int index)
+    {
+        List<string> allStats = new List<string>();
+        allStats.Add(partyNames[index]);
+        allStats.Add(partySpriteNames[index]);
+        allStats.Add(partyBaseStats[index]);
+        allStats.Add(partyEquipment[index]);
+        allStats.Add(partyCurrentStats[index]);
+        allStats.Add(battleFees[index]);
+        return allStats;
+    }
+    public void RemoveStatsAtIndex(int index)
+    {
+        partyNames.RemoveAt(index);
+        partySpriteNames.RemoveAt(index);
+        partyBaseStats.RemoveAt(index);
+        partyEquipment.RemoveAt(index);
+        partyCurrentStats.RemoveAt(index);
+        battleFees.RemoveAt(index);
     }
     public void ClearCurrentStats()
     {
         partyCurrentStats.Clear();
-        for (int i = 0; i < partybaseStats.Count; i++)
+        for (int i = 0; i < partyBaseStats.Count; i++)
         {
             partyCurrentStats.Add("");
         }
     }
     public void ReviveDefeatedMembers()
     {
-        for (int i = 0; i < partybaseStats.Count; i++)
+        for (int i = 0; i < partyBaseStats.Count; i++)
         {
             // Don't keep track of empty members.
-            if (partybaseStats[i].Length < 1){continue;}
+            if (partyBaseStats[i].Length < 1){continue;}
             if (partyCurrentStats[i].Length < 1)
             {
                 partyCurrentStats[i] = "1";
@@ -74,13 +90,7 @@ public class PartyData : SavedData
         {
             if (partyCurrentStats[i].Length < 1)
             {
-                partyCurrentStats.RemoveAt(i);
-                partybaseStats.RemoveAt(i);
-                partyNames.RemoveAt(i);
-                partyEquipment.RemoveAt(i);
-                partySpriteNames.RemoveAt(i);
-                battleFees.RemoveAt(i);
-                workersComp.RemoveAt(i);
+                RemoveStatsAtIndex(i);
             }
         }
     }
@@ -88,9 +98,9 @@ public class PartyData : SavedData
     public void ResetCurrentStats()
     {
         ClearCurrentStats();
-        for (int i = 0; i < partybaseStats.Count; i++)
+        for (int i = 0; i < partyBaseStats.Count; i++)
         {
-            string[] splitData = partybaseStats[i].Split("|");
+            string[] splitData = partyBaseStats[i].Split("|");
             partyCurrentStats[i] = (splitData[0]);
         }
     }
@@ -116,8 +126,8 @@ public class PartyData : SavedData
         tempData = "";
         for (int i = 0; i < partyNames.Count; i++)
         {
-            tempData += partybaseStats[i];
-            if (i < partybaseStats.Count - 1){tempData += delimiterTwo;}
+            tempData += partyBaseStats[i];
+            if (i < partyBaseStats.Count - 1){tempData += delimiterTwo;}
         }
         allData += tempData + delimiter;
         tempData = "";
@@ -143,13 +153,6 @@ public class PartyData : SavedData
                 if (i < battleFees.Count - 1){tempData += delimiterTwo;}
             }
             allData += tempData + delimiter;
-            tempData = "";
-            for (int i = 0; i < partyNames.Count; i++)
-            {
-                tempData += workersComp[i];
-                if (i < workersComp.Count - 1){tempData += delimiterTwo;}
-            }
-            allData += tempData + delimiter;
         }
         File.WriteAllText(dataPath, allData);
     }
@@ -160,7 +163,7 @@ public class PartyData : SavedData
         else{return;}
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
-        partybaseStats = dataList[2].Split(delimiterTwo).ToList();
+        partyBaseStats = dataList[2].Split(delimiterTwo).ToList();
         partyEquipment = dataList[3].Split(delimiterTwo).ToList();
         partyCurrentStats = dataList[4].Split(delimiterTwo).ToList();
         Save();
@@ -175,35 +178,33 @@ public class PartyData : SavedData
         else{return;}
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
-        partybaseStats = dataList[2].Split(delimiterTwo).ToList();
+        partyBaseStats = dataList[2].Split(delimiterTwo).ToList();
         partyEquipment = dataList[3].Split(delimiterTwo).ToList();
         partyCurrentStats = dataList[4].Split(delimiterTwo).ToList();
         if (hiringFees && dataList.Count > 6)
         {
             battleFees = dataList[5].Split(delimiterTwo).ToList();
-            workersComp = dataList[6].Split(delimiterTwo).ToList();
         }
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
-        partybaseStats = utility.RemoveEmptyListItems(partybaseStats);
+        partyBaseStats = utility.RemoveEmptyListItems(partyBaseStats);
         partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
         battleFees = utility.RemoveEmptyListItems(battleFees);
-        workersComp = utility.RemoveEmptyListItems(workersComp);
     }
     public List<string> GetStats(string joiner = "|")
     {
         List<string> stats = new List<string>();
-        for (int i = 0; i < partybaseStats.Count; i++)
+        for (int i = 0; i < partyBaseStats.Count; i++)
         {
-            stats.Add(partybaseStats[i]+joiner+partyCurrentStats[i]);
+            stats.Add(partyBaseStats[i]+joiner+partyCurrentStats[i]);
         }
         return stats;
     }
     public List<string> GetEquipmentStats(string joiner = "@")
     {
         /*List<string> stats = new List<string>();
-        for (int i = 0; i < partybaseStats.Count; i++)
+        for (int i = 0; i < partyBaseStats.Count; i++)
         {
             stats.Add(+joiner+joiner);
         }
@@ -282,7 +283,7 @@ public class PartyData : SavedData
     public void AddMember(string spriteName, string stats, string personalName = "")
     {
         partySpriteNames.Add(spriteName);
-        partybaseStats.Add(stats);
+        partyBaseStats.Add(stats);
         partyNames.Add(personalName);
         partyEquipment.Add("");
         string[] blocks = stats.Split("|");
@@ -292,8 +293,13 @@ public class PartyData : SavedData
     {
         battleFees.Add(fee);
     }
-    public void AddWorkerComp(string comp)
+    public void AddAllStats(string personalName, string spriteName, string baseStats, string equipment, string currentStats, string fee)
     {
-        workersComp.Add(comp);
+        partySpriteNames.Add(spriteName);
+        partyBaseStats.Add(baseStats);
+        partyNames.Add(personalName);
+        partyEquipment.Add(equipment);
+        partyCurrentStats.Add(currentStats);
+        battleFees.Add(fee);
     }
 }

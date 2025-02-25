@@ -51,11 +51,10 @@ public class PartyDataManager : MonoBehaviour
         return mainPartyData.PartyCount() < guildCard.GetGuildRank() + 2;
     }
 
-    public void HireMember(string name, string stats, string personalName, string fee, string comp)
+    public void HireMember(string name, string stats, string personalName, string fee)
     {
         mainPartyData.AddMember(name, stats, personalName);
         mainPartyData.AddBattleFee(fee);
-        mainPartyData.AddWorkerComp(comp);
         SetFullParty();
     }
 

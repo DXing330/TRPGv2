@@ -18,4 +18,6 @@ public class ActorSprite : MonoBehaviour
     {
         Debug.Log(actor.GetPersonalName());
     }
+
+    public virtual void ChangeTextColor(Color newColor){}
 }
