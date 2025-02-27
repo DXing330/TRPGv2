@@ -40,6 +40,14 @@ public class ActiveManager : MonoBehaviour
 
     public void ResetTargetedTiles(){targetedTiles.Clear();}
 
+    public void CheckIfSingleTargetableTile()
+    {
+        if (targetableTiles.Count == 1)
+        {
+            targetedTiles = new List<int>(targetableTiles);
+        }
+    }
+
     public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder)
     {
         targetedTiles = new List<int>(GetTiles(start, active.GetShape(), pathfinder, false));

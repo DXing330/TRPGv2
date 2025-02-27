@@ -9,6 +9,8 @@ public class ActiveSelectList : SelectList
 {
     public BattleManager battle;
     public ActiveManager activeManager;
+    public ActiveDescriptionViewer descriptionViewer;
+    public TMP_Text activeDescription;
     public int state;
     public Inventory inventory;
     public List<string> useableItems;
@@ -53,6 +55,7 @@ public class ActiveSelectList : SelectList
         IncrementState();
         ShowSelected();
         activeManager.SetSkillFromName(selected);
+        activeDescription.text = descriptionViewer.ReturnActiveDescription(activeManager.active);
         // Check cost here.
         if (!activeManager.CheckSkillCost())
         {
@@ -64,6 +67,7 @@ public class ActiveSelectList : SelectList
         }
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
         activeManager.ResetTargetedTiles();
+        activeManager.CheckIfSingleTargetableTile();
         battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
     }
 
@@ -124,6 +128,11 @@ public class ActiveSelectList : SelectList
         }
         activeManager.ActivateSkill(battle);
         battle.ActivateSkill();
+        // Check if the skill you just used was an item.
+        if (inventory.ItemExists(selected))
+        {
+            inventory.RemoveItemQuantity(1,selected);
+        }
         ResetState();
     }
 }

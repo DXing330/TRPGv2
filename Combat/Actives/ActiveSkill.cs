@@ -67,6 +67,7 @@ public class ActiveSkill : SkillEffect
     List<TacticActor> targetedActors;
     public void SetTargetedActors(List<TacticActor> newTargets){targetedActors = newTargets;}
     public string effect;
+    public string GetEffect(){return effect;}
     public string specifics;
     public string GetSpecifics(){return specifics;}
     public string power;

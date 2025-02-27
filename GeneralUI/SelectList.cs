@@ -21,7 +21,13 @@ public class SelectList : MonoBehaviour
         selectable = new List<string>(newList);
         currentPage = 0;
         UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
+        if (newList.Count > textObjects.Count)
+        {
+            utility.EnableGameObjects(changePageObjects);
+        }
+        else{utility.DisableGameObjects(changePageObjects);}
     }
+    public List<GameObject> changePageObjects;
     public List<GameObject> textObjects;
     public List<TMP_Text> textList;
     public int currentPage;
