@@ -22,6 +22,15 @@ public class StatTextList : GameObjectTextList
     public TMP_Text title;
     public void SetTitle(string newTitle){title.text = newTitle;}
     public List<StatTextText> statTexts;
+    public int textSize;
+    [ContextMenu("UpdateTextSize")]
+    public void UpdateTextSize()
+    {
+        for (int i = 0; i < statTexts.Count; i++)
+        {
+            statTexts[i].SetTextSize(textSize);
+        }
+    }
 
     public void SetStatsAndData(List<string> newStats, List<string> newData)
     {

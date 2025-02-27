@@ -8,6 +8,12 @@ using TMPro;
 public class SelectList : MonoBehaviour
 {
     public GeneralUtility utility;
+    public int textSize;
+    [ContextMenu("UpdateTextSize")]
+    public void UpdateTextSize()
+    {
+        utility.SetTextSizes(textList, textSize);
+    }
     public GameObject errorMsgPanel;
     public void ErrorMessage(bool show = true){errorMsgPanel.SetActive(show);}
     public TMP_Text errorText;

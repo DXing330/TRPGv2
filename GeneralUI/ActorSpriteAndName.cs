@@ -8,6 +8,11 @@ public class ActorSpriteAndName : ActorSprite
 {
     public TMP_Text actorName;
 
+    public virtual void SetTextSize(int newSize)
+    {
+        actorName.fontSize = newSize;
+    }
+
     public override void ShowActorInfo(TacticActor actor)
     {
         ShowActorSprite(actor);

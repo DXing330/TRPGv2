@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 [CreateAssetMenu(fileName = "Utility", menuName = "ScriptableObjects/Utility/GeneralUtility", order = 1)]
 public class GeneralUtility : ScriptableObject
@@ -61,6 +62,19 @@ public class GeneralUtility : ScriptableObject
         {
             objects[i].SetActive(true);
         }
+    }
+
+    public void SetTextSizes(List<TMP_Text> texts, int size)
+    {
+        for (int i = 0; i < texts.Count; i++)
+        {
+            SetTextSize(texts[i], size);
+        }
+    }
+
+    public void SetTextSize(TMP_Text text, int size)
+    {
+        text.fontSize = size;
     }
 
     public List<string> RemoveEmptyListItems(List<string> stringList, int minLength = 0)

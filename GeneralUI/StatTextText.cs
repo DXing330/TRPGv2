@@ -9,6 +9,11 @@ public class StatTextText : MonoBehaviour
     public TMP_Text statText;
     public TMP_Text text;
 
+    public void SetTextSize(int newSize)
+    {
+        statText.fontSize = newSize;
+        text.fontSize = newSize;
+    }
 
     public virtual void SetStatText(string statName){statText.text = statName;}
     public string GetStatText(){return statText.text;}
