@@ -10,6 +10,13 @@ public class ArmoryUI : MonoBehaviour
     public SelectStatTextList actorStats;
     public SelectStatTextList actorPassives;
     public SelectStatTextList actorEquipment;
+    void Start()
+    {
+        allActors.UpdateTextSize();
+        actorStats.UpdateTextSize();
+        actorPassives.UpdateTextSize();
+        actorEquipment.UpdateTextSize();
+    }
     public GameObject selectEquipObject;
     public SelectStatTextList selectEquipment;
     public ActorSpriteHPList allActors;

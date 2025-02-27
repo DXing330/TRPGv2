@@ -36,6 +36,15 @@ public class ActorSpriteHPList : MonoBehaviour
     public StatDatabase actorSpriteNames;
     public List<GameObject> objects;
     public List<ActorSprite> actors;
+    public int textSize;
+    [ContextMenu("UpdateTextSize")]
+    public void UpdateTextSize()
+    {
+        for (int i = 0; i < actors.Count; i++)
+        {
+            actors[i].SetTextSize(textSize);
+        }
+    }
     public List<GameObject> changePageObjects;
     public TacticActor dummyActor;
     public int selectedIndex = -1;

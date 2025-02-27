@@ -11,6 +11,10 @@ public class BarrackManager : MonoBehaviour
     public BarracksData barracksData;
     void Start()
     {
+        mainActors.UpdateTextSize();
+        barracksActors.UpdateTextSize();
+        actorStats.UpdateTextSize();
+        actorPassives.UpdateTextSize();
         mainPartyData = partyDataManager.mainPartyData;
         UpdateLists();
     }

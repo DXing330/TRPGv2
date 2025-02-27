@@ -8,6 +8,9 @@ public class ActorSprite : MonoBehaviour
 {
     public SpriteContainer actorSprites;
     public Image actorSprite;
+    public virtual void SetTextSize(int newSize)
+    {
+    }
 
     public void ShowActorSprite(TacticActor actor)
     {

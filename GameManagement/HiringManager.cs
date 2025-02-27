@@ -29,6 +29,7 @@ public class HiringManager : MonoBehaviour
     public StatTextList hirelingStats;
     // As you perform you can hire more/better hirelings.
     public int minHirelings = 2;
+    public int priceFeeRatio = 10;
 
     public List<string> currentHirelingClasses;
     public List<string> currentHirelingNames;
@@ -109,7 +110,7 @@ public class HiringManager : MonoBehaviour
         {
             string className = currentHirelingClasses[selected];
             inventory.RemoveItemQuantity(price);
-            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[selected], price.ToString());
+            partyData.HireMember(className, actorData.ReturnValue(className), currentHirelingNames[selected], (price/priceFeeRatio).ToString());
             currentHirelingClasses.RemoveAt(selected);
             currentHirelingNames.RemoveAt(selected);
             hirelingList.ResetSelected();

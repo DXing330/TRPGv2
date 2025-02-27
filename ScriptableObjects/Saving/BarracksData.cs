@@ -16,7 +16,6 @@ public class BarracksData : PartyData
     }
     protected void AddToBarracks(string personalName, string spriteName, string baseStats, string equipment, string currentStats, string fee)
     {
-        Debug.Log(equipment);
         partyNames.Add(personalName);
         partySpriteNames.Add(spriteName);
         partyBaseStats.Add(baseStats);
