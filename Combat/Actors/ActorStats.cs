@@ -152,6 +152,12 @@ public class ActorStats : ActorPassives
     }
     public void TakeDamage(int damage){UpdateHealth(damage);}
     public int currentEnergy;
+    public void UpdateEnergy(int changeAmount, bool decrease = false)
+    {
+        if (decrease){LoseEnergy(changeAmount);}
+        else {currentEnergy += changeAmount;}
+        if (currentEnergy > GetBaseEnergy()){currentEnergy = GetBaseEnergy();}
+    }
     public void LoseEnergy(int amount){currentEnergy -= amount;}
     public int GetEnergy(){return currentEnergy;}
     public bool SpendEnergy(int energyCost)

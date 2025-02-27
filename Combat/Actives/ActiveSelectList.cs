@@ -10,6 +10,30 @@ public class ActiveSelectList : SelectList
     public BattleManager battle;
     public ActiveManager activeManager;
     public int state;
+    public Inventory inventory;
+    public List<string> useableItems;
+    public List<int> useableQuantities;
+    public void UpdateUseableItems()
+    {
+        useableItems.Clear();
+        useableQuantities.Clear();
+        for (int i = 0; i < inventory.items.Count; i++)
+        {
+            if (activeManager.activeData.KeyExists(inventory.items[i]))
+            {
+                useableItems.Add(inventory.items[i]);
+                useableQuantities.Add(int.Parse(inventory.quantities[i]));
+            }
+        }
+        for (int i = useableItems.Count -1; i >= 0; i--)
+        {
+            if (useableQuantities[i] <= 0)
+            {
+                useableItems.RemoveAt(i);
+                useableQuantities.RemoveAt(i);
+            }
+        }
+    }
     public List<GameObject> statePanels;
     protected void ResetPanels()
     {
@@ -77,6 +101,18 @@ public class ActiveSelectList : SelectList
         activeManager.ResetTargetedTiles();
         StartingPage();
     }
+
+    public void StartSelectingItems()
+    {
+        UpdateUseableItems();
+        if (useableItems.Count <= 0 || battle.GetTurnActor().GetActions() <= 0){return;}
+        IncrementState();
+        SetSelectables(useableItems);
+        activeManager.SetSkillUser(battle.GetTurnActor());
+        activeManager.ResetTargetedTiles();
+        StartingPage();
+    }
+
     public void ActivateSkill()
     {
         // Don't do anything unless a target has been selected.

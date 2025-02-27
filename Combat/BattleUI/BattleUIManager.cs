@@ -7,6 +7,7 @@ public class BattleUIManager : MonoBehaviour
     public BattleStats battleStats;
     public DisplayTurnOrder turnOrder;
     public GameObject playerChoicesPanel;
+    public ActiveSelectList activeSelectList;
 
     public void NPCTurn()
     {
@@ -26,5 +27,10 @@ public class BattleUIManager : MonoBehaviour
     public void UpdateTurnOrder(BattleManager manager)
     {
         turnOrder.UpdateTurnOrder(manager.map.battlingActors, manager.GetTurnIndex());
+    }
+
+    public void ResetActiveSelectList()
+    {
+        activeSelectList.ResetState();
     }
 }

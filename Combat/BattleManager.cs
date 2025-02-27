@@ -138,6 +138,14 @@ public class BattleManager : MonoBehaviour
             }
             map.ResetHighlights();
             break;
+            case "Item":
+            if (!turnActor.ActionsLeft())
+            {
+                ResetState();
+                return;
+            }
+            map.ResetHighlights();
+            break;
         }
     }
     public int selectedTile;
@@ -149,6 +157,7 @@ public class BattleManager : MonoBehaviour
         selectedTile = -1;
         selectedActor = null;
         map.ResetHighlights();
+        UI.ResetActiveSelectList();
     }
 
     public void ClickOnTile(int tileNumber)
@@ -180,6 +189,12 @@ public class BattleManager : MonoBehaviour
             activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
             map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
+            case "Item":
+            // Target the tile and update the targeted tiles.
+            if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
+            activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
+            map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
+            break;
         }
         UI.battleStats.UpdateBasicStats();
         UI.battleStats.UpdateSpendableStats();
@@ -202,6 +217,7 @@ public class BattleManager : MonoBehaviour
 
     protected void StartAttacking()
     {
+        map.ResetHighlights();
         map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.battlingActors), "Attack");
     }
 
@@ -228,6 +244,7 @@ public class BattleManager : MonoBehaviour
     
     protected void StartMoving()
     {
+        map.ResetHighlights();
         map.UpdateMovingHighlights(turnActor, moveManager);
         moveManager.GetAllReachableTiles(turnActor, map.battlingActors);
     }
