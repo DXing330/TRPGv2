@@ -7,13 +7,15 @@ public class ActorSpriteHPList : MonoBehaviour
     public GeneralUtility utility;
     public ColorDictionary colors;
     public int page = 0;
+    protected void DisableChangePage(){utility.DisableGameObjects(changePageObjects);}
+    protected void EnableChangePage(){utility.EnableGameObjects(changePageObjects);}
     public void ChangePage(bool right = true)
     {
         page = utility.ChangePage(page, right, objects, allActorNames);
         ResetSelected();
         UpdateList();
     }
-    protected void ResetSelected()
+    public void ResetSelected()
     {
         selectedIndex = -1;
         ResetHighlights();
@@ -34,6 +36,7 @@ public class ActorSpriteHPList : MonoBehaviour
     public StatDatabase actorSpriteNames;
     public List<GameObject> objects;
     public List<ActorSprite> actors;
+    public List<GameObject> changePageObjects;
     public TacticActor dummyActor;
     public int selectedIndex = -1;
     public CharacterList savedData;
@@ -44,6 +47,11 @@ public class ActorSpriteHPList : MonoBehaviour
 
     void Start()
     {
+        RefreshData();
+    }
+
+    public void RefreshData()
+    {
         allActorNames = new List<string>(savedData.characters);
         allActorData = new List<string>(savedData.stats);
         ResetSelected();
@@ -53,6 +61,7 @@ public class ActorSpriteHPList : MonoBehaviour
     public void UpdateList()
     {
         utility.DisableGameObjects(objects);
+        DisableChangePage();
         actorNames = utility.GetCurrentPageStrings(page, objects, savedData.characters);
         actorData = utility.GetCurrentPageStrings(page, objects, savedData.stats);
         for (int i = 0; i < actorNames.Count; i++)
@@ -62,6 +71,10 @@ public class ActorSpriteHPList : MonoBehaviour
             dummyActor.SetSpriteName((actorNames[i]));
             dummyActor.SetStatsFromString(actorData[i]);
             actors[i].ShowActorInfo(dummyActor);
+        }
+        if (allActorNames.Count > objects.Count)
+        {
+            EnableChangePage();
         }
     }
 

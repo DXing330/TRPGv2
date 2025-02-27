@@ -115,6 +115,11 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public string ReturnMainPartyEquipment(int selected)
+    {
+        return mainPartyData.partyEquipment[selected];
+    }
+
     public int ReturnHealingCost()
     {
         int healCost = 0;

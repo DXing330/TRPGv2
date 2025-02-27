@@ -55,4 +55,10 @@ public class CharacterList : ScriptableObject
             // Add the other stuff later in harder dungeons/fights.
         }
     }
+
+    public void UpdateBasedOnPartyData(PartyData partyData)
+    {
+        ResetLists();
+        AddToParty(partyData.GetNames(), partyData.GetStats(), partyData.GetSpriteNames(), partyData.GetEquipmentStats());
+    }
 }

@@ -69,17 +69,20 @@ public class SelectStatTextList : StatTextList
         }
     }
 
-    public void UpdateActorPassiveTexts(TacticActor actor, string currentlyEquipped)
+    public void UpdateActorPassiveTexts(TacticActor actor, string currentlyEquipped = "")
     {
         page = 0;
         stats.Clear();
         data.Clear();
         ResetPage();
-        string[] allEquipped = currentlyEquipped.Split("@");
-        for (int i = 0; i < allEquipped.Length; i++)
+        if (currentlyEquipped.Length > 0)
         {
-            equipment.SetAllStats(allEquipped[i]);
-            equipment.EquipToActor(actor);
+            string[] allEquipped = currentlyEquipped.Split("@");
+            for (int i = 0; i < allEquipped.Length; i++)
+            {
+                equipment.SetAllStats(allEquipped[i]);
+                equipment.EquipToActor(actor);
+            }
         }
         stats = new List<string>(actor.GetPassiveSkills());
         data = new List<string>(actor.GetPassiveLevels());

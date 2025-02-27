@@ -55,6 +55,14 @@ public class GeneralUtility : ScriptableObject
         }
     }
 
+    public void EnableGameObjects(List<GameObject> objects)
+    {
+        for (int i = 0; i < objects.Count; i++)
+        {
+            objects[i].SetActive(true);
+        }
+    }
+
     public List<string> RemoveEmptyListItems(List<string> stringList, int minLength = 0)
     {
         for (int i = stringList.Count - 1; i >= 0; i--)

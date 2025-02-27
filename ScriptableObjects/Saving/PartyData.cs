@@ -106,6 +106,12 @@ public class PartyData : SavedData
     }
     public override void Save()
     {
+        partyNames = utility.RemoveEmptyListItems(partyNames);
+        partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
+        partyBaseStats = utility.RemoveEmptyListItems(partyBaseStats);
+        partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
+        //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
+        battleFees = utility.RemoveEmptyListItems(battleFees);
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
         string tempData = "";
@@ -298,7 +304,15 @@ public class PartyData : SavedData
         partySpriteNames.Add(spriteName);
         partyBaseStats.Add(baseStats);
         partyNames.Add(personalName);
-        partyEquipment.Add(equipment);
+        // If equipment is empty this could cause an issue.
+        if (partyEquipment.Count >= partyNames.Count)
+        {
+            partyEquipment[partyNames.Count - 1] = equipment;
+        }
+        else
+        {
+            partyEquipment.Add(equipment);
+        }
         partyCurrentStats.Add(currentStats);
         battleFees.Add(fee);
     }

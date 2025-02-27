@@ -8,10 +8,18 @@ public class SceneMover : MonoBehaviour
     public LoadingScreen loadingScreen;
     public SceneTracker sceneTracker;
     public bool loadingRequired = false;
+    public string hubSceneName = "Hub";
+    public PartyData permanentParty;
+    public PartyData mainParty;
 
     public void LoadScene(string sceneName)
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        if (sceneName == hubSceneName)
+        {
+            ReturnToHub();
+            return;
+        }
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(sceneName));
@@ -19,6 +27,21 @@ public class SceneMover : MonoBehaviour
         else
         {
             StartCoroutine(LoadAsyncScene(sceneName));
+        }
+    }
+
+    public void ReturnToHub()
+    {
+        sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        permanentParty.ResetCurrentStats();
+        mainParty.ResetCurrentStats();
+        if (loadingRequired)
+        {
+            StartCoroutine(LoadingScreenMoveScene(hubSceneName));
+        }
+        else
+        {
+            StartCoroutine(LoadAsyncScene(hubSceneName));
         }
     }
 
@@ -37,7 +60,6 @@ public class SceneMover : MonoBehaviour
 
     public void ReturnFromDungeon(bool clear = true)
     {
-        // TODO: Go to victory screen.
         if (clear)
         {
             if (loadingRequired)
@@ -51,7 +73,6 @@ public class SceneMover : MonoBehaviour
         }
         else
         {
-            // For now just go back to hub.
             if (loadingRequired)
             {
                 StartCoroutine(LoadingScreenMoveScene("Hub"));
@@ -68,6 +89,11 @@ public class SceneMover : MonoBehaviour
         // If you lose go somewhere else.
         //if (victory != 0)
         //else
+        if (sceneTracker.GetPreviousScene() == hubSceneName)
+        {
+            ReturnToHub();
+            return;
+        }
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(sceneTracker.GetPreviousScene()));

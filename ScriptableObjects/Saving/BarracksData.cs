@@ -16,10 +16,19 @@ public class BarracksData : PartyData
     }
     protected void AddToBarracks(string personalName, string spriteName, string baseStats, string equipment, string currentStats, string fee)
     {
+        Debug.Log(equipment);
         partyNames.Add(personalName);
         partySpriteNames.Add(spriteName);
         partyBaseStats.Add(baseStats);
-        partyEquipment.Add(equipment);
+        // If equipment is empty this could cause an issue.
+        if (partyEquipment.Count >= partyNames.Count)
+        {
+            partyEquipment[partyNames.Count - 1] = equipment;
+        }
+        else
+        {
+            partyEquipment.Add(equipment);
+        }
         partyCurrentStats.Add(currentStats);
         battleFees.Add(fee);
     }
@@ -27,6 +36,7 @@ public class BarracksData : PartyData
     public void AddFromBarracks(int index, PartyDataManager partyDataManager)
     {
         partyDataManager.mainPartyData.AddAllStats(partyNames[index], partySpriteNames[index], partyBaseStats[index], partyEquipment[index], partyCurrentStats[index], battleFees[index]);
+        RemoveStatsAtIndex(index);
         partyDataManager.Save();
         Save();
     }
