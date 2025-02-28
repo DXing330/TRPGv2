@@ -10,6 +10,7 @@ public class BattleManager : MonoBehaviour
     public ActorMaker actorMaker;
     public BattleMapFeatures battleMapFeatures;
     public InitiativeTracker initiativeTracker;
+    public CombatLog combatLog;
     public CharacterList playerParty;
     public CharacterList enemyParty;
     public EffectManager effectManager;
@@ -46,6 +47,7 @@ public class BattleManager : MonoBehaviour
     }
     public bool interactable = true;
     public int roundNumber;
+    public int GetRoundNumber(){return roundNumber;}
     public int turnNumber = 0;
     public int GetTurnIndex(){return turnNumber;}
     public TacticActor turnActor;
@@ -61,8 +63,10 @@ public class BattleManager : MonoBehaviour
     // Updates stats UI inbetween turns.
     protected void ChangeTurn()
     {
+        combatLog.AddNewLog();
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
+        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+"'s Turn");
         // Apply Conditions/Passives.
         effectManager.StartTurn(turnActor);
         UI.battleStats.SetActor(turnActor);
@@ -158,6 +162,8 @@ public class BattleManager : MonoBehaviour
         selectedActor = null;
         map.ResetHighlights();
         UI.ResetActiveSelectList();
+        UI.battleStats.UpdateBasicStats();
+        UI.battleStats.UpdateSpendableStats();
     }
 
     public void ClickOnTile(int tileNumber)
@@ -182,7 +188,10 @@ public class BattleManager : MonoBehaviour
             break;
             case "":
             ViewActorOnTile(selectedTile);
-            break;
+            return;
+            case "View":
+            ViewActorOnTile(selectedTile);
+            return;
             case "Skill":
             // Target the tile and update the targeted tiles.
             if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
@@ -211,6 +220,7 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
+            UI.battleStats.UpdateNonTurnActor(selectedActor);
             map.UpdateMovingHighlights(selectedActor, moveManager, false);
         }
     }
@@ -230,6 +240,7 @@ public class BattleManager : MonoBehaviour
             ResetState();
             return;
         }
+        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+selectedActor.GetPersonalName()+".");
         ActorAttacksActor(turnActor, selectedActor);
     }
 
@@ -316,10 +327,9 @@ public class BattleManager : MonoBehaviour
         ResetState();
     }
 
-    public void ActivateSkill()
+    public void ActivateSkill(string skillName)
     {
         ResetState();
-        UI.battleStats.UpdateBasicStats();
-        UI.battleStats.UpdateSpendableStats();
+        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" uses "+skillName+".");
     }
 }

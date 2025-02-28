@@ -56,6 +56,7 @@ public class ActorMaker : MonoBehaviour
             {
                 actors[i].SetPersonalName(teamPersonalNames[i]);
             }
+            else{actors[i].SetPersonalName(actors[i].GetSpriteName());}
             if (i < teamEquipment.Count)
             {
                 string[] equipData = teamEquipment[i].Split("@");

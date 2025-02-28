@@ -28,7 +28,7 @@ public class SelectStatTextList : StatTextList
     {
         ResetHighlights();
         if (GetSelected() < 0){return;}
-        statTexts[GetSelected()].SetColor(colors.GetColor(color));
+        statTexts[GetSelected()%statTexts.Count].SetColor(colors.GetColor(color));
     }
     public int selectedIndex = -1;
     public void ResetSelected()

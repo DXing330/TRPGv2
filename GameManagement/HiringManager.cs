@@ -11,10 +11,11 @@ public class HiringManager : MonoBehaviour
         hirelingList.ResetSelected();
     }
     public StatDatabase firstNames;
+    public StatDatabase middleNames;
     public StatDatabase lastNames;
     public string GenerateRandomName()
     {
-        return firstNames.ReturnRandomValue()+" "+lastNames.ReturnRandomValue();
+        return firstNames.ReturnRandomValue()+" "+middleNames.ReturnRandomValue()+" "+lastNames.ReturnRandomValue();
     }
     public StatDatabase actorData;
     public TacticActor dummyActor;

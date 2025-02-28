@@ -65,7 +65,7 @@ public class StatTextList : GameObjectTextList
         {
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[newPageIndices[i]]);
-
+            statTexts[i].SetText(data[newPageIndices[i]]);
         }
     }
     protected override void ResetPage()

@@ -31,4 +31,18 @@ public class BattleStats : MonoBehaviour
             spendableStats[i].SetText(stats[i]);
         }
     }
+
+    public void UpdateNonTurnActor(TacticActor newActor)
+    {
+        List<string> stats = newActor.ReturnStats();
+        for (int i = 0; i < Mathf.Min(stats.Count, basicStats.Count); i++)
+        {
+            basicStats[i].SetText(stats[i]);
+        }
+        stats = newActor.ReturnSpendableStats();
+        for (int i = 0; i < Mathf.Min(stats.Count, spendableStats.Count); i++)
+        {
+            spendableStats[i].SetText("?");
+        }
+    }
 }

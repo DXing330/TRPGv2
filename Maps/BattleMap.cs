@@ -5,6 +5,7 @@ using UnityEngine;
 // Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
+    public CombatLog combatLog;
     public StatDatabase terrainEffectData;
     public SkillEffect effect;
 
@@ -43,9 +44,9 @@ public class BattleMap : MapManager
     {
         // Probably need a table for this.
     }
-    public void ChangeTerrainEffect(int tileNumber, string effect)
+    public void ChangeTerrainEffect(int tileNumber, string newEffect)
     {
-        terrainEffectTiles[tileNumber] = effect;
+        terrainEffectTiles[tileNumber] = newEffect;
         UpdateMap();
     }
     protected void UpdateTerrain()

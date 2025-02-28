@@ -30,7 +30,7 @@ public class AttackManager : ScriptableObject
         baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
-        Debug.Log(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
+        map.combatLog.UpdateNewestLog(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
     }
 

@@ -127,7 +127,7 @@ public class ActiveSelectList : SelectList
             return;
         }
         activeManager.ActivateSkill(battle);
-        battle.ActivateSkill();
+        battle.ActivateSkill(selected);
         // Check if the skill you just used was an item.
         if (inventory.ItemExists(selected))
         {

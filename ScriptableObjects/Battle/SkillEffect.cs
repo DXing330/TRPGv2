@@ -11,7 +11,7 @@ public class SkillEffect : ScriptableObject
         switch (effect)
         {
             case "Status":
-            int duration = 2;
+            int duration = Mathf.Max(2, level);
             // Some statuses don't naturally wear off and are permanent.
             switch (effectSpecifics)
             {
