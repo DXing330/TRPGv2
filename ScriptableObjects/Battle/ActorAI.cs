@@ -6,6 +6,12 @@ using UnityEngine;
 public class ActorAI : ScriptableObject
 {
     public string AIType;
+    public StatDatabase actorAttackSkills;
+
+    public string ReturnAIAttackSkill(TacticActor actor)
+    {
+        return actorAttackSkills.ReturnValue(actor.GetPersonalName());
+    }
 
     public List<int> FindPathToTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {

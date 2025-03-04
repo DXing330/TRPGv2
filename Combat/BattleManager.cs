@@ -296,7 +296,21 @@ public class BattleManager : MonoBehaviour
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                     StartCoroutine(MoveAlongPath(turnActor, path));
                 }
-                ActorAttacksActor(turnActor, turnActor.GetTarget());
+                // Check if the actor can use their designated skill(s). How to deal with AOE skills?
+                string attackActive = actorAI.ReturnAIAttackSkill(turnActor);
+                if (activeManager.SkillExists(attackActive))
+                {
+                    activeManager.SetSkillFromName(actorAI.ReturnAIAttackSkill(turnActor));
+                    activeManager.SetSkillUser(turnActor);
+                    if (activeManager.CheckSkillCost())
+                    {
+                        activeManager.GetTargetedTiles(turnActor.GetTarget().GetLocation(), moveManager.actorPathfinder);
+                        ActivateSkill(attackActive);
+                        activeManager.ActivateSkill(this);
+                    }
+                    else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
+                }
+                else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
             }
             else
             {

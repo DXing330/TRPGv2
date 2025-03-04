@@ -13,6 +13,11 @@ public class ActiveManager : MonoBehaviour
     public List<int> targetableTiles;
     public List<int> targetedTiles;
 
+    public bool SkillExists(string skillName)
+    {
+        return activeData.KeyExists(skillName);
+    }
+
     public void SetSkillFromName(string skillName)
     {
         active.LoadSkill(activeData.ReturnStats(skillName));
@@ -106,6 +111,14 @@ public class ActiveManager : MonoBehaviour
                 {
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
                 }
+            }
+            return;
+            case "Attack+Status":
+            if (targets.Count <= 0){return;}
+            for (int i = 0; i < targets.Count; i++)
+            {
+                battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                active.AffectActor(targets[i], "Status", active.GetSpecifics(), active.GetPower());
             }
             return;
             case "Attack+Displace":
