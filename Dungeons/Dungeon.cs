@@ -41,6 +41,7 @@ public class Dungeon : ScriptableObject
         {
             treasureLocations.Add(int.Parse(tLoc[i]));
         }
+        InitializeViewedTiles();
     }
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
@@ -67,6 +68,7 @@ public class Dungeon : ScriptableObject
     public bool fastSpawn = false;
     public int minEnemies;
     public int maxEnemies;
+    public int enemyChaseRange = 6;
     public string type = "Forest";
     public string passableTileType = "Plains";
     public int maxFloors;
@@ -77,6 +79,23 @@ public class Dungeon : ScriptableObject
     // QUESTS and other stuff.
     // Store all the floors, incase you can go up or down floors?
     //public List<string> allFloorData;
+    public List<bool> viewedTiles;
+    protected void InitializeViewedTiles()
+    {
+        viewedTiles.Clear();
+        for (int i = 0; i < GetDungeonSize() * GetDungeonSize(); i++)
+        {
+            viewedTiles.Add(false);
+        }
+    }
+    public void UpdateViewedTiles(List<int> currentTiles)
+    {
+        for (int i = 0; i < currentTiles.Count; i++)
+        {
+            if (currentTiles[i] < 0 || currentTiles[i] >= viewedTiles.Count){continue;}
+            viewedTiles[currentTiles[i]] = true;
+        }
+    }
     public List<string> currentFloorTiles;
     public List<int> moveCosts;
     public void SetFloorTiles(List<string> newTiles, int floor = 0)
@@ -243,6 +262,11 @@ public class Dungeon : ScriptableObject
             // Move toward the player.
             currentEnemyLocation = allEnemyLocations[i];
             enemyPath = pathfinder.GetPrecomputedPath(partyLocation, currentEnemyLocation);
+            if (enemyPath.Count >= enemyChaseRange)
+            {
+                // Maybe move in a random direction?
+                continue;
+            }
             if (enemyPath.Count < 2)
             {
                 allEnemyLocations[i] = partyLocation;

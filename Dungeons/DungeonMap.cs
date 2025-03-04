@@ -6,6 +6,7 @@ public class DungeonMap : MapManager
 {
     public int maxDistanceFromCenter = 3;
     public Dungeon dungeon;
+    public DungeonMiniMap miniMap;
     public SceneMover sceneMover;
     // layers: 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
 
@@ -77,6 +78,9 @@ public class DungeonMap : MapManager
     {
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, dungeon.currentFloorTiles, currentTiles);
+        dungeon.UpdateViewedTiles(currentTiles);
+        miniMap.UpdateMiniMapString(currentTiles);
+        if (miniMap.active){miniMap.UpdateMiniMap();}
         UpdateActors();
     }
 
