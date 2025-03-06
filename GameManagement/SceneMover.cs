@@ -9,6 +9,7 @@ public class SceneMover : MonoBehaviour
     public SceneTracker sceneTracker;
     public bool loadingRequired = false;
     public string hubSceneName = "Hub";
+    public string dungeonSceneName = "Dungeon";
     public PartyData permanentParty;
     public PartyData mainParty;
 
@@ -45,6 +46,19 @@ public class SceneMover : MonoBehaviour
         }
     }
 
+    public void MoveToDungeon()
+    {
+        sceneTracker.SetPreviousScene(hubSceneName);
+        if (loadingRequired)
+        {
+            StartCoroutine(LoadingScreenMoveScene(dungeonSceneName));
+        }
+        else
+        {
+            StartCoroutine(LoadAsyncScene(dungeonSceneName));
+        }
+    }
+
     public void MoveToBattle()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
@@ -71,23 +85,18 @@ public class SceneMover : MonoBehaviour
                 StartCoroutine(LoadAsyncScene("DungeonRewards"));
             }
         }
-        else
-        {
-            if (loadingRequired)
-            {
-                StartCoroutine(LoadingScreenMoveScene("Hub"));
-            }
-            else
-            {
-                StartCoroutine(LoadAsyncScene("Hub"));
-            }
-        }
+        else{ReturnToHub();}
     }
 
     public void ReturnFromBattle(int victory = 0)
     {
         // If you lose go somewhere else.
-        //if (victory != 0)
+        if (victory != 0)
+        {
+            // Fail any quest in the dungeon.
+            ReturnToHub();
+            return;
+        }
         //else
         if (sceneTracker.GetPreviousScene() == hubSceneName)
         {

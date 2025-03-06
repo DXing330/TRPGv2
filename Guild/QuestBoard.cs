@@ -102,5 +102,10 @@ public class QuestBoard : MonoBehaviour
     public void BeginQuest()
     {
         if (questSelect.GetSelected() < 0){return;}
+        string[] questDetails = availableQuests[questSelect.GetSelected()].Split("|");
+        dungeon.SetDungeonName(questDetails[1]);
+        dungeon.SetQuestInfo(availableQuests[questSelect.GetSelected()]);
+        dungeon.MakeDungeon();
+        sceneMover.MoveToDungeon();
     }
 }

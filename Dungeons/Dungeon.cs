@@ -41,17 +41,49 @@ public class Dungeon : ScriptableObject
         {
             treasureLocations.Add(int.Parse(tLoc[i]));
         }
+        goalTile = -1;
+        if (currentFloor == goalFloor)
+        {
+            GenerateQuestGoal();
+        }
         InitializeViewedTiles();
+    }
+    protected void GenerateQuestGoal()
+    {
+        switch (questGoal)
+        {
+            case "Search":
+            goalTile = RandomEmptyTile();
+            break;
+            case "Defeat":
+            goalTile = stairsDown;
+            // Spawn a random boss tier enemy on the stairs.
+            break;
+            case "Rescue":
+            goalTile = RandomEmptyTile();
+            break;
+        }
     }
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
     // Need to determine what floor the goal is on.
     public string questInfo;
     public int goalFloor;
+    public int goalTile;
+    public bool GoalTile(int tileNumber)
+    {
+        if (goalFloor != currentFloor){return false;}
+        return tileNumber == goalTile;
+    }
+    public string questGoal;
+    public int questGoalsCompleted;
     public void SetQuestInfo(string newQuest)
     {
         questInfo = newQuest;
         goalFloor = Random.Range(currentFloor, maxFloors+1);
+        string[] questData = questInfo.Split("|");
+        questGoal = questData[0];
+        questGoalsCompleted = 0;
     }
     public string dungeonName;
     public void SetDungeonName(string newName)
@@ -130,6 +162,15 @@ public class Dungeon : ScriptableObject
         {
             partyLocations[allEnemyLocations[i]] = allEnemySprites[i];
         }
+        if (currentFloor == goalFloor && goalTile >= 0)
+        {
+            switch (questGoal)
+            {
+                case "Search":
+                partyLocations[goalTile] = "Necklace";
+                break;
+            }
+        }
         partyLocations[partyLocation] = partySprite;
         partyLocations[stairsDown] = stairsDownSprite;
     }
@@ -197,6 +238,11 @@ public class Dungeon : ScriptableObject
         {
             ClaimTreasure();
         }
+        if (GoalTile(partyLocation))
+        {
+            questGoalsCompleted++;
+            goalTile = -1;
+        }
         MoveEnemies();
         TryToSpawnEnemy();
         if (partyLocation == stairsDown){MoveFloors();}
@@ -228,6 +274,19 @@ public class Dungeon : ScriptableObject
     public bool TilePassable(int tileNumber)
     {
         return currentFloorTiles[tileNumber] == passableTileType;
+    }
+    public int RandomEmptyTile()
+    {
+        for (int i = 0; i < GetDungeonSize()*GetDungeonSize(); i++)
+        {
+            int tileNumber = Random.Range(0, GetDungeonSize()*GetDungeonSize());
+            if (TileEmpty(tileNumber)){return tileNumber;}
+        }
+        return -1;
+    }
+    public bool TileEmpty(int tileNumber)
+    {
+        return (TilePassable(tileNumber) && partyLocations[tileNumber] == "");
     }
     public void TryToSpawnEnemy()
     {

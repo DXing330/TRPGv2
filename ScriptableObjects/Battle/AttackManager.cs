@@ -14,6 +14,7 @@ public class AttackManager : ScriptableObject
     protected int damageMultiplier;
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1)
     {
+        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         advantage = 0;
         if (attackMultiplier < 0){damageMultiplier = baseMultiplier;}
         else {damageMultiplier = attackMultiplier;}
@@ -31,7 +32,6 @@ public class AttackManager : ScriptableObject
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
-        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
     }
 
     protected int RollAttackDamage(int baseAttack)
