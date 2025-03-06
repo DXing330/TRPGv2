@@ -10,6 +10,10 @@ public class QuestSuccessChecker : MonoBehaviour
         {
             case "Find":
             return partyData.inventory.ItemExists(specifics);
+            case "Escort":
+            return partyData.tempPartyData.PartyMemberIncluded(specifics);
+            case "Rescue":
+            return partyData.tempPartyData.PartyMemberIncluded(specifics);
         }
         // This only happens when the dungeon is completed, so default is true since if you cleared the dungeon you have defeated all required enemies.
         return true;

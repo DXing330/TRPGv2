@@ -45,6 +45,14 @@ public class Dungeon : ScriptableObject
     }
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
+    // Need to determine what floor the goal is on.
+    public string questInfo;
+    public int goalFloor;
+    public void SetQuestInfo(string newQuest)
+    {
+        questInfo = newQuest;
+        goalFloor = Random.Range(currentFloor, maxFloors+1);
+    }
     public string dungeonName;
     public void SetDungeonName(string newName)
     {
