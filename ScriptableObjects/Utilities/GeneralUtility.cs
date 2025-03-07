@@ -179,4 +179,10 @@ public class GeneralUtility : ScriptableObject
     {
         return String.Join(delimiter, string_list);
     }
+
+    public string ConvertArrayToString(string[] string_array, string delimiter = "|")
+    {
+        List<string> string_list = string_array.ToList();
+        return ConvertListToString(string_list, delimiter);
+    }
 }

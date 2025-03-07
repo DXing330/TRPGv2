@@ -64,7 +64,7 @@ public class QuestBoard : MonoBehaviour
         {
             string[] questDetails = availableQuests[i].Split("|");
             goals.Add(questDetails[0]);
-            rewards.Add(questDetails[questDetails.Length-1]+" Gold");
+            rewards.Add(questDetails[2]+" Gold");
         }
         questSelect.SetStatsAndData(goals, rewards);
     }

@@ -44,6 +44,7 @@ public class DungeonMiniMap : MonoBehaviour
                 if (i == dungeon.partyLocation){miniMapText += "<color=blue>P</color>";}
                 else if (dungeon.EnemyLocation(i) && currentTiles.Contains(i)){miniMapText += "<color=red>E</color>";}
                 else if (dungeon.StairsDownLocation(i)){miniMapText += "<color=green>S</color>";}
+                else if (dungeon.GoalTile(i)){miniMapText += "<color=green>Q</color>";}
                 else if (dungeon.TreasureLocation(i)){miniMapText += "<color=green>T</color>";}
                 else if (dungeon.TilePassable(i)){miniMapText += " ";}
                 else{miniMapText += "X";}

@@ -226,6 +226,8 @@ public class MoveCostManager : MonoBehaviour
         int moveSkillDirection = mover.GetDirection();
         switch (moveDirection)
         {
+            case "Forward":
+            break;
             case "Back":
             moveSkillDirection = (moveSkillDirection + 3)%6;
             break;

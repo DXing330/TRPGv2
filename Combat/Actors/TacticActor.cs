@@ -9,7 +9,6 @@ public class TacticActor : ActorStats
     public string GetWeaponType(){return weaponType;}
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
-    //public ActorStats allStats;
     public int team;
     public int GetTeam(){return team;}
     public void SetTeam(int newTeam){team = newTeam;}

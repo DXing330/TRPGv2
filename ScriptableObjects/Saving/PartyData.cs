@@ -22,6 +22,11 @@ public class PartyData : SavedData
     public List<string> partySpriteNames;
     public List<string> GetSpriteNames(){return partySpriteNames;}
     public List<string> partyBaseStats;
+    public List<string> GetBaseStats(){return partyBaseStats;}
+    public void ChangeBaseStats(string newStats, int index)
+    {
+        partyBaseStats[index] = newStats;
+    }
     // Equipment goes here?
     public List<string> partyEquipment;
     public List<string> partyCurrentStats;

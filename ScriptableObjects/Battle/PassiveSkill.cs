@@ -145,11 +145,11 @@ public class PassiveSkill : SkillEffect
             case 1:
             return "Back";
             case 2:
-            return "Face";
+            return "Front";
             case 3:
             return "Opposite";
             case 4:
-            return "Face";
+            return "Front";
             case 5:
             return "Back";
         }
@@ -159,7 +159,7 @@ public class PassiveSkill : SkillEffect
     public bool CheckDirectionSpecifics(string conditionSpecifics, string specifics)
     {
         if (conditionSpecifics == "Back" && specifics == "Same"){return true;}
-        else if (conditionSpecifics == "Face" && specifics == "Opposite"){return true;}
+        else if (conditionSpecifics == "Front" && specifics == "Opposite"){return true;}
         return (conditionSpecifics == specifics);
     }
 

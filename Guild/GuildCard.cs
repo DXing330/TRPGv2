@@ -16,6 +16,19 @@ public class GuildCard : SavedData
     // Gain exp = difficulty of quest squared?
     public int guildExp;
     public void SetGuildExp(int newExp){guildExp = newExp;}
+    public void GainGuildExp(int amount)
+    {
+        guildExp += amount;
+        if (guildExp > GetGuildRank()*GetGuildRank()*GetGuildRank())
+        {
+            guildRank++;
+        }
+    }
+    public void RefreshAll()
+    {
+        newHireables = 1;
+        newQuests = 1;
+    }
     public int GetGuildExp(){return guildExp;}
     public List<string> acceptedQuests;
     public void AcceptQuest(string newQuest){acceptedQuests.Add(newQuest);}

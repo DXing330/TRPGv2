@@ -37,6 +37,7 @@ public class Dungeon : ScriptableObject
         SetPartyLocation(int.Parse(newDungeon[1]));
         stairsDown = int.Parse(newDungeon[2]);
         List<string> tLoc = newDungeon[3].Split("|").ToList();
+        treasureLocations.Clear();
         for (int i = 0; i < tLoc.Count; i++)
         {
             treasureLocations.Add(int.Parse(tLoc[i]));
@@ -53,14 +54,14 @@ public class Dungeon : ScriptableObject
         switch (questGoal)
         {
             case "Search":
-            goalTile = RandomEmptyTile();
+            goalTile = FindRandomEmptyTile();
             break;
             case "Defeat":
             goalTile = stairsDown;
             // Spawn a random boss tier enemy on the stairs.
             break;
             case "Rescue":
-            goalTile = RandomEmptyTile();
+            goalTile = FindRandomEmptyTile();
             break;
         }
     }
@@ -68,6 +69,7 @@ public class Dungeon : ScriptableObject
     public StatDatabase dungeonData;
     // Need to determine what floor the goal is on.
     public string questInfo;
+    public string GetQuestInfo(){return questInfo;}
     public int goalFloor;
     public int goalTile;
     public bool GoalTile(int tileNumber)
@@ -76,7 +78,10 @@ public class Dungeon : ScriptableObject
         return tileNumber == goalTile;
     }
     public string questGoal;
+    public string GetQuestGoal(){return questGoal;}
     public int questGoalsCompleted;
+    public int questReward;
+    public int GetQuestReward(){return questReward;}
     public void SetQuestInfo(string newQuest)
     {
         questInfo = newQuest;
@@ -84,6 +89,14 @@ public class Dungeon : ScriptableObject
         string[] questData = questInfo.Split("|");
         questGoal = questData[0];
         questGoalsCompleted = 0;
+        questReward = int.Parse(questData[2]);
+    }
+    protected void ResetQuest()
+    {
+        questInfo = "";
+        goalFloor = -1;
+        questGoalsCompleted = 0;
+        questReward = 0;
     }
     public string dungeonName;
     public void SetDungeonName(string newName)
@@ -94,6 +107,7 @@ public class Dungeon : ScriptableObject
         treasuresAcquired = 0;
         spawnCounter = 0;
         ResetAllEnemies();
+        ResetQuest();
         maxFloors = int.Parse(dungeonInfo[0]);
         type = dungeonInfo[1];
         possibleEnemies = dungeonInfo[2].Split(",").ToList();
@@ -275,15 +289,6 @@ public class Dungeon : ScriptableObject
     {
         return currentFloorTiles[tileNumber] == passableTileType;
     }
-    public int RandomEmptyTile()
-    {
-        for (int i = 0; i < GetDungeonSize()*GetDungeonSize(); i++)
-        {
-            int tileNumber = Random.Range(0, GetDungeonSize()*GetDungeonSize());
-            if (TileEmpty(tileNumber)){return tileNumber;}
-        }
-        return -1;
-    }
     public bool TileEmpty(int tileNumber)
     {
         return (TilePassable(tileNumber) && partyLocations[tileNumber] == "");
@@ -292,7 +297,7 @@ public class Dungeon : ScriptableObject
     {
         spawnCounter++;
         // If you're lucky enemies will never spawn.
-        int spawnCheck = Random.Range(0, (dungeonSize * 6)/(currentFloor + 1));
+        int spawnCheck = Random.Range(0, (dungeonSize * 6) + spawnCounter);
         if (fastSpawn){spawnCheck = spawnCheck/10;}
         if (spawnCheck < spawnCounter)
         {
@@ -341,7 +346,25 @@ public class Dungeon : ScriptableObject
             }
             allEnemyLocations[i] = enemyPath[1];
         }
+        CombineEnemies();
         UpdatePartyLocations();
+    }
+    protected void CombineEnemies()
+    {
+        for (int i = allEnemyLocations.Count - 1; i > 0; i--)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                if (allEnemyLocations[j] == allEnemyLocations[i])
+                {
+                    allEnemyLocations.RemoveAt(i);
+                    allEnemyParties[j] += "|"+allEnemyParties[i];
+                    allEnemyParties.RemoveAt(i);
+                    allEnemySprites.RemoveAt(i);
+                    continue;
+                }
+            }
+        }
     }
     protected int FindRandomEmptyTile()
     {
@@ -350,7 +373,7 @@ public class Dungeon : ScriptableObject
         for (int i = 0; i < tries; i++)
         {
             tile = Random.Range(0, partyLocations.Count);
-            if (currentFloorTiles[tile] == passableTileType && partyLocations[tile].Length < 1){break;}
+            if (TileEmpty(tile)){break;}
             else{tile = -1;}
         }
         return tile;
