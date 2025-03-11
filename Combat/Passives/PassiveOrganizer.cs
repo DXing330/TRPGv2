@@ -2,15 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PassiveOrganizer : MonoBehaviour
+[CreateAssetMenu(fileName = "PassiveOrganizer", menuName = "ScriptableObjects/BattleLogic/PassiveOrganizer", order = 1)]
+public class PassiveOrganizer : ScriptableObject
 {
     public List<string> testPassiveList;
     public List<string> testPassiveLevels;
-    [ContextMenu("Test Sorting")]
-    public void TestSorting()
-    {
-        OrganizePassivesList(testPassiveList, testPassiveLevels);
-    }
     public MultiKeyStatDatabase passiveNameLevels;
     public StatDatabase passiveTiming;
     public List<string> startBattlePassives;
@@ -81,7 +77,7 @@ public class PassiveOrganizer : MonoBehaviour
 
     public void OrganizeActorPassives(TacticActor actor)
     {
-        OrganizePassivesList(actor.passiveSkills, actor.passiveLevels);
+        OrganizePassivesList(actor.GetPassiveSkills(), actor.GetPassiveLevels());
         actor.SetStartBattlePassives(startBattlePassives);
         actor.SetStartTurnPassives(startTurnPassives);
         actor.SetEndTurnPassives(endTurnPassives);

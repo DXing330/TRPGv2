@@ -56,7 +56,10 @@ public class ActiveManager : MonoBehaviour
     public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder)
     {
         targetedTiles = new List<int>(GetTiles(start, active.GetShape(), pathfinder, false));
-        targetedTiles.Add(start);
+        if (active.GetShape() == "Circle" || active.GetShape() == "None")
+        {
+            targetedTiles.Add(start);
+        }
         return targetedTiles;
     }
 
@@ -74,6 +77,8 @@ public class ActiveManager : MonoBehaviour
             return pathfinder.FindTilesInRange(startTile, range);
             case "Line":
             return pathfinder.GetTilesInLineRange(startTile, range);
+            case "Cone":
+            return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
         }
         return new List<int>();
     }

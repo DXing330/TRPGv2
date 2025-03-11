@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EffectManager : MonoBehaviour
 {
+    public PassiveOrganizer passiveOrganizer;
     public PassiveSkill passive;
     public StatDatabase passiveData;
     // Condition is a bad name, since passives have conditions to activate.
@@ -25,5 +26,9 @@ public class EffectManager : MonoBehaviour
     {
         status.ApplyEffects(actor, statusData, "End");
         passive.ApplyPassives(actor, passiveData, "End");
+        if (actor.DecreaseTempPassiveDurations())
+        {
+            passiveOrganizer.OrganizeActorPassives(actor);
+        }
     }
 }

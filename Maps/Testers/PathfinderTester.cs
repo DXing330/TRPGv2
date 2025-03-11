@@ -6,6 +6,7 @@ public class PathfinderTester : MonoBehaviour
 {
     public bool debugThis;
     public MapPathfinder pathfinder;
+    public int testConeStart;
     public int testTile;
     public int testDirection;
     public int testSize;
@@ -45,5 +46,20 @@ public class PathfinderTester : MonoBehaviour
         {
             Debug.Log(tiles[i]);
         }
+    }
+
+    [ContextMenu("Test Cone Range")]
+    public void TestConeRange()
+    {
+        if (!debugThis){return;}
+        pathfinder.SetMapSize(testSize);
+        List<int> tiles = pathfinder.GetTilesInConeShape(testTile, testRange, testConeStart);
+        tiles.Sort();
+        string tilesString = "";
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            tilesString += tiles[i]+" ";
+        }
+        Debug.Log(tilesString);
     }
 }

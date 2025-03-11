@@ -30,8 +30,12 @@ public class ActorPassives : MonoBehaviour
             if (passiveSkills[i].Length <= 1){passiveSkills.RemoveAt(i);}
         }
     }
-    public List<string> GetPassiveSkills(){return passiveSkills;}
-    
+    public List<string> GetPassiveSkills()
+    {
+        List<string> allPassives = new List<string>(passiveSkills);
+        allPassives.AddRange(tempPassives);
+        return allPassives;
+    }
     public List<string> passiveLevels;
     public void SetPassiveLevels(List<string> newLevels)
     {
@@ -42,7 +46,47 @@ public class ActorPassives : MonoBehaviour
             if (passiveLevels[i].Length < 1){passiveLevels.RemoveAt(i);}
         }
     }
-    public List<string> GetPassiveLevels(){return passiveLevels;}
+    public List<string> GetPassiveLevels()
+    {
+        List<string> allLevels = new List<string>(passiveLevels);
+        for (int i = 0; i < tempPassives.Count; i++)
+        {
+            allLevels.Add("1");
+        }
+        return allLevels;
+    }
+    // Temporary Passives Are Always Level 1.
+    public List<string> tempPassives;
+    public List<int> tempPassiveDurations;
+    public void AddTempPassive(string passive, int duration)
+    {
+        int indexOf = tempPassives.IndexOf(passive);
+        if (indexOf == -1)
+        {
+            tempPassives.Add(passive);
+            tempPassiveDurations.Add(duration);
+        }
+        else
+        {
+            tempPassiveDurations[indexOf] += duration;
+        }
+    }
+    // If any temp passives expire then reorganize the passives.
+    public bool DecreaseTempPassiveDurations()
+    {
+        bool removed = false;
+        for (int i = tempPassiveDurations.Count - 1; i >= 0; i--)
+        {
+            tempPassiveDurations[i] -= 1;
+            if (tempPassiveDurations[i] == 0)
+            {
+                removed = true;
+                tempPassiveDurations.RemoveAt(i);
+                tempPassives.RemoveAt(i);
+            }
+        }
+        return removed;
+    }
     public void ShowPassives()
     {
         for (int i = 0; i < passiveSkills.Count; i++)

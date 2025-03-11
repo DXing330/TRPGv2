@@ -5,11 +5,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillEffect", menuName = "ScriptableObjects/BattleLogic/SkillEffect", order = 1)]
 public class SkillEffect : ScriptableObject
 {
+    public PassiveOrganizer passiveOrganizer;
     public int basicDenominator = 100;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1)
     {
         switch (effect)
         {
+            case "Temporary Passive":
+            target.AddTempPassive(effectSpecifics, level);
+            passiveOrganizer.OrganizeActorPassives(target);
+            break;
             case "Status":
             int duration = Mathf.Max(2, level);
             // Some statuses don't naturally wear off and are permanent.
