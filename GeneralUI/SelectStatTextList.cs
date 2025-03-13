@@ -133,7 +133,7 @@ public class SelectStatTextList : StatTextList
             stats.Add(splitData[0]);
         }
         page = 0;
-        UpdateCurrentPage();
+        UpdateStatPortion();
     }
 
     public void UpdatePotentialPassives(TacticActor actor, string currentEquipment, string newEquipment)

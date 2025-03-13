@@ -53,4 +53,13 @@ public class Equipment : MonoBehaviour
             actor.AddPassiveSkill(passives[i], passiveLevels[i]);
         }
     }
+
+    public void EquipWeapon(TacticActor actor)
+    {
+        if (allStats.Length < 6){return;}
+        if (slot == "Weapon")
+        {
+            actor.SetWeaponType(type);
+        }
+    }
 }

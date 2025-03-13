@@ -118,6 +118,17 @@ public class ActiveManager : MonoBehaviour
                 }
             }
             return;
+            case "Attack+Drain":
+            if (targets.Count <= 0){return;}
+            for (int i = 0; i < targets.Count; i++)
+            {
+                for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                }
+                skillUser.UpdateHealth(Mathf.Max(0, skillUser.GetAttack() - targets[i].GetDefense()), false);
+            }
+            return;
             case "Attack+Status":
             if (targets.Count <= 0){return;}
             for (int i = 0; i < targets.Count; i++)

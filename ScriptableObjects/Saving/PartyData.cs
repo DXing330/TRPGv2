@@ -29,6 +29,7 @@ public class PartyData : SavedData
     }
     // Equipment goes here?
     public List<string> partyEquipment;
+    public List<string> GetEquipment(){return partyEquipment;}
     public List<string> partyCurrentStats;
     // Hiring costs go here.
     // Might change with promotions.

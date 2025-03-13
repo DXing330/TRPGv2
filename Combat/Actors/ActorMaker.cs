@@ -7,7 +7,6 @@ public class ActorMaker : MonoBehaviour
     public Equipment equipmentPrefab;
     public TacticActor actorPrefab;
     public StatDatabase actorStats;
-    public StatDatabase actorSpriteNames;
     public PassiveOrganizer passiveOrganizer;
     public MapPatternLocations mapPatterns;
     public int mapSize;

@@ -94,9 +94,13 @@ public class PassiveDetailViewer : MonoBehaviour
                 switch (specifics)
                 {
                     case "Front":
-                    return " if you are facing the enemy.";
+                    return " if you are facing the front side of the enemy.";
                     case "Back":
-                    return " if you are facing the back of the enemy.";
+                    return " if you are facing the back side of the enemy.";
+                    case "Same":
+                    return " if you are facing the back as the enemy.";
+                    case "Opposite":
+                    return " if you are facing the enemy.";
                 }
                 break;
             case "Distance":

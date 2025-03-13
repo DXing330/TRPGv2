@@ -14,10 +14,25 @@ public class DungeonRewardScene : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     // Obtain skills.
     public PartyDataManager partyData;
+    public TacticActor dummyActor;
+    public Equipment dummyEquip;
     public StatTextList allItemRewards;
     public StatTextList allSkillUps;
     public List<string> actorNames;
     public List<string> skillUpNames;
+    public void AddSkillUp(string actor, string skill)
+    {
+        int indexOf = actorNames.IndexOf(actor);
+        if (indexOf < 0)
+        {
+            actorNames.Add(actor);
+            skillUpNames.Add(skill+"+1");
+        }
+        else
+        {
+            skillUpNames[indexOf] += ", "+skill+"+1";
+        }
+    }
     public GameObject questRewardPanel;
     public TMP_Text questGoldReward;
     public QuestSuccessChecker questSuccessChecker;
@@ -67,45 +82,70 @@ public class DungeonRewardScene : MonoBehaviour
             questRewardPanel.SetActive(true);
             questGoldReward.text = questGold.ToString();
             CalculateSkillUps(questGold/10);
+            CalculateSkillUps(questGold/10, false);
         }
         partyData.guildCard.GainGuildExp((questGold*questGold/100));
         partyData.guildCard.RefreshAll();
     }
 
-    protected void CalculateSkillUps(int questDifficulty)
+    protected void CalculateSkillUps(int questDifficulty, bool main = true)
     {
         actorNames.Clear();
         skillUpNames.Clear();
         List<string> spriteNames = partyData.mainPartyData.GetSpriteNames();
         List<string> names = partyData.mainPartyData.GetNames();
         List<string> baseStats = partyData.mainPartyData.GetBaseStats();
-        // Skip the main party for now, they don't have specific class levels.
+        List<string> equipment = partyData.mainPartyData.GetEquipment();
+        if (!main)
+        {
+            spriteNames = partyData.permanentPartyData.GetSpriteNames();
+            names = partyData.permanentPartyData.GetNames();
+            baseStats = partyData.permanentPartyData.GetBaseStats();
+            equipment = partyData.permanentPartyData.GetEquipment();
+        }
         for (int i = 0; i < spriteNames.Count; i++)
         {
-            string[] allBaseStats = baseStats[i].Split("|");
-            // Just hardcode it for now, I doubt the indices will change.
-            string[] allPassives = allBaseStats[9].Split(",");
-            string[] allPassiveLevels = allBaseStats[10].Split(",");
-            for (int j = 0; j < allPassives.Length; j++)
+            dummyActor.SetStatsFromString(baseStats[i]);
+            dummyActor.ResetWeaponType();
+            string[] equipData = equipment[i].Split("@");
+            for (int j = 0; j < equipData.Length; j++)
             {
-                // For now just try to level the class passives.
-                if (allPassives[j] != spriteNames[i]){continue;}
-                // All class passives have a cap of 4.
-                int passiveLevel = int.Parse(allPassiveLevels[j]);
-                if (passiveLevel >= 4){continue;}
-                // Use RNG to determine if the passive levels up.
-                int RNG = Random.Range(0, passiveLevel*passiveLevel);
-                Debug.Log(names[i]+";"+spriteNames[i]+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+(passiveLevel*passiveLevel));
-                // Higher quest difficulty means more likely to level up.
+                dummyEquip.SetAllStats(equipData[j]);
+                dummyEquip.EquipWeapon(dummyActor);
+            }
+            int passiveLevel = dummyActor.GetLevelFromPassive(spriteNames[i]);
+            if (passiveLevel > 0 && passiveLevel < 4)
+            {
+                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1));
+                Debug.Log(names[i]+";"+spriteNames[i]+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1)));
                 if (RNG <= questDifficulty)
                 {
-                    allPassiveLevels[j] = (passiveLevel+1).ToString();
-                    actorNames.Add(names[i]);
-                    skillUpNames.Add(allPassives[j]+"++");
-                    // Roll it all back up.
-                    allBaseStats[10] = utility.ConvertArrayToString(allPassiveLevels, ",");
-                    baseStats[i] = utility.ConvertArrayToString(allBaseStats);
-                    break;
+                    dummyActor.SetLevelOfPassive(spriteNames[i], passiveLevel+1);
+                    dummyActor.ReloadPassives();
+                    baseStats[i] = dummyActor.GetStats();
+                    AddSkillUp(names[i], spriteNames[i]);
+                }
+            }
+            string weaponType = dummyActor.GetWeaponType()+" User";
+            if (weaponType == " User"){continue;} // If no weapon is equipped then continue.
+            passiveLevel = dummyActor.GetLevelFromPassive(weaponType);
+            if (passiveLevel <= 0)
+            {
+                dummyActor.AddPassiveSkill(weaponType, "1");
+                dummyActor.ReloadPassives();
+                baseStats[i] = dummyActor.GetStats();
+                AddSkillUp(names[i], weaponType);
+            }
+            else if (passiveLevel < 4)
+            {
+                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1));
+                Debug.Log(names[i]+";"+weaponType+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1)));
+                if (RNG <= questDifficulty)
+                {
+                    dummyActor.SetLevelOfPassive(weaponType, passiveLevel+1);
+                    dummyActor.ReloadPassives();
+                    baseStats[i] = dummyActor.GetStats();
+                    AddSkillUp(names[i], weaponType);
                 }
             }
         }

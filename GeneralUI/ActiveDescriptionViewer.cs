@@ -35,6 +35,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
             return "Move to the targeted tile and attack any target in "+ASD(s)+" of the the targeted tile.";
             case "Temporary Passive":
             return "Give the target(s) "+ASD(s)+" for "+APD(p)+" turns.";
+            case "Attack+Status":
+            return "Attack the target(s) and inflict "+ASD(s)+" for "+APD(p)+" turns.";
+            case "Attack+Drain":
+            return "Attack the target(s) and absorb some damage as health.";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

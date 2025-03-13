@@ -33,7 +33,6 @@ public class ActorSpriteHPList : MonoBehaviour
         if (GetSelected() < 0){return;}
         actors[GetSelected()%objects.Count].ChangeTextColor(colors.GetColor("Highlight"));
     }
-    public StatDatabase actorSpriteNames;
     public List<GameObject> objects;
     public List<ActorSprite> actors;
     public int textSize;

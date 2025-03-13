@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +8,21 @@ using UnityEngine;
 public class ActorStats : ActorPassives
 {
     public List<string> stats;
+    public void ReloadPassives()
+    {
+        stats[9] = String.Join(",", GetPassiveSkills());
+        stats[10] = String.Join(",", GetPassiveLevels());
+    }
+    public string GetStats()
+    {
+        string allStats = "";
+        for (int i = 0; i < stats.Count; i++)
+        {
+            allStats += stats[i];
+            if (i < stats.Count - 1){allStats+="|";}
+        }
+        return allStats;
+    }
     public void SetStatsFromString(string newStats)
     {
         SetStats(newStats.Split("|").ToList());
@@ -24,7 +41,6 @@ public class ActorStats : ActorPassives
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
     }
-
     protected void SetStat(string newStat, int index)
     {
         switch (index)
@@ -78,7 +94,6 @@ public class ActorStats : ActorPassives
             break;
         }
     }
-
     public void ResetStats()
     {
         currentAttack = baseAttack;

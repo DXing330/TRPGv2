@@ -5,6 +5,7 @@ using UnityEngine;
 public class TacticActor : ActorStats
 {
     public string weaponType;
+    public void ResetWeaponType(){weaponType = "";}
     public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
     public string GetWeaponType(){return weaponType;}
     public GameObject actorObject;

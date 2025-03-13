@@ -68,6 +68,18 @@ public class StatTextList : GameObjectTextList
             statTexts[i].SetText(data[newPageIndices[i]]);
         }
     }
+
+    protected void UpdateStatPortion()
+    {
+        ResetPage();
+        List<int> newPageIndices = new List<int>(utility.GetCurrentPageIndices(page, objects, data));
+        for (int i = 0; i < newPageIndices.Count; i++)
+        {
+            objects[i].SetActive(true);
+            statTexts[i].SetStatText(stats[newPageIndices[i]]);
+        }
+    }
+
     protected override void ResetPage()
     {
         for (int i = 0; i < objects.Count; i++)
