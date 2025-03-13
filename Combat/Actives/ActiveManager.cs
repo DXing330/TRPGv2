@@ -126,7 +126,7 @@ public class ActiveManager : MonoBehaviour
                 {
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
                 }
-                skillUser.UpdateHealth(Mathf.Max(0, skillUser.GetAttack() - targets[i].GetDefense()), false);
+                skillUser.UpdateHealth(Mathf.Max(1, skillUser.GetAttack() - targets[i].GetDefense()), false);
             }
             return;
             case "Attack+Status":
