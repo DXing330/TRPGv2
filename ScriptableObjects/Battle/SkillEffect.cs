@@ -16,7 +16,7 @@ public class SkillEffect : ScriptableObject
             passiveOrganizer.OrganizeActorPassives(target);
             break;
             case "Status":
-            int duration = Mathf.Max(2, level);
+            int duration = level;
             // Some statuses don't naturally wear off and are permanent.
             switch (effectSpecifics)
             {
