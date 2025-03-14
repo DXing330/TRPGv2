@@ -351,10 +351,12 @@ public class Dungeon : ScriptableObject
     }
     protected void CombineEnemies()
     {
-        for (int i = allEnemyLocations.Count - 1; i > 0; i--)
+        int enemyCount = allEnemyLocations.Count;
+        for (int i = enemyCount - 1; i > 0; i--)
         {
             for (int j = 0; j < i; j++)
             {
+                if (j >= allEnemyLocations.Count || i >= allEnemyLocations.Count){break;}
                 if (allEnemyLocations[j] == allEnemyLocations[i])
                 {
                     allEnemyLocations.RemoveAt(i);

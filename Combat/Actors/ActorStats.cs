@@ -25,6 +25,7 @@ public class ActorStats : ActorPassives
     }
     public void SetStatsFromString(string newStats)
     {
+        ClearStatuses();
         SetStats(newStats.Split("|").ToList());
     }
     public void SetStats(List<string> newStats)
@@ -197,6 +198,7 @@ public class ActorStats : ActorPassives
     public void AddActiveSkill(string skillName)
     {
         if (skillName.Length <= 1){return;}
+        if (activeSkills.Contains(skillName)){return;}
         activeSkills.Add(skillName);
     }
     public List<string> tempActives;
@@ -256,6 +258,16 @@ public class ActorStats : ActorPassives
         return curseString;
     }
     public List<int> statusDurations;
+    public void ClearStatuses(string specifics = "*")
+    {
+        if (specifics == "*")
+        {
+            statusDurations.Clear();
+            statuses.Clear();
+            return;
+        }
+        RemoveStatus(specifics);
+    }
     public void AddStatus(string newCondition, int duration)
     {
         // Permanent statuses can stack up infinitely and are a win condition.

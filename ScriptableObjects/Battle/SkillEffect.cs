@@ -45,6 +45,11 @@ public class SkillEffect : ScriptableObject
             case "Defense":
             target.UpdateDefense(int.Parse(effectSpecifics)*level);
             break;
+            case "AllStats":
+            target.UpdateHealth(int.Parse(effectSpecifics)*level, false);
+            target.UpdateAttack(int.Parse(effectSpecifics)*level);
+            target.UpdateDefense(int.Parse(effectSpecifics)*level);
+            break;
             case "BaseHealth":
             target.UpdateBaseHealth(int.Parse(effectSpecifics)*level, false);
             target.UpdateHealth(int.Parse(effectSpecifics)*level, false);

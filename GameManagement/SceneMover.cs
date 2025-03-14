@@ -94,6 +94,11 @@ public class SceneMover : MonoBehaviour
         if (victory != 0)
         {
             // Fail any quest in the dungeon.
+            if (sceneTracker.GetPreviousScene() == dungeonSceneName)
+            {
+                // Reset quests/hirelings.
+                mainParty.ClearAllStats();
+            }
             ReturnToHub();
             return;
         }

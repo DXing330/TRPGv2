@@ -35,6 +35,8 @@ public class DungeonRewardScene : MonoBehaviour
     }
     public GameObject questRewardPanel;
     public TMP_Text questGoldReward;
+    public TMP_Text hirelingFees;
+    public TMP_Text finalReward;
     public QuestSuccessChecker questSuccessChecker;
     public int questGold;
     public List<string> itemRewards;
@@ -78,11 +80,22 @@ public class DungeonRewardScene : MonoBehaviour
         if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
         {
             questGold = dungeon.GetQuestReward();
-            partyData.inventory.AddItemQuantity("Gold", questGold);
+            //partyData.inventory.AddItemQuantity("Gold", questGold);
             questRewardPanel.SetActive(true);
             questGoldReward.text = questGold.ToString();
             CalculateSkillUps(questGold/10);
             CalculateSkillUps(questGold/10, false);
+            // If you are successful then you must pay your hirelings their fair share.
+            List<string> fees = partyData.mainPartyData.GetBattleFees();
+            int totalFees = 0;
+            for (int i = 0; i < fees.Count; i++)
+            {
+                totalFees += int.Parse(fees[i]);
+            }
+            questGold -= Mathf.Min(totalFees, questGold);
+            hirelingFees.text = totalFees.ToString();
+            finalReward.text = questGold.ToString();
+            partyData.inventory.AddItemQuantity("Gold", questGold);
         }
         partyData.guildCard.GainGuildExp((questGold*questGold/100));
         partyData.guildCard.RefreshAll();
