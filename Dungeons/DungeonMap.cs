@@ -5,6 +5,8 @@ using UnityEngine;
 public class DungeonMap : MapManager
 {
     public int maxDistanceFromCenter = 3;
+    public PartyDataManager partyDataManager;
+    public ActorSpriteHPList actorSpriteHPList;
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
     public SceneMover sceneMover;
@@ -16,6 +18,12 @@ public class DungeonMap : MapManager
         InitializeEmptyList();
         dungeon.UpdateEmptyTiles(emptyList);
         centerTile = dungeon.GetPartyLocation();
+        if (dungeon.GetQuestGoal() == "Escort" && dungeon.GetGoalsCompleted() <= 0)
+        {
+            partyDataManager.AddTempPartyMember(dungeon.GetEscortName());
+            dungeon.SetGoalsCompleted(1);
+            actorSpriteHPList.RefreshData();
+        }
         UpdateMap();
     }
 

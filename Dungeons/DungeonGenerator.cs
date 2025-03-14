@@ -43,11 +43,12 @@ public class DungeonGenerator : ScriptableObject
         {
             treasureLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, treasureLocations));
         }
+        for (int i = 0; i < treasureLocations.Count; i++)
+        {
+            ConnectPoints(start, treasureLocations[i]);
+        }
         // Put traps inside rooms.
             // Explosives, poison, fire, spikes, etc.
-        // Get enemies.
-            // Starting amount equal to size or sqrt(size)?
-            // Enemies moves every turn and spawn every X turns.
         dungeonData.Add(utility.ConvertIntListToString(allTiles));
         dungeonData.Add(start.ToString());
         dungeonData.Add(end.ToString());

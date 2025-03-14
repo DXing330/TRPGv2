@@ -12,6 +12,7 @@ public class SceneMover : MonoBehaviour
     public string dungeonSceneName = "Dungeon";
     public PartyData permanentParty;
     public PartyData mainParty;
+    public PartyData tempParty;
 
     public void LoadScene(string sceneName)
     {
@@ -36,6 +37,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
         permanentParty.ResetCurrentStats();
         mainParty.ResetCurrentStats();
+        tempParty.ClearAllStats();
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(hubSceneName));

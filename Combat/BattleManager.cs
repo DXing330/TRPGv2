@@ -295,6 +295,7 @@ public class BattleManager : MonoBehaviour
                 {
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                     StartCoroutine(MoveAlongPath(turnActor, path));
+                    yield return new WaitForSeconds(0.5f);
                 }
                 // Check if the actor can use their designated skill(s). How to deal with AOE skills?
                 string attackActive = actorAI.ReturnAIAttackSkill(turnActor);

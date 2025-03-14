@@ -10,6 +10,9 @@ public class Dungeon : ScriptableObject
     public ActorPathfinder pathfinder;
     public DungeonGenerator dungeonGenerator;
     public CharacterList enemyList;
+    public PartyData tempParty;
+    public string escortName;
+    public string GetEscortName(){return escortName;}
     public int dungeonSize;
     public int GetDungeonSize(){return dungeonSize;}
     public void MakeDungeon()
@@ -80,6 +83,8 @@ public class Dungeon : ScriptableObject
     public string questGoal;
     public string GetQuestGoal(){return questGoal;}
     public int questGoalsCompleted;
+    public void SetGoalsCompleted(int newAmount){questGoalsCompleted = newAmount;}
+    public int GetGoalsCompleted(){return questGoalsCompleted;}
     public int questReward;
     public int GetQuestReward(){return questReward;}
     public void SetQuestInfo(string newQuest)
