@@ -163,7 +163,6 @@ public class PartyDataManager : MonoBehaviour
         permanentPartyData.ReviveDefeatedMembers();
         mainPartyData.RemoveDefeatedMembers();
         tempPartyData.RemoveDefeatedMembers();
-        // TODO: This isn't working inside the dungeon, party health isn't being tracked.
         SetFullParty();
     }
 
@@ -181,6 +180,6 @@ public class PartyDataManager : MonoBehaviour
         fullParty.ResetLists();
         fullParty.AddToParty(permanentPartyData.GetNames(), permanentPartyData.GetStats(), permanentPartyData.GetSpriteNames(), permanentPartyData.GetEquipmentStats());
         fullParty.AddToParty(mainPartyData.GetNames(), mainPartyData.GetStats(), mainPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats());
-        fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats());
+        fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames(), tempPartyData.GetEquipmentStats());
     }
 }

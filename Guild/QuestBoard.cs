@@ -85,6 +85,10 @@ public class QuestBoard : MonoBehaviour
         {
             case "Search":
             return "I lost my treasured item in ";
+            case "Escort":
+            return "I'm scared to go alone through ";
+            case "Defeat":
+            return "There are reports of a dangerous group in ";
         }
         return "";
     }
@@ -95,6 +99,10 @@ public class QuestBoard : MonoBehaviour
         {
             case "Search":
             return "please find it and bring it back to me.";
+            case "Escort":
+            return "I would be more comfortable if you would accompany me.";
+            case "Defeat":
+            return "please get rid of them.";
         }
         return "";
     }

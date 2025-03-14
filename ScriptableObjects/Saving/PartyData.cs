@@ -47,7 +47,7 @@ public class PartyData : SavedData
         partyBaseStats.Clear();
         partyEquipment.Clear();
         partyCurrentStats.Clear();
-        battleFees.Clear();
+        if(hiringFees){battleFees.Clear();}
     }
     public List<string> GetStatsAtIndex(int index)
     {
@@ -67,7 +67,7 @@ public class PartyData : SavedData
         partyBaseStats.RemoveAt(index);
         partyEquipment.RemoveAt(index);
         partyCurrentStats.RemoveAt(index);
-        battleFees.RemoveAt(index);
+        if(hiringFees){battleFees.RemoveAt(index);}
     }
     public void ClearCurrentStats()
     {
@@ -92,6 +92,11 @@ public class PartyData : SavedData
     }
     public void RemoveDefeatedMembers()
     {
+        if (partyCurrentStats.Count <= 0)
+        {
+            ClearAllStats();
+            return;
+        }
         for (int i = partyCurrentStats.Count - 1; i >= 0; i--)
         {
             if (partyCurrentStats[i].Length < 1)

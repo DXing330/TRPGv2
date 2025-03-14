@@ -26,6 +26,7 @@ public class ActorStats : ActorPassives
     public void SetStatsFromString(string newStats)
     {
         ClearStatuses();
+        ResetPassives();
         SetStats(newStats.Split("|").ToList());
     }
     public void SetStats(List<string> newStats)
