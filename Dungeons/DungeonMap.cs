@@ -33,6 +33,12 @@ public class DungeonMap : MapManager
         {
             centerTile = newTile;
         }
+        if (dungeon.GetQuestGoal() == "Rescue" && dungeon.GoalTile(newTile))
+        {
+            partyDataManager.AddTempPartyMember(dungeon.GetEscortName());
+            dungeon.SetGoalsCompleted(1);
+            actorSpriteHPList.RefreshData();
+        }
         if (dungeon.StairsDownLocation(newTile))
         {
             if (dungeon.FinalFloor())

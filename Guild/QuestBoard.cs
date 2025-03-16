@@ -100,13 +100,13 @@ public class QuestBoard : MonoBehaviour
         switch (goal)
         {
             case "Search":
-            return "please find it and bring it back to me.";
+            return "please find it!";
             case "Escort":
-            return "I would be more comfortable if you would accompany me.";
+            return "please accompany me.";
             case "Defeat":
-            return "please get rid of them.";
+            return "please get rid of them!";
             case "Rescue":
-            return ".";
+            return "please find them!";
         }
         return ".";
     }

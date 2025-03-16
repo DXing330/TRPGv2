@@ -142,7 +142,6 @@ public class Dungeon : ScriptableObject
     public int treasuresAcquired;
     public int GetTreasuresAcquired(){return treasuresAcquired;}
     public int spawnCounter;
-    // QUESTS and other stuff.
     // Store all the floors, incase you can go up or down floors?
     //public List<string> allFloorData;
     public List<bool> viewedTiles;
@@ -194,6 +193,9 @@ public class Dungeon : ScriptableObject
             {
                 case "Search":
                 partyLocations[goalTile] = "Necklace";
+                break;
+                case "Rescue":
+                partyLocations[goalTile] = escortName;
                 break;
             }
         }
