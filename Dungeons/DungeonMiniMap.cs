@@ -7,6 +7,8 @@ public class DungeonMiniMap : MonoBehaviour
 {
     public Dungeon dungeon;
     public bool active = false;
+    public bool copy = false;
+    public DungeonMiniMap copiedMap;
     public string miniMapText;
     public GameObject miniMapObject;
     public TMP_Text text;
@@ -22,6 +24,10 @@ public class DungeonMiniMap : MonoBehaviour
         if (active)
         {
             miniMapObject.SetActive(true);
+            if (copy)
+            {
+                miniMapText = copiedMap.miniMapText;
+            }
             UpdateMiniMap();
         }
         else{miniMapObject.SetActive(false);}

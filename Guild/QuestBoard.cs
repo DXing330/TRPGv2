@@ -89,6 +89,8 @@ public class QuestBoard : MonoBehaviour
             return "I'm scared to go alone through ";
             case "Defeat":
             return "There are reports of a dangerous group in ";
+            case "Rescue":
+            return "Someone is missing! They were last seen in ";
         }
         return "";
     }
@@ -103,8 +105,10 @@ public class QuestBoard : MonoBehaviour
             return "I would be more comfortable if you would accompany me.";
             case "Defeat":
             return "please get rid of them.";
+            case "Rescue":
+            return ".";
         }
-        return "";
+        return ".";
     }
 
     public void BeginQuest()

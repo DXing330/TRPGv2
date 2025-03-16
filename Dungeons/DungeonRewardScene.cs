@@ -129,8 +129,8 @@ public class DungeonRewardScene : MonoBehaviour
             int passiveLevel = dummyActor.GetLevelFromPassive(spriteNames[i]);
             if (passiveLevel > 0 && passiveLevel < 4)
             {
-                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1));
-                Debug.Log(names[i]+";"+spriteNames[i]+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1)));
+                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1)*(passiveLevel+1));
+                Debug.Log(names[i]+";"+spriteNames[i]+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1))*(passiveLevel+1));
                 if (RNG <= questDifficulty)
                 {
                     dummyActor.SetLevelOfPassive(spriteNames[i], passiveLevel+1);
@@ -151,8 +151,8 @@ public class DungeonRewardScene : MonoBehaviour
             }
             else if (passiveLevel < 4)
             {
-                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1));
-                Debug.Log(names[i]+";"+weaponType+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1)));
+                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1)*(passiveLevel+1));
+                Debug.Log(names[i]+";"+weaponType+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1)*(passiveLevel+1)));
                 if (RNG <= questDifficulty)
                 {
                     dummyActor.SetLevelOfPassive(weaponType, passiveLevel+1);

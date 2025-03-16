@@ -62,6 +62,12 @@ public class Dungeon : ScriptableObject
             case "Defeat":
             goalTile = stairsDown;
             // Spawn a random boss tier enemy on the stairs.
+            string[] bossGroups = dungeonBosses.ReturnValue(dungeonName).Split(",");
+            // The enemy is based on the dungeon name.
+            string bossParty = bossGroups[Random.Range(0, bossGroups.Length)];
+            allEnemySprites.Add(bossParty.Split("|")[0]);
+            allEnemyLocations.Add(goalTile);
+            allEnemyParties.Add(bossParty);
             break;
             case "Rescue":
             goalTile = FindRandomEmptyTile();
@@ -70,6 +76,7 @@ public class Dungeon : ScriptableObject
     }
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
+    public StatDatabase dungeonBosses;
     // Need to determine what floor the goal is on.
     public string questInfo;
     public string GetQuestInfo(){return questInfo;}
