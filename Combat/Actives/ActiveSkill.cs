@@ -5,12 +5,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Active", menuName = "ScriptableObjects/BattleLogic/Active", order = 1)]
 public class ActiveSkill : SkillEffect
 {
+    public string skillType;
+    public string GetSkillType(){return skillType;}
     public void LoadSkillFromString(string skillData, string delimiter = "|")
     {
         LoadSkill(new List<string>(skillData.Split(delimiter)));
     }
     public void LoadSkill(List<string> skillData)
     {
+        skillType = skillData[0];
         energyCost = skillData[1];
         actionCost = skillData[2];
         range = skillData[3];

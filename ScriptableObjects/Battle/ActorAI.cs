@@ -6,7 +6,25 @@ using UnityEngine;
 public class ActorAI : ScriptableObject
 {
     public string AIType;
+    public string activeSkillName;
+    public string ReturnAIActiveSkill(){return activeSkillName;}
+    public ActiveSkill active;
+    public StatDatabase activeData;
     public StatDatabase actorAttackSkills;
+    public StatDatabase actorSkillRotation;
+
+    public bool NormalTurn(TacticActor actor, int roundIndex)
+    {
+        string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetPersonalName());
+        Debug.Log(fullSkillRotation);
+        if (fullSkillRotation == "" || fullSkillRotation == "None"){return true;}
+        string[] skillRotation = fullSkillRotation.Split("|");
+        activeSkillName = skillRotation[(roundIndex-1)%(skillRotation.Length)];
+        Debug.Log(activeSkillName);
+        if (activeSkillName == "None"){return true;}
+        active.LoadSkill(activeData.ReturnStats(activeSkillName));
+        return false;
+    }
 
     public string ReturnAIAttackSkill(TacticActor actor)
     {
@@ -92,12 +110,20 @@ public class ActorAI : ScriptableObject
         return moveManager.TileInAttackRange(currentActor, target.GetLocation());
     }
 
-    public string NaiveChoseAction(bool adjacentEnemies = false)
+    public int ChooseSkillTargetLocation(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
-        // Naive AI: Move toward target, then attack.
-        // If no enemies in range.
-        if (!adjacentEnemies){return "Move";}
-        // If enemies in range.
-        else{return "Attack";}
+        int targetTile = -1;
+        List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
+        if (targetableTiles.Count <= 0){return targetTile;}
+        if (active.GetEffect() == "Summon")
+        {
+            // Look for an empty tile in range.
+            for (int i = targetableTiles.Count - 1; i >= 0; i--)
+            {
+                if (map.TileNotEmpty(targetableTiles[i])){targetableTiles.RemoveAt(i);}
+            }
+            return targetableTiles[Random.Range(0, targetableTiles.Count)];
+        }
+        return targetTile;
     }
 }

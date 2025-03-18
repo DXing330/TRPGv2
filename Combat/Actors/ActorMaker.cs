@@ -32,6 +32,7 @@ public class ActorMaker : MonoBehaviour
         TacticActor newActor = CreateActor();
         newActor.SetLocation(location);
         SetActorName(newActor, actorName);
+        newActor.SetPersonalName(actorName);
         newActor.SetTeam(team);
         return newActor;
     }

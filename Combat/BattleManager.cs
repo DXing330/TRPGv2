@@ -99,7 +99,11 @@ public class BattleManager : MonoBehaviour
         UI.NPCTurn();
         int actionsLeft = turnActor.GetActions();
         if (actionsLeft <= 0){StartCoroutine(EndTurn());}
-        else {StartCoroutine(NPCAction(actionsLeft));}
+        else if (!actorAI.NormalTurn(turnActor, roundNumber))
+        {
+            StartCoroutine(NPCSkillAction(actionsLeft));
+        }
+        else {StartCoroutine(StandardNPCAction(actionsLeft));}
     }
     IEnumerator EndTurn()
     {
@@ -287,7 +291,30 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    IEnumerator NPCAction(int actionsLeft)
+    IEnumerator NPCSkillAction(int actionsLeft)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            // Get the active and the targeted tile.
+            activeManager.SetSkillUser(turnActor);
+            activeManager.SetSkillFromName(actorAI.ReturnAIActiveSkill());
+            int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
+            // If you can't find a target or cast the skill then just do a regular action.
+            if (targetedTile == -1 || !activeManager.CheckSkillCost())
+            {
+                StartCoroutine(StandardNPCAction(actionsLeft));
+                yield break;
+            }
+            activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
+            ActivateSkill(actorAI.ReturnAIActiveSkill());
+            activeManager.ActivateSkill(this);
+            yield return new WaitForSeconds(0.5f);
+            if (turnActor.GetActions() <= 0){break;}
+        }
+        StartCoroutine(EndTurn());
+    }
+    
+    IEnumerator StandardNPCAction(int actionsLeft)
     {
         for (int i = 0; i < actionsLeft; i++)
         {

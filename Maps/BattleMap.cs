@@ -37,6 +37,11 @@ public class BattleMap : MapManager
     }
     // List of actor names on tiles.
     public List<string> actorTiles;
+    public bool TileNotEmpty(int tileNumber)
+    {
+        // If someone's name is on the tile then it's not empty.
+        return (actorTiles[tileNumber].Length > 1);
+    }
     // List of actor directions on tiles.
     public List<string> actorDirections;
     public List<string> terrainEffectTiles;
