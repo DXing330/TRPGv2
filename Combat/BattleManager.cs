@@ -103,7 +103,10 @@ public class BattleManager : MonoBehaviour
         {
             StartCoroutine(NPCSkillAction(actionsLeft));
         }
-        else {StartCoroutine(StandardNPCAction(actionsLeft));}
+        else
+        {
+            StartCoroutine(StandardNPCAction(actionsLeft));
+        }
     }
     IEnumerator EndTurn()
     {
@@ -257,6 +260,7 @@ public class BattleManager : MonoBehaviour
 
     protected void ActorAttacksActor(TacticActor attacker, TacticActor defender)
     {
+        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+defender.GetPersonalName()+".");
         attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
@@ -318,20 +322,15 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = 0; i < actionsLeft; i++)
         {
+            // Find a new target if needed.
             if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
             {
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
             }
-            if (actorAI.EnemyInAttackableRange(turnActor, turnActor.GetTarget(), moveManager))
+            // If they can be attacked without moving then attack.
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
             {
-                if (!actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
-                {
-                    List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
-                    StartCoroutine(MoveAlongPath(turnActor, path));
-                    yield return new WaitForSeconds(0.5f);
-                }
-                // Check if the actor can use their designated skill(s). How to deal with AOE skills?
                 string attackActive = actorAI.ReturnAIAttackSkill(turnActor);
                 if (activeManager.SkillExists(attackActive))
                 {
@@ -347,6 +346,7 @@ public class BattleManager : MonoBehaviour
                 }
                 else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
             }
+            // Otherwise move.
             else
             {
                 // If target is out of range, first try to get a new target in range.

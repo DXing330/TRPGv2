@@ -104,13 +104,6 @@ public class ActorPassives : MonoBehaviour
         }
         return removed;
     }
-    public void ShowPassives()
-    {
-        for (int i = 0; i < passiveSkills.Count; i++)
-        {
-            Debug.Log(passiveSkills[i]);
-        }
-    }
     public string GetPassiveSkill(int index){return passiveSkills[index];}    
     public List<string> startBattlePassives;
     public List<string> GetStartBattlePassives(){return startBattlePassives;}

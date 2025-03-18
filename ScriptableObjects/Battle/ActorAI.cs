@@ -16,11 +16,9 @@ public class ActorAI : ScriptableObject
     public bool NormalTurn(TacticActor actor, int roundIndex)
     {
         string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetPersonalName());
-        Debug.Log(fullSkillRotation);
         if (fullSkillRotation == "" || fullSkillRotation == "None"){return true;}
         string[] skillRotation = fullSkillRotation.Split("|");
         activeSkillName = skillRotation[(roundIndex-1)%(skillRotation.Length)];
-        Debug.Log(activeSkillName);
         if (activeSkillName == "None"){return true;}
         active.LoadSkill(activeData.ReturnStats(activeSkillName));
         return false;

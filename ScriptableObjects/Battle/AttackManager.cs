@@ -9,6 +9,7 @@ public class AttackManager : ScriptableObject
     public StatDatabase passiveData;
     public TerrainPassivesList terrainPassives;
     public int baseMultiplier;
+    protected string damageRolls;
     protected int advantage;
     protected int baseDamage;
     protected int damageMultiplier;
@@ -16,6 +17,7 @@ public class AttackManager : ScriptableObject
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         advantage = 0;
+        damageRolls = "";
         if (attackMultiplier < 0){damageMultiplier = baseMultiplier;}
         else {damageMultiplier = attackMultiplier;}
         // Forests/other cover will reduce ranged damage greatly.
@@ -24,6 +26,7 @@ public class AttackManager : ScriptableObject
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
+        Debug.Log(damageRolls);
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Adjust damage based on passives, terrain effects, direction, etc.
         // Check if the passive affects damage.
@@ -36,29 +39,40 @@ public class AttackManager : ScriptableObject
 
     protected int RollAttackDamage(int baseAttack)
     {
-        return baseAttack + Random.Range(-baseAttack/3, baseAttack/3);
+        int roll = baseAttack + Random.Range(-baseAttack/3, baseAttack/3);
+        damageRolls += " "+roll+" ";
+        return roll;
     }
 
     protected int Advantage(int baseAttack, int advantage)
     {
-        if (advantage < 0){return Disadvantage(baseAttack, Mathf.Abs(advantage));}
+        if (advantage < 0)
+        {
+            return Disadvantage(baseAttack, Mathf.Abs(advantage));
+        }
+        if (advantage == 0)
+        {
+            return RollAttackDamage(baseAttack);
+        }
+        damageRolls += "Max(";
         int damage = RollAttackDamage(baseAttack);
-        if (advantage == 0){return damage;}
         for (int i = 0; i < advantage; i++)
         {
             damage = Mathf.Max(damage, RollAttackDamage(baseAttack));
         }
+        damageRolls += ") + "+advantage.ToString();
         return damage + advantage;
     }
 
     protected int Disadvantage(int baseAttack, int disadvantage)
     {
+        damageRolls += "Min(";
         int damage = RollAttackDamage(baseAttack);
-        if (disadvantage == 0){return damage;}
         for (int i = 0; i < disadvantage; i++)
         {
             damage = Mathf.Min(damage, RollAttackDamage(baseAttack));
         }
+        damageRolls += ") - "+disadvantage.ToString();
         return damage - disadvantage;
     }
 
