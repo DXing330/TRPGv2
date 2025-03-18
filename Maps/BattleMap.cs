@@ -155,6 +155,12 @@ public class BattleMap : MapManager
         return null;
     }
 
+    public TacticActor GetActorByIndex(int index)
+    {
+        if (index < 0 || index >= battlingActors.Count){return null;}
+        return battlingActors[index];
+    }
+
     public string GetTileInfoOfActor(TacticActor actor)
     {
         return mapInfo[actor.GetLocation()];

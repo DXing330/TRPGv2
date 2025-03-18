@@ -8,6 +8,7 @@ public class ActorSpriteAndHP : ActorSprite
 {
     public TMP_Text actorHealth;
     public GameObject healthBar;
+    public float healthBarYScale = 0.7f;
 
     public override void ShowActorInfo(TacticActor actor)
     {
@@ -16,6 +17,6 @@ public class ActorSpriteAndHP : ActorSprite
         int cHP = actor.GetHealth();
         int mHP = actor.GetBaseHealth();
         actorHealth.text = cHP+" / "+mHP;
-        healthBar.transform.localScale = new Vector3(Mathf.Min(1, (float)cHP/(float)mHP),1,0);
+        healthBar.transform.localScale = new Vector3(Mathf.Min(1, (float)cHP/(float)mHP),healthBarYScale,0);
     }
 }

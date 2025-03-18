@@ -209,6 +209,13 @@ public class BattleManager : MonoBehaviour
         UI.battleStats.UpdateSpendableStats();
     }
 
+    public void ViewActorFromTurnOrder(int index)
+    {
+        selectedActor = map.GetActorByIndex(index + turnNumber);
+        if (selectedActor == null){return;}
+        ViewActorOnTile(selectedActor.GetLocation());
+    }
+
     protected void ViewActorOnTile(int tileNumber)
     {
         selectedActor = map.GetActorOnTile(tileNumber);
@@ -248,7 +255,7 @@ public class BattleManager : MonoBehaviour
     {
         attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
-        map.RemoveActorsFromBattle();
+        turnNumber = map.RemoveActorsFromBattle(turnNumber);
         map.UpdateActors();
         UI.UpdateTurnOrder(this);
     }

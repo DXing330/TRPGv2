@@ -75,6 +75,8 @@ public class ActiveManager : MonoBehaviour
         {
             case "Circle":
             return pathfinder.FindTilesInRange(startTile, range);
+            case "ECircle":
+            return pathfinder.FindTilesInRange(startTile, range);
             case "Line":
             return pathfinder.GetTilesInLineRange(startTile, range);
             case "Cone":
