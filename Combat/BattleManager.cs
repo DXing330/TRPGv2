@@ -254,7 +254,6 @@ public class BattleManager : MonoBehaviour
             ResetState();
             return;
         }
-        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+selectedActor.GetPersonalName()+".");
         ActorAttacksActor(turnActor, selectedActor);
     }
 
@@ -376,9 +375,24 @@ public class BattleManager : MonoBehaviour
         ResetState();
     }
 
-    public void ActivateSkill(string skillName)
+    public void ActivateSkill(string skillName, TacticActor actor = null)
     {
         ResetState();
-        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" uses "+skillName+".");
+        if (actor == null){actor = turnActor;}
+        combatLog.UpdateNewestLog(actor.GetPersonalName()+" uses "+skillName+".");
+    }
+
+    public void ActiveDeathPassives(TacticActor actor)
+    {
+        activeManager.SetSkillUser(actor);
+        List<string> deathPassives = new List<string>(actor.GetDeathPassives());
+        for (int i = 0; i < deathPassives.Count; i++)
+        {
+            if (deathPassives[i].Length <= 0){continue;}
+            activeManager.SetSkillFromName(deathPassives[i]);
+            activeManager.GetTargetedTiles(actor.GetLocation(), moveManager.actorPathfinder);
+            ActivateSkill(deathPassives[i], actor);
+            activeManager.ActivateSkill(this);
+        }
     }
 }

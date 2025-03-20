@@ -28,6 +28,9 @@ public class BattleMap : MapManager
         {
             if (battlingActors[i].GetHealth() <= 0)
             {
+                // Apply the death passives here.
+                combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName()+" is defeated.");
+                battleManager.ActiveDeathPassives(battlingActors[i]);
                 battlingActors.RemoveAt(i);
                 // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.
                 if (i <= turnNumber){turnNumber--;}
@@ -151,8 +154,8 @@ public class BattleMap : MapManager
         string actorName = actorTiles[tileNumber];
         for (int i = 0; i < battlingActors.Count; i++)
         {
-            // Some actors are not interactable and should be returned as null. IE buildings.
-            if (battlingActors[i].GetSpriteName() == actorName && battlingActors[i].GetLocation() == tileNumber)
+            // Some actors are not interactable and should be returned as null. IE buildings. Also if their health is less than zero then they can't be interacted with anymore.
+            if (battlingActors[i].GetSpriteName() == actorName && battlingActors[i].GetLocation() == tileNumber && battlingActors[i].GetHealth() > 0)
             {
                 return battlingActors[i];
             }

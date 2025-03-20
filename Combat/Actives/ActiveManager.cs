@@ -15,6 +15,7 @@ public class ActiveManager : MonoBehaviour
 
     public bool SkillExists(string skillName)
     {
+        if (skillName.Length <= 0){return false;}
         return activeData.KeyExists(skillName);
     }
 

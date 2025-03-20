@@ -64,7 +64,13 @@ public class SkillEffect : ScriptableObject
             target.SetAttackRangeMax(int.Parse(effectSpecifics));
             break;
             case "Health%":
-            target.UpdateHealth(level*int.Parse(effectSpecifics)*target.GetBaseHealth()/basicDenominator, false);
+            // Health% should not go below a minimum amount or else low health character are effectively immune.
+            int changeAmount = level*int.Parse(effectSpecifics)*target.GetBaseHealth()/basicDenominator;
+            if (Mathf.Abs(changeAmount) < Mathf.Abs(int.Parse(effectSpecifics)*level))
+            {
+                changeAmount = int.Parse(effectSpecifics);
+            }
+            target.UpdateHealth((changeAmount), false);
             break;
             case "Attack%":
             target.UpdateAttack(level*(int.Parse(effectSpecifics)*target.GetBaseAttack())/basicDenominator);

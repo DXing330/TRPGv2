@@ -8,6 +8,10 @@ public class Store : MonoBehaviour
 {
     void Start(){LoadStore();}
     public string storeName;
+    public int baseEquipStock;
+    public int baseItemStock;
+    public int equipStockPerRank;
+    public int itemStockPerRank;
     public PartyDataManager partyData;
     public InventoryUI inventoryUI;
     public StatDatabase storeData;
@@ -19,7 +23,32 @@ public class Store : MonoBehaviour
         equipmentPrices = blocks[1].Split(",").ToList();
         itemsSolds = blocks[2].Split(",").ToList();
         itemsPrices = blocks[3].Split(",").ToList();
+        TrimStock();
         UpdateDisplay();
+    }
+    protected void TrimStock()
+    {
+        int rank = partyData.guildCard.GetGuildRank();
+        for (int i = equipmentSold.Count - 1; i >= 0; i--)
+        {
+            if (i > baseEquipStock + (rank * equipStockPerRank))
+            {
+                equipmentSold.RemoveAt(i);
+                equipmentPrices.RemoveAt(i);
+                continue;
+            }
+            break;
+        }
+        for (int i = itemsSolds.Count - 1; i >= 0; i--)
+        {
+            if (i >= baseItemStock + (rank * itemStockPerRank))
+            {
+                itemsSolds.RemoveAt(i);
+                itemsPrices.RemoveAt(i);
+                continue;
+            }
+            break;
+        }
     }
     public List<string> equipmentSold;
     public List<string> equipmentPrices;

@@ -74,6 +74,13 @@ public class GuildCard : SavedData
         availableQuests = new List<string>(newQuests);
     }
 
+    public override void NewGame()
+    {
+        allData = newGameData;
+        dataPath = Application.persistentDataPath+"/"+filename;
+        File.WriteAllText(dataPath, allData);
+    }
+
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
