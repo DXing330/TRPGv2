@@ -46,7 +46,7 @@ public class BattleManager : MonoBehaviour
         map.AddActorToBattle(actorMaker.SpawnActor(location, actorName, team));
     }
     public bool interactable = true;
-    public int roundNumber;
+    public int roundNumber = 0;
     public int GetRoundNumber(){return roundNumber;}
     public int turnNumber = 0;
     public int GetTurnIndex(){return turnNumber;}

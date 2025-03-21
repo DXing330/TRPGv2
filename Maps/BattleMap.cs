@@ -7,12 +7,14 @@ public class BattleMap : MapManager
 {
     public CombatLog combatLog;
     public StatDatabase terrainEffectData;
+    public StatDatabase trapEffectData;
     public SkillEffect effect;
 
     protected override void Start()
     {
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
+        trappedTiles = new List<string>(emptyList);
         //base.Start();
     }
     public BattleManager battleManager;
@@ -60,6 +62,15 @@ public class BattleMap : MapManager
     protected void UpdateTerrain()
     {
         mapDisplayers[2].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
+    }
+    public List<string> trappedTiles;
+    public void ChangeTrap(int tileNumber, string newTrap)
+    {
+        trappedTiles[tileNumber] = newTrap;
+    }
+    public void TriggerTrap(int tileNumber)
+    {
+        trappedTiles[tileNumber] = "";
     }
     public List<string> highlightedTiles;
     public ColorDictionary colorDictionary;
@@ -190,11 +201,20 @@ public class BattleMap : MapManager
 
     public void ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
+        ApplyTrapEffect(actor, tileNumber);
         // Get the terrain info.
         string terrainEffect = terrainEffectTiles[tileNumber];
         if (terrainEffect.Length < 1){return;}
         // Apply the terrain effect.
         List<string> data = terrainEffectData.ReturnStats(terrainEffect);
+        effect.AffectActor(actor, data[0], data[1]);
+    }
+
+    protected void ApplyTrapEffect(TacticActor actor, int tileNumber)
+    {
+        string trapEffect = trappedTiles[tileNumber];
+        if (trapEffect.Length < 1){return;}
+        List<string> data = trapEffectData.ReturnStats(trapEffect);
         effect.AffectActor(actor, data[0], data[1]);
     }
 

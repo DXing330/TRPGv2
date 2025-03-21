@@ -19,7 +19,20 @@ public class SelectList : MonoBehaviour
     public TMP_Text errorText;
     public List<string> errorMessages;
     public List<string> selectable;
+    public int selectedIndex = -1;
+    public int GetSelected(){return selectedIndex;}
     public string selected;
+    public TMP_Text pageDisplay;
+    public void UpdatePageDisplay()
+    {
+        if (pageDisplay == null){return;}
+        pageDisplay.text = (currentPage + 1)+"/"+(MaxPages()+1);
+    }
+    public int MaxPages()
+    {
+        if (selectable.Count < textObjects.Count){return 0;}
+        return ((selectable.Count - 1) / textObjects.Count);
+    }
     public TMP_Text selectedText;
     public void ShowSelected(){selectedText.text = selected;}
     public void SetSelectables(List<string> newList)
@@ -33,28 +46,16 @@ public class SelectList : MonoBehaviour
         }
         else{utility.DisableGameObjects(changePageObjects);}
     }
+    public void UpdateSelectables(List<string> newList)
+    {
+        selectable = new List<string>(newList);
+        UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
+    }
     public List<GameObject> changePageObjects;
     public List<GameObject> textObjects;
     public List<TMP_Text> textList;
     public int currentPage;
-    [ContextMenu("0")]
-    public void Select0()
-    {
-        Select(0);
-        Debug.Log(selected);
-    }
-    [ContextMenu("1")]
-    public void Select1()
-    {
-        Select(1);
-        Debug.Log(selected);
-    }
-    [ContextMenu("2")]
-    public void Select2()
-    {
-        Select(2);
-        Debug.Log(selected);
-    }
+
     [ContextMenu("Right")]
     public void ChangeRight(){ChangePage();}
     [ContextMenu("Left")]
@@ -83,6 +84,7 @@ public class SelectList : MonoBehaviour
     protected void UpdateCurrentPage(List<string> newPageStrings)
     {
         ResetPage();
+        UpdatePageDisplay();
         for (int i = 0; i < newPageStrings.Count; i++)
         {
             textObjects[i].SetActive(true);
@@ -92,6 +94,7 @@ public class SelectList : MonoBehaviour
 
     public virtual void Select(int index)
     {
+        selectedIndex = (currentPage*textObjects.Count) + index;
         selected = selectable[currentPage*textObjects.Count + index];
     }
 }

@@ -10,6 +10,8 @@ public class AttackManager : ScriptableObject
     public TerrainPassivesList terrainPassives;
     public int baseMultiplier;
     protected string damageRolls;
+    protected string passiveEffectString;
+    protected string finalDamageCalculation;
     protected int advantage;
     protected int baseDamage;
     protected int damageMultiplier;
@@ -17,7 +19,8 @@ public class AttackManager : ScriptableObject
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         advantage = 0;
-        damageRolls = "";
+        damageRolls = "Damage Rolls: ";
+        passiveEffectString = "Applied Passives: ";
         if (attackMultiplier < 0){damageMultiplier = baseMultiplier;}
         else {damageMultiplier = attackMultiplier;}
         // Forests/other cover will reduce ranged damage greatly.
@@ -26,15 +29,22 @@ public class AttackManager : ScriptableObject
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
-        Debug.Log(damageRolls);
+        if (damageMultiplier < 0){damageMultiplier = 0;}
+        finalDamageCalculation = "Damage Multiplier: "+baseDamage+" * "+damageMultiplier+"% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
+        finalDamageCalculation += baseDamage;
+        finalDamageCalculation += "\n"+"Subtract Defense: "+baseDamage+" - "+defender.GetDefense()+" = ";
         // Adjust damage based on passives, terrain effects, direction, etc.
         // Check if the passive affects damage.
         baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
         baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
+        finalDamageCalculation += baseDamage;
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
+        map.combatLog.AddDetailedLogs(passiveEffectString);
+        map.combatLog.AddDetailedLogs(damageRolls);
+        map.combatLog.AddDetailedLogs(finalDamageCalculation);
     }
 
     protected int RollAttackDamage(int baseAttack)
@@ -87,28 +97,27 @@ public class AttackManager : ScriptableObject
     protected void ApplyPassiveEffect(string passiveName, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
         List<string> passiveStats = passiveData.ReturnStats(passiveName);
-        string passiveEffectString = "";
         if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
         {
             switch (passiveStats[3])
             {
                 case "Advantage":
+                passiveEffectString += "\n";
                 passiveEffectString += passiveName+";"+passiveStats[3]+":"+advantage+"->";
                 advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
                 passiveEffectString += advantage;
-                Debug.Log(passiveEffectString);
                 break;
                 case "Damage%":
+                passiveEffectString += "\n";
                 passiveEffectString += passiveName+";"+passiveStats[3]+":"+damageMultiplier+"->";
                 damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
                 passiveEffectString += damageMultiplier;
-                Debug.Log(passiveEffectString);
                 break;
                 case "BaseDamage":
+                passiveEffectString += "\n";
                 passiveEffectString += passiveName+";"+passiveStats[3]+":"+baseDamage+"->";
                 baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
                 passiveEffectString += baseDamage;
-                Debug.Log(passiveEffectString);
                 break;
                 case "Target":
                 passive.AffectActor(target, passiveStats[4], passiveStats[5]);
