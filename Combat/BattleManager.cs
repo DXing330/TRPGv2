@@ -367,8 +367,9 @@ public class BattleManager : MonoBehaviour
             actor.SetDirection(moveManager.DirectionBetweenLocations(actor.GetLocation(), path[i]));
             actor.SetLocation(path[i]);
             moveManager.ApplyMovePassiveEffects(actor, map);
-            map.ApplyMovingTileEffect(actor, path[i]);
+            map.ApplyTerrainEffect(actor, path[i]);
             map.UpdateActors();
+            if (map.ApplyTrapEffect(actor, path[i])){break;}
             yield return new WaitForSeconds(0.1f);
         }
         interactable = true;

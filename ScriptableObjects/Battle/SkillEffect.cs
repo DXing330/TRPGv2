@@ -17,7 +17,7 @@ public class SkillEffect : ScriptableObject
             break;
             case "Status":
             int duration = level;
-            // Some statuses don't naturally wear off and are permanent.
+            // Some statuses don't naturally wear off and are permanent or immediately take effect.
             switch (effectSpecifics)
             {
                 case "Poison":
@@ -25,6 +25,9 @@ public class SkillEffect : ScriptableObject
                 break;
                 case "Burn":
                 duration = -1;
+                break;
+                case "Stun":
+                target.ResetActions();
                 break;
             }
             target.AddStatus(effectSpecifics, duration);

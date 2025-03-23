@@ -9,7 +9,6 @@ public class BattleMap : MapManager
     public StatDatabase terrainEffectData;
     public StatDatabase trapEffectData;
     public SkillEffect effect;
-
     protected override void Start()
     {
         InitializeEmptyList();
@@ -64,6 +63,7 @@ public class BattleMap : MapManager
         mapDisplayers[2].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
     }
     public List<string> trappedTiles;
+    public List<string> stoppingTraps; // Traps that immediately stop movement.
     public void ChangeTrap(int tileNumber, string newTrap)
     {
         trappedTiles[tileNumber] = newTrap;
@@ -201,7 +201,13 @@ public class BattleMap : MapManager
 
     public void ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
+        ApplyTerrainEffect(actor, tileNumber);
         ApplyTrapEffect(actor, tileNumber);
+    }
+
+
+    public void ApplyTerrainEffect(TacticActor actor, int tileNumber)
+    {
         // Get the terrain info.
         string terrainEffect = terrainEffectTiles[tileNumber];
         if (terrainEffect.Length < 1){return;}
@@ -210,12 +216,17 @@ public class BattleMap : MapManager
         effect.AffectActor(actor, data[0], data[1]);
     }
 
-    protected void ApplyTrapEffect(TacticActor actor, int tileNumber)
+    public bool ApplyTrapEffect(TacticActor actor, int tileNumber)
     {
         string trapEffect = trappedTiles[tileNumber];
-        if (trapEffect.Length < 1){return;}
-        List<string> data = trapEffectData.ReturnStats(trapEffect);
+        if (trapEffect.Length < 1){return false;}
+        List<string> data = terrainEffectData.ReturnStats(trapEffect);
         effect.AffectActor(actor, data[0], data[1]);
+        TriggerTrap(tileNumber);
+        combatLog.UpdateNewestLog(actor.GetPersonalName()+" triggers a "+trapEffect+" trap.");
+        // If a trap forces actors to stop then return true.
+        if (stoppingTraps.Contains(trapEffect)){return true;}
+        return false;
     }
 
     public void ApplyEndTileEffect(TacticActor actor)

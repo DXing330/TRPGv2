@@ -14,6 +14,8 @@ public class TacticActor : ActorStats
     public int GetTeam(){return team;}
     public void SetTeam(int newTeam){team = newTeam;}
     public int actions;
+    public void SetActions(int newActions){actions = newActions;}
+    public void ResetActions(){actions = 0;}
     // AAA
     public void AdjustActionAmount(int change){actions += change;}
     public int GetActions(){return actions;}
