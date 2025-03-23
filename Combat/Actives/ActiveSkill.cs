@@ -43,7 +43,7 @@ public class ActiveSkill : SkillEffect
         {
             case "Move":
             if (skillUser == null){return 0;}
-            return skillUser.GetMoveSpeed();
+            return skillUser.GetSpeed();
             case "AttackRange":
             if (skillUser == null){return 0;}
             return skillUser.GetAttackRange();

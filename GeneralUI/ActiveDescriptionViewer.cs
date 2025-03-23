@@ -27,6 +27,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
             return "Summon a "+ASD(s)+".";
             case "TerrainEffect":
             return "Create "+ASD(s)+" on targeted tile(s).";
+            case "Trap":
+            return "Set up a "+ASD(s)+" trap on the targeted tile(s).";
             case "Taunt":
             return "Make target(s) more likely to attack.";
             case "Attack+Move":

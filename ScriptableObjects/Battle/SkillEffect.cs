@@ -7,6 +7,7 @@ public class SkillEffect : ScriptableObject
 {
     public PassiveOrganizer passiveOrganizer;
     public int basicDenominator = 100;
+    public int baseStatusDuration = 3;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1)
     {
         switch (effect)
@@ -17,6 +18,7 @@ public class SkillEffect : ScriptableObject
             break;
             case "Status":
             int duration = level;
+            if (level == 1){duration = baseStatusDuration;}
             // Some statuses don't naturally wear off and are permanent or immediately take effect.
             switch (effectSpecifics)
             {

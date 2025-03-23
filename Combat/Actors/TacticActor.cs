@@ -30,7 +30,7 @@ public class TacticActor : ActorStats
     protected void MoveAction()
     {
         actions--;
-        movement += GetMoveSpeed();
+        movement += GetSpeed();
     }
     public void GainMovement(int amount){movement += amount;}
     public void PayMoveCost(int cost)
@@ -55,13 +55,13 @@ public class TacticActor : ActorStats
     }
     public int GetMoveRangeBasedOnActions(int actionCount)
     {
-        return (movement + (GetMoveSpeed()*actionCount));
+        return (movement + (GetSpeed()*actionCount));
     }
     public int GetMoveRange(bool current = true)
     {
         if (current)
         {
-            return (movement + (GetMoveSpeed()*actions));
+            return (movement + (GetSpeed()*actions));
         }
         // Default is two actions.
         return GetMoveSpeed()*2;
@@ -70,7 +70,7 @@ public class TacticActor : ActorStats
     {
         if (current)
         {
-            return (movement + (GetMoveSpeed()*(actions-1)));
+            return (movement + (GetSpeed()*(actions-1)));
         }
         return GetMoveSpeed();
     }
