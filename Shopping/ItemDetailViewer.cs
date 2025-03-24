@@ -8,10 +8,11 @@ public class ItemDetailViewer : MonoBehaviour
     public TMP_Text itemName;
     public TMP_Text itemInfo;
     // Either view an equipment or an item.
-    public bool equipment = true;
-    public void ViewEquip(){equipment = true;}
-    public void ViewItem(){equipment = false;}
+    public bool viewingEquipment = true;
+    public void ViewEquip(){viewingEquipment = true;}
+    public void ViewItem(){viewingEquipment = false;}
     public StatDatabase equipData;
+    public Equipment equipment;
     public StatDatabase itemData;
     public ActiveSkill active;
     public ActiveDescriptionViewer itemDescriptions;
@@ -25,9 +26,23 @@ public class ItemDetailViewer : MonoBehaviour
     {
         string data = "";
         itemName.text = newItem;
-        if (equipment)
+        if (viewingEquipment)
         {
             data = equipData.ReturnValue(newItem);
+            equipment.SetAllStats(data);
+            itemInfo.text = "Grants the user: ";
+            for (int i = 0; i < equipment.passives.Count; i++)
+            {
+                itemInfo.text += equipment.passives[i];
+                if (i < equipment.passives.Count - 1)
+                {
+                    itemInfo.text += ", ";
+                }
+                else
+                {
+                    itemInfo.text += ".";
+                }
+            }
         }
         else
         {
