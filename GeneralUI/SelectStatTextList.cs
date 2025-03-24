@@ -42,6 +42,16 @@ public class SelectStatTextList : StatTextList
         HighlightSelected();
     }
     public int GetSelected(){return selectedIndex;}
+    public string GetSelectedStat(){return stats[selectedIndex];}
+    public string GetSelectedData(){return data[selectedIndex];}
+    public string GetCurrentPageStat(int index)
+    {
+        if (objects[index].activeSelf)
+        {
+            return statTexts[index].GetStatText();
+        }
+        return "";
+    }
     // This is more specialized but placed here for now.
     public void UpdateActorStatTexts(TacticActor actor)
     {

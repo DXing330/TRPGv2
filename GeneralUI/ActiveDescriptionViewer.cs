@@ -22,7 +22,9 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Teleport":
             return "Move to the targeted tile.";
             case "Status":
-            return "Give the target(s) "+ASD(s)+" for "+APD(p)+" turns.";
+            return "Give the target(s) "+ASD(s)+" for "+APD(p)+" turn(s).";
+            case "RemoveStatus":
+            return "Remove "+ASD(s)+" from the target(s).";
             case "Summon":
             return "Summon a "+ASD(s)+".";
             case "TerrainEffect":

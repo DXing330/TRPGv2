@@ -14,6 +14,7 @@ public class Store : MonoBehaviour
     public int itemStockPerRank;
     public PartyDataManager partyData;
     public InventoryUI inventoryUI;
+    public ItemDetailViewer itemDetailViewer;
     public StatDatabase storeData;
     protected void LoadStore()
     {
@@ -63,6 +64,8 @@ public class Store : MonoBehaviour
     {
         buyingEquipment = true;
         buyingItems = false;
+        itemDetailViewer.ViewEquip();
+        itemDetailViewer.ShowInfo(equipmentDisplay.GetSelectedStat());
         itemsDisplay.ResetSelected();
     }
     public bool buyingItems = false;
@@ -70,6 +73,8 @@ public class Store : MonoBehaviour
     {
         buyingEquipment = false;
         buyingItems = true;
+        itemDetailViewer.ViewItem();
+        itemDetailViewer.ShowInfo(itemsDisplay.GetSelectedStat());
         equipmentDisplay.ResetSelected();
     }
     protected void UpdateDisplay()
@@ -89,17 +94,22 @@ public class Store : MonoBehaviour
             equipmentOwned[i].text = "";
         }
     }
-    protected void UpdateQuantityOwned()
+    public void UpdateQuantityOwned()
     {
         ResetQuantityOwned();
         int quantity = 0;
-        for (int i = 0; i < itemsSolds.Count; i++)
+        // Needs to be based on the SelectStatTextList
+        for (int i = 0; i < itemsDisplay.GetListLength(); i++)
         {
-            quantity = partyData.inventory.ReturnQuantityOfItem(itemsSolds[i]);
+            string itemName = itemsDisplay.GetCurrentPageStat(i);
+            if (itemName == ""){break;}
+            quantity = partyData.inventory.ReturnQuantityOfItem(itemName);
             itemsOwned[i].text = quantity.ToString()+"X";
         }
-        for (int i = 0; i < equipmentSold.Count; i++)
+        for (int i = 0; i < equipmentDisplay.GetListLength(); i++)
         {
+            string equipName = equipmentDisplay.GetCurrentPageStat(i);
+            if (equipName == ""){break;}
             quantity = partyData.equipmentInventory.ReturnEquipmentQuantity(equipmentSold[i]);
             equipmentOwned[i].text = quantity.ToString()+"X";
         }

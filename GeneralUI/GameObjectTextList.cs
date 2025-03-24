@@ -7,6 +7,7 @@ public class GameObjectTextList : MonoBehaviour
     public int page = 0;
     public GeneralUtility utility;
     public List<GameObject> objects;
+    public int GetListLength(){return objects.Count;}
     public List<string> data;
     public void SetData(List<string> newData)
     {
