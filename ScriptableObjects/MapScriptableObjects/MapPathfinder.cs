@@ -91,17 +91,7 @@ public class MapPathfinder : ScriptableObject
 
     protected List<int> GetTilesInLineDirection(int startTile, int direction, int range)
     {
-        List<int> tiles = new List<int>();
-        int current = startTile;
-        for (int i = 0; i < range; i++)
-        {
-            if (mapUtility.DirectionCheck(current, direction, mapSize))
-            {
-                current = mapUtility.PointInDirection(current, direction, mapSize);
-                tiles.Add(current);
-            }
-        }
-        return tiles;
+        return mapUtility.GetTilesInLineDirection(startTile, direction, range, mapSize);
     }
 
     public List<int> GetTilesInLineRange(int startTile, int range, List<int> directions = null)

@@ -110,9 +110,8 @@ public class ActorAI : ScriptableObject
 
     public int ChooseSkillTargetLocation(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
-        int targetTile = -1;
         List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
-        if (targetableTiles.Count <= 0){return targetTile;}
+        if (targetableTiles.Count <= 0){return -1;}
         if (active.GetEffect() == "Summon")
         {
             // Look for an empty tile in range.
@@ -120,8 +119,9 @@ public class ActorAI : ScriptableObject
             {
                 if (map.TileNotEmpty(targetableTiles[i])){targetableTiles.RemoveAt(i);}
             }
+            if (targetableTiles.Count <= 0){return -1;}
             return targetableTiles[Random.Range(0, targetableTiles.Count)];
         }
-        return targetTile;
+        return -1;
     }
 }
