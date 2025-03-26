@@ -6,7 +6,18 @@ using TMPro;
 
 public class OverworldGenTester : MonoBehaviour
 {
+    void Start()
+    {
+        UpdateDisplay();
+    }
     public OverworldGenerator overworldGenerator;
+    public OverworldMap overworldMap;
+    [ContextMenu("Test Map")]
+    public void TestMap()
+    {
+        overworldMap.SetData();
+        overworldMap.PublicUpdateMap();
+    }
     public string overworldData;
     public List<string> overworldTiles;
     public TMP_Text overworldTileDisplay;
@@ -45,7 +56,17 @@ public class OverworldGenTester : MonoBehaviour
         {
             if (overworldTiles[i] == overworldGenerator.defaultTile)
             {
-                overworldTileDisplay.text += " ";
+                int luxury = overworldGenerator.allLuxuryTiles.IndexOf(i.ToString());
+                int city = overworldGenerator.allCityTiles.IndexOf(i.ToString());
+                if (city >= 0)
+                {
+                    overworldTileDisplay.text += "X";
+                }
+                else if (luxury >= 0)
+                {
+                    overworldTileDisplay.text += overworldGenerator.allLuxuries[luxury][0];
+                }
+                else{overworldTileDisplay.text += " ";}
             }
             else{overworldTileDisplay.text += overworldTiles[i][0];}
             if ((i+1)%overworldGenerator.GetSize() == 0){overworldTileDisplay.text += "\n";}

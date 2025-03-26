@@ -12,23 +12,31 @@ public class OverworldGenerator : ScriptableObject
     public List<string> allowedShapes;
     public int biomeMinSize;
     public int biomeMaxSize;
-    public int size;
-    public int GetSize(){return size;}
     public int biomeCount;
     public int GetBiomeCount(){return biomeCount;}
+    public List<string> possibleLuxuries;
+    public int luxuryCount;
+    public int size;
+    public int GetSize(){return size;}
     public List<string> allTiles;
+    public int RandomEmptyTile()
+    {
+        int tile = Random.Range(0, allTiles.Count);
+        if (allTiles[tile] == defaultTile){return tile;}
+        return RandomEmptyTile();
+    }
     public List<string> allBiomes;
     public List<string> allBiomeTiles;
-    public List<string> allCities;
-    public List<string> allCitiesTiles;
+    //public List<string> allCities; Don't need names for these cities.
+    public List<string> allCityTiles;
     public List<string> allLuxuries;
     public List<string> allLuxuryTiles;
     public void ResetTiles()
     {
         allTiles = new List<string>();
         allBiomes = new List<string>();
-        allCities = new List<string>();
-        allCitiesTiles = new List<string>();
+        //allCities = new List<string>();
+        allCityTiles = new List<string>();
         allLuxuries = new List<string>();
         allLuxuryTiles = new List<string>();
     }
@@ -39,8 +47,8 @@ public class OverworldGenerator : ScriptableObject
         overworld += utility.ConvertListToString(allTiles, "#")+"@";
         overworld += utility.ConvertListToString(allBiomes, "#")+"@";
         overworld += utility.ConvertListToString(allBiomeTiles, "#")+"@";
-        overworld += utility.ConvertListToString(allCities, "#")+"@";
-        overworld += utility.ConvertListToString(allCitiesTiles, "#")+"@";
+        //overworld += utility.ConvertListToString(allCities, "#")+"@";
+        overworld += utility.ConvertListToString(allCityTiles, "#")+"@";
         overworld += utility.ConvertListToString(allLuxuries, "#")+"@";
         overworld += utility.ConvertListToString(allLuxuryTiles, "#")+"@";
         return overworld;
@@ -58,6 +66,12 @@ public class OverworldGenerator : ScriptableObject
         {
             GenerateRandomBiome();
         }
+        for (int i = 0; i < luxuryCount; i++)
+        {
+            allLuxuries.Add(possibleLuxuries[Random.Range(0, possibleLuxuries.Count)]);
+            allLuxuryTiles.Add(RandomEmptyTile().ToString());
+        }
+        allCityTiles.Add(RandomEmptyTile().ToString());
     }
 
     public void TestGenerate(string biomeShape)
