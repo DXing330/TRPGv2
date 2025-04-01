@@ -42,7 +42,7 @@ public class SavedOverworld : SavedData
         }
     }
 
-    public override void NewGame()
+    protected void GenerateNewOverworld()
     {
         ResetData();
         List<string> zones = new List<string>();
@@ -81,6 +81,14 @@ public class SavedOverworld : SavedData
                 int tileNumber = (((extZoneRow*(GetSize()/zoneSizeDivisor))+(intZoneRow))*(GetSize()))+((extZoneCol*(GetSize()/zoneSizeDivisor))+(intZoneCol));
                 terrainLayer[tileNumber] = zoneTerrain[j];
                 cityLayer[tileNumber] = zoneCities[j];
+                if (zoneCities[j] == "City")
+                {
+                    cityLocationKeys.Add(tileNumber.ToString());
+                    // Supply is based on what zone.
+                    cityLuxurySupplys.Add(luxuryZoneOrder[i]);
+                    // Demand is based on the opposite side zone.
+                    cityLuxuryDemands.Add(luxuryZoneOrder[(luxuryZoneOrder.Count-1)-i]);
+                }
                 luxuryLayer[tileNumber] = zoneLuxuries[j];
                 intZoneCol++;
                 if (intZoneCol >= GetSize()/zoneSizeDivisor)
@@ -96,6 +104,12 @@ public class SavedOverworld : SavedData
                 extZoneRow++;
             }
         }
+    }
+
+    public override void NewGame()
+    {
+        GenerateNewOverworld();
+        Save();
     }
 
     public override void Save()

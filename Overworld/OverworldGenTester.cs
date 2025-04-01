@@ -10,6 +10,12 @@ public class OverworldGenTester : MonoBehaviour
     {
         UpdateDisplay();
     }
+    public SavedOverworld saveOverworld;
+    [ContextMenu("Debug Overworld New Game")]
+    public void OverworldNewGame()
+    {
+        saveOverworld.NewGame();
+    }
     public OverworldGenerator overworldGenerator;
     public OverworldMap overworldMap;
     [ContextMenu("Test Map")]

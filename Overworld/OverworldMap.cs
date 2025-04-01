@@ -5,8 +5,8 @@ using UnityEngine;
 public class OverworldMap : MapManager
 {
     public int maxDistanceFromCenter = 1;
-    public SavedData overworldData;
-    public OverworldGenerator overworldGenerator;
+    public SavedOverworld overworldData;
+    public PartyDataManager partyData;
     public List<string> luxuryLayer;
     public List<string> characterLayer;
     public int partyLocation;
@@ -38,14 +38,14 @@ public class OverworldMap : MapManager
 
     public void SetData()
     {
-        mapSize = overworldGenerator.GetSize();
+        overworldData.Load();
+        mapSize = overworldData.GetSize();
         InitializeEmptyList();
-        mapInfo = new List<string>(overworldGenerator.allTiles);
-        luxuryLayer = new List<string>(overworldGenerator.luxuryLayer);
-        characterLayer = new List<string>(overworldGenerator.cityLayer);
-        partyLocation = 0;
+        mapInfo = new List<string>(overworldData.terrainLayer);
+        luxuryLayer = new List<string>(overworldData.luxuryLayer);
+        characterLayer = new List<string>(overworldData.cityLayer);
+        //partyLocation = partyData.caravan.GetLocation();
         centerTile = partyLocation;
-        // Later load it from the saved data instead of generating it on the spot.
     }
 
     protected override void UpdateMap()
