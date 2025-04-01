@@ -25,6 +25,7 @@ public class OverworldGenerator : ScriptableObject
         if (allTiles[tile] == defaultTile){return tile;}
         return RandomEmptyTile();
     }
+    public string cityString = "City";
     public List<string> cityLayer;
     public List<string> luxuryLayer;
     public List<string> allBiomes;
@@ -73,7 +74,7 @@ public class OverworldGenerator : ScriptableObject
             //allLuxuries.Add(possibleLuxuries[Random.Range(0, possibleLuxuries.Count)]);
             //allLuxuryTiles.Add(RandomEmptyTile().ToString());
         }
-        cityLayer[RandomEmptyTile()] = "City";
+        cityLayer[RandomEmptyTile()] = cityString;
         //allCityTiles.Add(RandomEmptyTile().ToString());
     }
 
@@ -90,7 +91,7 @@ public class OverworldGenerator : ScriptableObject
         {
             GenerateRandomBiome();
         }
-        cityLayer[RandomEmptyTile()] = "City";
+        cityLayer[RandomEmptyTile()] = cityString;
         if (empty){return ReturnOverworld();}
         for (int i = 0; i < luxuryCount; i++)
         {
