@@ -23,6 +23,8 @@ public class SavedCaravan : SavedData
     // If you lose everything you can still ship a little by yourself to rebuild.
     public int basePullWeight;
     public int baseCarryWeight;
+    public int baseMaxDistance = 4;
+    public int GetMaxDistance(){return baseMaxDistance;}
     // Buy more horses/wagons at cities/villages.
     public int horseCount;
     public int GetHorseCount(){return horseCount;}
@@ -58,6 +60,7 @@ public class SavedCaravan : SavedData
         int totalWeight = 0;
         for (int i = 0; i < cargoWeights.Count; i++)
         {
+            if (cargoWeights[i].Length < 1){continue;}
             totalWeight += int.Parse(cargoWeights[i]);
         }
         return totalWeight;
@@ -131,24 +134,30 @@ public class SavedCaravan : SavedData
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
         cargoWeights = dataList[3].Split(delimiterTwo).ToList();
     }
-    public List<int> CarryPullTravelDistanceKeys;
-    public List<int> CarryPullTravelDistanceValues;
+    public float ReturnPullCargoRatio()
+    {
+        float maxPull = (float) GetMaxPullWeight();
+        float cargoWeight = (float) GetCargoWeight();
+        if (cargoWeight <= 0){return (float) baseMaxDistance;}
+        return (maxPull / cargoWeight);
+    }
     public int ReturnDailyTravelableDistance()
     {
         // Can't move if you are overloaded.
         if (GetCargoWeight() >= GetMaxCarryWeight()){return 0;}
         // Otherwise more horses means moving faster.
         // If you have no cargo, move as fast as possible.
-        if (GetCargoWeight() <= 0){return CarryPullTravelDistanceValues[0];}
+        if (GetCargoWeight() <= 0){return baseMaxDistance;}
         int ratio = GetMaxPullWeight()/GetCargoWeight();
-        // The less that you're carrying, the faster you can go, up to a maximum..
-        for (int i = 0; i < CarryPullTravelDistanceKeys.Count; i++)
-        {
-            if (ratio >= CarryPullTravelDistanceKeys[i])
-            {
-                return CarryPullTravelDistanceValues[i];
-            }
-        }
-        return 0;
+        // The less that you're carrying, the faster you can go, up to a maximum.
+        return Mathf.Min(ratio, baseMaxDistance);
+    }
+    public float ReturnCarryCargoRatio()
+    {
+        float maxCarry = (float) GetMaxCarryWeight();
+        float cargoWeight = (float) GetCargoWeight();
+        if (cargoWeight <= 0){return (float) 0;}
+        else if (cargoWeight > maxCarry){return (float) 1;}
+        return (cargoWeight / maxCarry);
     }
 }

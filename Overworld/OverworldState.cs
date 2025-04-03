@@ -10,10 +10,19 @@ public class OverworldState : SavedData
     public SavedCaravan caravan;
     public int location;
     public int GetLocation(){return location;}
-    public void SetLocation(int newLocation){location = newLocation;}
+    public void SetLocation(int newLocation)
+    {
+        location = newLocation;
+        Save();
+    }
     public int moves;
     public int GetMoves(){return moves;}
     public void SetMoves(int newMoves){moves = newMoves;}
+    public bool EnoughMovement(int moveCost){return moves >= moveCost;}
+    public void SpendMovement(int moveCost)
+    {
+        moves -= moveCost;
+    }
     public int dayCount;
     public int GetDay(){return dayCount;}
     public void SetDay(int newDate){dayCount = newDate;}
@@ -21,6 +30,7 @@ public class OverworldState : SavedData
     {
         dayCount++;
         ResetMoves();
+        Save();
     }
     public void ResetMoves()
     {

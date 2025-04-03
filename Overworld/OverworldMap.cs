@@ -5,13 +5,24 @@ using UnityEngine;
 public class OverworldMap : MapManager
 {
     public int maxDistanceFromCenter = 1;
+    public OverworldMoveManager moveManager;
+    public OverworldUIManager UI;
     public SavedOverworld overworldData;
+    public OverworldState overworldState;
     public PartyDataManager partyData;
     public List<string> luxuryLayer;
     public List<string> characterLayer;
     public int partyLocation;
     protected void MoveToTile(int newTile)
     {
+        // Check if you can afford to move to the tile.
+        int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
+        if (!overworldState.EnoughMovement(moveCost)){return;}
+        else
+        {
+            overworldState.SpendMovement(moveCost);
+            overworldState.SetLocation(newTile);
+        }
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
             centerTile = newTile;
@@ -39,12 +50,14 @@ public class OverworldMap : MapManager
     public void SetData()
     {
         overworldData.Load();
+        overworldState.Load();
         mapSize = overworldData.GetSize();
         InitializeEmptyList();
         mapInfo = new List<string>(overworldData.terrainLayer);
         luxuryLayer = new List<string>(overworldData.luxuryLayer);
         characterLayer = new List<string>(overworldData.cityLayer);
-        //partyLocation = partyData.caravan.GetLocation();
+        partyLocation = overworldState.GetLocation();
+        characterLayer[partyLocation] = "Player";
         centerTile = partyLocation;
     }
 
