@@ -30,6 +30,22 @@ public class MapDisplayer : ScriptableObject
             mapTiles[i].ResetLayerSprite(layer);
         }
     }
+
+    public void DisplayCurrentOverworldTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles, string outOfBoundsTile = "DeepWater")
+    {
+        int nextTile = -1;
+        for (int i = 0; i < (mapTiles.Count); i++)
+        {
+            nextTile = currentTiles[i];
+            if (nextTile < 0 || mapInfo[nextTile].Length < 1)
+            {
+                //mapTiles[i].ResetLayerSprite(layer);
+                mapTiles[i].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(outOfBoundsTile), layer);
+                continue;
+            }
+            mapTiles[i].UpdateLayerSprite(layerSprites[layer].SpriteDictionary(mapInfo[nextTile]), layer);
+        }
+    }
     
     public void DisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles, bool updateDirections = false, List<string> actorDirections = null)
     {

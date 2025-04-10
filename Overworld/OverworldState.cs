@@ -7,6 +7,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "OverworldState", menuName = "ScriptableObjects/DataContainers/SavedData/OverworldState", order = 1)]
 public class OverworldState : SavedData
 {
+    // Need to get the location of the guild hub when starting a new game.
+    public SavedOverworld savedOverworld;
     public SavedCaravan caravan;
     public int location;
     public int GetLocation(){return location;}
@@ -39,10 +41,13 @@ public class OverworldState : SavedData
     public override void NewGame()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = newGameData;
-        File.WriteAllText(dataPath, allData);
-        Load();
+        //allData = newGameData;
+        //File.WriteAllText(dataPath, allData);
+        location = savedOverworld.GetCenterCityLocation();
+        moves = 0;
+        dayCount = 0;
         Save();
+        Load();
     }
     public override void Save()
     {

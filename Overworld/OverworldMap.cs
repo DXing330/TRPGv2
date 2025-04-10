@@ -12,6 +12,7 @@ public class OverworldMap : MapManager
     public PartyDataManager partyData;
     public List<string> luxuryLayer;
     public List<string> characterLayer;
+    public List<string> cityLocations;
     public int partyLocation;
     protected void MoveToTile(int newTile)
     {
@@ -28,6 +29,10 @@ public class OverworldMap : MapManager
             centerTile = newTile;
         }
         characterLayer[partyLocation] = "";
+        for (int i = 0; i < cityLocations.Count; i++)
+        {
+            characterLayer[int.Parse(cityLocations[i])] = "City";
+        }
         characterLayer[newTile] = "Player";
         partyLocation = newTile;
         UpdateMap();
@@ -56,6 +61,7 @@ public class OverworldMap : MapManager
         mapInfo = new List<string>(overworldData.terrainLayer);
         luxuryLayer = new List<string>(overworldData.luxuryLayer);
         characterLayer = new List<string>(overworldData.cityLayer);
+        cityLocations = new List<string>(overworldData.cityLocationKeys);
         partyLocation = overworldState.GetLocation();
         characterLayer[partyLocation] = "Player";
         centerTile = partyLocation;
@@ -63,7 +69,8 @@ public class OverworldMap : MapManager
 
     protected override void UpdateMap()
     {
-        base.UpdateMap();
+        UpdateCurrentTiles();
+        mapDisplayers[0].DisplayCurrentOverworldTiles(mapTiles, mapInfo, currentTiles);
         DisplayCharacterLayer();
         DisplayLuxuryLayer();
     }

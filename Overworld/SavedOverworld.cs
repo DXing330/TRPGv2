@@ -20,6 +20,15 @@ public class SavedOverworld : SavedData
     public List<string> cityLayer;
     public List<string> luxuryLayer;
     public List<string> cityLocationKeys; // List of locations of cities.
+    public int GetCenterCityLocation()
+    {
+        return GetCityLocationFromIndex(cityLocationKeys.Count/2);
+    }
+    public int GetCityLocationFromIndex(int index)
+    {
+        if (index < 0 || index >= cityLocationKeys.Count){return -1;}
+        return int.Parse(cityLocationKeys[index]);
+    }
     // Price tiers: supplier, adjacent, normal, demanded
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.
     public List<string> cityLuxuryAdjacent; // Cheaper than normal, but not as cheap as supplied.
