@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class OverworldMap : MapManager
 {
+    public SceneMover sceneMover;
+    public DayNightFilter dayNightFilter;
     public int maxDistanceFromCenter = 1;
     public OverworldMoveManager moveManager;
     public OverworldUIManager UI;
@@ -18,12 +20,19 @@ public class OverworldMap : MapManager
     {
         // Check if you can afford to move to the tile.
         int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
-        if (!overworldState.EnoughMovement(moveCost)){return;}
+        // Move cost is affected by the weight of the caravan, the more loaded the caravan the slower it is.
+        // As such multiply the move cost by the ratio (current/max) weight.
+        
+        // Update the time based on the moveCost.
+        overworldState.AddHours(moveCost);
+        // Update the filter based on the time.
+        dayNightFilter.UpdateFilter(overworldState.GetHour());
+        /*if (!overworldState.EnoughMovement(moveCost)){return;}
         else
         {
             overworldState.SpendMovement(moveCost);
             overworldState.SetLocation(newTile);
-        }
+        }*/
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
             centerTile = newTile;
@@ -35,8 +44,18 @@ public class OverworldMap : MapManager
         }
         characterLayer[newTile] = "Player";
         partyLocation = newTile;
+        if (overworldData.CenterCity(newTile))
+        {
+            sceneMover.ReturnToHub();
+        }
+        else if (cityLocations.Contains(newTile.ToString()))
+        {
+            // Move into the city.
+            // Keep track of what resources are low/high price in that city.
+        }
         UpdateMap();
     }
+
     public void MoveInDirection(int direction)
     {
         int newTile = mapUtility.PointInDirection(partyLocation, direction, mapSize);
@@ -47,6 +66,7 @@ public class OverworldMap : MapManager
     protected override void Start()
     {
         SetData();
+        dayNightFilter.UpdateFilter(overworldState.GetHour());
         UpdateMap();
     }
 

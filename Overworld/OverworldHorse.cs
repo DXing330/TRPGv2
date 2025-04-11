@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class OverworldHorse : MonoBehaviour
 {
-    public string horseName;
+    public string horseSprite;
     // BASE STATS: Generated when the horse is created.
     public int pullStrength;
     public int maxSpeed;

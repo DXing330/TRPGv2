@@ -20,6 +20,11 @@ public class SavedOverworld : SavedData
     public List<string> cityLayer;
     public List<string> luxuryLayer;
     public List<string> cityLocationKeys; // List of locations of cities.
+    // If you enter the center city then it's the guild hub, not a regular city.
+    public bool CenterCity(int cityLocation)
+    {
+        return cityLocation == GetCenterCityLocation();
+    }
     public int GetCenterCityLocation()
     {
         return GetCityLocationFromIndex(cityLocationKeys.Count/2);

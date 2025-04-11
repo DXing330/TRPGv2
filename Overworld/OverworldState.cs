@@ -10,6 +10,9 @@ public class OverworldState : SavedData
     // Need to get the location of the guild hub when starting a new game.
     public SavedOverworld savedOverworld;
     public SavedCaravan caravan;
+    public int hoursInDay = 24;
+    public int restingPeriod = 8;
+    public int GetRestingPeriod(){return restingPeriod;}
     public int location;
     public int GetLocation(){return location;}
     public void SetLocation(int newLocation)
@@ -17,42 +20,42 @@ public class OverworldState : SavedData
         location = newLocation;
         Save();
     }
-    public int moves;
-    public int GetMoves(){return moves;}
-    public void SetMoves(int newMoves){moves = newMoves;}
-    public bool EnoughMovement(int moveCost){return moves >= moveCost;}
-    public void SpendMovement(int moveCost)
-    {
-        moves -= moveCost;
-    }
     public int dayCount;
     public int GetDay(){return dayCount;}
     public void SetDay(int newDate){dayCount = newDate;}
+    public int currentHour;
+    public int GetHour(){return currentHour%hoursInDay;}
+    public void AddHours(int newHours)
+    {
+        currentHour += newHours;
+        while (currentHour >= hoursInDay)
+        {
+            NewDay();
+            currentHour -= hoursInDay;
+        }
+        Save();
+    }
+    public void Rest()
+    {
+        AddHours(GetRestingPeriod());
+    }
     public void NewDay()
     {
         dayCount++;
-        ResetMoves();
-        Save();
-    }
-    public void ResetMoves()
-    {
-        moves = caravan.ReturnDailyTravelableDistance();
     }
     public override void NewGame()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        //allData = newGameData;
-        //File.WriteAllText(dataPath, allData);
         location = savedOverworld.GetCenterCityLocation();
-        moves = 0;
         dayCount = 0;
+        currentHour = 0;
         Save();
         Load();
     }
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = location+delimiter+moves+delimiter+dayCount;
+        allData = location+delimiter+dayCount+delimiter+currentHour;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -66,7 +69,7 @@ public class OverworldState : SavedData
         }
         dataList = allData.Split(delimiter).ToList();
         location = int.Parse(dataList[0]);
-        moves = int.Parse(dataList[1]);
         dayCount = int.Parse(dataList[1]);
+        currentHour = int.Parse(dataList[2]);
     }
 }

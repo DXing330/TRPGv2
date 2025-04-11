@@ -23,11 +23,9 @@ public class SavedCaravan : SavedData
     // If you lose everything you can still ship a little by yourself to rebuild.
     public int basePullWeight;
     public int baseCarryWeight;
-    public int baseMaxDistance = 4;
-    public int GetMaxDistance(){return baseMaxDistance;}
     // Buy more horses/wagons at cities/villages.
-    public int horseCount;
-    public int GetHorseCount(){return horseCount;}
+    public List<string> horses;
+    public int GetHorseCount(){return horses.Count;}
     public string foodString;
     public int horseFoodRequirment;
     public int GetFoodRequirement(){return horseFoodRequirment;}
@@ -40,17 +38,19 @@ public class SavedCaravan : SavedData
     {
         return EnoughCargo(foodString, TotalDailyFood());
     }
-    public int wagonCount;
-    public int GetWagonCount(){return wagonCount;}
-    public int horsePullWeight;
-    public int wagonCarryWeight;
+    public List<string> wagons;
+    public int GetWagonCount(){return wagons.Count;}
     public int GetMaxPullWeight()
     {
-        return (horseCount*horsePullWeight)+basePullWeight;
+        int max = basePullWeight;
+        // Add each horse's individual pull weight.
+        return max;
     }
     public int GetMaxCarryWeight()
     {
-        return (wagonCount*wagonCarryWeight)+baseCarryWeight;
+        int max = baseCarryWeight;
+        // Add each wagon's individual carry weight.
+        return max;
     }
     // Carry a variety of things.
     public List<string> cargoItems;
@@ -63,6 +63,7 @@ public class SavedCaravan : SavedData
             if (cargoWeights[i].Length < 1){continue;}
             totalWeight += int.Parse(cargoWeights[i]);
         }
+        //TODO: Also add all the wagon weights.
         return totalWeight;
     }
     public int ReturnItemWeight(string itemName)
@@ -104,7 +105,19 @@ public class SavedCaravan : SavedData
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = horseCount+delimiter+wagonCount+delimiter;
+        allData = "";
+        for (int i = 0; i < horses.Count; i++)
+        {
+            allData += horses[i];
+            if (i < horses.Count - 1){allData += delimiterTwo;}
+        }
+        allData += delimiter;
+        for (int i = 0; i < wagons.Count; i++)
+        {
+            allData += wagons[i];
+            if (i < wagons.Count - 1){allData += delimiterTwo;}
+        }
+        allData += delimiter;
         for (int i = 0; i < cargoItems.Count; i++)
         {
             allData += cargoItems[i];
@@ -129,29 +142,17 @@ public class SavedCaravan : SavedData
             return;
         }
         dataList = allData.Split(delimiter).ToList();
-        horseCount = int.Parse(dataList[0]);
-        wagonCount = int.Parse(dataList[1]);
+        horses = dataList[0].Split(delimiterTwo).ToList();
+        wagons = dataList[1].Split(delimiterTwo).ToList();
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
         cargoWeights = dataList[3].Split(delimiterTwo).ToList();
     }
-    public float ReturnPullCargoRatio()
+    public void ReturnPullCargoRatio()
     {
         float maxPull = (float) GetMaxPullWeight();
         float cargoWeight = (float) GetCargoWeight();
-        if (cargoWeight <= 0){return (float) baseMaxDistance;}
-        return (maxPull / cargoWeight);
     }
-    public int ReturnDailyTravelableDistance()
-    {
-        // Can't move if you are overloaded.
-        if (GetCargoWeight() >= GetMaxCarryWeight()){return 0;}
-        // Otherwise more horses means moving faster.
-        // If you have no cargo, move as fast as possible.
-        if (GetCargoWeight() <= 0){return baseMaxDistance;}
-        int ratio = GetMaxPullWeight()/GetCargoWeight();
-        // The less that you're carrying, the faster you can go, up to a maximum.
-        return Mathf.Min(ratio, baseMaxDistance);
-    }
+
     public float ReturnCarryCargoRatio()
     {
         float maxCarry = (float) GetMaxCarryWeight();

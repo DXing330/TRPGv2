@@ -8,6 +8,7 @@ public class SceneMover : MonoBehaviour
     public LoadingScreen loadingScreen;
     public SceneTracker sceneTracker;
     public bool loadingRequired = false;
+    public string overworldSceneName = "Overworld";
     public string hubSceneName = "Hub";
     public string dungeonSceneName = "Dungeon";
     public PartyData permanentParty;

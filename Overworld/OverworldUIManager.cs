@@ -31,13 +31,11 @@ public class OverworldUIManager : MonoBehaviour
     // Bar for current/max carry weight.
     public void UpdateMoveRange()
     {
-        remainingMovement.text = overworldState.GetMoves().ToString();
+        // remainingMovement.text = overworldState.GetMoves().ToString();
     }
     public void UpdateMoveSpeed()
     {
-        float moveSpeedRatio = partyData.caravan.ReturnPullCargoRatio();
-        float adjRatio = moveSpeedRatio / partyData.caravan.GetMaxDistance();
-        moveSpeedBar.transform.localScale = new Vector3(Mathf.Min(1,adjRatio),barYScale,0);
+        
     }
     public void UpdateCargoWeight()
     {
@@ -47,8 +45,6 @@ public class OverworldUIManager : MonoBehaviour
     }
     public void UpdateCaravanPanel()
     {
-        UpdateMoveRange();
-        UpdateMoveSpeed();
         UpdateCargoWeight();
     }
     public void UpdateCurrentPanel()
