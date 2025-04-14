@@ -10,6 +10,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedCaravan", menuName = "ScriptableObjects/DataContainers/SavedData/SavedCaravan", order = 1)]
 public class SavedCaravan : SavedData
 {
+    public GeneralUtility utility;
     public PartyData permanentParty;
     public override void NewGame()
     {
@@ -29,10 +30,30 @@ public class SavedCaravan : SavedData
     // Buy more horses/wagons at cities/villages.
     public List<string> horses;
     public OverworldHorse dummyHorse;
-    public int GetCurrentSpeed()
+    public int GetMaxSpeed()
     {
         if (horses.Count == 0){return baseSpeed;}
-        return 0;
+        int speed = 999;
+        for (int i = 0; i < horses.Count; i++)
+        {
+            dummyHorse.LoadAllStats(horses[i]);
+            // Horses without energy means the whole caravan slows.
+            if (dummyHorse.GetEnergy() <= 0)
+            {
+                speed = 1;
+                break;
+            }
+            // Only as fast as the slowest link.
+            else
+            {
+                speed = Mathf.Min(speed, dummyHorse.GetMaxSpeed());
+            }
+        }
+        return speed;
+    }
+    public int GetCurrentSpeed()
+    {
+        return Mathf.Min(GetMaxSpeed(), ReturnPullCargoRatio());
     }
     public int GetHorseCount(){return horses.Count;}
     public string foodString;
@@ -48,17 +69,36 @@ public class SavedCaravan : SavedData
         return EnoughCargo(foodString, TotalDailyFood());
     }
     public List<string> wagons;
+    public OverworldWagon dummyWagon;
     public int GetWagonCount(){return wagons.Count;}
     public int GetMaxPullWeight()
     {
         int max = basePullWeight;
         // Add each horse's individual pull weight.
+        for (int i = 0; i < horses.Count; i++)
+        {
+            dummyHorse.LoadAllStats(horses[i]);
+            // Horses without energy means the whole caravan slows.
+            if (dummyHorse.GetEnergy() <= 0){continue;}
+            // Only as fast as the slowest link.
+            else
+            {
+                max += dummyHorse.GetPullStrength();
+            }
+        }
         return max;
     }
     public int GetMaxCarryWeight()
     {
         int max = baseCarryWeight;
         // Add each wagon's individual carry weight.
+        for (int i = 0; i < wagons.Count; i++)
+        {
+            dummyWagon.LoadAllStats(wagons[i]);
+            {
+                max += dummyWagon.GetCarryWeight();
+            }
+        }
         return max;
     }
     // Carry a variety of things.
@@ -73,6 +113,13 @@ public class SavedCaravan : SavedData
             totalWeight += int.Parse(cargoWeights[i]);
         }
         //TODO: Also add all the wagon weights.
+        /*for (int i = 0; i < wagons.Count; i++)
+        {
+            dummyWagon.LoadAllStats(wagons[i]);
+            {
+                max += dummyWagon.GetWeight();
+            }
+        }*/
         return totalWeight;
     }
     public int ReturnItemWeight(string itemName)
@@ -155,11 +202,16 @@ public class SavedCaravan : SavedData
         wagons = dataList[1].Split(delimiterTwo).ToList();
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
         cargoWeights = dataList[3].Split(delimiterTwo).ToList();
+        utility.RemoveEmptyListItems(horses);
+        utility.RemoveEmptyListItems(wagons);
     }
-    public void ReturnPullCargoRatio()
+    public int ReturnPullCargoRatio()
     {
-        float maxPull = (float) GetMaxPullWeight();
-        float cargoWeight = (float) GetCargoWeight();
+        int maxPull = GetMaxPullWeight();
+        int cargoWeight = GetCargoWeight();
+        if (cargoWeight > maxPull){return 0;}
+        else if (cargoWeight <= 0){return 999;}
+        return (maxPull/cargoWeight);
     }
 
     public float ReturnCarryCargoRatio()

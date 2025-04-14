@@ -22,6 +22,7 @@ public class OverworldMap : MapManager
 
         // Check if you can afford to move to the tile.
         int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
+        moveCost = moveCost/partyData.caravan.GetCurrentSpeed();
         // Move cost is affected by the weight of the caravan, the more loaded the caravan the slower it is.
         // As such multiply the move cost by the ratio (current/max) weight.
         // Update the time based on the moveCost.

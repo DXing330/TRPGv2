@@ -28,8 +28,22 @@ public class OverworldHorse : MonoBehaviour
         allStats += pullStrength+"|"+maxSpeed+"|"+maxEnergy+"|"+maxHealth+"|"+currentEnergy+"|"+currentHealth;
         return allStats;
     }
+    public void ResetStats()
+    {
+        pullStrength = 0;
+        maxSpeed = 0;
+        maxEnergy = 0;
+        maxHealth = 0;
+        currentEnergy = 0;
+        currentHealth = 0;
+    }
     public void LoadAllStats(string newStats)
     {
+        if (newStats.Length < 6)
+        {
+            ResetStats();
+            return;
+        }
         string[] stats = newStats.Split("|");
         pullStrength = int.Parse(stats[0]);
         maxSpeed = int.Parse(stats[1]);

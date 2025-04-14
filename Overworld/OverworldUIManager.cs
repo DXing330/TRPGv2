@@ -25,7 +25,7 @@ public class OverworldUIManager : MonoBehaviour
     public TMP_Text cargoWeightText;
     public void UpdateMoveSpeed()
     {
-        string hourlySpeed = (overworldMap.moveManager.GetBaseMoveCost()).ToString();
+        string hourlySpeed = (overworldMap.moveManager.GetBaseMoveCost()/partyData.caravan.GetCurrentSpeed()).ToString();
         moveSpeedText.text = "1 Tile ~ "+hourlySpeed+" Hours";
     }
     public void UpdateCargoWeight()
