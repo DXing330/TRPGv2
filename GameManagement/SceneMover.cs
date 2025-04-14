@@ -15,9 +15,17 @@ public class SceneMover : MonoBehaviour
     public PartyData mainParty;
     public PartyData tempParty;
 
+    public void StartGame()
+    {
+        sceneTracker.Load();
+        LoadScene(sceneTracker.GetCurrentScene());
+    }
+
     public void LoadScene(string sceneName)
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        sceneTracker.SetCurrentScene(sceneName);
+        sceneTracker.Save();
         if (sceneName == hubSceneName)
         {
             ReturnToHub();
@@ -36,6 +44,7 @@ public class SceneMover : MonoBehaviour
     public void ReturnToHub()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        sceneTracker.SetCurrentScene(hubSceneName);
         permanentParty.ResetCurrentStats();
         mainParty.ResetCurrentStats();
         tempParty.ClearAllStats();

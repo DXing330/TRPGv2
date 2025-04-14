@@ -18,21 +18,16 @@ public class OverworldMap : MapManager
     public int partyLocation;
     protected void MoveToTile(int newTile)
     {
+        // Check if you have enough energy to move.
+
         // Check if you can afford to move to the tile.
         int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
         // Move cost is affected by the weight of the caravan, the more loaded the caravan the slower it is.
         // As such multiply the move cost by the ratio (current/max) weight.
-        
         // Update the time based on the moveCost.
         overworldState.AddHours(moveCost);
-        // Update the filter based on the time.
         dayNightFilter.UpdateFilter(overworldState.GetHour());
-        /*if (!overworldState.EnoughMovement(moveCost)){return;}
-        else
-        {
-            overworldState.SpendMovement(moveCost);
-            overworldState.SetLocation(newTile);
-        }*/
+        overworldState.SetLocation(newTile);
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
             centerTile = newTile;

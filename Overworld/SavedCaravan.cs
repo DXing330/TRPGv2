@@ -23,8 +23,17 @@ public class SavedCaravan : SavedData
     // If you lose everything you can still ship a little by yourself to rebuild.
     public int basePullWeight;
     public int baseCarryWeight;
+    // By yourself you're about twice as fast as a normal traveller.
+    // Of course horses can be much faster than you and pull much more weight.
+    public int baseSpeed = 2;
     // Buy more horses/wagons at cities/villages.
     public List<string> horses;
+    public OverworldHorse dummyHorse;
+    public int GetCurrentSpeed()
+    {
+        if (horses.Count == 0){return baseSpeed;}
+        return 0;
+    }
     public int GetHorseCount(){return horses.Count;}
     public string foodString;
     public int horseFoodRequirment;

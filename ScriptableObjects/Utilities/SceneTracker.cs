@@ -14,14 +14,26 @@ public class SceneTracker : SavedData
         previousScene = sceneName;
     }
     public string GetPreviousScene(){return previousScene;}
-    public string defaultScene;
-    public void SetDefaultScene(string sceneName){defaultScene = sceneName;}
-    public string GetDefaultScene(){return defaultScene;}
+    public string currentScene;
+    public void SetCurrentScene(string sceneName)
+    {
+        currentScene = sceneName;
+        Save();
+    }
+    public string GetCurrentScene(){return currentScene;}
+
+    public override void NewGame()
+    {
+        allData = newGameData;
+        dataPath = Application.persistentDataPath+"/"+filename;
+        File.WriteAllText(dataPath, allData);
+        Load();
+    }
 
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = previousScene+delimiter+defaultScene;
+        allData = previousScene+delimiter+currentScene;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -37,6 +49,6 @@ public class SceneTracker : SavedData
             dataList.Add(allData);
         }
         SetPreviousScene(dataList[0]);
-        SetDefaultScene(dataList[1]);
+        SetCurrentScene(dataList[1]);
     }
 }

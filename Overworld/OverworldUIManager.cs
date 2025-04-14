@@ -21,31 +21,21 @@ public class OverworldUIManager : MonoBehaviour
     }
     public List<GameObject> panels;
     // Caravan stats.
-
-    public TMP_Text remainingMovement;
-    public GameObject moveSpeedBar;
-    public GameObject cargoWeightBar;
-    public float barYScale = 0.7f;
-    public float barMinWidth = 0.1f;
-    // Bar for movement.
-    // Bar for current/max carry weight.
-    public void UpdateMoveRange()
-    {
-        // remainingMovement.text = overworldState.GetMoves().ToString();
-    }
+    public TMP_Text moveSpeedText;
+    public TMP_Text cargoWeightText;
     public void UpdateMoveSpeed()
     {
-        
+        string hourlySpeed = (overworldMap.moveManager.GetBaseMoveCost()).ToString();
+        moveSpeedText.text = "1 Tile ~ "+hourlySpeed+" Hours";
     }
     public void UpdateCargoWeight()
     {
-        float cargoWeightRatio = partyData.caravan.ReturnCarryCargoRatio();
-        if (cargoWeightRatio <= barMinWidth){cargoWeightRatio = barMinWidth;}
-        cargoWeightBar.transform.localScale = new Vector3(Mathf.Min(1,cargoWeightRatio),barYScale,0);
+        cargoWeightText.text = partyData.caravan.GetCargoWeight()+" / "+partyData.caravan.GetMaxCarryWeight();
     }
     public void UpdateCaravanPanel()
     {
         UpdateCargoWeight();
+        UpdateMoveSpeed();
     }
     public void UpdateCurrentPanel()
     {
