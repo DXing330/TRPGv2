@@ -13,13 +13,16 @@ public class OverworldMap : MapManager
     public OverworldState overworldState;
     public PartyDataManager partyData;
     public List<string> luxuryLayer;
+    public int luxuryLayerInt = 2;
     public List<string> characterLayer;
+    public int characterLayerInt = 3;
+    public string partySprite = "Player";
     public List<string> cityLocations;
+    public List<string> featureLayer;
+    public int featureLayerInt = 1;
     public int partyLocation;
     protected void MoveToTile(int newTile)
     {
-        // Check if you have enough energy to move.
-
         // Check if you can afford to move to the tile.
         int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
         moveCost = moveCost/partyData.caravan.GetCurrentSpeed();
@@ -29,16 +32,13 @@ public class OverworldMap : MapManager
         overworldState.AddHours(moveCost);
         dayNightFilter.UpdateFilter(overworldState.GetHour());
         overworldState.SetLocation(newTile);
+        UpdateData();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
             centerTile = newTile;
         }
         characterLayer[partyLocation] = "";
-        for (int i = 0; i < cityLocations.Count; i++)
-        {
-            characterLayer[int.Parse(cityLocations[i])] = "City";
-        }
-        characterLayer[newTile] = "Player";
+        characterLayer[newTile] = partySprite;
         partyLocation = newTile;
         if (overworldData.CenterCity(newTile))
         {
@@ -75,12 +75,18 @@ public class OverworldMap : MapManager
         mapSize = overworldData.GetSize();
         InitializeEmptyList();
         mapInfo = new List<string>(overworldData.terrainLayer);
-        luxuryLayer = new List<string>(overworldData.luxuryLayer);
-        characterLayer = new List<string>(overworldData.cityLayer);
-        cityLocations = new List<string>(overworldData.cityLocationKeys);
+        UpdateData();
         partyLocation = overworldState.GetLocation();
-        characterLayer[partyLocation] = "Player";
+        characterLayer[partyLocation] = partySprite;
         centerTile = partyLocation;
+    }
+
+    protected void UpdateData()
+    {
+        luxuryLayer = new List<string>(overworldData.luxuryLayer);
+        featureLayer = new List<string>(overworldData.featureLayer);
+        cityLocations = new List<string>(overworldData.cityLocationKeys);
+        characterLayer = new List<string>(overworldData.characterLayer);
     }
 
     protected override void UpdateMap()
@@ -89,17 +95,24 @@ public class OverworldMap : MapManager
         mapDisplayers[0].DisplayCurrentOverworldTiles(mapTiles, mapInfo, currentTiles);
         DisplayCharacterLayer();
         DisplayLuxuryLayer();
+        DisplayFeatureLayer();
     }
 
     protected void DisplayLuxuryLayer()
     {
-        mapDisplayers[2].ResetCurrentTiles(mapTiles);
-        mapDisplayers[2].DisplayCurrentTiles(mapTiles, luxuryLayer, currentTiles);
+        mapDisplayers[luxuryLayerInt].ResetCurrentTiles(mapTiles);
+        mapDisplayers[luxuryLayerInt].DisplayCurrentTiles(mapTiles, luxuryLayer, currentTiles);
     }
 
     protected void DisplayCharacterLayer()
     {
-        mapDisplayers[1].ResetCurrentTiles(mapTiles);
-        mapDisplayers[1].DisplayCurrentTiles(mapTiles, characterLayer, currentTiles);
+        mapDisplayers[characterLayerInt].ResetCurrentTiles(mapTiles);
+        mapDisplayers[characterLayerInt].DisplayCurrentTiles(mapTiles, characterLayer, currentTiles);
+    }
+
+    protected void DisplayFeatureLayer()
+    {
+        mapDisplayers[featureLayerInt].ResetCurrentTiles(mapTiles);
+        mapDisplayers[featureLayerInt].DisplayCurrentTiles(mapTiles, featureLayer, currentTiles);
     }
 }

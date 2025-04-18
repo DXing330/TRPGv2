@@ -7,6 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedOverworld", menuName = "ScriptableObjects/DataContainers/SavedData/SavedOverworld", order = 1)]
 public class SavedOverworld : SavedData
 {
+    public GeneralUtility utility;
     public string delimiterTwo;
     public OverworldGenerator owGen;
     public MapUtility mapUtility;
@@ -17,9 +18,71 @@ public class SavedOverworld : SavedData
     public List<string> possibleLuxuries;
     public List<string> GetPossibleLuxuries(){return possibleLuxuries;}
     public List<string> terrainLayer;
-    public List<string> cityLayer;
+    public string ReturnTerrain(int tileNumber){return terrainLayer[tileNumber];}
+    // Cities, Guild Hub, Villages, Caves, Ruins, Bandit Camps
+    public List<string> featureLayer;
+    public int RandomTile()
+    {
+        return Random.Range(0, terrainLayer.Count);
+    }
+    public string ReturnFeature(int tileNumber)
+    {
+        return featureLayer[tileNumber];
+    }
+    public bool FeatureExists(int tileNumber)
+    {
+        return featureLayer[tileNumber] != "";
+    }
+    public void AddFeature(string featureName, int featureLocation)
+    {
+        // Can't have features overlapping.
+        if (featureLayer[featureLocation] == "")
+        {
+            featureLayer[featureLocation] = featureName;
+        }
+    }
+    public string guildHubSprite = "Citadel";
+    public List<string> cityLocationKeys;
     public List<string> luxuryLayer;
-    public List<string> cityLocationKeys; // List of locations of cities.
+    // Player, Monsters, Bandits, NPCs
+    public List<string> characterLayer;
+    public void AddCharacter(string characterName, int characterLocation)
+    {
+        // Can't overlap.
+        if (characterLayer[characterLocation] == "")
+        {
+            characterLayer[characterLocation] = characterName;
+        }
+    }
+    public string ReturnCharacter(int tileNumber)
+    {
+        return characterLayer[tileNumber];
+    }
+    public bool CharacterExists(int tileNumber)
+    {
+        return characterLayer[tileNumber] != "";
+    }
+    public int ReturnClosestCityDistance(int tileNumber)
+    {
+        return mapUtility.DistanceBetweenTiles(tileNumber, ReturnClosestCityLocation(tileNumber), overworldSize);
+    }
+    public int ReturnClosestCityLocation(int tileNumber)
+    {
+        int distance = 999;
+        int cityIndex = -1;
+        for (int i = 0; i < cityLocationKeys.Count; i++)
+        {
+            // Don't count the guild hub as a city.
+            if (i == cityLocationKeys.Count/2){continue;}
+            int newDistance = mapUtility.DistanceBetweenTiles(tileNumber, int.Parse(cityLocationKeys[i]), overworldSize);
+            if (newDistance < distance)
+            {
+                distance = newDistance;
+                cityIndex = i;
+            }
+        }
+        return int.Parse(cityLocationKeys[cityIndex]);
+    }
     // If you enter the center city then it's the guild hub, not a regular city.
     public bool CenterCity(int cityLocation)
     {
@@ -42,8 +105,9 @@ public class SavedOverworld : SavedData
     protected void ResetData()
     {
         terrainLayer = new List<string>();
-        cityLayer = new List<string>();
+        featureLayer = new List<string>();
         luxuryLayer = new List<string>();
+        characterLayer = new List<string>();
         cityLocationKeys = new List<string>();
         cityLuxurySupplys = new List<string>();
         cityLuxuryAdjacent = new List<string>();
@@ -51,8 +115,9 @@ public class SavedOverworld : SavedData
         for (int i = 0; i < GetSize()*GetSize(); i++)
         {
             terrainLayer.Add("");
-            cityLayer.Add("");
+            featureLayer.Add("");
             luxuryLayer.Add("");
+            characterLayer.Add("");
         }
     }
 
@@ -94,7 +159,7 @@ public class SavedOverworld : SavedData
             {
                 int tileNumber = (((extZoneRow*(GetSize()/zoneSizeDivisor))+(intZoneRow))*(GetSize()))+((extZoneCol*(GetSize()/zoneSizeDivisor))+(intZoneCol));
                 terrainLayer[tileNumber] = zoneTerrain[j];
-                cityLayer[tileNumber] = zoneCities[j];
+                featureLayer[tileNumber] = zoneCities[j];
                 if (zoneCities[j] == "City")
                 {
                     cityLocationKeys.Add(tileNumber.ToString());
@@ -118,12 +183,20 @@ public class SavedOverworld : SavedData
                 extZoneRow++;
             }
         }
+        // Make the center city the guild hub.
+        featureLayer[int.Parse(cityLocationKeys[cityLocationKeys.Count/2])] = guildHubSprite;
     }
 
     public override void NewGame()
     {
         GenerateNewOverworld();
         Save();
+    }
+
+    // Hope this is quicker, using linq, this requires loading first;
+    public void QuickSave()
+    {
+
     }
 
     public override void Save()
@@ -136,10 +209,10 @@ public class SavedOverworld : SavedData
             if (i < terrainLayer.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
-        for (int i = 0; i < cityLayer.Count; i++)
+        for (int i = 0; i < featureLayer.Count; i++)
         {
-            allData += cityLayer[i];
-            if (i < cityLayer.Count - 1){allData += delimiterTwo;}
+            allData += featureLayer[i];
+            if (i < featureLayer.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
         for (int i = 0; i < luxuryLayer.Count; i++)
@@ -172,6 +245,12 @@ public class SavedOverworld : SavedData
             if (i < cityLuxuryDemands.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
+        for (int i = 0; i < characterLayer.Count; i++)
+        {
+            allData += characterLayer[i];
+            if (i < characterLayer.Count - 1){allData += delimiterTwo;}
+        }
+        allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -186,11 +265,12 @@ public class SavedOverworld : SavedData
         }
         dataList = allData.Split(delimiter).ToList();
         terrainLayer = dataList[0].Split(delimiterTwo).ToList();
-        cityLayer = dataList[1].Split(delimiterTwo).ToList();
+        featureLayer = dataList[1].Split(delimiterTwo).ToList();
         luxuryLayer = dataList[2].Split(delimiterTwo).ToList();
         cityLocationKeys = dataList[3].Split(delimiterTwo).ToList();
         cityLuxurySupplys = dataList[4].Split(delimiterTwo).ToList();
         cityLuxuryAdjacent = dataList[5].Split(delimiterTwo).ToList();
         cityLuxuryDemands = dataList[6].Split(delimiterTwo).ToList();
+        characterLayer = dataList[7].Split(delimiterTwo).ToList();
     }
 }

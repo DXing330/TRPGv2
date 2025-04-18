@@ -10,6 +10,8 @@ public class OverworldState : SavedData
     // Need to get the location of the guild hub when starting a new game.
     public SavedOverworld savedOverworld;
     public SavedCaravan caravan;
+    // Bandits will appear as the days go by.
+    public BanditManager banditManager;
     public int hoursInDay = 24;
     public int restingPeriod = 8;
     public int GetRestingPeriod(){return restingPeriod;}
@@ -42,6 +44,7 @@ public class OverworldState : SavedData
     public void NewDay()
     {
         dayCount++;
+        banditManager.NewDay(dayCount);
     }
     public override void NewGame()
     {
