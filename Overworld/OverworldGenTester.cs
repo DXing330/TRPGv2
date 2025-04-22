@@ -16,6 +16,14 @@ public class OverworldGenTester : MonoBehaviour
     {
         saveOverworld.NewGame();
     }
+    [ContextMenu("Debug Luxury Tile Types")]
+    public void DebugLuxuryTileTypes()
+    {
+        for (int i = 0; i < saveOverworld.luxuryLocations.Count; i++)
+        {
+            Debug.Log(saveOverworld.terrainLayer[int.Parse(saveOverworld.luxuryLocations[i])]);
+        }
+    }
     public OverworldGenerator overworldGenerator;
     public OverworldMap overworldMap;
     [ContextMenu("Test Map")]

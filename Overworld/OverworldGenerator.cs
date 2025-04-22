@@ -22,12 +22,16 @@ public class OverworldGenerator : ScriptableObject
     public int RandomEmptyTile()
     {
         int tile = Random.Range(0, allTiles.Count);
+        if (tile == int.Parse(cityLocation)){return RandomEmptyTile();}
         if (allTiles[tile] == defaultTile){return tile;}
         return RandomEmptyTile();
     }
     public string cityString = "City";
+    public string cityLocation;
     public List<string> cityLayer;
     public List<string> luxuryLayer;
+    public List<string> allLuxuries;
+    public List<string> allLuxuryTiles;
     public List<string> allBiomes;
     public List<string> allBiomeTiles;
     public void ResetTiles()
@@ -39,8 +43,8 @@ public class OverworldGenerator : ScriptableObject
         luxuryLayer = new List<string>();
         //allCities = new List<string>();
         //allCityTiles = new List<string>();
-        //allLuxuries = new List<string>();
-        //allLuxuryTiles = new List<string>();
+        allLuxuries = new List<string>();
+        allLuxuryTiles = new List<string>();
     }
 
     public string ReturnOverworld()
@@ -49,8 +53,13 @@ public class OverworldGenerator : ScriptableObject
         overworld += utility.ConvertListToString(allTiles, "#")+"@";
         overworld += utility.ConvertListToString(cityLayer, "#")+"@";
         overworld += utility.ConvertListToString(luxuryLayer, "#")+"@";
+        overworld += cityLocation+"@";
+        overworld += utility.ConvertListToString(allLuxuries, "#")+"@";
+        overworld += utility.ConvertListToString(allLuxuryTiles, "#")+"@";
+        /*overworld += utility.ConvertListToString(cityLayer, "#")+"@";
+        overworld += utility.ConvertListToString(luxuryLayer, "#")+"@";
         overworld += utility.ConvertListToString(allBiomes, "#")+"@";
-        overworld += utility.ConvertListToString(allBiomeTiles, "#")+"@";
+        overworld += utility.ConvertListToString(allBiomeTiles, "#")+"@";*/
         return overworld;
     }
 
@@ -71,11 +80,8 @@ public class OverworldGenerator : ScriptableObject
         for (int i = 0; i < luxuryCount; i++)
         {
             luxuryLayer[RandomEmptyTile()] = possibleLuxuries[Random.Range(0, possibleLuxuries.Count)];
-            //allLuxuries.Add(possibleLuxuries[Random.Range(0, possibleLuxuries.Count)]);
-            //allLuxuryTiles.Add(RandomEmptyTile().ToString());
         }
         cityLayer[RandomEmptyTile()] = cityString;
-        //allCityTiles.Add(RandomEmptyTile().ToString());
     }
 
     public string GenerateZone(int zoneSize, string luxury, bool empty = false)
@@ -91,11 +97,16 @@ public class OverworldGenerator : ScriptableObject
         {
             GenerateRandomBiome();
         }
-        cityLayer[RandomEmptyTile()] = cityString;
+        int randomTile = RandomEmptyTile();
+        cityLocation = randomTile.ToString();
+        cityLayer[randomTile] = cityString;
         if (empty){return ReturnOverworld();}
         for (int i = 0; i < luxuryCount; i++)
         {
-            luxuryLayer[RandomEmptyTile()] = possibleLuxuries[Random.Range(0, possibleLuxuries.Count)];
+            allLuxuries.Add(luxury);
+            randomTile = RandomEmptyTile();
+            allLuxuryTiles.Add(randomTile.ToString());
+            luxuryLayer[randomTile] = luxury;
         }
         return ReturnOverworld();
     }

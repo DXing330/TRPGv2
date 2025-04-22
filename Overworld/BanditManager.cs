@@ -124,7 +124,7 @@ public class BanditManager : SavedData
             // Get a random empty tile.
             int potentialCamp = savedOverworld.RandomTile();
             // Check if it is far away enough from a city.
-            if (spawnableTerrain.Contains(savedOverworld.ReturnTerrain(potentialCamp)) && !savedOverworld.FeatureExists(potentialCamp) && savedOverworld.ReturnClosestCityDistance(potentialCamp) >= minDistanceFromCity)
+            if (spawnableTerrain.Contains(savedOverworld.ReturnTerrain(potentialCamp)) && savedOverworld.ReturnClosestCityDistance(potentialCamp) >= minDistanceFromCity)
             {
                 SpawnCamp(potentialCamp);
             }
@@ -132,21 +132,21 @@ public class BanditManager : SavedData
         // Spawn bandits from camps.
         for (int i = 0; i < banditCamps.Count; i++)
         {
-            if (savedOverworld.CharacterExists(int.Parse(banditCamps[i])))
+            if (savedOverworld.AddCharacter(banditString, banditCamps[i]))
             {
-                continue;
+                bandits.Add(banditCamps[i]);
+                banditLevels.Add(banditCampSizes[i]);
             }
-            bandits.Add(banditCamps[i]);
-            banditLevels.Add(banditCampSizes[i]);
-            savedOverworld.AddCharacter(banditString, int.Parse(banditCamps[i]));
         }
-        //Save();
+        Save();
     }
 
     protected void SpawnCamp(int tileNumber)
     {
-        banditCamps.Add(tileNumber.ToString());
-        banditCampSizes.Add("1");
-        savedOverworld.AddFeature(banditCampString, tileNumber);
+        if (savedOverworld.AddFeature(banditCampString, tileNumber.ToString()))
+        {
+            banditCamps.Add(tileNumber.ToString());
+            banditCampSizes.Add("1");
+        }
     }
 }

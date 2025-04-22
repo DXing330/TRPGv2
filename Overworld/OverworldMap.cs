@@ -83,9 +83,9 @@ public class OverworldMap : MapManager
 
     protected void UpdateData()
     {
+        overworldData.UpdateLayers(emptyList);
         luxuryLayer = new List<string>(overworldData.luxuryLayer);
         featureLayer = new List<string>(overworldData.featureLayer);
-        cityLocations = new List<string>(overworldData.cityLocationKeys);
         characterLayer = new List<string>(overworldData.characterLayer);
     }
 
