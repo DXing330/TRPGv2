@@ -79,6 +79,14 @@ public class SavedOverworld : SavedData
         QuickSave();
         return true;
     }
+    public bool MoveCharacter(string currentLocation, string newLocation)
+    {
+        int indexOf = characterLocations.IndexOf(currentLocation);
+        if (indexOf < 0){return false;}
+        if (characterLocations.Contains(newLocation)){return false;}
+        characterLocations[indexOf] = newLocation;
+        return true;
+    }
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.
     // List of what luxuries are in demand in each city, more expensive than usual.
     public List<string> cityLuxuryDemands; // Probably have to make this here, the overworld gen won't know since it only makes them one at a time.
@@ -128,6 +136,10 @@ public class SavedOverworld : SavedData
         cityLuxuryDemands = new List<string>();
         luxuries = new List<string>();
         luxuryLocations = new List<string>();
+        features = new List<string>();
+        featureLocations = new List<string>();
+        characters = new List<string>();
+        characterLocations = new List<string>();
         for (int i = 0; i < GetSize()*GetSize(); i++)
         {
             terrainLayer.Add("");

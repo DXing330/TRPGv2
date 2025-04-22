@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BanditManager", menuName = "ScriptableObjects/DataContainers/SavedData/BanditManager", order = 1)]
-public class BanditManager : SavedData
+public class BanditManager : OverworldEnemyManager
 {
     public GeneralUtility utility;
     public string delimiterTwo;
@@ -34,16 +34,19 @@ public class BanditManager : SavedData
     public List<string> banditCampSizes;
     // Bandits will spawn from camps every X days/weeks.
     // Bandits will move every day.
-    public List<string> bandits;
+    public List<string> banditLocations;
     // Bigger camps spawn higher level bandits (bigger groups).
     public List<string> banditLevels;
 
-    public void NewDay(int dayCount)
+    public override void NewDay(int dayCount)
     {
+        // All bandits move during each day.
+        UpdateBanditLocations();
         if (dayCount%spawnRate == 0)
         {
             UpdateBanditCamps();
         }
+        Save();
     }
 
     public override void NewGame()
@@ -71,10 +74,10 @@ public class BanditManager : SavedData
             if (i < banditCampSizes.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
-        for (int i = 0; i < bandits.Count; i++)
+        for (int i = 0; i < banditLocations.Count; i++)
         {
-            allData += bandits[i];
-            if (i < bandits.Count - 1){allData += delimiterTwo;}
+            allData += banditLocations[i];
+            if (i < banditLocations.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
         for (int i = 0; i < banditLevels.Count; i++)
@@ -98,11 +101,11 @@ public class BanditManager : SavedData
         dataList = allData.Split(delimiter).ToList();
         banditCamps = dataList[0].Split(delimiterTwo).ToList();
         banditCampSizes = dataList[1].Split(delimiterTwo).ToList();
-        bandits = dataList[2].Split(delimiterTwo).ToList();
+        banditLocations = dataList[2].Split(delimiterTwo).ToList();
         banditLevels = dataList[3].Split(delimiterTwo).ToList();
         utility.RemoveEmptyListItems(banditCamps);
         utility.RemoveEmptyListItems(banditCampSizes);
-        utility.RemoveEmptyListItems(bandits);
+        utility.RemoveEmptyListItems(banditLocations);
         utility.RemoveEmptyListItems(banditLevels);
     }
 
@@ -134,11 +137,10 @@ public class BanditManager : SavedData
         {
             if (savedOverworld.AddCharacter(banditString, banditCamps[i]))
             {
-                bandits.Add(banditCamps[i]);
+                banditLocations.Add(banditCamps[i]);
                 banditLevels.Add(banditCampSizes[i]);
             }
         }
-        Save();
     }
 
     protected void SpawnCamp(int tileNumber)
@@ -147,6 +149,21 @@ public class BanditManager : SavedData
         {
             banditCamps.Add(tileNumber.ToString());
             banditCampSizes.Add("1");
+        }
+    }
+
+    public void UpdateBanditLocations()
+    {
+        for (int i = 0; i < banditLocations.Count; i++)
+        {
+            // Try having the bandits move randomly for now.
+            int direction = Random.Range(0, 6);
+            int newTile = mapUtility.PointInDirection(int.Parse(banditLocations[i]), direction, savedOverworld.GetSize());
+            if (newTile < 0){continue;}
+            if (savedOverworld.MoveCharacter(banditLocations[i], newTile.ToString()))
+            {
+                banditLocations[i] = newTile.ToString();
+            }
         }
     }
 }

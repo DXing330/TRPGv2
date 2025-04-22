@@ -15,6 +15,11 @@ public class SavedData : ScriptableObject
     public List<string> GetData(){return dataList;}
     public string delimiter;
 
+    public virtual void NewDay(int dayCount)
+    {
+
+    }
+
     public virtual void NewGame()
     {
         allData = newGameData;
