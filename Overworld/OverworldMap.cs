@@ -31,7 +31,8 @@ public class OverworldMap : MapManager
         // Update the time based on the moveCost.
         overworldState.AddHours(moveCost);
         dayNightFilter.UpdateFilter(overworldState.GetHour());
-        overworldState.SetLocation(newTile);
+        bool enemies = false;
+        enemies = overworldState.SetLocation(newTile);
         UpdateData();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
@@ -40,6 +41,12 @@ public class OverworldMap : MapManager
         characterLayer[partyLocation] = "";
         characterLayer[newTile] = partySprite;
         partyLocation = newTile;
+        UpdateMap();
+        if (enemies)
+        {
+            sceneMover.MoveToBattle();
+            return;
+        }
         if (overworldData.CenterCity(newTile))
         {
             sceneMover.ReturnToHub();
@@ -49,7 +56,6 @@ public class OverworldMap : MapManager
             // Move into the city.
             // Keep track of what resources are low/high price in that city.
         }
-        UpdateMap();
     }
 
     public void MoveInDirection(int direction)

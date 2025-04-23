@@ -87,6 +87,13 @@ public class SavedOverworld : SavedData
         characterLocations[indexOf] = newLocation;
         return true;
     }
+    public void RemoveCharacterAtLocation(int location)
+    {
+        int indexOf = characterLocations.IndexOf(location.ToString());
+        characterLocations.RemoveAt(indexOf);
+        characters.RemoveAt(indexOf);
+        QuickSave();
+    }
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.
     // List of what luxuries are in demand in each city, more expensive than usual.
     public List<string> cityLuxuryDemands; // Probably have to make this here, the overworld gen won't know since it only makes them one at a time.

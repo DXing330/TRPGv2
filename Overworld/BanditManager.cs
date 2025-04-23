@@ -21,6 +21,7 @@ public class BanditManager : OverworldEnemyManager
     // Each camp can only spawn 1 bandit per level?
     public int maxBandits;
     public int maxCampSize;
+    public int banditPerLevel;
     // Sprite name for bandit camps.
     public string banditCampString;
     // Sprite name for overworld bandits.
@@ -37,6 +38,13 @@ public class BanditManager : OverworldEnemyManager
     public List<string> banditLocations;
     // Bigger camps spawn higher level bandits (bigger groups).
     public List<string> banditLevels;
+    public void RemoveBanditsAtLocation(int location)
+    {
+        int indexOf = banditLocations.IndexOf(location.ToString());
+        banditLocations.RemoveAt(indexOf);
+        banditLevels.RemoveAt(indexOf);
+        savedOverworld.RemoveCharacterAtLocation(location);
+    }
 
     public override void NewDay(int dayCount)
     {
@@ -47,6 +55,30 @@ public class BanditManager : OverworldEnemyManager
             UpdateBanditCamps();
         }
         Save();
+    }
+
+    public override bool EnemiesOnTile(int tileNumber)
+    {
+        int indexOf = banditLocations.IndexOf(tileNumber.ToString());
+        if (indexOf >= 0)
+        {
+            GenerateEnemies(indexOf);
+            // Later do this later, or else players might be able to avoid combat by quitting in the middle of battle?
+            // Alternatively adjust the game state tracker so you can quit in the middle of battle and reload in battle.
+            RemoveBanditsAtLocation(tileNumber);
+            return true;
+        }
+        return false;
+    }
+
+    public override void GenerateEnemies(int index)
+    {
+        currentEnemyPool = new List<string>();
+        int enemyCount = int.Parse(banditLevels[index])*banditPerLevel;
+        for (int i = 0; i < enemyCount; i++)
+        {
+            currentEnemyPool.Add(baseEnemyPool[Random.Range(0, baseEnemyPool.Count)]);
+        }
     }
 
     public override void NewGame()
@@ -138,7 +170,8 @@ public class BanditManager : OverworldEnemyManager
             if (savedOverworld.AddCharacter(banditString, banditCamps[i]))
             {
                 banditLocations.Add(banditCamps[i]);
-                banditLevels.Add(banditCampSizes[i]);
+                int newLevel = Random.Range(1, int.Parse(banditCampSizes[i])+1);
+                banditLevels.Add(newLevel.ToString());
             }
         }
     }

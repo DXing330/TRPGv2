@@ -19,10 +19,35 @@ public class OverworldState : SavedData
     public int GetRestingPeriod(){return restingPeriod;}
     public int location;
     public int GetLocation(){return location;}
-    public void SetLocation(int newLocation)
+    public bool SetLocation(int newLocation)
     {
         location = newLocation;
-        Save();
+        // Check if there are any enemies;
+        bool enemies = false;
+        List<int> enemyManagerIndices = new List<int>();
+        for (int i = 0; i < enemyManagers.Count; i++)
+        {
+            if (enemyManagers[i].EnemiesOnTile(location))
+            {
+                enemyManagerIndices.Add(i);
+                enemies = true;
+            }
+        }
+        if (enemies)
+        {
+            // Load all enemies;
+            enemyList.ResetLists();
+            for (int i = 0; i < enemyManagerIndices.Count; i++)
+            {
+                enemyList.AddCharacters(enemyManagers[enemyManagerIndices[i]].GetCurrentEnemies());
+            }
+            return true;
+        }
+        else
+        {
+            Save();
+            return false;
+        }
     }
     public int dayCount;
     public int GetDay(){return dayCount;}

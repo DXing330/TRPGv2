@@ -102,24 +102,20 @@ public class SceneMover : MonoBehaviour
 
     public void ReturnFromBattle(int victory = 0)
     {
-        // If you lose go somewhere else.
-        if (victory != 0)
+        // Fail any quest in the dungeon.
+        if (victory != 0 && sceneTracker.GetPreviousScene() == dungeonSceneName)
         {
-            // Fail any quest in the dungeon.
-            if (sceneTracker.GetPreviousScene() == dungeonSceneName)
-            {
-                // Reset quests/hirelings.
-                mainParty.ClearAllStats();
-            }
+            mainParty.ClearAllStats();
+            // If you die in the dungeon, basically game over, go back home.
             ReturnToHub();
             return;
         }
-        //else
-        if (sceneTracker.GetPreviousScene() == hubSceneName)
+        else if (sceneTracker.GetPreviousScene() == hubSceneName)
         {
             ReturnToHub();
             return;
         }
+        // Otherwise just go back to the previous scene.
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(sceneTracker.GetPreviousScene()));

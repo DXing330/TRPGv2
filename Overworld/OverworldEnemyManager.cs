@@ -9,9 +9,13 @@ public class OverworldEnemyManager : SavedData
     public List<string> bossEnemyPool;
     public List<string> baseEnemyPool;
     public List<string> currentEnemyPool;
-    public virtual List<string> GenerateEnemies()
+    public List<string> GetCurrentEnemies(){return currentEnemyPool;}
+    public virtual bool EnemiesOnTile(int tileNumber)
+    {
+        return false;
+    }
+    public virtual void GenerateEnemies(int index)
     {
         currentEnemyPool = new List<string>();
-        return currentEnemyPool;
     }
 }
