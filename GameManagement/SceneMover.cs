@@ -7,10 +7,12 @@ public class SceneMover : MonoBehaviour
 {
     public LoadingScreen loadingScreen;
     public SceneTracker sceneTracker;
+    public BattleState battleState;
     public bool loadingRequired = false;
     public string overworldSceneName = "Overworld";
     public string hubSceneName = "Hub";
     public string dungeonSceneName = "Dungeon";
+    public string battleSceneName = "BattleScene";
     public PartyData permanentParty;
     public PartyData mainParty;
     public PartyData tempParty;
@@ -18,7 +20,23 @@ public class SceneMover : MonoBehaviour
     public void StartGame()
     {
         sceneTracker.Load();
-        LoadScene(sceneTracker.GetCurrentScene());
+        string currentScene = sceneTracker.GetCurrentScene();
+        if (currentScene == battleSceneName)
+        {
+            battleState.Load();
+            if (loadingRequired)
+            {
+                StartCoroutine(LoadingScreenMoveScene(battleSceneName));
+            }
+            else
+            {
+                StartCoroutine(LoadAsyncScene(battleSceneName));
+            }
+        }
+        else
+        {
+            LoadScene(sceneTracker.GetCurrentScene());
+        }
     }
 
     public void LoadScene(string sceneName)
@@ -74,13 +92,18 @@ public class SceneMover : MonoBehaviour
     public void MoveToBattle()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        sceneTracker.SetCurrentScene(battleSceneName);
+        sceneTracker.Save();
+        battleState.UpdatePreviousScene();
+        battleState.UpdateEnemyNames();
+        battleState.Save();
         if (loadingRequired)
         {
-            StartCoroutine(LoadingScreenMoveScene("BattleScene"));
+            StartCoroutine(LoadingScreenMoveScene(battleSceneName));
         }
         else
         {
-            StartCoroutine(LoadAsyncScene("BattleScene"));
+            StartCoroutine(LoadAsyncScene(battleSceneName));
         }
     }
 
