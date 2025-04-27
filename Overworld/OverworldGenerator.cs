@@ -28,6 +28,16 @@ public class OverworldGenerator : ScriptableObject
     }
     public string cityString = "City";
     public string cityLocation;
+    protected int GenerateCentralCity(int zoneSize, int maxDistanceFromCenter = 6)
+    {
+        // Pick a point away from the center.
+        int colDist = Random.Range(-maxDistanceFromCenter, maxDistanceFromCenter+1);
+        int rowDist = Random.Range(-maxDistanceFromCenter, maxDistanceFromCenter+1);
+        int center = mapUtility.DetermineCenterTile(zoneSize);
+        int centerRow = mapUtility.GetRow(center, zoneSize) + colDist;
+        int centerCol = mapUtility.GetColumn(center, zoneSize) + rowDist;
+        return mapUtility.ReturnTileNumberFromRowCol(centerRow, centerCol, zoneSize);
+    }
     public List<string> cityLayer;
     public List<string> luxuryLayer;
     public List<string> allLuxuries;
@@ -97,10 +107,11 @@ public class OverworldGenerator : ScriptableObject
         {
             GenerateRandomBiome();
         }
-        int randomTile = RandomEmptyTile();
-        cityLocation = randomTile.ToString();
-        cityLayer[randomTile] = cityString;
+        cityLocation = GenerateCentralCity(zoneSize, (int) Mathf.Sqrt(zoneSize)).ToString();
+        allTiles[int.Parse(cityLocation)] = defaultTile;
+        cityLayer[int.Parse(cityLocation)] = cityString;
         if (empty){return ReturnOverworld();}
+        int randomTile = RandomEmptyTile();
         for (int i = 0; i < luxuryCount; i++)
         {
             allLuxuries.Add(luxury);

@@ -47,7 +47,7 @@ public class OverworldMap : MapManager
             sceneMover.MoveToBattle();
             return;
         }
-        if (overworldData.CenterCity(newTile))
+        /*if (overworldData.CenterCity(newTile))
         {
             sceneMover.ReturnToHub();
         }
@@ -55,6 +55,15 @@ public class OverworldMap : MapManager
         {
             // Move into the city.
             // Keep track of what resources are low/high price in that city.
+        }*/
+    }
+
+    public void InteractWithTile()
+    {
+        int tile = partyLocation;
+        if (overworldData.CenterCity(tile))
+        {
+            sceneMover.ReturnToHub();
         }
     }
 
