@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class LoadingScreen : MonoBehaviour
 {
+    public bool starting = true;
     public Image loadingScreen;
     public List<Color> fadeColors;
     public int fadeFrames = 6;
@@ -12,7 +13,10 @@ public class LoadingScreen : MonoBehaviour
 
     protected virtual void Start()
     {
-        StartCoroutine(FadeFromBlack());
+        if (starting)
+        {
+            StartCoroutine(FadeFromBlack());
+        }
     }
 
     public void SetTransparent()

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OverworldHorse : MonoBehaviour
+public class CaravanMule : MonoBehaviour
 {
-    public string horseSprite;
+    public string muleSprite;
     // BASE STATS: Generated when the horse is created.
     public int pullStrength;
     public int maxSpeed;
