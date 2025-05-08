@@ -21,6 +21,28 @@ public class OverworldMap : MapManager
     public List<string> featureLayer;
     public int featureLayerInt = 1;
     public int partyLocation;
+
+    public void Rest()
+    {
+        bool newDay = false;
+        newDay = overworldState.Rest();
+        if (newDay)
+        {
+            overworldState.UpdateEnemies(partyLocation);
+        }
+        dayNightFilter.UpdateFilter(overworldState.GetHour());
+        bool enemies = false;
+        enemies = overworldState.SetLocation(partyLocation);
+        UpdateData();
+        characterLayer[partyLocation] = partySprite;
+        UpdateMap();
+        if (enemies)
+        {
+            sceneMover.MoveToBattle();
+            return;
+        }
+    }
+
     protected void MoveToTile(int newTile)
     {
         // Check if you can afford to move to the tile.
@@ -29,7 +51,13 @@ public class OverworldMap : MapManager
         // Move cost is affected by the weight of the caravan, the more loaded the caravan the slower it is.
         // As such multiply the move cost by the ratio (current/max) weight.
         // Update the time based on the moveCost.
-        overworldState.AddHours(moveCost);
+        bool newDay = false;
+        newDay = overworldState.AddHours(moveCost);
+        // Don't move any enemies that are on the player's tile, those are guaranteed fights.
+        if (newDay)
+        {
+            overworldState.UpdateEnemies(newTile);
+        }
         dayNightFilter.UpdateFilter(overworldState.GetHour());
         bool enemies = false;
         enemies = overworldState.SetLocation(newTile);

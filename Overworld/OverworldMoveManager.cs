@@ -5,14 +5,20 @@ using UnityEngine;
 public class OverworldMoveManager : MonoBehaviour
 {
     public List<string> tileTypes;
-    public List<int> baseMoveCosts;
-    public int hourlyMoveCost = 6;
-    public int GetBaseMoveCost(){return hourlyMoveCost;}
+    public List<int> moveCostMultipliers;
+    public int baseMoveCost = 12;
+    public int GetBaseMoveCost(){return baseMoveCost;}
 
     public int ReturnMoveCost(string tileName)
     {
         int indexOf = tileTypes.IndexOf(tileName);
-        if (indexOf == -1){return hourlyMoveCost;}
-        return baseMoveCosts[indexOf]*hourlyMoveCost;
+        if (indexOf == -1){return baseMoveCost;}
+        return moveCostMultipliers[indexOf]*baseMoveCost;
+    }
+
+    public int ReturnMoveCostByIndex(int index)
+    {
+        if (index < 0 || index >= moveCostMultipliers.Count){return baseMoveCost;}
+        return moveCostMultipliers[index]*baseMoveCost;
     }
 }

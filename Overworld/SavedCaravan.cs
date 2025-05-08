@@ -28,17 +28,17 @@ public class SavedCaravan : SavedData
     // Of course horses can be much faster than you and pull much more weight.
     public int baseSpeed = 2;
     // Buy more horses/wagons at cities/villages.
-    public List<string> horses;
-    public OverworldHorse dummyHorse;
+    public List<string> mules;
+    public CaravanMule dummyMule;
     public int GetMaxSpeed()
     {
-        if (horses.Count == 0){return baseSpeed;}
+        if (mules.Count == 0){return baseSpeed;}
         int speed = 999;
-        for (int i = 0; i < horses.Count; i++)
+        for (int i = 0; i < mules.Count; i++)
         {
-            dummyHorse.LoadAllStats(horses[i]);
+            dummyMule.LoadAllStats(mules[i]);
             // Horses without energy means the whole caravan slows.
-            if (dummyHorse.GetEnergy() <= 0)
+            if (dummyMule.GetEnergy() <= 0)
             {
                 speed = 1;
                 break;
@@ -46,7 +46,7 @@ public class SavedCaravan : SavedData
             // Only as fast as the slowest link.
             else
             {
-                speed = Mathf.Min(speed, dummyHorse.GetMaxSpeed());
+                speed = Mathf.Min(speed, dummyMule.GetMaxSpeed());
             }
         }
         return speed;
@@ -55,11 +55,11 @@ public class SavedCaravan : SavedData
     {
         return Mathf.Min(GetMaxSpeed(), ReturnPullCargoRatio());
     }
-    public int GetHorseCount(){return horses.Count;}
+    public int GetMuleCount(){return mules.Count;}
     public string foodString;
-    public int horseFoodRequirment;
-    public int GetFoodRequirement(){return horseFoodRequirment;}
-    public int DailyHorseFood(){return GetHorseCount()*GetFoodRequirement();}
+    public int muleFoodRequirment;
+    public int GetFoodRequirement(){return muleFoodRequirment;}
+    public int DailyHorseFood(){return GetMuleCount()*GetFoodRequirement();}
     public int TotalDailyFood()
     {
         return DailyHorseFood()+permanentParty.PartyCount();
@@ -75,15 +75,13 @@ public class SavedCaravan : SavedData
     {
         int max = basePullWeight;
         // Add each horse's individual pull weight.
-        for (int i = 0; i < horses.Count; i++)
+        for (int i = 0; i < mules.Count; i++)
         {
-            dummyHorse.LoadAllStats(horses[i]);
-            // Horses without energy means the whole caravan slows.
-            if (dummyHorse.GetEnergy() <= 0){continue;}
-            // Only as fast as the slowest link.
+            dummyMule.LoadAllStats(mules[i]);
+            if (dummyMule.GetEnergy() <= 0){continue;}
             else
             {
-                max += dummyHorse.GetPullStrength();
+                max += dummyMule.GetPullStrength();
             }
         }
         return max;
@@ -162,10 +160,10 @@ public class SavedCaravan : SavedData
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
-        for (int i = 0; i < horses.Count; i++)
+        for (int i = 0; i < mules.Count; i++)
         {
-            allData += horses[i];
-            if (i < horses.Count - 1){allData += delimiterTwo;}
+            allData += mules[i];
+            if (i < mules.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
         for (int i = 0; i < wagons.Count; i++)
@@ -198,11 +196,11 @@ public class SavedCaravan : SavedData
             return;
         }
         dataList = allData.Split(delimiter).ToList();
-        horses = dataList[0].Split(delimiterTwo).ToList();
+        mules = dataList[0].Split(delimiterTwo).ToList();
         wagons = dataList[1].Split(delimiterTwo).ToList();
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
         cargoWeights = dataList[3].Split(delimiterTwo).ToList();
-        utility.RemoveEmptyListItems(horses);
+        utility.RemoveEmptyListItems(mules);
         utility.RemoveEmptyListItems(wagons);
     }
     public int ReturnPullCargoRatio()

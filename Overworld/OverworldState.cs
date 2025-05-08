@@ -54,26 +54,24 @@ public class OverworldState : SavedData
     public void SetDay(int newDate){dayCount = newDate;}
     public int currentHour;
     public int GetHour(){return currentHour%hoursInDay;}
-    public void AddHours(int newHours)
+    public bool AddHours(int newHours)
     {
         currentHour += newHours;
-        while (currentHour >= hoursInDay)
-        {
-            NewDay();
-            currentHour -= hoursInDay;
-        }
-        Save();
-    }
-    public void Rest()
-    {
-        AddHours(GetRestingPeriod());
-    }
-    public void NewDay()
-    {
+        if (currentHour < hoursInDay){return false;}
         dayCount++;
+        currentHour -= hoursInDay;
+        return true;
+    }
+    public bool Rest()
+    {
+        return AddHours(GetRestingPeriod());
+    }
+    public void UpdateEnemies(int except)
+    {
         for (int i = 0; i < enemyManagers.Count; i++)
         {
             enemyManagers[i].NewDay(dayCount);
+            enemyManagers[i].MoveEnemies(except);
         }
     }
     public override void NewGame()

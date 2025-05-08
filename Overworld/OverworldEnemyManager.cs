@@ -18,4 +18,8 @@ public class OverworldEnemyManager : SavedData
     {
         currentEnemyPool = new List<string>();
     }
+    public virtual void MoveEnemies(int except)
+    {
+        
+    }
 }

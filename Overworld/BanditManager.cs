@@ -48,13 +48,16 @@ public class BanditManager : OverworldEnemyManager
 
     public override void NewDay(int dayCount)
     {
-        // All bandits move during each day.
-        UpdateBanditLocations();
         if (dayCount%spawnRate == 0)
         {
             UpdateBanditCamps();
         }
         Save();
+    }
+
+    public override void MoveEnemies(int except)
+    {
+        UpdateBanditLocations(except);
     }
 
     public override bool EnemiesOnTile(int tileNumber)
@@ -185,10 +188,11 @@ public class BanditManager : OverworldEnemyManager
         }
     }
 
-    public void UpdateBanditLocations()
+    public void UpdateBanditLocations(int except)
     {
         for (int i = 0; i < banditLocations.Count; i++)
         {
+            if (int.Parse(banditLocations[i]) == except){continue;}
             // Try having the bandits move randomly for now.
             int direction = Random.Range(0, 6);
             int newTile = mapUtility.PointInDirection(int.Parse(banditLocations[i]), direction, savedOverworld.GetSize());

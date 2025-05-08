@@ -22,11 +22,17 @@ public class OverworldUIManager : MonoBehaviour
     public List<GameObject> panels;
     // Caravan stats.
     public TMP_Text moveSpeedText;
+    public List<StatImageText> moveSpeedTexts;
     public TMP_Text cargoWeightText;
     public void UpdateMoveSpeed()
     {
-        string hourlySpeed = (overworldMap.moveManager.GetBaseMoveCost()/partyData.caravan.GetCurrentSpeed()).ToString();
-        moveSpeedText.text = "1 Tile ~ "+hourlySpeed+" Hours";
+        int hourlySpeed = partyData.caravan.GetCurrentSpeed();
+        string speedText = "";
+        for (int i = 0; i < moveSpeedTexts.Count; i++)
+        {
+            speedText = "~"+(overworldMap.moveManager.ReturnMoveCostByIndex(i)/hourlySpeed)+" hours";
+            moveSpeedTexts[i].SetText(speedText);
+        }
     }
     public void UpdateCargoWeight()
     {
