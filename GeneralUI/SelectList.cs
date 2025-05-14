@@ -8,6 +8,7 @@ using TMPro;
 public class SelectList : MonoBehaviour
 {
     public GeneralUtility utility;
+    public ColorDictionary colors;
     public int textSize;
     [ContextMenu("UpdateTextSize")]
     public void UpdateTextSize()
@@ -20,6 +21,12 @@ public class SelectList : MonoBehaviour
     public List<string> errorMessages;
     public List<string> selectable;
     public int selectedIndex = -1;
+    public void ResetSelected()
+    {
+        selectedIndex = -1;
+        selected = "";
+        ResetHighlights();
+    }
     public int GetSelected(){return selectedIndex;}
     public string selected;
     public TMP_Text pageDisplay;
@@ -54,6 +61,23 @@ public class SelectList : MonoBehaviour
     public List<GameObject> changePageObjects;
     public List<GameObject> textObjects;
     public List<TMP_Text> textList;
+    public void ResetHighlights()
+    {
+        for (int i = 0; i < textList.Count; i++)
+        {
+            textList[i].color = colors.GetColor("Default");
+        }
+    }
+    public void HighlightIndex(int index, string color = "Highlight")
+    {
+        textList[index].color = colors.GetColor(color);
+    }
+    public void HighlightSelected(string color = "Highlight")
+    {
+        ResetHighlights();
+        if (GetSelected() < 0){return;}
+        textList[GetSelected()%textList.Count].color = colors.GetColor(color);
+    }
     public int currentPage;
 
     [ContextMenu("Right")]
@@ -62,6 +86,7 @@ public class SelectList : MonoBehaviour
     public void ChangeLeft(){ChangePage(false);}
     public void ChangePage(bool right = true)
     {
+        ResetSelected();
         currentPage = utility.ChangePage(currentPage, right, textObjects, selectable);
         UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
     }
@@ -78,6 +103,7 @@ public class SelectList : MonoBehaviour
     public void StartingPage()
     {
         currentPage = 0;
+        ResetSelected();
         UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
     }
 
@@ -96,5 +122,6 @@ public class SelectList : MonoBehaviour
     {
         selectedIndex = (currentPage*textObjects.Count) + index;
         selected = selectable[currentPage*textObjects.Count + index];
+        HighlightSelected();
     }
 }

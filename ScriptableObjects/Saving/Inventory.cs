@@ -11,6 +11,7 @@ public class Inventory : SavedData
     public string delimiterTwo;
     public List<string> items;
     public List<string> quantities;
+    public string goldString = "Gold";
 
     public override void NewGame()
     {
@@ -56,6 +57,11 @@ public class Inventory : SavedData
         quantities = dataList[1].Split(delimiterTwo).ToList();
         items = utility.RemoveEmptyListItems(items);
         quantities = utility.RemoveEmptyListItems(quantities);
+    }
+
+    public int ReturnGold()
+    {
+        return ReturnQuantityOfItem(goldString);
     }
 
     public int ReturnQuantityOfItem(string itemName)

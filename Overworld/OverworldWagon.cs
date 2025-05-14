@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class OverworldWagon : MonoBehaviour
 {
+    public string delimiter = "|";
     public int weight;
     public int GetWeight(){return weight;}
     public int maxCarryWeight;
@@ -19,10 +20,10 @@ public class OverworldWagon : MonoBehaviour
     {
         weight = 0;
         maxCarryWeight = 0;
-        wheelsType = "";
-        coverType = "";
         maxDurability = 0;
         currentDurability = 0;
+        wheelsType = "";
+        coverType = "";
     }
 
     public void LoadAllStats(string newStats)
@@ -32,17 +33,17 @@ public class OverworldWagon : MonoBehaviour
             ResetStats();
             return;
         }
-        string[] data = newStats.Split("|");
+        string[] data = newStats.Split(delimiter);
         weight = int.Parse(data[0]);
         maxCarryWeight = int.Parse(data[1]);
-        wheelsType = data[2];
-        coverType = data[3];
-        maxDurability = int.Parse(data[4]);
-        currentDurability = int.Parse(data[5]);
+        maxDurability = int.Parse(data[2]);
+        currentDurability = int.Parse(data[3]);
+        wheelsType = data[4];
+        coverType = data[5];
     }
 
     public string ReturnStats()
     {
-        return weight+"|"+maxCarryWeight+"|"+wheelsType+"|"+coverType+"|"+maxDurability+"|"+currentDurability;
+        return weight+delimiter+maxCarryWeight+maxDurability+delimiter+currentDurability+delimiter+wheelsType+delimiter+coverType+delimiter;
     }
 }

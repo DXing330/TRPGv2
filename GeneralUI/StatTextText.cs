@@ -22,8 +22,13 @@ public class StatTextText : MonoBehaviour
 
     public virtual void Reset()
     {
-        text.text = "";
+        ResetText();
         statText.text = "";
+    }
+
+    public virtual void ResetText()
+    {
+        text.text = "";
     }
 
     public virtual void SetColor(Color newColor)

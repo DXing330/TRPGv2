@@ -1,15 +1,21 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CaravanMule : MonoBehaviour
 {
+    public string delimiter = "|";
+    public string delimiter2 = ",";
     public string muleSprite;
     // BASE STATS: Generated when the horse is created.
     public int pullStrength;
     public int maxSpeed;
     public int maxEnergy;
     public int maxHealth;
+    public List<string> statuses;
+    public List<string> passives;
+    public List<string> actives;
     public int GetPullStrength(){return pullStrength;}
     public int GetMaxSpeed(){return maxSpeed;}
     // CURRENT STATS: Updated during travel.
@@ -25,7 +31,37 @@ public class CaravanMule : MonoBehaviour
     public string ReturnAllStats()
     {
         string allStats = "";
-        allStats += pullStrength+"|"+maxSpeed+"|"+maxEnergy+"|"+maxHealth+"|"+currentEnergy+"|"+currentHealth;
+        allStats += pullStrength+delimiter+maxSpeed+delimiter+maxEnergy+delimiter+maxHealth+delimiter+currentEnergy+delimiter+currentHealth+delimiter;
+        for (int i = 0; i < statuses.Count; i++)
+        {
+            if (statuses[i].Length <= 1){continue;}
+            allStats += statuses[i];
+            if (i < statuses.Count - 1)
+            {
+                allStats += delimiter2;
+            }
+            else{allStats += delimiter;}
+        }
+        for (int i = 0; i < passives.Count; i++)
+        {
+            if (passives[i].Length <= 1){continue;}
+            allStats += passives[i];
+            if (i < passives.Count - 1)
+            {
+                allStats += delimiter2;
+            }
+            else{allStats += delimiter;}
+        }
+        for (int i = 0; i < actives.Count; i++)
+        {
+            if (actives[i].Length <= 1){continue;}
+            allStats += actives[i];
+            if (i < actives.Count - 1)
+            {
+                allStats += delimiter2;
+            }
+            else{allStats += delimiter;}
+        }
         return allStats;
     }
     public void ResetStats()
@@ -36,6 +72,9 @@ public class CaravanMule : MonoBehaviour
         maxHealth = 0;
         currentEnergy = 0;
         currentHealth = 0;
+        statuses.Clear();
+        passives.Clear();
+        actives.Clear();
     }
     public void LoadAllStats(string newStats)
     {
@@ -44,12 +83,24 @@ public class CaravanMule : MonoBehaviour
             ResetStats();
             return;
         }
-        string[] stats = newStats.Split("|");
+        string[] stats = newStats.Split(delimiter);
         pullStrength = int.Parse(stats[0]);
         maxSpeed = int.Parse(stats[1]);
         maxEnergy = int.Parse(stats[2]);
         maxHealth = int.Parse(stats[3]);
         currentEnergy = int.Parse(stats[4]);
         currentHealth = int.Parse(stats[5]);
+        if (stats.Length > 6)
+        {
+            statuses = stats[7].Split(delimiter2).ToList();
+        }
+        if (stats.Length > 7)
+        {
+            passives = stats[7].Split(delimiter2).ToList();
+        }
+        if (stats.Length > 8)
+        {
+            actives = stats[8].Split(delimiter2).ToList();
+        }
     }
 }

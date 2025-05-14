@@ -29,6 +29,7 @@ public class SavedCaravan : SavedData
     public int baseSpeed = 2;
     // Buy more horses/wagons at cities/villages.
     public List<string> mules;
+    public void AddMule(string newStats){mules.Add(newStats);}
     public CaravanMule dummyMule;
     public int GetMaxSpeed()
     {
@@ -57,18 +58,17 @@ public class SavedCaravan : SavedData
     }
     public int GetMuleCount(){return mules.Count;}
     public string foodString;
+    public int ReturnFood(){return ReturnItemWeight(foodString);}
+    public void ConsumeFood(int amount){UnloadCargo(foodString, amount);}
+    public string muleFoodString;
+    public int ReturnMuleFood(){return ReturnItemWeight(muleFoodString);}
+    public void ConsumeMuleFood(int amount){UnloadCargo(muleFoodString, amount);}
     public int muleFoodRequirment;
-    public int GetFoodRequirement(){return muleFoodRequirment;}
-    public int DailyHorseFood(){return GetMuleCount()*GetFoodRequirement();}
-    public int TotalDailyFood()
-    {
-        return DailyHorseFood()+permanentParty.PartyCount();
-    }
-    public bool EnoughFood()
-    {
-        return EnoughCargo(foodString, TotalDailyFood());
-    }
+    public int GetMuleFoodRequirement(){return muleFoodRequirment;}
+    public int DailyMuleFood(){return GetMuleCount()*GetMuleFoodRequirement();}
+    public bool EnoughMuleFood(){return EnoughCargo(muleFoodString, DailyMuleFood());}
     public List<string> wagons;
+    public void AddWagon(string newStats){wagons.Add(newStats);}
     public OverworldWagon dummyWagon;
     public int GetWagonCount(){return wagons.Count;}
     public int GetMaxPullWeight()
@@ -101,60 +101,76 @@ public class SavedCaravan : SavedData
     }
     // Carry a variety of things.
     public List<string> cargoItems;
-    public List<string> cargoWeights;
+    public List<string> cargoQuantities;
+    public StatDatabase cargoWeightData;
     public int GetCargoWeight()
     {
         int totalWeight = 0;
-        for (int i = 0; i < cargoWeights.Count; i++)
+        for (int i = 0; i < cargoItems.Count; i++)
         {
-            if (cargoWeights[i].Length < 1){continue;}
-            totalWeight += int.Parse(cargoWeights[i]);
+            if (cargoItems[i].Length < 1){continue;}
+            int quantity = int.Parse(cargoQuantities[i]);
+            if (quantity < 1){continue;}
+            totalWeight += quantity * ReturnIndividualItemWeight(cargoItems[i]);
         }
         //TODO: Also add all the wagon weights.
-        /*for (int i = 0; i < wagons.Count; i++)
+        for (int i = 0; i < wagons.Count; i++)
         {
             dummyWagon.LoadAllStats(wagons[i]);
             {
-                max += dummyWagon.GetWeight();
+                totalWeight += dummyWagon.GetWeight();
             }
-        }*/
+        }
         return totalWeight;
     }
+
+    public int ReturnIndividualItemWeight(string itemName)
+    {
+        string value = cargoWeightData.ReturnValue(itemName);
+        if (value == ""){return 1;}
+        return int.Parse(value);
+    }
+
     public int ReturnItemWeight(string itemName)
     {
         int indexOf = cargoItems.IndexOf(itemName);
         if (indexOf == -1){return 0;}
-        return int.Parse(cargoWeights[indexOf]);
+        int quantity = int.Parse(cargoQuantities[indexOf]);
+        if (quantity < 1){return 0;}
+        return quantity * ReturnIndividualItemWeight(itemName);
+    }
+    public int ReturnItemQuantity(string itemName)
+    {
+        int indexOf = cargoItems.IndexOf(itemName);
+        if (indexOf == -1){return 0;}
+        int quantity = int.Parse(cargoQuantities[indexOf]);
+        if (quantity < 1){return 0;}
+        return quantity;
     }
     public bool EnoughCargo(string cargoName, int amount)
     {
         int indexOf = cargoItems.IndexOf(cargoName);
         if (indexOf == -1){return false;}
-        return int.Parse(cargoWeights[indexOf]) >= amount;
+        return int.Parse(cargoQuantities[indexOf]) >= amount;
     }
-    public int ReturnFood(){return ReturnItemWeight(foodString);}
-    public void ConsumeFood(int amount)
-    {
-        UnloadCargo(foodString, amount);
-    }
-    public void AddCargo(string itemName, int itemWeight)
+    public void AddCargo(string itemName, int quantity)
     {
         int indexOf = cargoItems.IndexOf(itemName);
         if (indexOf == -1)
         {
             cargoItems.Add(itemName);
-            cargoWeights.Add(itemWeight.ToString());
+            cargoQuantities.Add(quantity.ToString());
         }
         else
         {
-            cargoWeights[indexOf] = (int.Parse(cargoWeights[indexOf])+itemWeight).ToString();
+            cargoQuantities[indexOf] = (int.Parse(cargoQuantities[indexOf])+quantity).ToString();
         }
     }
-    public void UnloadCargo(string cargoName, int itemWeight)
+    public void UnloadCargo(string cargoName, int quantity)
     {
         int indexOf = cargoItems.IndexOf(cargoName);
         if (indexOf == -1){return;}
-        cargoWeights[indexOf] = (int.Parse(cargoWeights[indexOf])-itemWeight).ToString();
+        cargoQuantities[indexOf] = (int.Parse(cargoQuantities[indexOf])-quantity).ToString();
     }
     public override void Save()
     {
@@ -178,10 +194,10 @@ public class SavedCaravan : SavedData
             if (i < cargoItems.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
-        for (int i = 0; i < cargoWeights.Count; i++)
+        for (int i = 0; i < cargoQuantities.Count; i++)
         {
-            allData += cargoWeights[i];
-            if (i < cargoWeights.Count - 1){allData += delimiterTwo;}
+            allData += cargoQuantities[i];
+            if (i < cargoQuantities.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
@@ -199,7 +215,7 @@ public class SavedCaravan : SavedData
         mules = dataList[0].Split(delimiterTwo).ToList();
         wagons = dataList[1].Split(delimiterTwo).ToList();
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
-        cargoWeights = dataList[3].Split(delimiterTwo).ToList();
+        cargoQuantities = dataList[3].Split(delimiterTwo).ToList();
         utility.RemoveEmptyListItems(mules);
         utility.RemoveEmptyListItems(wagons);
     }
