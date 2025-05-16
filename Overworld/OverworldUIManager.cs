@@ -6,9 +6,20 @@ using TMPro;
 public class OverworldUIManager : MonoBehaviour
 {
     public PartyDataManager partyData;
+    public SavedCaravan caravan;
     public OverworldState overworldState;
     public OverworldMap overworldMap;
     public int state = 0;
+    public StatDisplayList muleStats;
+    public void UpdateMuleStats()
+    {
+        muleStats.SetStatsToDisplay(caravan.mules);
+    }
+    public StatDisplayList wagonStats;
+    public void UpdateWagonStats()
+    {
+        wagonStats.SetStatsToDisplay(caravan.wagons);
+    }
     public List<string> stateNames;
     public List<int> statePanelIndexes;
     public void ChangeState(int newState)

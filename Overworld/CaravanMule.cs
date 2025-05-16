@@ -24,6 +24,8 @@ public class CaravanMule : MonoBehaviour
     // If out of energy, the horse's pull strength becomes 0 and it's max speed becomes 1.
     public int currentEnergy;
     public int GetEnergy(){return currentEnergy;}
+    public void ConsumeEnergy(int amount){currentEnergy -= Mathf.Min(currentEnergy, amount);}
+    public void RestoreEnergy(){currentEnergy = maxEnergy;}
     // If health is 0 then the horse dies.
     // Health is restored by eating/resting.
     public int currentHealth;
@@ -92,7 +94,7 @@ public class CaravanMule : MonoBehaviour
         currentHealth = int.Parse(stats[5]);
         if (stats.Length > 6)
         {
-            statuses = stats[7].Split(delimiter2).ToList();
+            statuses = stats[6].Split(delimiter2).ToList();
         }
         if (stats.Length > 7)
         {

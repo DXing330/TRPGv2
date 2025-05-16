@@ -57,6 +57,7 @@ public class OverworldState : SavedData
     public bool AddHours(int newHours)
     {
         currentHour += newHours;
+        caravan.ConsumeMuleEnergy(newHours);
         if (currentHour < hoursInDay){return false;}
         dayCount++;
         currentHour -= hoursInDay;
@@ -64,7 +65,9 @@ public class OverworldState : SavedData
     }
     public bool Rest()
     {
-        return AddHours(GetRestingPeriod());
+        bool newDay = AddHours(GetRestingPeriod());
+        caravan.Rest();
+        return newDay;
     }
     public void UpdateEnemies(int except)
     {
@@ -88,6 +91,7 @@ public class OverworldState : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = location+delimiter+dayCount+delimiter+currentHour;
         File.WriteAllText(dataPath, allData);
+        caravan.Save();
     }
     public override void Load()
     {

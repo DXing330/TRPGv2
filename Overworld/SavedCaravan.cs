@@ -30,6 +30,15 @@ public class SavedCaravan : SavedData
     // Buy more horses/wagons at cities/villages.
     public List<string> mules;
     public void AddMule(string newStats){mules.Add(newStats);}
+    public void ConsumeMuleEnergy(int energyCost)
+    {
+        for (int i = 0; i < mules.Count; i++)
+        {
+            dummyMule.LoadAllStats(mules[i]);
+            dummyMule.ConsumeEnergy(energyCost);
+            mules[i] = dummyMule.ReturnAllStats();
+        }
+    }
     public CaravanMule dummyMule;
     public int GetMaxSpeed()
     {
@@ -38,7 +47,7 @@ public class SavedCaravan : SavedData
         for (int i = 0; i < mules.Count; i++)
         {
             dummyMule.LoadAllStats(mules[i]);
-            // Horses without energy means the whole caravan slows.
+            // Mules without energy means the whole caravan slows.
             if (dummyMule.GetEnergy() <= 0)
             {
                 speed = 1;
@@ -54,7 +63,7 @@ public class SavedCaravan : SavedData
     }
     public int GetCurrentSpeed()
     {
-        return Mathf.Min(GetMaxSpeed(), ReturnPullCargoRatio());
+        return Mathf.Min(GetMaxSpeed(), Mathf.Max(ReturnPullCargoRatio(),1));
     }
     public int GetMuleCount(){return mules.Count;}
     public string foodString;
@@ -123,14 +132,12 @@ public class SavedCaravan : SavedData
         }
         return totalWeight;
     }
-
     public int ReturnIndividualItemWeight(string itemName)
     {
         string value = cargoWeightData.ReturnValue(itemName);
         if (value == ""){return 1;}
         return int.Parse(value);
     }
-
     public int ReturnItemWeight(string itemName)
     {
         int indexOf = cargoItems.IndexOf(itemName);
@@ -227,7 +234,6 @@ public class SavedCaravan : SavedData
         else if (cargoWeight <= 0){return 999;}
         return (maxPull/cargoWeight);
     }
-
     public float ReturnCarryCargoRatio()
     {
         float maxCarry = (float) GetMaxCarryWeight();
@@ -235,5 +241,17 @@ public class SavedCaravan : SavedData
         if (cargoWeight <= 0){return (float) 0;}
         else if (cargoWeight > maxCarry){return (float) 1;}
         return (cargoWeight / maxCarry);
+    }
+    public void Rest()
+    {
+        // Consume mule food.
+        for (int i = 0; i < mules.Count; i++)
+        {
+            if (ReturnItemQuantity(muleFoodString) < 1){break;}
+            ConsumeMuleFood(1);
+            dummyMule.LoadAllStats(mules[i]);
+            dummyMule.RestoreEnergy();
+            mules[i] = dummyMule.ReturnAllStats();
+        }
     }
 }
