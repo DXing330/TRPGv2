@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CaravanMule : MonoBehaviour
 {
+    public int hungerPain = 10;
     public string delimiter = "|";
     public string delimiter2 = ",";
     public string muleSprite;
@@ -29,40 +30,42 @@ public class CaravanMule : MonoBehaviour
     // If health is 0 then the horse dies.
     // Health is restored by eating/resting.
     public int currentHealth;
-    public int GetHealth(){return currentHealth;}
+    public bool Alive(){ return currentHealth > 0; }
+    public int GetHealth() { return currentHealth; }
+    public void HungerDamage(){ currentHealth -= hungerPain; }
     public string ReturnAllStats()
     {
         string allStats = "";
-        allStats += pullStrength+delimiter+maxSpeed+delimiter+maxEnergy+delimiter+maxHealth+delimiter+currentEnergy+delimiter+currentHealth+delimiter;
+        allStats += pullStrength + delimiter + maxSpeed + delimiter + maxEnergy + delimiter + maxHealth + delimiter + currentEnergy + delimiter + currentHealth + delimiter;
         for (int i = 0; i < statuses.Count; i++)
         {
-            if (statuses[i].Length <= 1){continue;}
+            if (statuses[i].Length <= 1) { continue; }
             allStats += statuses[i];
             if (i < statuses.Count - 1)
             {
                 allStats += delimiter2;
             }
-            else{allStats += delimiter;}
+            else { allStats += delimiter; }
         }
         for (int i = 0; i < passives.Count; i++)
         {
-            if (passives[i].Length <= 1){continue;}
+            if (passives[i].Length <= 1) { continue; }
             allStats += passives[i];
             if (i < passives.Count - 1)
             {
                 allStats += delimiter2;
             }
-            else{allStats += delimiter;}
+            else { allStats += delimiter; }
         }
         for (int i = 0; i < actives.Count; i++)
         {
-            if (actives[i].Length <= 1){continue;}
+            if (actives[i].Length <= 1) { continue; }
             allStats += actives[i];
             if (i < actives.Count - 1)
             {
                 allStats += delimiter2;
             }
-            else{allStats += delimiter;}
+            else { allStats += delimiter; }
         }
         return allStats;
     }

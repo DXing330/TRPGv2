@@ -5,11 +5,26 @@ using TMPro;
 
 public class OverworldUIManager : MonoBehaviour
 {
+    void Start()
+    {
+        cargoList.UpdateTextSize();
+    }
     public PartyDataManager partyData;
     public SavedCaravan caravan;
     public OverworldState overworldState;
     public OverworldMap overworldMap;
     public int state = 0;
+    public StatTextList cargoList;
+    public void UpdateCargoListWeight()
+    {
+        cargoList.SetStatsAndData(caravan.GetAllCargo(), caravan.GetAllCargoWeights());
+        cargoList.SetTitle("Weight");
+    }
+    public void UpdateCargoListQuantity()
+    {
+        cargoList.SetStatsAndData(caravan.GetAllCargo(), caravan.GetAllCargoQuantities());
+        cargoList.SetTitle("Quantity");
+    }
     public StatDisplayList muleStats;
     public void UpdateMuleStats()
     {

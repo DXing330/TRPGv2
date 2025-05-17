@@ -110,8 +110,39 @@ public class SavedCaravan : SavedData
     }
     // Carry a variety of things.
     public List<string> cargoItems;
+    public List<string> GetAllCargo()
+    {
+        List<string> allCargo = new List<string>();
+        for (int i = 0; i < cargoItems.Count; i++)
+        {
+            if (ReturnItemQuantity(cargoItems[i]) > 0){allCargo.Add(cargoItems[i]);}
+        }
+        return allCargo;
+    }
     public List<string> cargoQuantities;
+    public List<string> GetAllCargoQuantities()
+    {
+        List<string> allQuantities = new List<string>();
+        for (int i = 0; i < cargoQuantities.Count; i++)
+        {
+            if (int.Parse(cargoQuantities[i]) > 0) {allQuantities.Add(cargoQuantities[i]); }
+        }
+        return allQuantities;
+    }
     public StatDatabase cargoWeightData;
+    public List<string> GetAllCargoWeights()
+    {
+        List<string> allWeights = new List<string>();
+        for (int i = 0; i < cargoQuantities.Count; i++)
+        {
+            int quantity = int.Parse(cargoQuantities[i]);
+            if (quantity < 1){continue;}
+            int weight = quantity * ReturnIndividualItemWeight(cargoItems[i]);
+            allWeights.Add(weight.ToString());
+        }
+        return allWeights;
+
+    }
     public int GetCargoWeight()
     {
         int totalWeight = 0;
@@ -223,6 +254,8 @@ public class SavedCaravan : SavedData
         wagons = dataList[1].Split(delimiterTwo).ToList();
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
         cargoQuantities = dataList[3].Split(delimiterTwo).ToList();
+        utility.RemoveEmptyListItems(cargoItems);
+        utility.RemoveEmptyListItems(cargoQuantities);
         utility.RemoveEmptyListItems(mules);
         utility.RemoveEmptyListItems(wagons);
     }
@@ -245,13 +278,28 @@ public class SavedCaravan : SavedData
     public void Rest()
     {
         // Consume mule food.
-        for (int i = 0; i < mules.Count; i++)
+        for (int i = mules.Count -1; i >= 0; i--)
         {
-            if (ReturnItemQuantity(muleFoodString) < 1){break;}
-            ConsumeMuleFood(1);
-            dummyMule.LoadAllStats(mules[i]);
-            dummyMule.RestoreEnergy();
-            mules[i] = dummyMule.ReturnAllStats();
+            if (ReturnItemQuantity(muleFoodString) < 1)
+            {
+                dummyMule.LoadAllStats(mules[i]);
+                dummyMule.HungerDamage();
+                if (!dummyMule.Alive())
+                {
+                    mules.RemoveAt(i);
+                }
+                else
+                {
+                    mules[i] = dummyMule.ReturnAllStats();
+                }
+            }
+            else
+            {
+                ConsumeMuleFood(1);
+                dummyMule.LoadAllStats(mules[i]);
+                dummyMule.RestoreEnergy();
+                mules[i] = dummyMule.ReturnAllStats();
+            }
         }
     }
 }
