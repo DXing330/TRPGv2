@@ -68,6 +68,10 @@ public class OverworldUIManager : MonoBehaviour
     {
         UpdateCargoWeight();
         UpdateMoveSpeed();
+        UpdateCargoListWeight();
+        UpdateCargoListQuantity();
+        UpdateMuleStats();
+        UpdateWagonStats();
     }
     public void UpdateCurrentPanel()
     {

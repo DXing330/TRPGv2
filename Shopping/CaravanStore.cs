@@ -77,6 +77,7 @@ public class CaravanStore : MonoBehaviour
         switch (state)
         {
             case 0:
+            ownedSupply.text = "";
             supplySelectList.StartingPage();
             for (int i = 0; i < supplyInfo.Count; i++){supplyInfo[i].ResetText();}
             break;
@@ -95,7 +96,8 @@ public class CaravanStore : MonoBehaviour
     {
         int selected = supplySelectList.GetSelected();
         List<string> allStats = new List<string>(supplyData.ReturnStats(suppliesSold[selected]));
-        for (int i = 0; i < supplyInfo.Count; i++){supplyInfo[i].SetText(allStats[i]);}
+        for (int i = 0; i < supplyInfo.Count; i++) { supplyInfo[i].SetText(allStats[i]); }
+        ownedSupply.text = partyData.caravan.ReturnItemQuantity(suppliesSold[selected]).ToString();
     }
     
     public void SelectMule()

@@ -30,13 +30,15 @@ public class SavedCaravan : SavedData
     // Buy more horses/wagons at cities/villages.
     public List<string> mules;
     public void AddMule(string newStats){mules.Add(newStats);}
-    public void ConsumeMuleEnergy(int energyCost)
+    public void ConsumeMuleEnergy(int energyCost, bool rest = false)
     {
-        for (int i = 0; i < mules.Count; i++)
+        if (rest){ return; }
+        for (int i = mules.Count - 1; i >= 0; i--)
         {
             dummyMule.LoadAllStats(mules[i]);
             dummyMule.ConsumeEnergy(energyCost);
-            mules[i] = dummyMule.ReturnAllStats();
+            if (!dummyMule.Alive()) { mules.RemoveAt(i); }
+            else { mules[i] = dummyMule.ReturnAllStats(); }
         }
     }
     public CaravanMule dummyMule;

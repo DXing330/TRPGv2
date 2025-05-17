@@ -54,10 +54,10 @@ public class OverworldState : SavedData
     public void SetDay(int newDate){dayCount = newDate;}
     public int currentHour;
     public int GetHour(){return currentHour%hoursInDay;}
-    public bool AddHours(int newHours)
+    public bool AddHours(int newHours, bool rest = false)
     {
         currentHour += newHours;
-        caravan.ConsumeMuleEnergy(newHours);
+        caravan.ConsumeMuleEnergy(newHours, rest);
         if (currentHour < hoursInDay){return false;}
         dayCount++;
         currentHour -= hoursInDay;
@@ -65,7 +65,7 @@ public class OverworldState : SavedData
     }
     public bool Rest()
     {
-        bool newDay = AddHours(GetRestingPeriod());
+        bool newDay = AddHours(GetRestingPeriod(), true);
         caravan.Rest();
         return newDay;
     }
