@@ -65,7 +65,8 @@ public class SavedCaravan : SavedData
     }
     public int GetCurrentSpeed()
     {
-        return Mathf.Min(GetMaxSpeed(), Mathf.Max(ReturnPullCargoRatio(),1));
+        if (!CargoLessThanMax()){ return 0; }
+        return Mathf.Min(GetMaxSpeed(), ReturnPullCargoRatio());
     }
     public int GetMuleCount(){return mules.Count;}
     public string foodString;
@@ -212,32 +213,39 @@ public class SavedCaravan : SavedData
         if (indexOf == -1){return;}
         cargoQuantities[indexOf] = (int.Parse(cargoQuantities[indexOf])-quantity).ToString();
     }
+    public void DumpCargo(int indexOf)
+    {
+        if (indexOf < 0 || indexOf > cargoQuantities.Count){ return; }
+        int quantity = int.Parse(cargoQuantities[indexOf]);
+        if (quantity <= 0){ return; }
+        cargoQuantities[indexOf] = (quantity-1).ToString();
+    }
     public override void Save()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
+        dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
         for (int i = 0; i < mules.Count; i++)
         {
             allData += mules[i];
-            if (i < mules.Count - 1){allData += delimiterTwo;}
+            if (i < mules.Count - 1) { allData += delimiterTwo; }
         }
         allData += delimiter;
         for (int i = 0; i < wagons.Count; i++)
         {
             allData += wagons[i];
-            if (i < wagons.Count - 1){allData += delimiterTwo;}
+            if (i < wagons.Count - 1) { allData += delimiterTwo; }
         }
         allData += delimiter;
         for (int i = 0; i < cargoItems.Count; i++)
         {
             allData += cargoItems[i];
-            if (i < cargoItems.Count - 1){allData += delimiterTwo;}
+            if (i < cargoItems.Count - 1) { allData += delimiterTwo; }
         }
         allData += delimiter;
         for (int i = 0; i < cargoQuantities.Count; i++)
         {
             allData += cargoQuantities[i];
-            if (i < cargoQuantities.Count - 1){allData += delimiterTwo;}
+            if (i < cargoQuantities.Count - 1) { allData += delimiterTwo; }
         }
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
@@ -269,13 +277,12 @@ public class SavedCaravan : SavedData
         else if (cargoWeight <= 0){return 999;}
         return (maxPull/cargoWeight);
     }
-    public float ReturnCarryCargoRatio()
+    public bool CargoLessThanMax()
     {
-        float maxCarry = (float) GetMaxCarryWeight();
-        float cargoWeight = (float) GetCargoWeight();
-        if (cargoWeight <= 0){return (float) 0;}
-        else if (cargoWeight > maxCarry){return (float) 1;}
-        return (cargoWeight / maxCarry);
+        int maxCarry = GetMaxCarryWeight();
+        int cargoWeight = GetCargoWeight();
+        if (cargoWeight <= maxCarry){return true;}
+        return false;
     }
     public void Rest()
     {
@@ -300,6 +307,7 @@ public class SavedCaravan : SavedData
                 ConsumeMuleFood(1);
                 dummyMule.LoadAllStats(mules[i]);
                 dummyMule.RestoreEnergy();
+                dummyMule.RestoreHealth();
                 mules[i] = dummyMule.ReturnAllStats();
             }
         }

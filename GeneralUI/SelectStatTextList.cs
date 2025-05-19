@@ -7,6 +7,7 @@ public class SelectStatTextList : StatTextList
 {
     public Equipment equipment;
     public ColorDictionary colors;
+    public bool highlights = true;
     protected override void ResetPage()
     {
         base.ResetPage();
@@ -27,7 +28,8 @@ public class SelectStatTextList : StatTextList
     public void HighlightSelected(string color = "Highlight")
     {
         ResetHighlights();
-        if (GetSelected() < 0){return;}
+        if (!highlights){ return; }
+        if (GetSelected() < 0) { return; }
         statTexts[GetSelected()%statTexts.Count].SetColor(colors.GetColor(color));
     }
     public int selectedIndex = -1;

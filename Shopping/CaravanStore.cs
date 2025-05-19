@@ -19,11 +19,11 @@ public class CaravanStore : MonoBehaviour
     public List<StatTextText> supplyInfo;
     public TMP_Text ownedSupply;
     public List<string> mulesSold;
-    public List<string> mulePrices;
+    public StatDatabase mulePrices;
     public SelectList muleSelectList;
     public List<StatTextText> muleInfo;
     public List<string> wagonsSold;
-    public List<string> wagonPrices;
+    public StatDatabase wagonPrices;
     public SelectList wagonSelectList;
     public List<StatTextText> wagonInfo;
     public StatDatabase supplyData;
@@ -42,6 +42,8 @@ public class CaravanStore : MonoBehaviour
     void Start()
     {
         suppliesSold = new List<string>(supplyData.keys);
+        mulesSold = new List<string>(mulePrices.keys);
+        wagonsSold = new List<string>(wagonPrices.keys);
         supplySelectList.SetSelectables(suppliesSold);
         muleSelectList.SetSelectables(mulesSold);
         wagonSelectList.SetSelectables(wagonsSold);
@@ -103,7 +105,7 @@ public class CaravanStore : MonoBehaviour
     public void SelectMule()
     {
         int selected = muleSelectList.GetSelected();
-        muleInfo[0].SetText(mulePrices[selected].ToString());
+        muleInfo[0].SetText(mulePrices.ReturnValue(mulesSold[selected]));
         List<string> allMuleStats = new List<string>(muleData.ReturnStats(mulesSold[selected]));
         for (int i = 1; i < muleInfo.Count; i++)
         {
@@ -114,7 +116,7 @@ public class CaravanStore : MonoBehaviour
     public void SelectWagon()
     {
         int selected = wagonSelectList.GetSelected();
-        wagonInfo[0].SetText(wagonPrices[selected].ToString());
+        wagonInfo[0].SetText(wagonPrices.ReturnValue(wagonsSold[selected]));
         List<string> allMuleStats = new List<string>(wagonData.ReturnStats(wagonsSold[selected]));
         for (int i = 1; i < wagonInfo.Count; i++)
         {

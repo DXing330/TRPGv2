@@ -20,10 +20,17 @@ public class OverworldUIManager : MonoBehaviour
         cargoList.SetStatsAndData(caravan.GetAllCargo(), caravan.GetAllCargoWeights());
         cargoList.SetTitle("Weight");
     }
-    public void UpdateCargoListQuantity()
+    public SelectStatTextList dumpCargoList;
+    public void Dump()
     {
-        cargoList.SetStatsAndData(caravan.GetAllCargo(), caravan.GetAllCargoQuantities());
-        cargoList.SetTitle("Quantity");
+        int selected = dumpCargoList.GetSelected();
+        caravan.DumpCargo(selected);
+        UpdateDumpCargoList();
+    }
+    public void UpdateDumpCargoList()
+    {
+        dumpCargoList.SetStatsAndData(caravan.GetAllCargo(), caravan.GetAllCargoQuantities());
+        dumpCargoList.SetTitle("Quantity");
     }
     public StatDisplayList muleStats;
     public void UpdateMuleStats()
@@ -50,26 +57,33 @@ public class OverworldUIManager : MonoBehaviour
     public TMP_Text moveSpeedText;
     public List<StatImageText> moveSpeedTexts;
     public TMP_Text cargoWeightText;
+    public TMP_Text cargoPullText;
     public void UpdateMoveSpeed()
     {
         int hourlySpeed = partyData.caravan.GetCurrentSpeed();
         string speedText = "";
         for (int i = 0; i < moveSpeedTexts.Count; i++)
         {
-            speedText = "~"+(overworldMap.moveManager.ReturnMoveCostByIndex(i)/hourlySpeed)+" hours";
+            if (hourlySpeed <= 0)
+            {
+                moveSpeedTexts[i].SetText("\u221E" + " hours");
+                continue;
+            }
+            speedText = "~" + (overworldMap.moveManager.ReturnMoveCostByIndex(i) / hourlySpeed) + " hours";
             moveSpeedTexts[i].SetText(speedText);
         }
     }
-    public void UpdateCargoWeight()
+    public void UpdateCargoWeightAndPull()
     {
-        cargoWeightText.text = partyData.caravan.GetCargoWeight()+" / "+partyData.caravan.GetMaxCarryWeight();
+        cargoWeightText.text = partyData.caravan.GetCargoWeight() + " / " + partyData.caravan.GetMaxCarryWeight();
+        cargoPullText.text = partyData.caravan.GetMaxPullWeight().ToString();
     }
     public void UpdateCaravanPanel()
     {
-        UpdateCargoWeight();
+        UpdateCargoWeightAndPull();
         UpdateMoveSpeed();
         UpdateCargoListWeight();
-        UpdateCargoListQuantity();
+        UpdateDumpCargoList();
         UpdateMuleStats();
         UpdateWagonStats();
     }

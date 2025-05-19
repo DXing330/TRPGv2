@@ -30,7 +30,7 @@ public class CaravanMule : MonoBehaviour
         currentEnergy -= amount;
         if (currentEnergy < 0)
         {
-            currentHealth += currentEnergy;
+            HungerDamage();
             currentEnergy = 0;
         }
     }
@@ -39,6 +39,11 @@ public class CaravanMule : MonoBehaviour
     // Health is restored by eating/resting.
     public int currentHealth;
     public bool Alive(){ return currentHealth > 0; }
+    public void RestoreHealth(int amount = 1)
+    {
+        currentHealth += amount;
+        currentHealth = Mathf.Min(currentHealth, maxHealth);
+    }
     public int GetHealth() { return currentHealth; }
     public void HungerDamage(){ currentHealth -= hungerPain; }
     public string ReturnAllStats()
