@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class PassiveDetailViewer : MonoBehaviour
 {
+    void Start()
+    {
+        UpdateTextSize();
+    }
+    public int textSize;
+    public void UpdateTextSize()
+    {
+        for (int i = 0; i < passiveInfoTexts.Count; i++)
+        {
+            passiveInfoTexts[i].SetTextSize(textSize);
+        }
+    }
     public string passiveGroupName;
     public StatTextText passiveGroupText;
     public void SetPassiveGroupName(string newGroup){passiveGroupName = newGroup;}
@@ -187,7 +199,7 @@ public class PassiveDetailViewer : MonoBehaviour
             }
             return " "+effect+" damage dealt by "+specifics;
             case "Damage%":
-            return " "+effect+" damage multipler by "+specifics;
+            return " "+effect+" damage multipler by "+specifics+"%";
         }
         return " "+effect+" "+target+" by "+specifics;
     }

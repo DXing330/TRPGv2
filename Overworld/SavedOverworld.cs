@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
@@ -19,8 +20,11 @@ public class SavedOverworld : SavedData
     public List<string> GetPossibleLuxuries(){return possibleLuxuries;}
     public List<string> terrainLayer;
     public string ReturnTerrain(int tileNumber){return terrainLayer[tileNumber];}
+    [System.NonSerialized]
     public List<string> featureLayer;
+    [System.NonSerialized]
     public List<string> luxuryLayer;
+    [System.NonSerialized]
     public List<string> characterLayer;
     public void UpdateLayers(List<string> emptyList)
     {
@@ -47,7 +51,7 @@ public class SavedOverworld : SavedData
     
     public int RandomTile()
     {
-        return Random.Range(0, terrainLayer.Count);
+        return UnityEngine.Random.Range(0, terrainLayer.Count);
     }
     public string guildHubSprite;
     // Cities, Guild Hub
@@ -170,7 +174,7 @@ public class SavedOverworld : SavedData
                 continue;
             }
             // Pick a random luxury for each zone.
-            int randomLuxIndex = Random.Range(0, possibleLuxuriesCopy.Count);
+            int randomLuxIndex = UnityEngine.Random.Range(0, possibleLuxuriesCopy.Count);
             string randomLux = possibleLuxuriesCopy[randomLuxIndex];
             possibleLuxuriesCopy.RemoveAt(randomLuxIndex);
             luxuryZoneOrder.Add(randomLux);
@@ -236,7 +240,7 @@ public class SavedOverworld : SavedData
         Save();
     }
 
-    // Hope this is quicker, using linq, this requires loading first;
+    // Hope this is quicker, this requires loading first;
     public void QuickSave()
     {
         string newData = "";
@@ -280,71 +284,27 @@ public class SavedOverworld : SavedData
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
-        for (int i = 0; i < terrainLayer.Count; i++)
-        {
-            allData += terrainLayer[i];
-            if (i < terrainLayer.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, terrainLayer);
         allData += delimiter;
-        for (int i = 0; i < cities.Count; i++)
-        {
-            allData += cities[i];
-            if (i < cities.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, cities);
         allData += delimiter;
-        for (int i = 0; i < cityLocations.Count; i++)
-        {
-            allData += cityLocations[i];
-            if (i < cityLocations.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, cityLocations);
         allData += delimiter;
-        for (int i = 0; i < cityLuxurySupplys.Count; i++)
-        {
-            allData += cityLuxurySupplys[i];
-            if (i < cityLuxurySupplys.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, cityLuxurySupplys);
         allData += delimiter;
-        for (int i = 0; i < cityLuxuryDemands.Count; i++)
-        {
-            allData += cityLuxuryDemands[i];
-            if (i < cityLuxuryDemands.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, cityLuxuryDemands);
         allData += delimiter;
-        for (int i = 0; i < luxuries.Count; i++)
-        {
-            allData += luxuries[i];
-            if (i < luxuries.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, luxuries);
         allData += delimiter;
-        for (int i = 0; i < luxuryLocations.Count; i++)
-        {
-            allData += luxuryLocations[i];
-            if (i < luxuryLocations.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, luxuryLocations);
         allData += delimiter;
-        for (int i = 0; i < features.Count; i++)
-        {
-            allData += features[i];
-            if (i < features.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, features);
         allData += delimiter;
-        for (int i = 0; i < featureLocations.Count; i++)
-        {
-            allData += featureLocations[i];
-            if (i < featureLocations.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, featureLocations);
         allData += delimiter;
-        for (int i = 0; i < characters.Count; i++)
-        {
-            allData += characters[i];
-            if (i < characters.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, characters);
         allData += delimiter;
-        for (int i = 0; i < characterLocations.Count; i++)
-        {
-            allData += characterLocations[i];
-            if (i < characterLocations.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, characterLocations);
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }

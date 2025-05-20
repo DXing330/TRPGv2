@@ -18,6 +18,10 @@ public class CaravanStore : MonoBehaviour
     public SelectList supplySelectList;
     public List<StatTextText> supplyInfo;
     public TMP_Text ownedSupply;
+    public List<string> luxuriesSold;
+    public SelectList luxurySelectList;
+    public List<StatTextText> luxuryInfo;
+    public TMP_Text ownedLuxury;
     public List<string> mulesSold;
     public StatDatabase mulePrices;
     public SelectList muleSelectList;
@@ -27,6 +31,7 @@ public class CaravanStore : MonoBehaviour
     public SelectList wagonSelectList;
     public List<StatTextText> wagonInfo;
     public StatDatabase supplyData;
+    public StatDatabase luxuryData;
     public StatDatabase muleData;
     public StatDatabase wagonData;
     public PartyDataManager partyData;
@@ -42,9 +47,11 @@ public class CaravanStore : MonoBehaviour
     void Start()
     {
         suppliesSold = new List<string>(supplyData.keys);
+        luxuriesSold = new List<string>(luxuryData.keys);
         mulesSold = new List<string>(mulePrices.keys);
         wagonsSold = new List<string>(wagonPrices.keys);
         supplySelectList.SetSelectables(suppliesSold);
+        luxurySelectList.SetSelectables(luxuriesSold);
         muleSelectList.SetSelectables(mulesSold);
         wagonSelectList.SetSelectables(wagonsSold);
         UpdateCaravanStats();
@@ -55,16 +62,19 @@ public class CaravanStore : MonoBehaviour
         switch (state)
         {
             case -1:
-            return;
+                return;
             case 0:
-            TryToBuySupply();
-            break;
+                TryToBuySupply();
+                break;
             case 1:
-            TryToBuyMule();
-            break;
+                TryToBuyMule();
+                break;
             case 2:
-            TryToBuyWagon();
-            break;
+                TryToBuyWagon();
+                break;
+            case 3:
+                TryToBuyLuxury();
+                break;
         }
     }
 
@@ -79,18 +89,22 @@ public class CaravanStore : MonoBehaviour
         switch (state)
         {
             case 0:
-            ownedSupply.text = "";
-            supplySelectList.StartingPage();
-            for (int i = 0; i < supplyInfo.Count; i++){supplyInfo[i].ResetText();}
-            break;
+                ownedSupply.text = "";
+                supplySelectList.StartingPage();
+                for (int i = 0; i < supplyInfo.Count; i++) { supplyInfo[i].ResetText(); }
+                break;
             case 1:
-            muleSelectList.StartingPage();
-            for (int i = 0; i < muleInfo.Count; i++){muleInfo[i].ResetText();}
-            break;
+                muleSelectList.StartingPage();
+                for (int i = 0; i < muleInfo.Count; i++) { muleInfo[i].ResetText(); }
+                break;
             case 2:
-            wagonSelectList.StartingPage();
-            for (int i = 0; i < wagonInfo.Count; i++){wagonInfo[i].ResetText();}
-            break;
+                wagonSelectList.StartingPage();
+                for (int i = 0; i < wagonInfo.Count; i++) { wagonInfo[i].ResetText(); }
+                break;
+            case 3:
+                luxurySelectList.StartingPage();
+                for (int i = 0; i < luxuryInfo.Count; i++) { luxuryInfo[i].ResetText(); }
+                break;
         }
     }
 
@@ -101,6 +115,14 @@ public class CaravanStore : MonoBehaviour
         for (int i = 0; i < supplyInfo.Count; i++) { supplyInfo[i].SetText(allStats[i]); }
         ownedSupply.text = partyData.caravan.ReturnItemQuantity(suppliesSold[selected]).ToString();
     }
+
+    public void SelectLuxury()
+    {
+        int selected = luxurySelectList.GetSelected();
+        List<string> allStats = new List<string>(luxuryData.ReturnStats(luxuriesSold[selected]));
+        for (int i = 0; i < luxuryInfo.Count; i++) { luxuryInfo[i].SetText(allStats[i]); }
+        ownedLuxury.text = partyData.caravan.ReturnItemQuantity(luxuriesSold[selected]).ToString();
+    }
     
     public void SelectMule()
     {
@@ -109,7 +131,7 @@ public class CaravanStore : MonoBehaviour
         List<string> allMuleStats = new List<string>(muleData.ReturnStats(mulesSold[selected]));
         for (int i = 1; i < muleInfo.Count; i++)
         {
-            muleInfo[i].SetText(allMuleStats[i-1]);
+            muleInfo[i].SetText(allMuleStats[i - 1]);
         }
     }
 
@@ -133,9 +155,6 @@ public class CaravanStore : MonoBehaviour
 
     public void TryToBuySupply()
     {
-        // Check if enough money.
-        // Add supply to cargo.
-        // Update weight.
         int selected = supplySelectList.GetSelected();
         if (selected < 0){return;}
         int price = int.Parse(supplyInfo[0].text.text);
@@ -146,10 +165,22 @@ public class CaravanStore : MonoBehaviour
         }
     }
     
+    public void TryToBuyLuxury()
+    {
+        int selected = luxurySelectList.GetSelected();
+        if (selected < 0){return;}
+        int price = int.Parse(luxuryInfo[0].text.text);
+        if (EnoughMoney(price))
+        {
+            partyData.caravan.AddCargo(luxuriesSold[selected], int.Parse(luxuryInfo[2].text.text));
+            UpdateCaravanStats();
+        }
+    }
+    
     public void TryToBuyMule()
     {
         int selected = muleSelectList.GetSelected();
-        if (selected < 0){return;}
+        if (selected < 0) { return; }
         int price = int.Parse(muleInfo[0].text.text);
         if (EnoughMoney(price))
         {

@@ -77,6 +77,7 @@ public class ArmoryUI : MonoBehaviour
     {
         selectEquipment.ResetSelected();
         selectEquipObject.SetActive(false);
+        if (allActors.GetSelected() < 0){return;}
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
