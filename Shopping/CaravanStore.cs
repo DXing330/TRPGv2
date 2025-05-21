@@ -32,6 +32,27 @@ public class CaravanStore : MonoBehaviour
     public List<StatTextText> wagonInfo;
     public StatDatabase supplyData;
     public StatDatabase luxuryData;
+    public SavedOverworld overworld; // Need overworld to determine increased/decreased prices for luxuries.
+    public OverworldState overworldState; // Need state to determine city.
+    public string suppliedLuxury = "";
+    public string demandedLuxury = "";
+    public int discountedPercentage = 80;
+    public int premiumPercentage = 120;
+    public int unitPrice;
+    public void ResetSDLuxuries()
+    {
+        suppliedLuxury = "";
+        demandedLuxury = "";
+    }
+    public void SetSDLuxuries()
+    {
+        ResetSDLuxuries();
+        int currentLocation = overworldState.GetLocation();
+        int cityIndex = overworld.cityLocations.IndexOf(currentLocation.ToString());
+        if (cityIndex < 0) { return; }
+        suppliedLuxury = overworld.cityLuxurySupplys[cityIndex];
+        demandedLuxury = overworld.cityLuxuryDemands[cityIndex];
+    }
     public StatDatabase muleData;
     public StatDatabase wagonData;
     public PartyDataManager partyData;
@@ -78,13 +99,41 @@ public class CaravanStore : MonoBehaviour
         }
     }
 
+    public void Sell(int state)
+    {
+        int selected = luxurySelectList.GetSelected();
+        if (selected < 0){ return; }
+        int currentAmount = int.Parse(ownedLuxury.text);
+        if (currentAmount <= 0){ return;}
+        string selectedLuxury = luxuriesSold[selected];
+        List<string> allStats = new List<string>(luxuryData.ReturnStats(selectedLuxury));
+        int soldAmount = 0;
+        int unitPrice = int.Parse(allStats[0])/int.Parse(allStats[2]);
+        switch (state)
+        {
+            case 0:
+                soldAmount = 1;
+                break;
+            case 1:
+                soldAmount = currentAmount / 2;
+                break;
+            case 2:
+                soldAmount = currentAmount;
+                break;
+        }
+        partyData.caravan.UnloadCargo(selectedLuxury, soldAmount);
+        partyData.inventory.GainGold(soldAmount * unitPrice);
+        UpdateCaravanStats();
+        UpdateOwnedLuxury();
+    }
+
     protected void UpdateStatePanels()
     {
         for (int i = 0; i < storePanels.Count; i++)
         {
             storePanels[i].SetActive(false);
         }
-        if (state < 0){return;}
+        if (state < 0) { return; }
         storePanels[state].SetActive(true);
         switch (state)
         {
@@ -102,6 +151,7 @@ public class CaravanStore : MonoBehaviour
                 for (int i = 0; i < wagonInfo.Count; i++) { wagonInfo[i].ResetText(); }
                 break;
             case 3:
+                ownedLuxury.text = "";
                 luxurySelectList.StartingPage();
                 for (int i = 0; i < luxuryInfo.Count; i++) { luxuryInfo[i].ResetText(); }
                 break;
@@ -116,12 +166,36 @@ public class CaravanStore : MonoBehaviour
         ownedSupply.text = partyData.caravan.ReturnItemQuantity(suppliesSold[selected]).ToString();
     }
 
+    public void UpdateOwnedSupply()
+    {
+        int selected = supplySelectList.GetSelected();
+        ownedSupply.text = partyData.caravan.ReturnItemQuantity(suppliesSold[selected]).ToString();
+    }
+
     public void SelectLuxury()
     {
         int selected = luxurySelectList.GetSelected();
-        List<string> allStats = new List<string>(luxuryData.ReturnStats(luxuriesSold[selected]));
+        string selectedLuxury = luxuriesSold[selected];
+        List<string> allStats = new List<string>(luxuryData.ReturnStats(selectedLuxury));
+        int price = int.Parse(allStats[0]);
+        if (selectedLuxury == suppliedLuxury)
+        {
+            price = price * discountedPercentage / 100;
+        }
+        else if (selectedLuxury == demandedLuxury)
+        {
+            price = price * premiumPercentage / 100;
+        }
         for (int i = 0; i < luxuryInfo.Count; i++) { luxuryInfo[i].SetText(allStats[i]); }
-        ownedLuxury.text = partyData.caravan.ReturnItemQuantity(luxuriesSold[selected]).ToString();
+        luxuryInfo[0].SetText(price.ToString());
+        ownedLuxury.text = partyData.caravan.ReturnItemQuantity(selectedLuxury).ToString();
+    }
+
+    public void UpdateOwnedLuxury()
+    {
+        int selected = luxurySelectList.GetSelected();
+        string selectedLuxury = luxuriesSold[selected];
+        ownedLuxury.text = partyData.caravan.ReturnItemQuantity(selectedLuxury).ToString();
     }
     
     public void SelectMule()
@@ -162,6 +236,7 @@ public class CaravanStore : MonoBehaviour
         {
             partyData.caravan.AddCargo(suppliesSold[selected], int.Parse(supplyInfo[2].text.text));
             UpdateCaravanStats();
+            UpdateOwnedSupply();
         }
     }
     
@@ -174,6 +249,7 @@ public class CaravanStore : MonoBehaviour
         {
             partyData.caravan.AddCargo(luxuriesSold[selected], int.Parse(luxuryInfo[2].text.text));
             UpdateCaravanStats();
+            UpdateOwnedLuxury();
         }
     }
     

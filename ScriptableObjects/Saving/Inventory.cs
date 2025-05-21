@@ -89,6 +89,11 @@ public class Inventory : SavedData
         quantities[indexOf] = (currentQuantity - quantity).ToString();
     }
 
+    public void GainGold(int amount)
+    {
+        AddItemQuantity(goldString, amount);
+    }
+
     public void AddItemQuantity(string itemName, int quantity = 1)
     {
         int indexOf = items.IndexOf(itemName);
