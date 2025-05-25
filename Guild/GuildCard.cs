@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
@@ -32,10 +33,22 @@ public class GuildCard : SavedData
     public int GetGuildExp(){return guildExp;}
     public List<string> acceptedQuests;
     public void AcceptQuest(string newQuest){acceptedQuests.Add(newQuest);}
-    // Store the current quest/expedition/goal.
-    public List<string> leavingParty;
-    public List<string> partyFees;
-    // Hiring area only refreshes after an expedition.
+        public int newQuests = 1;
+    public bool RefreshQuests()
+    {
+        if (newQuests == 1)
+        {
+            newQuests = 0;
+            return true;
+        }
+        return false;
+    }
+    public List<string> availableQuests;
+    public void SetAvailableQuests(List<string> newQuests)
+    {
+        availableQuests = new List<string>(newQuests);
+    }
+    // Hiring area only refreshes after a quest is completed/failed.
     public int newHireables = 1;
     public bool RefreshHireables()
     {
@@ -58,22 +71,6 @@ public class GuildCard : SavedData
         newHireNames = newNames;
     }
     public List<string> GetNewHireNames(){return newHireNames;}
-    public int newQuests = 1;
-    public bool RefreshQuests()
-    {
-        if (newQuests == 1)
-        {
-            newQuests = 0;
-            return true;
-        }
-        return false;
-    }
-    public List<string> availableQuests;
-    public void SetAvailableQuests(List<string> newQuests)
-    {
-        availableQuests = new List<string>(newQuests);
-    }
-
     public override void NewGame()
     {
         allData = newGameData;
@@ -85,41 +82,13 @@ public class GuildCard : SavedData
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = guildRank.ToString()+delimiter+guildExp.ToString()+delimiter;
-        for (int i = 0; i < acceptedQuests.Count; i++)
-        {
-            allData += acceptedQuests[i];
-            if (i < acceptedQuests.Count - 1){allData += delimiterTwo;}
-        }
-        allData += delimiter;
-        for (int i = 0; i < leavingParty.Count; i++)
-        {
-            allData += leavingParty[i];
-            if (i < leavingParty.Count - 1){allData += delimiterTwo;}
-        }
-        allData += delimiter;
-        for (int i = 0; i < partyFees.Count; i++)
-        {
-            allData += partyFees[i];
-            if (i < partyFees.Count - 1){allData += delimiterTwo;}
-        }
-        allData += delimiter+newHireables.ToString()+delimiter;
-        for (int i = 0; i < newHireClasses.Count; i++)
-        {
-            allData += newHireClasses[i];
-            if (i < newHireClasses.Count - 1){allData += delimiterTwo;}
-        }
-        allData += delimiter;
-        for (int i = 0; i < newHireNames.Count; i++)
-        {
-            allData += newHireNames[i];
-            if (i < newHireNames.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, acceptedQuests);
         allData += delimiter+newQuests.ToString()+delimiter;
-        for (int i = 0; i < availableQuests.Count; i++)
-        {
-            allData += availableQuests[i];
-            if (i < availableQuests.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, availableQuests);
+        allData += delimiter+newHireables.ToString()+delimiter;
+        allData += String.Join(delimiterTwo, newHireClasses);
+        allData += delimiter;
+        allData += String.Join(delimiterTwo, newHireNames);
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
@@ -140,16 +109,14 @@ public class GuildCard : SavedData
         guildRank = int.Parse(dataList[0]);
         guildExp = int.Parse(dataList[1]);
         acceptedQuests = dataList[2].Split(delimiterTwo).ToList();
-        leavingParty = dataList[3].Split(delimiterTwo).ToList();
-        partyFees = dataList[4].Split(delimiterTwo).ToList();
+        newQuests = int.Parse(dataList[3]);
+        availableQuests = dataList[4].Split(delimiterTwo).ToList();
         newHireables = int.Parse(dataList[5]);
         newHireClasses = dataList[6].Split(delimiterTwo).ToList();
         newHireNames = dataList[7].Split(delimiterTwo).ToList();
-        newQuests = int.Parse(dataList[8]);
-        availableQuests = dataList[9].Split(delimiterTwo).ToList();
     }
-
-    public void SetLeavingParty(List<string> personalNames, List<string> fees)
+    // No party fees, just a high upfront cost.
+    /*public void SetLeavingParty(List<string> personalNames, List<string> fees)
     {
         leavingParty = new List<string>(personalNames);
         partyFees = new List<string>(fees);
@@ -168,5 +135,5 @@ public class GuildCard : SavedData
             }
         }
         return cost;
-    }
+    }*/
 }

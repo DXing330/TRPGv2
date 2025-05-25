@@ -18,6 +18,19 @@ public class SavedOverworld : SavedData
     public int zoneSizeDivisor = 3;
     public List<string> possibleLuxuries;
     public List<string> GetPossibleLuxuries(){return possibleLuxuries;}
+    public List<string> luxuryToCityNames;
+    public string GetCityName(int cityLocation)
+    {
+        int indexOf = cityLocations.IndexOf(cityLocation.ToString());
+        string suppliedLuxury = cityLuxurySupplys[indexOf];
+        int nameIndex = possibleLuxuries.IndexOf(suppliedLuxury);
+        return luxuryToCityNames[nameIndex];
+    }
+    public string RandomCityName()
+    {
+        return luxuryToCityNames[UnityEngine.Random.Range(0, luxuryToCityNames.Count)];
+    }
+    [System.NonSerialized]
     public List<string> terrainLayer;
     public string ReturnTerrain(int tileNumber){return terrainLayer[tileNumber];}
     [System.NonSerialized]
@@ -136,8 +149,6 @@ public class SavedOverworld : SavedData
         if (index < 0 || index >= cityLocations.Count){return -1;}
         return int.Parse(cityLocations[index]);
     }
-    // Price tiers: supplier, adjacent, normal, demanded
-    
     protected void ResetData()
     {
         terrainLayer = new List<string>();
@@ -156,7 +167,6 @@ public class SavedOverworld : SavedData
             terrainLayer.Add("");
         }
     }
-
     protected void GenerateNewOverworld()
     {
         ResetData();
@@ -233,13 +243,11 @@ public class SavedOverworld : SavedData
             }
         }
     }
-
     public override void NewGame()
     {
         GenerateNewOverworld();
         Save();
     }
-
     // Hope this is quicker, this requires loading first;
     public void QuickSave()
     {
@@ -279,7 +287,6 @@ public class SavedOverworld : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         File.WriteAllText(dataPath, allData);
     }
-
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
@@ -308,7 +315,6 @@ public class SavedOverworld : SavedData
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
-
     public void QuickLoad()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
@@ -319,7 +325,6 @@ public class SavedOverworld : SavedData
         characters = dataList[9].Split(delimiterTwo).ToList();
         characterLocations = dataList[10].Split(delimiterTwo).ToList();
     }
-
     public override void Load()
     {
         dataPath = Application.persistentDataPath+"/"+filename;

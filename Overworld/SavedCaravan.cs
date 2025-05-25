@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
@@ -220,40 +221,28 @@ public class SavedCaravan : SavedData
         if (quantity <= 0){ return; }
         cargoQuantities[indexOf] = (quantity-1).ToString();
     }
+    public List<string> people;
+    public OverworldActor dummyActor;
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
-        for (int i = 0; i < mules.Count; i++)
-        {
-            allData += mules[i];
-            if (i < mules.Count - 1) { allData += delimiterTwo; }
-        }
+        allData += String.Join(delimiterTwo, mules);
         allData += delimiter;
-        for (int i = 0; i < wagons.Count; i++)
-        {
-            allData += wagons[i];
-            if (i < wagons.Count - 1) { allData += delimiterTwo; }
-        }
+        allData += String.Join(delimiterTwo, wagons);
         allData += delimiter;
-        for (int i = 0; i < cargoItems.Count; i++)
-        {
-            allData += cargoItems[i];
-            if (i < cargoItems.Count - 1) { allData += delimiterTwo; }
-        }
+        allData += String.Join(delimiterTwo, cargoItems);
         allData += delimiter;
-        for (int i = 0; i < cargoQuantities.Count; i++)
-        {
-            allData += cargoQuantities[i];
-            if (i < cargoQuantities.Count - 1) { allData += delimiterTwo; }
-        }
+        allData += String.Join(delimiterTwo, cargoQuantities);
+        allData += delimiter;
+        allData += String.Join(delimiterTwo, people);
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
-        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
+        dataPath = Application.persistentDataPath + "/" + filename;
+        if (File.Exists(dataPath)) { allData = File.ReadAllText(dataPath); }
         else
         {
             NewGame();
@@ -264,10 +253,12 @@ public class SavedCaravan : SavedData
         wagons = dataList[1].Split(delimiterTwo).ToList();
         cargoItems = dataList[2].Split(delimiterTwo).ToList();
         cargoQuantities = dataList[3].Split(delimiterTwo).ToList();
+        people = dataList[4].Split(delimiterTwo).ToList();
         utility.RemoveEmptyListItems(cargoItems);
         utility.RemoveEmptyListItems(cargoQuantities);
         utility.RemoveEmptyListItems(mules);
         utility.RemoveEmptyListItems(wagons);
+        utility.RemoveEmptyListItems(people);
     }
     public int ReturnPullCargoRatio()
     {

@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class OverworldActor : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    // moving, interacting, resting
+    // foreman will ensure no one internally takes cargo for the wagon they are supervising
+    public List<string> passives;
 }

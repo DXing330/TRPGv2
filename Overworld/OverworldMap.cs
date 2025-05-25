@@ -36,6 +36,7 @@ public class OverworldMap : MapManager
         UpdateData();
         characterLayer[partyLocation] = partySprite;
         UpdateMap();
+        // Trigger resting events.
         if (enemies)
         {
             sceneMover.MoveToBattle();
@@ -95,6 +96,7 @@ public class OverworldMap : MapManager
         {
             sceneMover.ReturnToHub();
         }
+        // Trigger interact event.
     }
 
     public void MoveInDirection(int direction)
