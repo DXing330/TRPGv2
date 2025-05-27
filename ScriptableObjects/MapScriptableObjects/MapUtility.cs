@@ -163,11 +163,12 @@ public class MapUtility : ScriptableObject
         return tiles;
     }
 
-    public List<int> GetTileInRingShape(int startTile, int range, int size)
+    public List<int> GetTileInRingShape(int startTile, int range, int size, int width = 1)
     {
         List<int> tiles = new List<int>();
         tiles = GetTilesInCircleShape(startTile, range, size);
-        tiles = tiles.Except(GetTilesInCircleShape(startTile, range-1,size)).ToList();
+        if (width >= range){ return tiles; }
+        tiles = tiles.Except(GetTilesInCircleShape(startTile, range-width,size)).ToList();
         tiles = tiles.Distinct().ToList();
         return tiles;
     }
@@ -210,7 +211,27 @@ public class MapUtility : ScriptableObject
         }
         return -1;
     }
-    
+
+    public string IntDirectionToString(int direction)
+    {
+        switch (direction)
+        {
+            case 0:
+                return "North";
+            case 1:
+                return "North-East";
+            case 2:
+                return "South-East";
+            case 3:
+                return "South";
+            case 4:
+                return "South-West";
+            case 5:
+                return "North-West";
+        }
+        return "";
+    }
+
     public List<int> AdjacentTiles(int location, int size)
     {
         List<int> adjacent = new List<int>();
@@ -218,7 +239,7 @@ public class MapUtility : ScriptableObject
         for (int i = 0; i < 6; i++)
         {
             adjacentTile = PointInDirection(location, i, size);
-            if (adjacentTile < 0){continue;}
+            if (adjacentTile < 0) { continue; }
             adjacent.Add(adjacentTile);
         }
         return adjacent;

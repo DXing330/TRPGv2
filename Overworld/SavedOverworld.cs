@@ -17,11 +17,19 @@ public class SavedOverworld : SavedData
     public int zoneCount = 9;
     public int zoneSizeDivisor = 3;
     public List<string> possibleLuxuries;
-    public List<string> GetPossibleLuxuries(){return possibleLuxuries;}
+    public string RandomLuxury(){ return possibleLuxuries[UnityEngine.Random.Range(0, possibleLuxuries.Count)]; }
+    public List<string> GetPossibleLuxuries() { return possibleLuxuries; }
     public List<string> luxuryToCityNames;
-    public string GetCityName(int cityLocation)
+    public string GetCityNameFromLocation(int cityLocation)
     {
         int indexOf = cityLocations.IndexOf(cityLocation.ToString());
+        string suppliedLuxury = cityLuxurySupplys[indexOf];
+        int nameIndex = possibleLuxuries.IndexOf(suppliedLuxury);
+        return luxuryToCityNames[nameIndex];
+    }
+    public string GetCityNameFromDemandedLuxury(string luxury)
+    {
+        int indexOf = cityLuxuryDemands.IndexOf(luxury);
         string suppliedLuxury = cityLuxurySupplys[indexOf];
         int nameIndex = possibleLuxuries.IndexOf(suppliedLuxury);
         return luxuryToCityNames[nameIndex];
@@ -61,7 +69,6 @@ public class SavedOverworld : SavedData
             characterLayer[int.Parse(characterLocations[i])] = characters[i];
         }
     }
-    
     public int RandomTile()
     {
         return UnityEngine.Random.Range(0, terrainLayer.Count);
@@ -70,6 +77,16 @@ public class SavedOverworld : SavedData
     // Cities, Guild Hub
     public List<string> cities;
     public List<string> cityLocations;
+    public int GetCityLocationFromLuxurySupplied(string luxury)
+    {
+        int indexOf = cityLuxurySupplys.IndexOf(luxury);
+        return int.Parse(cityLocations[indexOf]);
+    }
+    public int GetCityLocationFromLuxuryDemanded(string luxury)
+    {
+        int indexOf = cityLuxuryDemands.IndexOf(luxury);
+        return int.Parse(cityLocations[indexOf]);
+    }
     // Luxuries, their locations will rarely change.
     public List<string> luxuries;
     public List<string> luxuryLocations;
@@ -112,8 +129,7 @@ public class SavedOverworld : SavedData
         QuickSave();
     }
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.
-    // List of what luxuries are in demand in each city, more expensive than usual.
-    public List<string> cityLuxuryDemands; // Probably have to make this here, the overworld gen won't know since it only makes them one at a time.
+    public List<string> cityLuxuryDemands;
     public int ReturnClosestCityDistance(int tileNumber)
     {
         return mapUtility.DistanceBetweenTiles(tileNumber, ReturnClosestCityLocation(tileNumber), overworldSize);

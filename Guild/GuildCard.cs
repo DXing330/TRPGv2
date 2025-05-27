@@ -33,7 +33,7 @@ public class GuildCard : SavedData
     public int GetGuildExp(){return guildExp;}
     public List<string> acceptedQuests;
     public void AcceptQuest(string newQuest){acceptedQuests.Add(newQuest);}
-        public int newQuests = 1;
+    public int newQuests = 1;
     public bool RefreshQuests()
     {
         if (newQuests == 1)
@@ -100,12 +100,6 @@ public class GuildCard : SavedData
         else{allData = newGameData;}
         if (allData.Length < newGameData.Length){allData = newGameData;}
         dataList = allData.Split(delimiter).ToList();
-        // This will more strictly enforce loading new game data if an error would occur.
-        if (dataList.Count < 10)
-        {
-            allData = newGameData;
-            dataList = allData.Split(delimiter).ToList();
-        }
         guildRank = int.Parse(dataList[0]);
         guildExp = int.Parse(dataList[1]);
         acceptedQuests = dataList[2].Split(delimiterTwo).ToList();
@@ -115,25 +109,4 @@ public class GuildCard : SavedData
         newHireClasses = dataList[6].Split(delimiterTwo).ToList();
         newHireNames = dataList[7].Split(delimiterTwo).ToList();
     }
-    // No party fees, just a high upfront cost.
-    /*public void SetLeavingParty(List<string> personalNames, List<string> fees)
-    {
-        leavingParty = new List<string>(personalNames);
-        partyFees = new List<string>(fees);
-        Save();
-    }
-
-    public int ReturnExpeditionCost(List<string> returningParty)
-    {
-        Load();
-        int cost = 0;
-        for (int i = leavingParty.Count - 1; i >= 0; i--)
-        {
-            if (returningParty.Contains(leavingParty[i]))
-            {
-                cost += int.Parse(partyFees[i]);
-            }
-        }
-        return cost;
-    }*/
 }
