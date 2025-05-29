@@ -10,20 +10,46 @@ public class RequestBoard : MonoBehaviour
     public OverworldState overworldState;
     public SavedCaravan caravan;
     public GuildCard guildCard;
+    public StatDatabase luxuryUnitPrices;
     public List<string> requestGoals;
     public Request dummyRequest;
+    public RequestDisplay requestDisplay;
     public List<string> availableRequests;
     public SelectStatTextList questSelect;
     public TMP_Text questDetails;
+    public void ResetQuestDetails(){questDetails.text = "";}
     public int baseRequestCount = 6;
     public int amountVariation = 9;
     public int distanceVariation = 3;
 
     void Start()
     {
+        questSelect.ResetSelected();
         availableRequests = guildCard.availableQuests;
         if (guildCard.RefreshQuests()) { GenerateRequests(); }
         UpdateSelectableQuests();
+    }
+
+    public void AcceptQuest()
+    {
+        int selected = questSelect.GetSelected();
+        if (selected < 0) { return; }
+        dummyRequest.Load(availableRequests[selected]);
+        guildCard.AcceptQuest(availableRequests[selected]);
+        // Add any features that are listed in the request. Note features don't move, so anything added should be a feature.
+        // This could be a problem if you generate quests, then leave, spawn a feature then come back and accept the quest. Specifically this could lead to features overlapping on a single tile, in these situations the quest will be unable to be completed and automatically failed, git gud.
+        availableRequests.Clear();
+        UpdateSelectableQuests();
+        ResetQuestDetails();
+        guildCard.Save();
+        // If it's a delivery request then add the specified cargo to your wagon.
+        if (dummyRequest.GetGoal() == "Deliver")
+        {
+            caravan.AddCargo(dummyRequest.GetGoalSpecifics(), dummyRequest.GetGoalAmount());
+        }
+        // Don't add a city, those are fixed locations at the start of the game, not normal features.
+        if (dummyRequest.GetLocationSpecifics() == "City") { return; }
+        overworldTiles.AddFeature(dummyRequest.GetLocationSpecifics(), dummyRequest.GetLocation().ToString());
     }
 
     public void UpdateSelectableQuests()
@@ -34,7 +60,7 @@ public class RequestBoard : MonoBehaviour
         {
             dummyRequest.Load(availableRequests[i]);
             goals.Add(dummyRequest.GetGoal());
-            rewards.Add(dummyRequest.GetReward()+" Gold");
+            rewards.Add(dummyRequest.GetReward() + " Gold");
         }
         questSelect.SetStatsAndData(goals, rewards);
     }
@@ -43,33 +69,7 @@ public class RequestBoard : MonoBehaviour
     {
         int selected = questSelect.GetSelected();
         string selectedRequest = availableRequests[selected];
-        dummyRequest.Load(selectedRequest);
-        switch (dummyRequest.GetGoal())
-        {
-            case "Deliver":
-                questDetails.text = UpdateDeliveryDescription();
-            break;
-        }
-    }
-
-    protected string UpdateDeliveryDescription()
-    {
-        string description = "I need you to deliver these " + dummyRequest.GetGoalAmount() + " shipments of " + dummyRequest.GetGoalSpecifics();
-        string cityName = overworldTiles.GetCityNameFromDemandedLuxury(dummyRequest.GetGoalSpecifics());
-        int direction = overworldTiles.mapUtility.DirectionBetweenLocations(overworldState.GetLocation(), dummyRequest.GetLocation(), overworldTiles.GetSize());
-        string directionName = overworldTiles.mapUtility.IntDirectionToString(direction);
-        switch (dummyRequest.GetLocationSpecifics())
-        {
-            case "City":
-                description += " to " + cityName;
-                break;
-            case "Merchant":
-                description += " about halfway to " + cityName;
-                break;
-        }
-        description += ", to the " + directionName + " of here,";
-        description += " within " + dummyRequest.GetDeadline() + " days.";
-        return description;
+        questDetails.text = requestDisplay.DisplayRequestDescription(selectedRequest);
     }
 
     public void GenerateRequests()
@@ -101,6 +101,8 @@ public class RequestBoard : MonoBehaviour
         string requestedLuxury = overworldTiles.RandomLuxury();
         dummyRequest.SetGoalSpecifics(requestedLuxury);
         dummyRequest.SetGoalAmount(Random.Range(1, amountVariation + 1));
+        // The failure fee is the cost of the goods.
+        dummyRequest.SetFailPenalty(dummyRequest.GetGoalAmount()*int.Parse(luxuryUnitPrices.ReturnValue(dummyRequest.GetGoalSpecifics())));
         dummyRequest.SetReward((int) Mathf.Sqrt(dummyRequest.GetGoalAmount()));
         int distance = Random.Range(0, 3); // 0 = full, else half
         if (distance == 0)
@@ -117,9 +119,8 @@ public class RequestBoard : MonoBehaviour
             int currentLocation = overworldState.GetLocation();
             int row = (overworldTiles.mapUtility.GetRow(cityLocation, overworldTiles.GetSize()) + overworldTiles.mapUtility.GetRow(currentLocation, overworldTiles.GetSize())) / 2;
             int col = (overworldTiles.mapUtility.GetColumn(cityLocation, overworldTiles.GetSize()) + overworldTiles.mapUtility.GetColumn(currentLocation, overworldTiles.GetSize())) / 2;
-            row += Random.Range(-distanceVariation, distanceVariation + 1); // Add a small variation
-            col += Random.Range(-distanceVariation, distanceVariation + 1);
-            dummyRequest.SetLocation(overworldTiles.mapUtility.ReturnTileNumberFromRowCol(row, col, overworldTiles.GetSize()));
+            int questLocation = GenerateRandomEmptyLocationAroundCenter(row, col);
+            dummyRequest.SetLocation(questLocation);
             dummyRequest.SetLocationSpecifics("Merchant");
             // Deadline is assuming you travel 1 tile/day.
             dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()));
@@ -127,6 +128,15 @@ public class RequestBoard : MonoBehaviour
             // Add some slight RNG to the reward amount.
             dummyRequest.SetReward(dummyRequest.GetReward() + Random.Range(-amountVariation, amountVariation + 1));
         }
+    }
+
+    protected int GenerateRandomEmptyLocationAroundCenter(int row, int col)
+    {
+        row += Random.Range(-distanceVariation, distanceVariation + 1); // Add a small variation
+        col += Random.Range(-distanceVariation, distanceVariation + 1);
+        int tile = overworldTiles.mapUtility.ReturnTileNumberFromRowCol(row, col, overworldTiles.GetSize());
+        if (!overworldTiles.FeatureExist(tile)){ return tile; }
+        return GenerateRandomEmptyLocationAroundCenter(row, col);
     }
 
     protected void GenerateEscortRequest()

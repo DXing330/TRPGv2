@@ -27,6 +27,11 @@ public class Request : MonoBehaviour
     // # days left before failure
     public int deadline;
     public void SetDeadline(int newInfo) { deadline = newInfo; }
+    public void NewDay()
+    {
+        if (completed == 1){ return; }
+        deadline--;
+    }
     public int GetDeadline() { return deadline; }
     // 0 = false, 1 = true
     public int completed;

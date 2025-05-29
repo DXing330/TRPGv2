@@ -7,7 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BanditManager", menuName = "ScriptableObjects/DataContainers/SavedData/BanditManager", order = 1)]
 public class BanditManager : OverworldEnemyManager
 {
-    public GeneralUtility utility;
     public string delimiterTwo;
     public SavedOverworld savedOverworld;
     // How often bandits spawn, maybe make this a setting or adjustable later.

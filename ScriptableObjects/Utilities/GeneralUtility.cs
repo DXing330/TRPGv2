@@ -9,19 +9,33 @@ using TMPro;
 [CreateAssetMenu(fileName = "Utility", menuName = "ScriptableObjects/Utility/GeneralUtility", order = 1)]
 public class GeneralUtility : ScriptableObject
 {
-    public int ChangePage(int currentPage, bool right, List<GameObject> pageLength, List<string> dataList)
+    public int ChangeIndex(int currentIndex, bool right, int maxIndex)
     {
-        int maxPage = dataList.Count/pageLength.Count;
-        if (dataList.Count%pageLength.Count == 0){maxPage--;}
         if (right)
         {
-            if (currentPage < maxPage){currentPage++;}
-            else{currentPage = 0;}
+            if (currentIndex >= maxIndex) { return 0; }
+            else { return currentIndex + 1; }
         }
         else
         {
-            if (currentPage > 0){currentPage--;}
-            else{currentPage = maxPage;}
+            if (currentIndex > 0) { return currentIndex - 1; }
+            else{ return maxIndex; }
+        }
+    }
+
+    public int ChangePage(int currentPage, bool right, List<GameObject> pageLength, List<string> dataList)
+    {
+        int maxPage = dataList.Count / pageLength.Count;
+        if (dataList.Count % pageLength.Count == 0) { maxPage--; }
+        if (right)
+        {
+            if (currentPage < maxPage) { currentPage++; }
+            else { currentPage = 0; }
+        }
+        else
+        {
+            if (currentPage > 0) { currentPage--; }
+            else { currentPage = maxPage; }
         }
         return currentPage;
     }

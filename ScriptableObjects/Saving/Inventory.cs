@@ -7,7 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Inventory", menuName = "ScriptableObjects/DataContainers/SavedData/Inventory", order = 1)]
 public class Inventory : SavedData
 {
-    public GeneralUtility utility;
     public string delimiterTwo;
     public List<string> items;
     public List<string> quantities;
@@ -87,6 +86,15 @@ public class Inventory : SavedData
         int indexOf = items.IndexOf(itemName);
         int currentQuantity = int.Parse(quantities[indexOf]);
         quantities[indexOf] = (currentQuantity - quantity).ToString();
+    }
+
+    public void LoseGold(int amount = -1)
+    {
+        if (amount < 0)
+        {
+            RemoveItemQuantity(ReturnQuantityOfItem(goldString));
+        }
+        else{ RemoveItemQuantity(amount); }
     }
 
     public void GainGold(int amount)
