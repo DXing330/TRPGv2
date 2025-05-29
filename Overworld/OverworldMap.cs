@@ -24,9 +24,9 @@ public class OverworldMap : MapManager
 
     public void Rest()
     {
-        bool newDay = false;
-        newDay = overworldState.Rest();
-        if (newDay)
+        int cDay = overworldState.GetDay();
+        overworldState.Rest();
+        if (cDay != overworldState.GetDay())
         {
             overworldState.UpdateEnemies(partyLocation);
         }
@@ -54,10 +54,10 @@ public class OverworldMap : MapManager
         // Move cost is affected by the weight of the caravan, the more loaded the caravan the slower it is.
         // As such multiply the move cost by the ratio (current/max) weight.
         // Update the time based on the moveCost.
-        bool newDay = false;
-        newDay = overworldState.AddHours(moveCost);
+        int cDay = overworldState.GetDay();
+        overworldState.AddHours(moveCost);
         // Don't move any enemies that are on the player's tile, those are guaranteed fights.
-        if (newDay)
+        if (cDay != overworldState.GetDay())
         {
             overworldState.UpdateEnemies(newTile);
         }

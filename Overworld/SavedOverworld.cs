@@ -8,7 +8,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedOverworld", menuName = "ScriptableObjects/DataContainers/SavedData/SavedOverworld", order = 1)]
 public class SavedOverworld : SavedData
 {
-    public GeneralUtility utility;
     public string delimiterTwo;
     public OverworldGenerator owGen;
     public MapUtility mapUtility;
@@ -101,6 +100,18 @@ public class SavedOverworld : SavedData
         featureLocations.Add(newLocation);
         QuickSave();
         return true;
+    }
+    public bool FeatureExist(int location)
+    {
+        int indexOf = featureLocations.IndexOf(location.ToString());
+        return indexOf >= 0;
+    }
+    public void RemoveFeatureAtLocation(int location)
+    {
+        int indexOf = featureLocations.IndexOf(location.ToString());
+        featureLocations.RemoveAt(indexOf);
+        features.RemoveAt(indexOf);
+        QuickSave();
     }
     // Player, Monsters, Bandits, NPCs
     public List<string> characters;

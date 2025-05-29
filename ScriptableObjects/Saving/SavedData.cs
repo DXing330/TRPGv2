@@ -7,6 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedData", menuName = "ScriptableObjects/DataContainers/SavedData/SavedData", order = 1)]
 public class SavedData : ScriptableObject
 {
+    public GeneralUtility utility;
     protected string dataPath;
     public string filename;
     public string newGameData;
@@ -18,6 +19,16 @@ public class SavedData : ScriptableObject
     public virtual void NewDay(int dayCount)
     {
 
+    }
+
+    public virtual void AddHours(int hours)
+    {
+
+    }
+
+    public virtual void Rest()
+    {
+        
     }
 
     public virtual void NewGame()

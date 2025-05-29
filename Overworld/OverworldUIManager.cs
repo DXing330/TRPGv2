@@ -9,11 +9,31 @@ public class OverworldUIManager : MonoBehaviour
     {
         cargoList.UpdateTextSize();
     }
+    public GeneralUtility utility;
     public PartyDataManager partyData;
     public SavedCaravan caravan;
     public OverworldState overworldState;
     public OverworldMap overworldMap;
     public int state = 0;
+    public RequestDisplay requestDisplay;
+    public TMP_Text requestText;
+    public int selectedQuest = 0;
+    public void ResetSelectedQuest(){ selectedQuest = 0; }
+    public void ChangeSelectedQuest(bool right = true)
+    {
+        selectedQuest = utility.ChangeIndex(selectedQuest, right, partyData.guildCard.acceptedQuests.Count - 1);
+        DisplayQuest();
+    }
+    public void DisplayQuest()
+    {
+        // If no quests then return.
+        if (partyData.guildCard.acceptedQuests.Count <= 0)
+        {
+            requestText.text = "";
+            return;
+        }
+        requestText.text = requestDisplay.DisplayRequestDescription(partyData.guildCard.acceptedQuests[selectedQuest]);
+    }
     public StatTextList cargoList;
     public void UpdateCargoListWeight()
     {
