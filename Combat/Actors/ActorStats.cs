@@ -18,6 +18,7 @@ public class ActorStats : ActorPassives
         string allStats = "";
         for (int i = 0; i < stats.Count; i++)
         {
+            stats[i] = GetStat(i);
             allStats += stats[i];
             if (i < stats.Count - 1){allStats+="|";}
         }
@@ -43,57 +44,92 @@ public class ActorStats : ActorPassives
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
     }
+    protected string GetStat(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                return GetBaseHealth().ToString();
+            case 1:
+                return GetBaseEnergy().ToString();
+            case 2:
+                return GetBaseAttack().ToString();
+            case 3:
+                return GetAttackRange().ToString();
+            case 4:
+                return GetBaseDefense().ToString();
+            case 5:
+                return GetMoveSpeed().ToString();
+            case 6:
+                return GetMoveType();
+            case 7:
+                return GetWeight().ToString();
+            case 8:
+                return GetInitiative().ToString();
+            case 9:
+                return GetPassiveString();
+            case 10:
+                return GetPassiveLevelString();
+            case 11:
+                return GetActivesString();
+            case 12:
+                return GetHealth().ToString();
+            case 13:
+                return GetCurseString();
+        }
+        return "";
+    }
     protected void SetStat(string newStat, int index)
     {
         switch (index)
         {
             case 0:
-            SetBaseHealth(int.Parse(newStat));
-            break;
+                SetBaseHealth(int.Parse(newStat));
+                break;
             case 1:
-            SetBaseEnergy(int.Parse(newStat));
-            break;
+                SetBaseEnergy(int.Parse(newStat));
+                break;
             case 2:
-            SetBaseAttack(int.Parse(newStat));
-            break;
+                SetBaseAttack(int.Parse(newStat));
+                break;
             case 3:
-            SetAttackRange(int.Parse(newStat));
-            break;
+                SetAttackRange(int.Parse(newStat));
+                break;
             case 4:
-            SetBaseDefense(int.Parse(newStat));
-            break;
+                SetBaseDefense(int.Parse(newStat));
+                break;
             case 5:
-            SetMoveSpeed(int.Parse(newStat));
-            break;
+                SetMoveSpeed(int.Parse(newStat));
+                break;
             case 6:
-            SetMoveType(newStat);
-            break;
+                SetMoveType(newStat);
+                break;
             case 7:
-            SetWeight(int.Parse(newStat));
-            break;
+                SetWeight(int.Parse(newStat));
+                break;
             case 8:
-            SetInitiative(int.Parse(newStat));
-            break;
+                SetInitiative(int.Parse(newStat));
+                break;
             case 9:
-            SetPassiveSkills(newStat.Split(",").ToList());
-            break;
+                SetPassiveSkills(newStat.Split(",").ToList());
+                break;
             case 10:
-            SetPassiveLevels(newStat.Split(",").ToList());
-            break;
+                SetPassiveLevels(newStat.Split(",").ToList());
+                break;
             case 11:
-            SetActiveSkills(newStat.Split(",").ToList());
-            break;
+                SetActiveSkills(newStat.Split(",").ToList());
+                break;
             case 12:
-            SetCurrentHealth(int.Parse(newStat));
-            break;
+                SetCurrentHealth(int.Parse(newStat));
+                break;
             case 13:
-            // If they were kept then they must have had infinite duration.
-            List<string> curses = newStat.Split(",").ToList();
-            for (int i = 0; i < curses.Count; i++)
-            {
-                AddStatus(curses[i], -1);
-            }
-            break;
+                // If they were kept then they must have had infinite duration.
+                List<string> curses = newStat.Split(",").ToList();
+                for (int i = 0; i < curses.Count; i++)
+                {
+                    AddStatus(curses[i], -1);
+                }
+                break;
         }
     }
     public void ResetStats()
@@ -234,7 +270,11 @@ public class ActorStats : ActorPassives
         allActives.AddRange(tempActives);
         return allActives;
     }
-    
+    public string GetActivesString()
+    {
+        if (activeSkills.Count == 0) { return ""; }
+        return String.Join(",", activeSkills);
+    }
     public List<string> statuses;
     public List<string> GetStatuses(){return statuses;}
     public List<string> GetCurses()

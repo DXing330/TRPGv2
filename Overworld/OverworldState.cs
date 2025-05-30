@@ -9,7 +9,7 @@ public class OverworldState : SavedData
 {
     // Need to get the location of the guild hub when starting a new game.
     public SavedOverworld savedOverworld;
-    public SavedCaravan caravan;
+    public PartyDataManager partyData;
     // Bandits/Enemies will appear as the days go by.
     public List<OverworldEnemyManager> enemyManagers;
     // Enemies will be added to the enemy list before battle.
@@ -54,20 +54,23 @@ public class OverworldState : SavedData
     public void SetDay(int newDate){dayCount = newDate;}
     public int currentHour;
     public int GetHour(){return currentHour%hoursInDay;}
-    public bool AddHours(int newHours, bool rest = false)
+    public override void AddHours(int newHours)
     {
         currentHour += newHours;
-        caravan.ConsumeMuleEnergy(newHours, rest);
-        if (currentHour < hoursInDay){return false;}
+        if (currentHour < hoursInDay) { return; }
         dayCount++;
         currentHour -= hoursInDay;
-        return true;
+        NewDay(dayCount);
     }
-    public bool Rest()
+    public override void NewDay(int dayCount)
     {
-        bool newDay = AddHours(GetRestingPeriod(), true);
-        caravan.Rest();
-        return newDay;
+        partyData.NewDay(dayCount);
+        Save();
+    }
+    public override void Rest()
+    {
+        AddHours(GetRestingPeriod());
+        partyData.Rest();
     }
     public void UpdateEnemies(int except)
     {
@@ -91,7 +94,7 @@ public class OverworldState : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = location+delimiter+dayCount+delimiter+currentHour;
         File.WriteAllText(dataPath, allData);
-        caravan.Save();
+        partyData.Save();
     }
     public override void Load()
     {

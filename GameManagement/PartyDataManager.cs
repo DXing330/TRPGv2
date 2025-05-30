@@ -19,11 +19,13 @@ public class PartyDataManager : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     public GuildCard guildCard;
     public SavedCaravan caravan;
+    public string hungerStatus;
+    public int hungerLimit = 3;
 
     public void Save()
     {
-        for (int i = 0; i < allParties.Count; i++){allParties[i].Save();}
-        for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].Save();}
+        for (int i = 0; i < allParties.Count; i++) { allParties[i].Save(); }
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].Save(); }
     }
 
     public void Load()
@@ -37,6 +39,56 @@ public class PartyDataManager : MonoBehaviour
     {
         for (int i = 0; i < allParties.Count; i++){allParties[i].NewGame();}
         for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].NewGame();}
+    }
+
+    public virtual void NewDay(int dayCount)
+    {
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].NewDay(dayCount); }
+        // Pay the failure penalty for any failed quests.
+        int penalty = guildCard.GetFailPenalty();
+        if (penalty > 0)
+        {
+            if (inventory.QuantityExists(penalty))
+            {
+                inventory.RemoveItemQuantity(penalty);
+            }
+            else
+            {
+                inventory.LoseGold();
+                // Maybe lose guild rank here.
+            }
+        }
+    }
+
+    public virtual void AddHours(int hours)
+    {
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].AddHours(hours); }
+    }
+
+    public virtual void Rest()
+    {
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].Rest(); }
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            for (int j = allParties[i].PartyCount() - 1; j >= 0; j--)
+            {
+                int hunger = 0;
+                if (caravan.FoodAvailable())
+                {
+                    caravan.ConsumeFood();
+                    allParties[i].Rest(j);
+                }
+                else
+                {
+                    hunger = allParties[i].Hunger(j);
+                    // Probably need a notification of peope leaving due to hunger.
+                    /*if (hunger > hungerLimit && i > 0)
+                    {
+                        allParties[i].RemoveStatsAtIndex(j)
+                    }*/
+                }
+            }
+        }
     }
 
     public void AddTempPartyMember(string name)

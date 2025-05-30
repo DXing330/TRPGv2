@@ -8,34 +8,34 @@ using UnityEngine;
 public class PartyData : SavedData
 {
     public bool hiringFees = false;
-    public GeneralUtility utility;
+    public int restHealth;
+    public string hungerStatus;
     public TacticActor dummyActor;
     public string delimiterTwo;
     public List<string> partyNames;
-    public int PartyCount(){return partyNames.Count;}
+    public int PartyCount() { return partyNames.Count; }
     public void ChangeName(string newName, int index)
     {
         partyNames[index] = newName;
         Save();
     }
-    public List<string> GetNames(){return partyNames;}
+    public List<string> GetNames() { return partyNames; }
     public List<string> partySpriteNames;
-    public List<string> GetSpriteNames(){return partySpriteNames;}
+    public List<string> GetSpriteNames() { return partySpriteNames; }
     public List<string> partyBaseStats;
-    public List<string> GetBaseStats(){return partyBaseStats;}
+    public List<string> GetBaseStats() { return partyBaseStats; }
     public void ChangeBaseStats(string newStats, int index)
     {
         partyBaseStats[index] = newStats;
     }
     // Equipment goes here?
     public List<string> partyEquipment;
-    public List<string> GetEquipment(){return partyEquipment;}
+    public List<string> GetEquipment() { return partyEquipment; }
     public List<string> partyCurrentStats;
     // Hiring costs go here.
     // Might change with promotions.
     public List<string> battleFees;
-    public List<string> GetBattleFees(){return battleFees;}
-
+    public List<string> GetBattleFees() { return battleFees; }
     public void SetCurrentStats(string newStats, int index)
     {
         partyCurrentStats[index] = newStats;
@@ -47,7 +47,7 @@ public class PartyData : SavedData
         partyBaseStats.Clear();
         partyEquipment.Clear();
         partyCurrentStats.Clear();
-        if(hiringFees){battleFees.Clear();}
+        if (hiringFees) { battleFees.Clear(); }
     }
     public List<string> GetStatsAtIndex(int index)
     {
@@ -67,7 +67,7 @@ public class PartyData : SavedData
         partyBaseStats.RemoveAt(index);
         partyEquipment.RemoveAt(index);
         partyCurrentStats.RemoveAt(index);
-        if(hiringFees){battleFees.RemoveAt(index);}
+        if (hiringFees) { battleFees.RemoveAt(index); }
     }
     public void ClearCurrentStats()
     {
@@ -82,7 +82,7 @@ public class PartyData : SavedData
         for (int i = 0; i < partyBaseStats.Count; i++)
         {
             // Don't keep track of empty members.
-            if (partyBaseStats[i].Length < 1){continue;}
+            if (partyBaseStats[i].Length < 1) { continue; }
             if (partyCurrentStats[i].Length < 1)
             {
                 partyCurrentStats[i] = "1";
@@ -123,42 +123,42 @@ public class PartyData : SavedData
         partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
         battleFees = utility.RemoveEmptyListItems(battleFees);
-        dataPath = Application.persistentDataPath+"/"+filename;
+        dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
         string tempData = "";
         // Use partyNames to count for everything, as they should always be the same count, if this causes an error then thats a problem.
         for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyNames[i];
-            if (i < partyNames.Count - 1){tempData += delimiterTwo;}
+            if (i < partyNames.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
         tempData = "";
         for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partySpriteNames[i];
-            if (i < partySpriteNames.Count - 1){tempData += delimiterTwo;}
+            if (i < partySpriteNames.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
         tempData = "";
         for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyBaseStats[i];
-            if (i < partyBaseStats.Count - 1){tempData += delimiterTwo;}
+            if (i < partyBaseStats.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
         tempData = "";
         for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyEquipment[i];
-            if (i < partyEquipment.Count - 1){tempData += delimiterTwo;}
+            if (i < partyEquipment.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
         tempData = "";
         for (int i = 0; i < partyNames.Count; i++)
         {
             tempData += partyCurrentStats[i];
-            if (i < partyCurrentStats.Count - 1){tempData += delimiterTwo;}
+            if (i < partyCurrentStats.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
         if (hiringFees)
@@ -167,7 +167,7 @@ public class PartyData : SavedData
             for (int i = 0; i < partyNames.Count; i++)
             {
                 tempData += battleFees[i];
-                if (i < battleFees.Count - 1){tempData += delimiterTwo;}
+                if (i < battleFees.Count - 1) { tempData += delimiterTwo; }
             }
             allData += tempData + delimiter;
         }
@@ -176,8 +176,8 @@ public class PartyData : SavedData
     public override void NewGame()
     {
         allData = newGameData;
-        if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
-        else{return;}
+        if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
+        else { return; }
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
         partyBaseStats = dataList[2].Split(delimiterTwo).ToList();
@@ -188,11 +188,11 @@ public class PartyData : SavedData
     }
     public override void Load()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
-        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
-        else{allData = newGameData;}
-        if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
-        else{return;}
+        dataPath = Application.persistentDataPath + "/" + filename;
+        if (File.Exists(dataPath)) { allData = File.ReadAllText(dataPath); }
+        else { allData = newGameData; }
+        if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
+        else { return; }
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
         partyBaseStats = dataList[2].Split(delimiterTwo).ToList();
@@ -214,7 +214,7 @@ public class PartyData : SavedData
         List<string> stats = new List<string>();
         for (int i = 0; i < partyBaseStats.Count; i++)
         {
-            stats.Add(partyBaseStats[i]+joiner+partyCurrentStats[i]);
+            stats.Add(partyBaseStats[i] + joiner + partyCurrentStats[i]);
         }
         return stats;
     }
@@ -239,7 +239,7 @@ public class PartyData : SavedData
         string oldEquip = "";
         for (int i = 0; i < currentEquipment.Count; i++)
         {
-            if (currentEquipment[i].Length < 6){continue;}
+            if (currentEquipment[i].Length < 6) { continue; }
             dummyEquip.SetAllStats(currentEquipment[i]);
             string oldSlot = dummyEquip.GetSlot();
             if (oldSlot == newSlot)
@@ -249,7 +249,7 @@ public class PartyData : SavedData
                 break;
             }
         }
-        partyEquipment[memberIndex] = equip+"@";
+        partyEquipment[memberIndex] = equip + "@";
         for (int i = 0; i < currentEquipment.Count; i++)
         {
             partyEquipment[memberIndex] += currentEquipment[i];
@@ -268,7 +268,7 @@ public class PartyData : SavedData
         List<string> currentEquipment = partyEquipment[memberIndex].Split("@").ToList();
         for (int i = 0; i < currentEquipment.Count; i++)
         {
-            if (currentEquipment[i].Length < 6){continue;}
+            if (currentEquipment[i].Length < 6) { continue; }
             dummyEquip.SetAllStats(currentEquipment[i]);
             if (slot == dummyEquip.GetSlot())
             {
@@ -326,5 +326,28 @@ public class PartyData : SavedData
         }
         partyCurrentStats.Add(currentStats);
         battleFees.Add(fee);
+    }
+    public void Rest(int index)
+    {
+        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
+        dummyActor.SetStatsFromString(stats);
+        dummyActor.UpdateHealth(restHealth, false);
+        dummyActor.ClearStatuses(hungerStatus);
+        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+    }
+    public int Hunger(int index)
+    {
+        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
+        dummyActor.SetStatsFromString(stats);
+        dummyActor.AddStatus(hungerStatus, -1);
+        Debug.Log("Hunger");
+        Debug.Log(dummyActor.ReturnPersistentStats());
+        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+        int count = 0;
+        for (int i = 0; i < dummyActor.statuses.Count; i++)
+        {
+            if (dummyActor.statuses[i] == hungerStatus) { count++; }
+        }
+        return count;
     }
 }

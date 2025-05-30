@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -41,6 +42,11 @@ public class ActorPassives : MonoBehaviour
         allPassives.AddRange(tempPassives);
         return allPassives;
     }
+    public string GetPassiveString()
+    {
+        if (passiveSkills.Count == 0){ return ""; }
+        return String.Join(",", passiveSkills);
+    }
     public List<string> passiveLevels;
     public void SetPassiveLevels(List<string> newLevels)
     {
@@ -60,10 +66,15 @@ public class ActorPassives : MonoBehaviour
         }
         return allLevels;
     }
+    public string GetPassiveLevelString()
+    {
+        if (passiveLevels.Count == 0){ return ""; }
+        return String.Join(",", passiveLevels);
+    }
     public int GetLevelFromPassive(string passiveName)
     {
         int indexOf = passiveSkills.IndexOf(passiveName);
-        if (indexOf == -1){return -1;}
+        if (indexOf == -1) { return -1; }
         return int.Parse(passiveLevels[indexOf]);
     }
     public void SetLevelOfPassive(string passiveName, int newLevel)

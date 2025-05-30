@@ -56,6 +56,7 @@ public class OverworldMap : MapManager
         // Update the time based on the moveCost.
         int cDay = overworldState.GetDay();
         overworldState.AddHours(moveCost);
+        partyData.caravan.ConsumeMuleEnergy(moveCost);
         // Don't move any enemies that are on the player's tile, those are guaranteed fights.
         if (cDay != overworldState.GetDay())
         {

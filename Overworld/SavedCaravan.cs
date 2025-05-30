@@ -11,7 +11,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedCaravan", menuName = "ScriptableObjects/DataContainers/SavedData/SavedCaravan", order = 1)]
 public class SavedCaravan : SavedData
 {
-    public GeneralUtility utility;
     public PartyData permanentParty;
     public override void NewGame()
     {
@@ -31,9 +30,8 @@ public class SavedCaravan : SavedData
     // Buy more horses/wagons at cities/villages.
     public List<string> mules;
     public void AddMule(string newStats){mules.Add(newStats);}
-    public void ConsumeMuleEnergy(int energyCost, bool rest = false)
+    public void ConsumeMuleEnergy(int energyCost)
     {
-        if (rest){ return; }
         for (int i = mules.Count - 1; i >= 0; i--)
         {
             dummyMule.LoadAllStats(mules[i]);
@@ -72,7 +70,8 @@ public class SavedCaravan : SavedData
     public int GetMuleCount(){return mules.Count;}
     public string foodString;
     public int ReturnFood(){return ReturnItemWeight(foodString);}
-    public void ConsumeFood(int amount){UnloadCargo(foodString, amount);}
+    public bool FoodAvailable(){ return ReturnItemQuantity(foodString) > 0; }
+    public void ConsumeFood(int amount = 1) { UnloadCargo(foodString, amount); }
     public string muleFoodString;
     public int ReturnMuleFood(){return ReturnItemWeight(muleFoodString);}
     public void ConsumeMuleFood(int amount){UnloadCargo(muleFoodString, amount);}
@@ -275,10 +274,10 @@ public class SavedCaravan : SavedData
         if (cargoWeight <= maxCarry){return true;}
         return false;
     }
-    public void Rest()
+    public override void Rest()
     {
         // Consume mule food.
-        for (int i = mules.Count -1; i >= 0; i--)
+        for (int i = mules.Count - 1; i >= 0; i--)
         {
             if (ReturnItemQuantity(muleFoodString) < 1)
             {
@@ -302,5 +301,6 @@ public class SavedCaravan : SavedData
                 mules[i] = dummyMule.ReturnAllStats();
             }
         }
+        // Consume rations. // This is handled by the party data manager.
     }
 }
