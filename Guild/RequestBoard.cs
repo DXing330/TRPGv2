@@ -21,6 +21,9 @@ public class RequestBoard : MonoBehaviour
     public int baseRequestCount = 6;
     public int amountVariation = 9;
     public int distanceVariation = 3;
+    //public int maxDefeatDistance = 6;
+    public string deliverFeatureString = "Merchant";
+    public string defeatFeatureString = "Cave";
 
     void Start()
     {
@@ -86,6 +89,9 @@ public class RequestBoard : MonoBehaviour
                 case "Deliver":
                     GenerateDeliveryRequest();
                     break;
+                case "Defeat":
+                    GenerateDefeatRequest();
+                    break;
             }
             dummyRequest.SetGoal(requestGoal);
             availableRequests.Add(dummyRequest.ReturnDetails());
@@ -109,7 +115,7 @@ public class RequestBoard : MonoBehaviour
         {
             dummyRequest.SetLocation(overworldTiles.GetCityLocationFromLuxuryDemanded(requestedLuxury));
             dummyRequest.SetLocationSpecifics("City");
-            dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()));
+            dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize())+distanceVariation);
             dummyRequest.SetReward(dummyRequest.GetReward() * dummyRequest.GetDeadline() * 3 / 4);
         }
         else
@@ -121,9 +127,9 @@ public class RequestBoard : MonoBehaviour
             int col = (overworldTiles.mapUtility.GetColumn(cityLocation, overworldTiles.GetSize()) + overworldTiles.mapUtility.GetColumn(currentLocation, overworldTiles.GetSize())) / 2;
             int questLocation = GenerateRandomEmptyLocationAroundCenter(row, col);
             dummyRequest.SetLocation(questLocation);
-            dummyRequest.SetLocationSpecifics("Merchant");
-            // Deadline is assuming you travel 1 tile/day.
-            dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()));
+            dummyRequest.SetLocationSpecifics(deliverFeatureString);
+            // Deadline is assuming you travel 1 tile/day + buffer.
+            dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize())+distanceVariation);
             dummyRequest.SetReward(dummyRequest.GetReward() * dummyRequest.GetDeadline());
             // Add some slight RNG to the reward amount.
             dummyRequest.SetReward(dummyRequest.GetReward() + Random.Range(-amountVariation, amountVariation + 1));
@@ -147,7 +153,15 @@ public class RequestBoard : MonoBehaviour
 
     protected void GenerateDefeatRequest()
     {
-        // Basically either beasts/bandit camp.
-        // Generally the least travel required.
+        // Monster Cave (Goblins/Wolves).
+        // Pick a random location close by.
+        int currentLocation = overworldState.GetLocation();
+        int row = overworldTiles.mapUtility.GetRow(currentLocation, overworldTiles.GetSize());
+        int col = overworldTiles.mapUtility.GetColumn(currentLocation, overworldTiles.GetSize());
+        int questLocation = GenerateRandomEmptyLocationAroundCenter(row, col);
+        dummyRequest.SetLocation(questLocation);
+        dummyRequest.SetLocationSpecifics(defeatFeatureString);
+        dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()) + distanceVariation);
+        // Don't need specifics, amount or fail penalty.
     }
 }

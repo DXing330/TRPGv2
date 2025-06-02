@@ -35,7 +35,53 @@ public class GuildCard : SavedData
     public Request dummyRequest;
     public int failPenalty = 0;
     public int GetFailPenalty(){ return failPenalty; }
+    public bool QuestCompleted(int index)
+    {
+        dummyRequest.Load(acceptedQuests[index]);
+        return dummyRequest.GetCompletion();
+    }
     public void AcceptQuest(string newQuest) { acceptedQuests.Add(newQuest); }
+    public bool QuestTile(int tileNumber)
+    {
+        for (int i = 0; i < acceptedQuests.Count; i++)
+        {
+            dummyRequest.Load(acceptedQuests[i]);
+            if (dummyRequest.GetLocation() == tileNumber){ return true; }
+        }
+        return false;
+    }
+    public string QuestTypeFromTile(int tileNumber)
+    {
+        for (int i = 0; i < acceptedQuests.Count; i++)
+        {
+            dummyRequest.Load(acceptedQuests[i]);
+            if (dummyRequest.GetLocation() == tileNumber) { return dummyRequest.GetGoal(); }
+        }
+        return "";
+    }
+    public int QuestIndexFromTile(int tileNumber)
+    {
+        for (int i = 0; i < acceptedQuests.Count; i++)
+        {
+            dummyRequest.Load(acceptedQuests[i]);
+            if (dummyRequest.GetLocation() == tileNumber) { return i; }
+        }
+        return -1;
+    }
+    public bool CompleteDeliveryQuest(int tileNumber, SavedCaravan caravan)
+    {
+        int index = QuestIndexFromTile(tileNumber);
+        dummyRequest.Load(acceptedQuests[index]);
+        if (dummyRequest.GetCompletion()) { return false; } // Can't complete a completed request, obviously.
+        if (caravan.EnoughCargo(dummyRequest.GetGoalSpecifics(), dummyRequest.GetGoalAmount()))
+        {
+            dummyRequest.Complete(); // Turn in the quest at the hub/city.
+            caravan.UnloadCargo(dummyRequest.GetGoalSpecifics(), dummyRequest.GetGoalAmount());
+            acceptedQuests[index] = dummyRequest.ReturnDetails();
+            return true;
+        }
+        return false;
+    }
     public int newQuests = 1;
     public bool RefreshQuests()
     {
@@ -127,6 +173,7 @@ public class GuildCard : SavedData
             {
                 failPenalty += dummyRequest.GetFailPenalty();
                 acceptedQuests.RemoveAt(i);
+                newQuests = 1; // If you fail a quest then you can receive new quests.
             }
         }
     }

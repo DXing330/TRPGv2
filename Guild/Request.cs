@@ -35,6 +35,7 @@ public class Request : MonoBehaviour
     public int GetDeadline() { return deadline; }
     // 0 = false, 1 = true
     public int completed;
+    public void Complete(){ completed = 1; }
     public bool GetCompletion() { return completed == 1; }
     public int location;
     public void SetLocation(int newInfo) { location = newInfo; }
@@ -64,6 +65,7 @@ public class Request : MonoBehaviour
     public void Load(string requestDetails)
     {
         string[] data = requestDetails.Split(delimiter);
+        if (data.Length < 6){ Reset(); return; }
         difficulty = int.Parse(data[0]);
         reward = int.Parse(data[1]);
         goal = data[2];

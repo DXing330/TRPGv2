@@ -15,6 +15,8 @@ public class RequestDisplay : MonoBehaviour
         {
             case "Deliver":
                 return UpdateDeliveryDescription();
+            case "Defeat":
+                return UpdateDefeatDescription();
         }
         return "";
     }
@@ -41,6 +43,16 @@ public class RequestDisplay : MonoBehaviour
         {
             description += "\n" + "Note: " + dummyRequest.GetFailPenalty() + " GOLD fine if the delivery is not completed.";
         }
+        return description;
+    }
+
+    protected string UpdateDefeatDescription()
+    {
+        string description = "There have been reports of monsters ";
+        int direction = overworldTiles.mapUtility.DirectionBetweenLocations(overworldState.GetLocation(), dummyRequest.GetLocation(), overworldTiles.GetSize());
+        string directionName = overworldTiles.mapUtility.IntDirectionToString(direction);
+        description += ", to the " + directionName + " of here.";
+        description += "\n"+ "Take care of them within " + dummyRequest.GetDeadline() + " days.";
         return description;
     }
 }

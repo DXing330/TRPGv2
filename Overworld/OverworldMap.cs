@@ -93,17 +93,61 @@ public class OverworldMap : MapManager
     public void InteractWithTile()
     {
         int tile = partyLocation;
+        // Cities/Hub take priority over everything.
         if (overworldData.CenterCity(tile))
         {
             sceneMover.ReturnToHub();
         }
+        // Next priority is quests.
+        else if (partyData.guildCard.QuestTile(tile))
+        {
+            QuestInteraction();
+        }
         // Trigger interact event.
+        // else if ()
+    }
+
+    protected void QuestInteraction()
+    {
+        // Determine what type of quest it is.
+        int tile = partyLocation;
+        bool completed = false;
+        string questType = partyData.guildCard.QuestTypeFromTile(tile);
+        switch (questType)
+        {
+            // Try to complete the deliver quest.
+            case "Deliver":
+                if (partyData.guildCard.CompleteDeliveryQuest(tile, partyData.caravan))
+                {
+                    completed = true;
+                    overworldData.RemoveFeatureAtLocation(tile);
+                }
+                break;
+            // Escort quests autocomplete.
+            case "Escort":
+                completed = true;
+                break;
+            // Battle quests start a battle, if you win then it's complete, need data from the battle.
+            // Potentially after a winning battle remove any characters, so if the tile is empty of characters the quest is completed.
+            case "Defeat":
+                // Enter a battle if possible.
+                // If the battle is won, check if its a quest battle, if it is then remove the character from the map.
+                // Else its complete.
+                completed = true;
+                break;
+        }
+        // Pop up a quest completed message if you win.
+        if (completed)
+        {
+            UI.UpdateRequestCompletedText(questType);
+            partyData.Save();
+        }
     }
 
     public void MoveInDirection(int direction)
     {
         int newTile = mapUtility.PointInDirection(partyLocation, direction, mapSize);
-        if (newTile < 0 || newTile == partyLocation){return;}
+        if (newTile < 0 || newTile == partyLocation) { return; }
         MoveToTile(newTile);
     }
 
