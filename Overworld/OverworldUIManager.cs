@@ -17,8 +17,6 @@ public class OverworldUIManager : MonoBehaviour
     public OverworldMap overworldMap;
     public int state = 0;
     public RequestDisplay requestDisplay;
-    public TMP_Text requestText;
-    public GameObject requestCompletedStamp;
     public List<string> requestTypes;
     public List<string> requestCompletedStrings;
     public TMP_Text requestCompletedText;
@@ -29,32 +27,6 @@ public class OverworldUIManager : MonoBehaviour
         if (indexOf == -1) { return; }
         questCompletedPanel.SetActive(true);
         requestCompletedText.text = requestCompletedStrings[indexOf];
-    }
-    public int selectedQuest = 0;
-    public void ResetSelectedQuest()
-    {
-        selectedQuest = 0;
-        requestCompletedStamp.SetActive(false);
-    }
-    public void ChangeSelectedQuest(bool right = true)
-    {
-        selectedQuest = utility.ChangeIndex(selectedQuest, right, partyData.guildCard.acceptedQuests.Count - 1);
-        DisplayQuest();
-    }
-    public void DisplayQuest()
-    {
-        // If no quests then return.
-        if (partyData.guildCard.acceptedQuests.Count <= 0)
-        {
-            requestText.text = "";
-            return;
-        }
-        requestText.text = requestDisplay.DisplayRequestDescription(partyData.guildCard.acceptedQuests[selectedQuest]);
-        // If its completed them red stamp it.
-        if (partyData.guildCard.QuestCompleted(selectedQuest))
-        {
-            requestCompletedStamp.SetActive(true);
-        }
     }
     public StatTextList cargoList;
     public void UpdateCargoListWeight()
@@ -141,8 +113,8 @@ public class OverworldUIManager : MonoBehaviour
             case 2:
                 break;
             case 3:
-                ResetSelectedQuest();
-                DisplayQuest();
+                requestDisplay.ResetSelectedQuest();
+                requestDisplay.DisplayQuest();
                 break;
         }
     }

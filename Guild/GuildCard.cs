@@ -83,6 +83,11 @@ public class GuildCard : SavedData
         return false;
     }
     public int newQuests = 1;
+    public void SubmitQuest(int index)
+    {
+        acceptedQuests.RemoveAt(index);
+        newQuests = 1;
+    }
     public bool RefreshQuests()
     {
         if (newQuests == 1)
@@ -93,6 +98,11 @@ public class GuildCard : SavedData
         return false;
     }
     public List<string> availableQuests;
+    public int QuestReward(int index)
+    {
+        dummyRequest.Load(acceptedQuests[index]);
+        return dummyRequest.GetReward();
+    }
     public void SetAvailableQuests(List<string> newQuests)
     {
         availableQuests = new List<string>(newQuests);

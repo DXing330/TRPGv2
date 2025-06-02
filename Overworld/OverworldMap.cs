@@ -12,12 +12,15 @@ public class OverworldMap : MapManager
     public SavedOverworld overworldData;
     public OverworldState overworldState;
     public PartyDataManager partyData;
+    [System.NonSerialized]
     public List<string> luxuryLayer;
     public int luxuryLayerInt = 2;
+    [System.NonSerialized]
     public List<string> characterLayer;
     public int characterLayerInt = 3;
     public string partySprite = "Player";
     public List<string> cityLocations;
+    [System.NonSerialized]
     public List<string> featureLayer;
     public int featureLayerInt = 1;
     public int partyLocation;

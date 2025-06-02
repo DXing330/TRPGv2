@@ -1,12 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class RequestDisplay : MonoBehaviour
 {
+    public GeneralUtility utility;
+    public GuildCard guildCard;
     public SavedOverworld overworldTiles;
     public OverworldState overworldState;
     public Request dummyRequest;
+    public TMP_Text requestText;
+    public GameObject requestCompletedStamp;
+    public int selectedQuest = 0;
+    public int GetSelectedQuest(){return selectedQuest;}
+    public void ResetSelectedQuest()
+    {
+        selectedQuest = 0;
+        requestCompletedStamp.SetActive(false);
+    }
+    public void ChangeSelectedQuest(bool right = true)
+    {
+        selectedQuest = utility.ChangeIndex(selectedQuest, right, guildCard.acceptedQuests.Count - 1);
+        DisplayQuest();
+    }
+    public void DisplayQuest()
+    {
+        // If no quests then return.
+        if (guildCard.acceptedQuests.Count <= 0)
+        {
+            requestText.text = "";
+            return;
+        }
+        requestText.text = DisplayRequestDescription(guildCard.acceptedQuests[selectedQuest]);
+        // If its completed them red stamp it.
+        if (guildCard.QuestCompleted(selectedQuest))
+        {
+            requestCompletedStamp.SetActive(true);
+        }
+    }
 
     public string DisplayRequestDescription(string requestInfo)
     {
@@ -48,7 +80,7 @@ public class RequestDisplay : MonoBehaviour
 
     protected string UpdateDefeatDescription()
     {
-        string description = "There have been reports of monsters ";
+        string description = "There have been reports of monsters";
         int direction = overworldTiles.mapUtility.DirectionBetweenLocations(overworldState.GetLocation(), dummyRequest.GetLocation(), overworldTiles.GetSize());
         string directionName = overworldTiles.mapUtility.IntDirectionToString(direction);
         description += ", to the " + directionName + " of here.";

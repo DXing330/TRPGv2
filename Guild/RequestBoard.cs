@@ -6,9 +6,11 @@ using TMPro;
 // Generates requests. Displays available requests. Changes the overworld based on accepted quests.
 public class RequestBoard : MonoBehaviour
 {
+    public GeneralUtility utility;
     public SavedOverworld overworldTiles;
     public OverworldState overworldState;
     public SavedCaravan caravan;
+    public Inventory inventory;
     public GuildCard guildCard;
     public StatDatabase luxuryUnitPrices;
     public List<string> requestGoals;
@@ -31,6 +33,26 @@ public class RequestBoard : MonoBehaviour
         availableRequests = guildCard.availableQuests;
         if (guildCard.RefreshQuests()) { GenerateRequests(); }
         UpdateSelectableQuests();
+    }
+
+    public void TryToCompleteQuest()
+    {
+        // Check if a quest exists.
+        if (guildCard.acceptedQuests.Count <= 0) { return; }
+        int selectedQuest = requestDisplay.GetSelectedQuest();
+        // Check if the currently selected quest is completed.
+        if (guildCard.QuestCompleted(selectedQuest))
+        {
+            // Claim your reward.
+            inventory.GainGold(guildCard.QuestReward(selectedQuest));
+            // Remove the quest.
+            guildCard.SubmitQuest(selectedQuest);
+            requestDisplay.ResetSelectedQuest();
+            requestDisplay.DisplayQuest();
+            // Reset accepted quests.
+            GenerateRequests();
+            UpdateSelectableQuests();
+        }
     }
 
     public void AcceptQuest()
@@ -109,7 +131,8 @@ public class RequestBoard : MonoBehaviour
         dummyRequest.SetGoalAmount(Random.Range(1, amountVariation + 1));
         // The failure fee is the cost of the goods.
         dummyRequest.SetFailPenalty(dummyRequest.GetGoalAmount()*int.Parse(luxuryUnitPrices.ReturnValue(dummyRequest.GetGoalSpecifics())));
-        dummyRequest.SetReward((int) Mathf.Sqrt(dummyRequest.GetGoalAmount()));
+        // Double it since you probably need to travel back eventually.
+        dummyRequest.SetReward(2 * (int) Mathf.Sqrt(dummyRequest.GetGoalAmount()));
         int distance = Random.Range(0, 3); // 0 = full, else half
         if (distance == 0)
         {
@@ -162,6 +185,7 @@ public class RequestBoard : MonoBehaviour
         dummyRequest.SetLocation(questLocation);
         dummyRequest.SetLocationSpecifics(defeatFeatureString);
         dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()) + distanceVariation);
+        dummyRequest.SetReward(dummyRequest.GetDeadline() + Random.Range(1, amountVariation + 1));
         // Don't need specifics, amount or fail penalty.
     }
 }
