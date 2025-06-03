@@ -85,8 +85,10 @@ public class GuildCard : SavedData
     public void CompleteDefeatQuest(int tileNumber)
     {
         int index = QuestIndexFromTile(tileNumber);
+        if (index == -1){ return; }
         dummyRequest.Load(acceptedQuests[index]);
         dummyRequest.Complete();
+        acceptedQuests[index] = dummyRequest.ReturnDetails();
     }
     public int newQuests = 1;
     public void SubmitQuest(int index)

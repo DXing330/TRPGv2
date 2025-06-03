@@ -26,8 +26,6 @@ public class ActorStats : ActorPassives
     }
     public void SetStatsFromString(string newStats)
     {
-        ClearStatuses();
-        ResetPassives();
         SetStats(newStats.Split("|").ToList());
     }
     public void SetStats(List<string> newStats)
@@ -211,7 +209,11 @@ public class ActorStats : ActorPassives
         else {currentEnergy += changeAmount;}
         if (currentEnergy > GetBaseEnergy()){currentEnergy = GetBaseEnergy();}
     }
-    public void LoseEnergy(int amount){currentEnergy -= amount;}
+    public void LoseEnergy(int amount)
+    {
+        currentEnergy -= amount;
+        if (currentEnergy < 0){ currentEnergy = 0; }
+    }
     public int GetEnergy(){return currentEnergy;}
     public bool SpendEnergy(int energyCost)
     {
@@ -294,7 +296,7 @@ public class ActorStats : ActorPassives
         for (int i = 0; i < curses.Count; i++)
         {
             curseString += curses[i];
-            if (i < curses.Count - 1){curseString += "|";}
+            if (i < curses.Count - 1){curseString += ",";}
         }
         return curseString;
     }

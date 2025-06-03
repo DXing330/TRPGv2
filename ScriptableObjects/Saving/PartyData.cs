@@ -340,8 +340,6 @@ public class PartyData : SavedData
         string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
         dummyActor.SetStatsFromString(stats);
         dummyActor.AddStatus(hungerStatus, -1);
-        Debug.Log("Hunger");
-        Debug.Log(dummyActor.ReturnPersistentStats());
         partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
         int count = 0;
         for (int i = 0; i < dummyActor.statuses.Count; i++)

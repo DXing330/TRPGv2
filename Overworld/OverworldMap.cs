@@ -122,7 +122,7 @@ public class OverworldMap : MapManager
         // else if ()
     }
 
-    protected void FeatureInteraction()
+    protected void FeatureInteraction(bool quest = false)
     {
         // Determine what type of feature it is.
         int tile = partyLocation;
@@ -135,6 +135,10 @@ public class OverworldMap : MapManager
             enemyList.ResetLists();
             enemyList.AddCharacters(selectedEnemies);
             overworldState.EnterBattleFromFeature();
+            if (quest)
+            {
+                overworldState.EnterBattleFromQuest();
+            }
             overworldState.Save();
             // Move to battle.
             sceneMover.MoveToBattle();
@@ -166,9 +170,16 @@ public class OverworldMap : MapManager
             // Potentially after a winning battle remove any characters, so if the tile is empty of characters the quest is completed.
             case "Defeat":
                 // Enter a battle if possible.
+                if (overworldData.FeatureExist(tile))
+                {
+                    FeatureInteraction(true);
+                }
                 // If the battle is won, check if its a quest battle, if it is then remove the character from the map.
                 // Else its complete.
-                completed = true;
+                else
+                {
+                    completed = true;
+                }
                 break;
         }
         // Pop up a quest completed message if you win.

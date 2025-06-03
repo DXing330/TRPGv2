@@ -16,6 +16,9 @@ public class ActorMaker : MonoBehaviour
     public TacticActor CreateActor()
     {
         TacticActor newActor = Instantiate(actorPrefab, transform.position, new Quaternion(0, 0, 0, 0));
+        // Need to reset somethings so that they don't carryover.
+        newActor.ClearStatuses();
+        newActor.ResetPassives();
         return newActor;
     }
 
