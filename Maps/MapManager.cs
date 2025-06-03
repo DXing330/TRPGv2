@@ -18,12 +18,14 @@ public class MapManager : MonoBehaviour
         }
     }
     public List<int> currentTiles;
+    [System.NonSerialized]
     public List<string> mapInfo;
+    [System.NonSerialized]
     public List<string> emptyList;
     protected virtual void InitializeEmptyList()
     {
-        emptyList.Clear();
-        for (int i = 0; i < mapSize*mapSize; i++)
+        emptyList = new List<string>();
+        for (int i = 0; i < mapSize * mapSize; i++)
         {
             emptyList.Add("");
         }

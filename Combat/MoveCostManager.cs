@@ -256,6 +256,8 @@ public class MoveCostManager : MonoBehaviour
         for (int i = 0; i < force; i++)
         {
             nextTile = PointInDirection(nextTile, direction);
+            // Can't push someone out of bounds.
+            if (nextTile < 0) { break; }
             // Tiles are passable if no one is occupying them.
             if (map.GetActorOnTile(nextTile) == null)
             {
@@ -263,7 +265,7 @@ public class MoveCostManager : MonoBehaviour
                 map.ApplyMovingTileEffect(actor, nextTile);
                 ApplyMovePassiveEffects(actor, map);
             }
-            else {break;}
+            else { break; }
         }
     }
 

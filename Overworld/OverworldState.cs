@@ -57,6 +57,8 @@ public class OverworldState : SavedData
     public int GetHour() { return currentHour % hoursInDay; }
     // Stored here for convenience.
     public string battleType; // Quest/Feature/Event/"";
+    public void ResetBattleType(){ battleType = ""; }
+    public void EnterBattleFromFeature() { SetBattleType("Feature"); }
     public void SetBattleType(string newType) { battleType = newType; }
     public string GetBattleType() { return battleType; }
     public override void AddHours(int newHours)

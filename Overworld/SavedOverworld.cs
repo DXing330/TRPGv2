@@ -113,6 +113,11 @@ public class SavedOverworld : SavedData
         features.RemoveAt(indexOf);
         QuickSave();
     }
+    public string GetFeatureFromLocation(int location)
+    {
+        int indexOf = featureLocations.IndexOf(location.ToString());
+        return features[indexOf];
+    }
     // Player, Monsters, Bandits, NPCs
     public List<string> characters;
     public List<string> characterLocations;

@@ -11,6 +11,8 @@ public class OverworldMap : MapManager
     public OverworldUIManager UI;
     public SavedOverworld overworldData;
     public OverworldState overworldState;
+    // Sometimes you can add enemies directly.
+    public CharacterList enemyList;
     public PartyDataManager partyData;
     [System.NonSerialized]
     public List<string> luxuryLayer;
@@ -23,6 +25,7 @@ public class OverworldMap : MapManager
     [System.NonSerialized]
     public List<string> featureLayer;
     public int featureLayerInt = 1;
+    public FeatureManager featureManager;
     public int partyLocation;
 
     public void Rest()
@@ -42,6 +45,8 @@ public class OverworldMap : MapManager
         // Trigger resting events.
         if (enemies)
         {
+            overworldState.ResetBattleType();
+            overworldState.Save();
             sceneMover.MoveToBattle();
             return;
         }
@@ -79,6 +84,8 @@ public class OverworldMap : MapManager
         UpdateMap();
         if (enemies)
         {
+            overworldState.ResetBattleType();
+            overworldState.Save();
             sceneMover.MoveToBattle();
             return;
         }
@@ -106,8 +113,33 @@ public class OverworldMap : MapManager
         {
             QuestInteraction();
         }
+        // Next priority is natural features.
+        else if (overworldData.FeatureExist(tile))
+        {
+            FeatureInteraction();
+        }
         // Trigger interact event.
         // else if ()
+    }
+
+    protected void FeatureInteraction()
+    {
+        // Determine what type of feature it is.
+        int tile = partyLocation;
+        string feature = overworldData.GetFeatureFromLocation(tile);
+        string sceneName = featureManager.ReturnSceneName(feature);
+        if (sceneName == "BattleScene")
+        {
+            // Get the enemies.
+            List<string> selectedEnemies = featureManager.ReturnRandomFeatureSpecificsList(feature);
+            enemyList.ResetLists();
+            enemyList.AddCharacters(selectedEnemies);
+            overworldState.EnterBattleFromFeature();
+            overworldState.Save();
+            // Move to battle.
+            sceneMover.MoveToBattle();
+            return;
+        }
     }
 
     protected void QuestInteraction()
