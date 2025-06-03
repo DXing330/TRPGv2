@@ -5,6 +5,8 @@ using UnityEngine;
 public class BattleEndManager : MonoBehaviour
 {
     public PartyDataManager partyData;
+    public SavedOverworld overworld;
+    public OverworldState overworldState;
 
     public int FindWinningTeam(List<TacticActor> actors)
     {
@@ -17,7 +19,7 @@ public class BattleEndManager : MonoBehaviour
                 teams.Add(actors[i].GetTeam());
             }
         }
-        if (teams.Count == 1){return teams[0];}
+        if (teams.Count == 1) { return teams[0]; }
         return winningTeam;
     }
 
@@ -36,6 +38,26 @@ public class BattleEndManager : MonoBehaviour
             stats.Add(actors[i].ReturnPersistentStats());
         }
         partyData.UpdatePartyAfterBattle(names, stats);
+    }
+
+    public void UpdateOverworldAfterBattle(int winningTeam)
+    {
+        if (winningTeam != 0) { return; }
+        string battleType = overworldState.GetBattleType();
+        int location = overworldState.GetLocation();
+        if (battleType == "") { return; }
+        switch (battleType)
+        {
+            case "Quest":
+            overworld.RemoveFeatureAtLocation(location);
+            partyData.guildCard.CompleteDefeatQuest(location);
+                break;
+            case "Feature":
+            overworld.RemoveFeatureAtLocation(location);
+                break;
+            case "Event":
+                break;
+        }
     }
 
     public void PartyDefeated()

@@ -16,9 +16,9 @@ public class OverworldState : SavedData
     public CharacterList enemyList;
     public int hoursInDay = 24;
     public int restingPeriod = 8;
-    public int GetRestingPeriod(){return restingPeriod;}
+    public int GetRestingPeriod() { return restingPeriod; }
     public int location;
-    public int GetLocation(){return location;}
+    public int GetLocation() { return location; }
     public bool SetLocation(int newLocation)
     {
         location = newLocation;
@@ -50,10 +50,15 @@ public class OverworldState : SavedData
         }
     }
     public int dayCount;
-    public int GetDay(){return dayCount;}
-    public void SetDay(int newDate){dayCount = newDate;}
+    public int GetDay() { return dayCount; }
+    public void SetDay(int newDate) { dayCount = newDate; }
     public int currentHour;
-    public int GetHour(){return currentHour%hoursInDay;}
+    public void SetHour(int newHour) { currentHour = newHour; }
+    public int GetHour() { return currentHour % hoursInDay; }
+    // Stored here for convenience.
+    public string battleType; // Quest/Feature/Event/"";
+    public void SetBattleType(string newType) { battleType = newType; }
+    public string GetBattleType() { return battleType; }
     public override void AddHours(int newHours)
     {
         currentHour += newHours;
@@ -82,7 +87,7 @@ public class OverworldState : SavedData
     }
     public override void NewGame()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
+        dataPath = Application.persistentDataPath + "/" + filename;
         location = savedOverworld.GetCenterCityLocation();
         dayCount = 0;
         currentHour = 0;
@@ -91,23 +96,43 @@ public class OverworldState : SavedData
     }
     public override void Save()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
-        allData = location+delimiter+dayCount+delimiter+currentHour;
+        dataPath = Application.persistentDataPath + "/" + filename;
+        allData = location + delimiter + dayCount + delimiter + currentHour + delimiter + battleType;
         File.WriteAllText(dataPath, allData);
         partyData.Save();
     }
     public override void Load()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
-        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
+        dataPath = Application.persistentDataPath + "/" + filename;
+        if (File.Exists(dataPath)) { allData = File.ReadAllText(dataPath); }
         else
         {
             NewGame();
             return;
         }
         dataList = allData.Split(delimiter).ToList();
-        location = int.Parse(dataList[0]);
-        dayCount = int.Parse(dataList[1]);
-        currentHour = int.Parse(dataList[2]);
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            SetData(dataList[i], i);
+        }
+    }
+
+    protected void SetData(string data, int index)
+    {
+        switch (index)
+        {
+            case 0:
+                SetLocation(int.Parse(data));
+                break;
+            case 1:
+                SetDay(int.Parse(data));
+                break;
+            case 2:
+                SetHour(int.Parse(data));
+                break;
+            case 3:
+                SetBattleType(data);
+                break;
+        }
     }
 }

@@ -80,11 +80,11 @@ public class RequestDisplay : MonoBehaviour
 
     protected string UpdateDefeatDescription()
     {
-        string description = "There have been reports of monsters";
+        string description = "There have been reports of monsters in a cave";
         int direction = overworldTiles.mapUtility.DirectionBetweenLocations(overworldState.GetLocation(), dummyRequest.GetLocation(), overworldTiles.GetSize());
         string directionName = overworldTiles.mapUtility.IntDirectionToString(direction);
         description += ", to the " + directionName + " of here.";
-        description += "\n"+ "Take care of them within " + dummyRequest.GetDeadline() + " days.";
+        description += "\n"+ "Eliminate them within " + dummyRequest.GetDeadline() + " days.";
         return description;
     }
 }

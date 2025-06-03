@@ -84,6 +84,7 @@ public class BattleManager : MonoBehaviour
         if (winningTeam >= 0)
         {
             battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
+            battleEndManager.UpdateOverworldAfterBattle(winningTeam);
             sceneMover.ReturnFromBattle(winningTeam);
             return;
         }
