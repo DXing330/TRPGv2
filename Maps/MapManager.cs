@@ -56,7 +56,7 @@ public class MapManager : MonoBehaviour
 
     public virtual void GetNewMapFeatures(MapFeaturesList mapFeatures)
     {
-        mapInfo = mapMaker.MakeBasicMap(mapSize);
+        mapInfo = mapMaker.MakeBasicMap(mapSize, mapFeatures.baseTileType);
         for (int i = 0; i < mapFeatures.features.Count; i++)
         {
             mapInfo = mapMaker.AddFeature(mapInfo, mapFeatures.features[i], mapFeatures.patterns[i]);

@@ -40,18 +40,19 @@ public class MapMaker : ScriptableObject
         }
     }
 
-    public List<string> MakeBasicMap(int newSize = -1)
+    public List<string> MakeBasicMap(int newSize = -1, string baseTerrain = "")
     {
         UpdatePossibleTiles();
         if (newSize > 0){mapSize = newSize;}
         else {mapSize = defaultSize;}
         List<string> mapTiles = new List<string>();
+        if (baseTerrain == ""){ baseTerrain = possibleTiles[0]; }
         // Add a bunch of tiles.
         for (int i = 0; i < mapSize; i++)
         {
             for (int j = 0; j < mapSize; j++)
             {
-                mapTiles.Add(possibleTiles[0]);
+                mapTiles.Add(baseTerrain);
             }
         }
         return mapTiles;

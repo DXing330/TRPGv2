@@ -95,7 +95,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetCurrentScene(battleSceneName);
         sceneTracker.Save();
         battleState.UpdatePreviousScene();
-        battleState.UpdateTerrainType();
+        battleState.SetTerrainType();
         battleState.UpdateEnemyNames();
         battleState.Save();
         if (loadingRequired)

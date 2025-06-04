@@ -18,6 +18,7 @@ public class OverworldState : SavedData
     public int restingPeriod = 8;
     public int GetRestingPeriod() { return restingPeriod; }
     public int location;
+    public string GetLocationTerrain(){return savedOverworld.ReturnTerrain(location);}
     public int GetLocation() { return location; }
     public bool SetLocation(int newLocation)
     {

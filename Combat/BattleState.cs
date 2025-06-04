@@ -11,6 +11,7 @@ public class BattleState : SavedData
     public string delimiterTwo = "|";
     public SceneTracker sceneTracker;
     public CharacterList enemyList;
+    public OverworldState overworldState;
     public BattleMapFeatures battleMapFeatures;
     public string previousScene;
     public void UpdatePreviousScene(){previousScene = sceneTracker.GetPreviousScene();}
@@ -20,9 +21,13 @@ public class BattleState : SavedData
     public void SetEnemyNames(List<string> newEnemies){enemies = new List<string>(newEnemies);}
     public void UpdateEnemyNames(){enemies = new List<string>(enemyList.characters);}
     public string terrainType;
-    public void SetTerrainType(string newData){terrainType = newData;}
+    public void SetTerrainType()
+    {
+        terrainType = overworldState.GetLocationTerrain();
+        battleMapFeatures.SetTerrainType(terrainType);
+    }
     public string GetTerrainType(){return terrainType;}
-    public void UpdateTerrainType(){battleMapFeatures.SetTileType(terrainType);}
+    public void UpdateTerrainType(){battleMapFeatures.SetTerrainType(terrainType);}
     public List<string> tiles;
 
     public override void NewGame()
@@ -48,7 +53,7 @@ public class BattleState : SavedData
 
     public override void Load()
     {
-        dataPath = Application.persistentDataPath+"/"+filename;
+        dataPath = Application.persistentDataPath + "/" + filename;
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
         previousScene = dataList[0];
@@ -58,5 +63,6 @@ public class BattleState : SavedData
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);
+        battleMapFeatures.SetTerrainType(terrainType);
     }
 }
