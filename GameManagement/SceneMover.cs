@@ -95,6 +95,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetCurrentScene(battleSceneName);
         sceneTracker.Save();
         battleState.UpdatePreviousScene();
+        battleState.UpdateTerrainType();
         battleState.UpdateEnemyNames();
         battleState.Save();
         if (loadingRequired)
@@ -138,6 +139,8 @@ public class SceneMover : MonoBehaviour
             ReturnToHub();
             return;
         }
+        sceneTracker.SetCurrentScene(sceneTracker.GetPreviousScene());
+        sceneTracker.Save();
         // Otherwise just go back to the previous scene.
         if (loadingRequired)
         {

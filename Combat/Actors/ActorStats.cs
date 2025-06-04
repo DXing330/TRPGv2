@@ -35,8 +35,8 @@ public class ActorStats : ActorPassives
         {
             SetStat(stats[i], i);
         }
-        if (currentHealth <= 0){currentHealth = GetBaseHealth();}
-        else if (currentHealth > GetBaseHealth()){currentHealth = GetBaseHealth();}
+        if (currentHealth <= 0) { currentHealth = GetBaseHealth(); }
+        else if (currentHealth > GetBaseHealth()) { currentHealth = GetBaseHealth(); }
         currentEnergy = baseEnergy;
         currentAttack = baseAttack;
         currentDefense = baseDefense;

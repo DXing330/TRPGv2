@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
@@ -10,6 +11,7 @@ public class BattleState : SavedData
     public string delimiterTwo = "|";
     public SceneTracker sceneTracker;
     public CharacterList enemyList;
+    public BattleMapFeatures battleMapFeatures;
     public string previousScene;
     public void UpdatePreviousScene(){previousScene = sceneTracker.GetPreviousScene();}
     public void SetPreviousScene(string sceneName){previousScene = sceneName;}
@@ -17,6 +19,10 @@ public class BattleState : SavedData
     public void AddEnemyName(string newName){enemies.Add(newName);}
     public void SetEnemyNames(List<string> newEnemies){enemies = new List<string>(newEnemies);}
     public void UpdateEnemyNames(){enemies = new List<string>(enemyList.characters);}
+    public string terrainType;
+    public void SetTerrainType(string newData){terrainType = newData;}
+    public string GetTerrainType(){return terrainType;}
+    public void UpdateTerrainType(){battleMapFeatures.SetTileType(terrainType);}
     public List<string> tiles;
 
     public override void NewGame()
@@ -34,11 +40,9 @@ public class BattleState : SavedData
             if (i < enemies.Count - 1){allData += delimiterTwo;}
         }
         allData += delimiter;
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            allData += tiles[i];
-            if (i < tiles.Count - 1){allData += delimiterTwo;}
-        }
+        allData += terrainType;
+        allData += delimiter;
+        allData += String.Join(delimiterTwo, tiles);
         File.WriteAllText(dataPath, allData);
     }
 
@@ -49,7 +53,8 @@ public class BattleState : SavedData
         dataList = allData.Split(delimiter).ToList();
         previousScene = dataList[0];
         enemies = dataList[1].Split(delimiterTwo).ToList();
-        tiles = dataList[2].Split(delimiterTwo).ToList();
+        terrainType = dataList[2];
+        tiles = dataList[3].Split(delimiterTwo).ToList();
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);

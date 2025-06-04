@@ -6,6 +6,8 @@ using UnityEngine;
 public class BattleMapFeatures : ScriptableObject
 {
     public string currentTileType;
+    public void SetTileType(string newType){currentTileType = newType;}
+    public void ResetTileType(){currentTileType = "";}
     public List<MapFeaturesList> mapFeatures;
 
     public MapFeaturesList CurrentMapFeatures()

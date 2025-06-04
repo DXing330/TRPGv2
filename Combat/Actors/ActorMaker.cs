@@ -19,6 +19,7 @@ public class ActorMaker : MonoBehaviour
         // Need to reset somethings so that they don't carryover.
         newActor.ClearStatuses();
         newActor.ResetPassives();
+        newActor.SetCurrentHealth(0);
         return newActor;
     }
 

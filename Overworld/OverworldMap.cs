@@ -127,17 +127,19 @@ public class OverworldMap : MapManager
         // Determine what type of feature it is.
         int tile = partyLocation;
         string feature = overworldData.GetFeatureFromLocation(tile);
-        string sceneName = featureManager.ReturnSceneName(feature);
+        string terrain = overworldData.ReturnTerrain(tile);
+        string featureTerrain = feature+"-"+terrain;
+        string sceneName = featureManager.ReturnSceneName(featureTerrain);
         if (sceneName == "BattleScene")
         {
             // Get the enemies.
-            List<string> selectedEnemies = featureManager.ReturnRandomFeatureSpecificsList(feature);
+            List<string> selectedEnemies = featureManager.ReturnRandomFeatureSpecificsList(featureTerrain);
             enemyList.ResetLists();
             enemyList.AddCharacters(selectedEnemies);
             overworldState.EnterBattleFromFeature();
             if (quest)
             {
-                overworldState.EnterBattleFromQuest();
+                overworldState.EnterBattleFromFeature();
             }
             overworldState.Save();
             // Move to battle.

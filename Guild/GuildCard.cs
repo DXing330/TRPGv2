@@ -40,7 +40,12 @@ public class GuildCard : SavedData
         dummyRequest.Load(acceptedQuests[index]);
         return dummyRequest.GetCompletion();
     }
-    public void AcceptQuest(string newQuest) { acceptedQuests.Add(newQuest); }
+    public void AcceptQuest(string newQuest)
+    {
+        acceptedQuests.Add(newQuest);
+        newQuests = 0;
+        Save();
+    }
     public bool QuestTile(int tileNumber)
     {
         for (int i = 0; i < acceptedQuests.Count; i++)

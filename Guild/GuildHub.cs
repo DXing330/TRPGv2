@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class GuildHub : MonoBehaviour
 {
-    public PartyDataManager partyDataManager;
+    public PartyDataManager partyData;
     public ActorSpriteHPList actorSpriteHPList;
 
     public void Start()
     {
-        partyDataManager.Save();
-        partyDataManager.SetFullParty();
+        partyData.Save();
+        partyData.SetFullParty();
         actorSpriteHPList.RefreshData();
     }
 }

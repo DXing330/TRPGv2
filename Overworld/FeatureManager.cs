@@ -5,28 +5,29 @@ using UnityEngine;
 
 public class FeatureManager : MonoBehaviour
 {
-    public StatDatabase featureToScenes;
-    public StatDatabase featureToSpecifics;
+    public StatDatabase featureTerrainToScenes;
+    public StatDatabase featureTerrainToSpecifics;
 
-    public string ReturnSceneName(string feature)
+    public string ReturnSceneName(string featureTerrain)
     {
-        return featureToScenes.ReturnValue(feature);
+        return featureTerrainToScenes.ReturnValue(featureTerrain);
     }
 
-    public string ReturnFeatureSpecifics(string feature)
+    public string ReturnFeatureSpecifics(string featureTerrain)
     {
-        return featureToSpecifics.ReturnValue(feature);
+        return featureTerrainToSpecifics.ReturnValue(featureTerrain);
     }
 
-    public List<string> ReturnFeatureSpecificsList(string feature)
+    public List<string> ReturnFeatureSpecificsList(string featureTerrain)
     {
-        string specifics = ReturnFeatureSpecifics(feature);
-        return specifics.Split(featureToSpecifics.valueDelimiter).ToList();
+        string specifics = ReturnFeatureSpecifics(featureTerrain);
+        return specifics.Split(featureTerrainToSpecifics.valueDelimiter).ToList();
     }
 
-    public List<string> ReturnRandomFeatureSpecificsList(string feature)
+    // Specifically returns enemies lists for now.
+    public List<string> ReturnRandomFeatureSpecificsList(string featureTerrain)
     {
-        List<string> possibleFeatures = ReturnFeatureSpecificsList(feature);
+        List<string> possibleFeatures = ReturnFeatureSpecificsList(featureTerrain);
         int index = Random.Range(0, possibleFeatures.Count);
         return possibleFeatures[index].Split(",").ToList();
     }

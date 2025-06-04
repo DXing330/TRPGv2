@@ -61,7 +61,6 @@ public class RequestBoard : MonoBehaviour
         if (selected < 0) { return; }
         dummyRequest.Load(availableRequests[selected]);
         guildCard.AcceptQuest(availableRequests[selected]);
-        // Add any features that are listed in the request. Note features don't move, so anything added should be a feature.
         // This could be a problem if you generate quests, then leave, spawn a feature then come back and accept the quest. Specifically this could lead to features overlapping on a single tile, in these situations the quest will be unable to be completed and automatically failed, git gud.
         availableRequests.Clear();
         UpdateSelectableQuests();
