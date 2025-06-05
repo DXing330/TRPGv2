@@ -329,36 +329,45 @@ public class BattleManager : MonoBehaviour
                 turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
             }
             // If they can be attacked without moving then attack.
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager))
-            {
-                string attackActive = actorAI.ReturnAIAttackSkill(turnActor);
-                if (activeManager.SkillExists(attackActive))
-                {
-                    activeManager.SetSkillFromName(actorAI.ReturnAIAttackSkill(turnActor));
-                    activeManager.SetSkillUser(turnActor);
-                    if (activeManager.CheckSkillCost())
-                    {
-                        activeManager.GetTargetedTiles(turnActor.GetTarget().GetLocation(), moveManager.actorPathfinder);
-                        ActivateSkill(attackActive);
-                        activeManager.ActivateSkill(this);
-                    }
-                    else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
-                }
-                else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
-            }
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)){ NPCAttackAction(); }
             // Otherwise move.
             else
             {
                 // If target is out of range, first try to get a new target in range.
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
-                List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
-                StartCoroutine(MoveAlongPath(turnActor, path));
+                // If you're next to the new target then attack them.
+                if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)){ NPCAttackAction(); }
+                else
+                {
+                    List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+                    StartCoroutine(MoveAlongPath(turnActor, path));
+                }
+                
             }
             yield return new WaitForSeconds(0.5f);
             if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
+    }
+
+    protected void NPCAttackAction()
+    {
+        string attackActive = actorAI.ReturnAIAttackSkill(turnActor);
+        if (activeManager.SkillExists(attackActive))
+        {
+            activeManager.SetSkillFromName(actorAI.ReturnAIAttackSkill(turnActor));
+            activeManager.SetSkillUser(turnActor);
+            if (activeManager.CheckSkillCost())
+            {
+                activeManager.GetTargetedTiles(turnActor.GetTarget().GetLocation(), moveManager.actorPathfinder);
+                ActivateSkill(attackActive);
+                activeManager.ActivateSkill(this);
+            }
+            else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
+        }
+        // This can lead to bugs if the skill pushes the target out of attack range, easy fix is to buff push skill damage and make them cost two actions LMAO.
+        else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
     }
     
     IEnumerator MoveAlongPath(TacticActor actor, List<int> path)
