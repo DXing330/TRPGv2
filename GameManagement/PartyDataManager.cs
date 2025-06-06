@@ -19,7 +19,6 @@ public class PartyDataManager : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     public GuildCard guildCard;
     public SavedCaravan caravan;
-    public int hungerLimit = 3;
 
     public void Save()
     {
@@ -92,11 +91,6 @@ public class PartyDataManager : MonoBehaviour
                 {
                     allParties[i].Rest(j, false);
                     hunger = allParties[i].Hunger(j);
-                    // Probably need a notification of peope leaving due to hunger.
-                    /*if (hunger > hungerLimit && i > 0)
-                    {
-                        allParties[i].RemoveStatsAtIndex(j)
-                    }*/
                 }
             }
         }

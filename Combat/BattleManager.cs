@@ -5,7 +5,6 @@ using UnityEngine;
 public class BattleManager : MonoBehaviour
 {
     public BattleMap map;
-    public SceneMover sceneMover;
     public ActorAI actorAI;
     public ActorMaker actorMaker;
     public BattleMapFeatures battleMapFeatures;
@@ -85,7 +84,7 @@ public class BattleManager : MonoBehaviour
         {
             battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
             battleEndManager.UpdateOverworldAfterBattle(winningTeam);
-            sceneMover.ReturnFromBattle(winningTeam);
+            battleEndManager.EndBattle(winningTeam);
             return;
         }
         turnNumber++;
