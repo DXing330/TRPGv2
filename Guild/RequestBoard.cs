@@ -9,6 +9,7 @@ public class RequestBoard : MonoBehaviour
     public GeneralUtility utility;
     public SavedOverworld overworldTiles;
     public OverworldState overworldState;
+    public PartyDataManager partyData;
     public SavedCaravan caravan;
     public Inventory inventory;
     public GuildCard guildCard;
@@ -26,6 +27,9 @@ public class RequestBoard : MonoBehaviour
     //public int maxDefeatDistance = 6;
     public string deliverFeatureString = "Merchant";
     public string defeatFeatureString = "Cave";
+    public string escortTempMember = "Scholar";
+    public string escortFeatureString = "Ruins";
+    public int escortFailPenalty = 50;
 
     void Start()
     {
@@ -71,6 +75,11 @@ public class RequestBoard : MonoBehaviour
         {
             caravan.AddCargo(dummyRequest.GetGoalSpecifics(), dummyRequest.GetGoalAmount());
         }
+        // If it's an escort request, then add the temp party member.
+        if (dummyRequest.GetGoal() == "Escort")
+        {
+            partyData.AddTempPartyMember(escortTempMember);
+        }
         // Don't add a city, those are fixed locations at the start of the game, not normal features.
         if (dummyRequest.GetLocationSpecifics() == "City") { return; }
         overworldTiles.AddFeature(dummyRequest.GetLocationSpecifics(), dummyRequest.GetLocation().ToString());
@@ -112,6 +121,9 @@ public class RequestBoard : MonoBehaviour
                     break;
                 case "Defeat":
                     GenerateDefeatRequest();
+                    break;
+                case "Escort":
+                    GenerateEscortRequest();
                     break;
             }
             dummyRequest.SetGoal(requestGoal);
@@ -158,10 +170,11 @@ public class RequestBoard : MonoBehaviour
         }
     }
 
-    protected int GenerateRandomEmptyLocationAroundCenter(int row, int col)
+    protected int GenerateRandomEmptyLocationAroundCenter(int row, int col, int distance = -1)
     {
-        row += Random.Range(-distanceVariation, distanceVariation + 1); // Add a small variation
-        col += Random.Range(-distanceVariation, distanceVariation + 1);
+        if (distance <= 0){ distance = distanceVariation; }
+        row += Random.Range(-distance, distance + 1); // Add a small variation
+        col += Random.Range(-distance, distance + 1);
         int tile = overworldTiles.mapUtility.ReturnTileNumberFromRowCol(row, col, overworldTiles.GetSize());
         if (!overworldTiles.FeatureExist(tile)){ return tile; }
         return GenerateRandomEmptyLocationAroundCenter(row, col);
@@ -171,6 +184,17 @@ public class RequestBoard : MonoBehaviour
     {
         // Escort people to key features (dungeons).
         // Used to generate features.
+        int currentLocation = overworldState.GetLocation();
+        int row = overworldTiles.mapUtility.GetRow(currentLocation, overworldTiles.GetSize());
+        int col = overworldTiles.mapUtility.GetColumn(currentLocation, overworldTiles.GetSize());
+        int questLocation = GenerateRandomEmptyLocationAroundCenter(row, col, distanceVariation * 2);
+        dummyRequest.SetLocation(questLocation);
+        dummyRequest.SetLocationSpecifics(escortFeatureString);
+        dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()) + distanceVariation);
+        dummyRequest.SetReward(dummyRequest.GetDeadline() + Random.Range(1, amountVariation + 1));
+        // Fail penalty is the cost of hiring someone.
+        dummyRequest.SetFailPenalty(escortFailPenalty);
+        // Don't need specifics, amount.
     }
 
     protected void GenerateDefeatRequest()

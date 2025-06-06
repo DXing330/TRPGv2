@@ -60,7 +60,7 @@ public class OverworldUIManager : MonoBehaviour
     public List<int> statePanelIndexes;
     public void ChangeState(int newState)
     {
-        if (state == newState){return;}
+        if (state == newState) { return; }
         panels[state].SetActive(false);
         panels[newState].SetActive(true);
         state = newState;
@@ -111,6 +111,7 @@ public class OverworldUIManager : MonoBehaviour
                 UpdateCaravanPanel();
                 break;
             case 2:
+                UpdatePartyStats();
                 break;
             case 3:
                 requestDisplay.ResetSelectedQuest();
@@ -119,5 +120,10 @@ public class OverworldUIManager : MonoBehaviour
         }
     }
     // Party stats.
+    public ActorSpriteHPList partyStats;
+    public void UpdatePartyStats()
+    {
+        partyStats.RefreshData();
+    }
     // Quest stats.
 }

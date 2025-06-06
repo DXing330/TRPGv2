@@ -9,6 +9,8 @@ public class PartyData : SavedData
 {
     public bool hiringFees = false;
     public int restHealth;
+    public string exhaustStatus;
+    public int exhaustDamage;
     public string hungerStatus;
     public TacticActor dummyActor;
     public string delimiterTwo;
@@ -333,6 +335,7 @@ public class PartyData : SavedData
         dummyActor.SetStatsFromString(stats);
         dummyActor.UpdateHealth(restHealth, false);
         dummyActor.ClearStatuses(hungerStatus);
+        dummyActor.ClearStatuses(exhaustStatus);
         partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
     }
     public int Hunger(int index)
@@ -347,5 +350,32 @@ public class PartyData : SavedData
             if (dummyActor.statuses[i] == hungerStatus) { count++; }
         }
         return count;
+    }
+    public void Exhaust(int index, bool death = false)
+    {
+        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
+        dummyActor.SetStatsFromString(stats);
+        if (dummyActor.statuses.Contains(exhaustStatus))
+        {
+            dummyActor.UpdateHealth(exhaustDamage, true);
+            // Exhaust won't kill you?
+            if (dummyActor.GetHealth() <= 0)
+            {
+                if (!death)
+                {
+                    dummyActor.SetCurrentHealth(1);
+                }
+                else
+                {
+                    RemoveStatsAtIndex(index);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            dummyActor.AddStatus(exhaustStatus, -1);
+        }
+        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
     }
 }

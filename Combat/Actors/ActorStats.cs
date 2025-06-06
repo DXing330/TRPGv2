@@ -30,6 +30,8 @@ public class ActorStats : ActorPassives
     }
     public void SetStats(List<string> newStats)
     {
+        ClearStatuses();
+        ResetPassives();
         stats = newStats;
         for (int i = 0; i < stats.Count; i++)
         {

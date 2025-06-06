@@ -19,7 +19,6 @@ public class PartyDataManager : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     public GuildCard guildCard;
     public SavedCaravan caravan;
-    public string hungerStatus;
     public int hungerLimit = 3;
 
     public void Save()
@@ -58,6 +57,17 @@ public class PartyDataManager : MonoBehaviour
                 // Maybe lose guild rank here.
             }
         }
+        // Add exhaustion to all party members.
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            for (int j = allParties[i].PartyCount() - 1; j >= 0; j--)
+            {
+                allParties[i].Exhaust(j, i != 0);
+            }
+        }
+        // People might die or get injured after a new day.
+        // Or they might rest and heal if we're optimistic.
+        SetFullParty();
     }
 
     public virtual void AddHours(int hours)
