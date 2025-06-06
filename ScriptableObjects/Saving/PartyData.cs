@@ -329,12 +329,15 @@ public class PartyData : SavedData
         partyCurrentStats.Add(currentStats);
         battleFees.Add(fee);
     }
-    public void Rest(int index)
+    public void Rest(int index, bool eat = true)
     {
         string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
         dummyActor.SetStatsFromString(stats);
-        dummyActor.UpdateHealth(restHealth, false);
-        dummyActor.ClearStatuses(hungerStatus);
+        if (eat)
+        {
+            dummyActor.UpdateHealth(restHealth, false);
+            dummyActor.ClearStatuses(hungerStatus);
+        }
         dummyActor.ClearStatuses(exhaustStatus);
         partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
     }

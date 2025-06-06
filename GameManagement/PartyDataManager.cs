@@ -86,10 +86,11 @@ public class PartyDataManager : MonoBehaviour
                 if (caravan.FoodAvailable())
                 {
                     caravan.ConsumeFood();
-                    allParties[i].Rest(j);
+                    allParties[i].Rest(j, true);
                 }
                 else
                 {
+                    allParties[i].Rest(j, false);
                     hunger = allParties[i].Hunger(j);
                     // Probably need a notification of peope leaving due to hunger.
                     /*if (hunger > hungerLimit && i > 0)
