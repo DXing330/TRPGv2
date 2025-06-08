@@ -359,13 +359,14 @@ public class BattleManager : MonoBehaviour
             activeManager.SetSkillUser(turnActor);
             if (activeManager.CheckSkillCost())
             {
+                // Turn to face the target in case the skill is not a real attack.
+                turnActor.SetDirection(moveManager.DirectionBetweenActors(turnActor, turnActor.GetTarget()));
                 activeManager.GetTargetedTiles(turnActor.GetTarget().GetLocation(), moveManager.actorPathfinder);
                 ActivateSkill(attackActive);
                 activeManager.ActivateSkill(this);
             }
             else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
         }
-        // This can lead to bugs if the skill pushes the target out of attack range, easy fix is to buff push skill damage and make them cost two actions LMAO.
         else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
     }
     

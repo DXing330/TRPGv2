@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameObjectTextList : MonoBehaviour
 {
+    public GameObject thisList;
+    public void Disable(){thisList.SetActive(false);}
     public int page = 0;
     public GeneralUtility utility;
     public List<GameObject> objects;
