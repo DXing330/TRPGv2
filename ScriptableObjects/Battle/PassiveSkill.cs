@@ -77,6 +77,8 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == map.GetTileInfoOfActor(actor);
             case "Weather":
                 return conditionSpecifics == map.GetWeather();
+            case "Time":
+                return conditionSpecifics == map.GetTime();
         }
         // Most of them have no condition.
         return true;

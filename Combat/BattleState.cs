@@ -35,7 +35,7 @@ public class BattleState : SavedData
 
     public string GetWeather()
     {
-        return "";
+        return overworldState.GetWeather();
     }
 
     public override void NewGame()

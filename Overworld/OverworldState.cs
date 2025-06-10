@@ -50,9 +50,11 @@ public class OverworldState : SavedData
             return false;
         }
     }
+    public SeasonManager seasonManager;
     public string season;
     public void SetSeason(string newInfo){ season = newInfo; }
     public string GetSeason() { return season; }
+    public WeatherManager weatherManager;
     public string weather;
     public void SetWeather(string newInfo){ weather = newInfo; }
     public string GetWeather() { return weather; }
@@ -91,6 +93,8 @@ public class OverworldState : SavedData
     public override void NewDay(int dayCount)
     {
         partyData.NewDay(dayCount);
+        season = seasonManager.ReturnNextSeason(dayCount);
+        weather = weatherManager.ReturnNextWeather(season);
         Save();
     }
     public override void Rest()
@@ -112,6 +116,8 @@ public class OverworldState : SavedData
         location = savedOverworld.GetCenterCityLocation();
         dayCount = 0;
         currentHour = 0;
+        season = seasonManager.ReturnNextSeason(dayCount);
+        weather = weatherManager.ReturnNextWeather(season);
         Save();
         Load();
     }

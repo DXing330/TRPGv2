@@ -2,17 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SeasonManager : MonoBehaviour
+[CreateAssetMenu(fileName = "SeasonManager", menuName = "ScriptableObjects/Overworld/SeasonManager", order = 1)]
+public class SeasonManager : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public List<string> seasons;
+    public int seasonLength;
 
-    // Update is called once per frame
-    void Update()
+    public string ReturnNextSeason(int day)
     {
-        
+        return seasons[(day / seasonLength) % seasons.Count];
     }
 }

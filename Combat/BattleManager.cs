@@ -23,6 +23,7 @@ public class BattleManager : MonoBehaviour
     {
         // Get a new battle map.
         map.SetWeather(battleState.GetWeather());
+        map.SetTime(battleState.GetTime());
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         moveManager.SetMapInfo(map.mapInfo);
         actorMaker.SetMapSize(map.mapSize);
@@ -60,6 +61,8 @@ public class BattleManager : MonoBehaviour
         roundNumber++;
         // Get initiative order.
         map.battlingActors = initiativeTracker.SortActors(map.battlingActors);
+        // Update terrain effects/weather interactions/etc.
+        map.NextRound();
     }
     // Updates stats UI inbetween turns.
     protected void ChangeTurn()
@@ -361,13 +364,13 @@ public class BattleManager : MonoBehaviour
             activeManager.SetSkillUser(turnActor);
             if (activeManager.CheckSkillCost())
             {
-                // Turn to face the target in case the skill is not a real attack.
-                turnActor.SetDirection(moveManager.DirectionBetweenActors(turnActor, turnActor.GetTarget()));
                 activeManager.GetTargetedTiles(turnActor.GetTarget().GetLocation(), moveManager.actorPathfinder);
                 ActivateSkill(attackActive);
                 activeManager.ActivateSkill(this);
+                // Turn to face the target in case the skill is not a real attack or an AOE.
+                turnActor.SetDirection(moveManager.DirectionBetweenActors(turnActor, turnActor.GetTarget()));
             }
-            else{ActorAttacksActor(turnActor, turnActor.GetTarget());}
+            else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
         }
         else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
     }

@@ -2,17 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeatherManager : MonoBehaviour
+[CreateAssetMenu(fileName = "WeatherManager", menuName = "ScriptableObjects/Overworld/WeatherManager", order = 1)]
+public class WeatherManager : ScriptableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public List<string> weathers;
 
-    // Update is called once per frame
-    void Update()
+    public string ReturnNextWeather(string season)
     {
-        
+        string weather = weathers[Random.Range(0, weathers.Count)];
+        if (weather == season) { return weather; }
+        return weathers[Random.Range(0, weathers.Count)];
     }
 }

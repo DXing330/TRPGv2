@@ -6,8 +6,11 @@ using UnityEngine;
 public class BattleMap : MapManager
 {
     public string weather;
-    public void SetWeather(string newInfo){weather = newInfo;}
-    public string GetWeather(){return weather;}
+    public void SetWeather(string newInfo) { weather = newInfo; }
+    public string GetWeather() { return weather; }
+    public string time;
+    public void SetTime(string newInfo){ time = newInfo; }
+    public string GetTime(){ return time; }
     public CombatLog combatLog;
     public StatDatabase terrainEffectData;
     public StatDatabase trapEffectData;
@@ -28,16 +31,16 @@ public class BattleMap : MapManager
     }
     public int RemoveActorsFromBattle(int turnNumber = -1)
     {
-        for (int i = battlingActors.Count-1; i >= 0; i--)
+        for (int i = battlingActors.Count - 1; i >= 0; i--)
         {
             if (battlingActors[i].GetHealth() <= 0)
             {
                 // Apply the death passives here.
-                combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName()+" is defeated.");
+                combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " is defeated.");
                 battleManager.ActiveDeathPassives(battlingActors[i]);
                 battlingActors.RemoveAt(i);
                 // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.
-                if (i <= turnNumber){turnNumber--;}
+                if (i <= turnNumber) { turnNumber--; }
             }
         }
         return turnNumber;
@@ -85,7 +88,7 @@ public class BattleMap : MapManager
 
     protected virtual void GetActorTiles()
     {
-        if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
+        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         actorTiles = new List<string>(emptyList);
         actorDirections = new List<string>(emptyList);
         for (int i = 0; i < battlingActors.Count; i++)
@@ -100,7 +103,7 @@ public class BattleMap : MapManager
     {
         for (int i = 0; i < battlingActors.Count; i++)
         {
-            if (battlingActors[i] == null){continue;}
+            if (battlingActors[i] == null) { continue; }
             battlingActors[i].DestroyActor();
         }
         battlingActors.Clear();
@@ -121,13 +124,13 @@ public class BattleMap : MapManager
 
     public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)
     {
-        if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
+        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         highlightedTiles = new List<string>(emptyList);
         int maxActions = 2;
-        if (current){maxActions = selectedActor.GetActions();}
+        if (current) { maxActions = selectedActor.GetActions(); }
         for (int i = maxActions; i >= 0; i--)
         {
-            UpdateHighlightsWithoutReseting(moveManager.GetReachableTilesBasedOnActions(selectedActor, battlingActors, i), colorDictionary.keys[i+1]);
+            UpdateHighlightsWithoutReseting(moveManager.GetReachableTilesBasedOnActions(selectedActor, battlingActors, i), colorDictionary.keys[i + 1]);
         }
         //UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, battlingActors, current));
     }
@@ -145,7 +148,7 @@ public class BattleMap : MapManager
     public void UpdateHighlights(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)
     {
         string colorName = colorDictionary.GetColorNameByKey(colorKey);
-        if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
+        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         highlightedTiles = new List<string>(emptyList);
         for (int i = 0; i < newTiles.Count; i++)
         {
@@ -157,7 +160,7 @@ public class BattleMap : MapManager
     [ContextMenu("Reset Highlights")]
     public void ResetHighlights()
     {
-        if (emptyList.Count < mapSize*mapSize){InitializeEmptyList();}
+        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         highlightedTiles = new List<string>(emptyList);
         mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
         mapDisplayers[4].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
@@ -184,7 +187,7 @@ public class BattleMap : MapManager
 
     public TacticActor GetActorByIndex(int index)
     {
-        if (index < 0 || index >= battlingActors.Count){return null;}
+        if (index < 0 || index >= battlingActors.Count) { return null; }
         return battlingActors[index];
     }
 
@@ -213,12 +216,11 @@ public class BattleMap : MapManager
         ApplyTrapEffect(actor, tileNumber);
     }
 
-
     public void ApplyTerrainEffect(TacticActor actor, int tileNumber)
     {
         // Get the terrain info.
         string terrainEffect = terrainEffectTiles[tileNumber];
-        if (terrainEffect.Length < 1){return;}
+        if (terrainEffect.Length < 1) { return; }
         // Apply the terrain effect.
         List<string> data = terrainEffectData.ReturnStats(terrainEffect);
         effect.AffectActor(actor, data[0], data[1]);
@@ -227,21 +229,29 @@ public class BattleMap : MapManager
     public bool ApplyTrapEffect(TacticActor actor, int tileNumber)
     {
         string trapEffect = trappedTiles[tileNumber];
-        if (trapEffect.Length < 1){return false;}
+        if (trapEffect.Length < 1) { return false; }
         List<string> data = terrainEffectData.ReturnStats(trapEffect);
         effect.AffectActor(actor, data[0], data[1]);
         TriggerTrap(tileNumber);
-        combatLog.UpdateNewestLog(actor.GetPersonalName()+" triggers a "+trapEffect+" trap.");
+        combatLog.UpdateNewestLog(actor.GetPersonalName() + " triggers a " + trapEffect + " trap.");
         // If a trap forces actors to stop then return true.
-        if (stoppingTraps.Contains(trapEffect)){return true;}
+        if (stoppingTraps.Contains(trapEffect)) { return true; }
         return false;
     }
 
     public void ApplyEndTileEffect(TacticActor actor)
     {
         string terrainEffect = terrainEffectTiles[actor.GetLocation()];
-        if (terrainEffect.Length < 1){return;}
+        if (terrainEffect.Length < 1) { return; }
         List<string> data = terrainEffectData.ReturnStats(terrainEffect);
         effect.AffectActor(actor, data[2], data[3]);
+    }
+
+    public void NextRound()
+    {
+        // Apply weather effects to terrain.
+        // Apply weather effects to terrain effects.
+        // Spread terrain effects if applicable.
+        UpdateMap();
     }
 }

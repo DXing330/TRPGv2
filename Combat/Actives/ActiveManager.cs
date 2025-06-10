@@ -196,6 +196,16 @@ public class ActiveManager : MonoBehaviour
                 battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
             }
             return;
+            case "Attack+TerrainEffect":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                }
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
+                }
+                return;
             case "Trap":
             for (int i = 0; i < targetedTiles.Count; i++)
             {
