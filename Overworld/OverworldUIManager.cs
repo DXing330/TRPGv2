@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class OverworldUIManager : MonoBehaviour
@@ -14,8 +15,17 @@ public class OverworldUIManager : MonoBehaviour
     public PartyDataManager partyData;
     public SavedCaravan caravan;
     public OverworldState overworldState;
-    public OverworldMap overworldMap;
+    public OverworldMoveManager moveManager;
     public int state = 0;
+    public GameObject weatherObject;
+    public Image weatherImage;
+    public SpriteContainer weatherSprites;
+    public void UpdateWeather()
+    {
+        weatherObject.SetActive(true);
+        weatherImage.sprite = weatherSprites.SpriteDictionary(overworldState.GetWeather());
+        if (weatherImage.sprite == null){weatherObject.SetActive(false);}
+    }
     public RequestDisplay requestDisplay;
     public List<string> requestTypes;
     public List<string> requestCompletedStrings;
@@ -60,13 +70,28 @@ public class OverworldUIManager : MonoBehaviour
     public List<int> statePanelIndexes;
     public void ChangeState(int newState)
     {
+        if (newState == 0)
+        {
+            ResetPanels();
+            panels[newState].SetActive(true);
+            state = newState;
+            return;
+        }
         if (state == newState) { return; }
         panels[state].SetActive(false);
         panels[newState].SetActive(true);
         state = newState;
         // Update the panel that was just activated.
+        UpdateCurrentPanel();
     }
     public List<GameObject> panels;
+    public void ResetPanels()
+    {
+        for (int i = 0; i < panels.Count; i++)
+        {
+            panels[i].SetActive(false);
+        }
+    }
     // Caravan stats.
     public TMP_Text moveSpeedText;
     public List<StatImageText> moveSpeedTexts;
@@ -83,7 +108,7 @@ public class OverworldUIManager : MonoBehaviour
                 moveSpeedTexts[i].SetText("\u221E" + " hours");
                 continue;
             }
-            speedText = "~" + (overworldMap.moveManager.ReturnMoveCostByIndex(i) / hourlySpeed) + " hours";
+            speedText = "~" + (moveManager.ReturnMoveCostByIndex(i) / hourlySpeed) + " hours";
             moveSpeedTexts[i].SetText(speedText);
         }
     }
@@ -106,6 +131,7 @@ public class OverworldUIManager : MonoBehaviour
         switch (state)
         {
             case 0:
+                UpdateWeather();
                 return;
             case 1:
                 UpdateCaravanPanel();

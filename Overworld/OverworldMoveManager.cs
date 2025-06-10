@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OverworldMoveManager : MonoBehaviour
+[CreateAssetMenu(fileName = "OverworldMoveManager", menuName = "ScriptableObjects/Overworld/OverworldMoveManager", order = 1)]
+public class OverworldMoveManager : ScriptableObject
 {
     public List<string> tileTypes;
     public List<int> moveCostMultipliers;
