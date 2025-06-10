@@ -219,6 +219,33 @@ public class BattleMap : MapManager
         return actors;
     }
 
+    public List<TacticActor> GetAdjacentActors(int tileNumber)
+    {
+        return GetActorsOnTiles(mapUtility.AdjacentTiles(tileNumber, mapSize));
+    }
+
+    public List<TacticActor> GetAdjacentAllies(TacticActor actor)
+    {
+        List<TacticActor> all = new List<TacticActor>();
+        all = GetAdjacentActors(actor.GetLocation());
+        for (int i = all.Count - 1; i >= 0; i--)
+        {
+            if (all[i].GetTeam() != actor.GetTeam()){all.RemoveAt(i);}
+        }
+        return all;
+    }
+
+    public List<TacticActor> GetAdjacentEnemies(TacticActor actor)
+    {
+        List<TacticActor> all = new List<TacticActor>();
+        all = GetAdjacentActors(actor.GetLocation());
+        for (int i = all.Count - 1; i >= 0; i--)
+        {
+            if (all[i].GetTeam() == actor.GetTeam()){all.RemoveAt(i);}
+        }
+        return all;
+    }
+
     public void ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
         ApplyTerrainEffect(actor, tileNumber);

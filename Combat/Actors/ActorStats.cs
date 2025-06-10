@@ -32,6 +32,7 @@ public class ActorStats : ActorPassives
     {
         ClearStatuses();
         ResetPassives();
+        ResetTempAttack();
         stats = newStats;
         for (int i = 0; i < stats.Count; i++)
         {
@@ -227,8 +228,11 @@ public class ActorStats : ActorPassives
         }
         return false;
     }
+    public int tempAttack; // Used specifically for end of turn attack buffs.
+    public void ResetTempAttack(){ tempAttack = 0; }
+    public void UpdateTempAttack(int changeAmount) { tempAttack += changeAmount; }
     public int currentAttack;
-    public int GetAttack(){return currentAttack;}
+    public int GetAttack(){return currentAttack + tempAttack;}
     public void UpdateAttack(int changeAmount){currentAttack += changeAmount;}
     public int currentDefense;
     public int GetDefense(){return currentDefense;}

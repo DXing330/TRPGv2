@@ -80,10 +80,10 @@ public class BattleManager : MonoBehaviour
     }
     public void NextTurn()
     {
+        turnActor.EndTurn(); // End turn first before passives apply, so that end of turn buffs can stick around til the next round.
         effectManager.EndTurn(turnActor, map);
         // This allows for a one turn grace period for immunities to have a chance.
         map.ApplyEndTileEffect(turnActor);
-        turnActor.EndTurn();
         // Remove dead actors.
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);

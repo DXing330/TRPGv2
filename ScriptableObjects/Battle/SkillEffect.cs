@@ -44,6 +44,9 @@ public class SkillEffect : ScriptableObject
             case "Energy":
                 target.UpdateEnergy(int.Parse(effectSpecifics) * level);
                 break;
+            case "TempAttack":
+                target.UpdateTempAttack(int.Parse(effectSpecifics));
+                break;
             case "Attack":
                 target.UpdateAttack(int.Parse(effectSpecifics) * level);
                 break;
@@ -80,6 +83,9 @@ public class SkillEffect : ScriptableObject
                     changeAmount = int.Parse(effectSpecifics);
                 }
                 target.UpdateHealth((changeAmount), false);
+                break;
+            case "TempAttack%":
+                target.UpdateTempAttack((int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
                 break;
             case "Attack%":
                 target.UpdateAttack(level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);

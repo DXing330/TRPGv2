@@ -35,13 +35,35 @@ public class PassiveSkill : SkillEffect
         }
         string passiveName = "";
         List<string> passiveData = new List<string>();
+        List<TacticActor> targets = new List<TacticActor>();
         for (int i = 0; i < passives.Count; i++)
         {
+            targets.Clear();
             passiveName = passives[i];
-            if (passiveName.Length <= 1){continue;}
+            if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
-            if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor, map)){continue;}
-            AffectActor(actor, passiveData[4], passiveData[5]);
+            if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor, map)) { continue; }
+            switch (passiveData[3])
+            {
+                case "Self":
+                    AffectActor(actor, passiveData[4], passiveData[5]);
+                    break;
+                case "Adjacent Allies":
+                    AffectActor(actor, passiveData[4], passiveData[5]);
+                    targets = map.GetAdjacentAllies(actor);
+                    for (int j = 0; j < targets.Count; j++)
+                    {
+                        AffectActor(targets[j], passiveData[4], passiveData[5]);
+                    }
+                    break;
+                case "Adjacent Enemies":
+                    targets = map.GetAdjacentEnemies(actor);
+                    for (int j = 0; j < targets.Count; j++)
+                    {
+                        AffectActor(targets[j], passiveData[4], passiveData[5]);
+                    }
+                    break;
+            }
         }
     }
 
