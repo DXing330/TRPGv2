@@ -8,6 +8,7 @@ public class OverworldMap : MapManager
     public DayNightFilter dayNightFilter;
     public int maxDistanceFromCenter = 1;
     public OverworldMoveManager moveManager;
+    public int moveCostVariancePercentage = 20;
     public OverworldUIManager UI;
     public SavedOverworld overworldData;
     public OverworldState overworldState;
@@ -55,12 +56,14 @@ public class OverworldMap : MapManager
     protected void MoveToTile(int newTile)
     {
         // Check if you can afford to move to the tile.
-        int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
         int currentSpeed = partyData.caravan.GetCurrentSpeed();
         if (currentSpeed <= 0){ return; }
+        int moveCost = moveManager.ReturnMoveCost(mapInfo[newTile]);
         moveCost = moveCost/currentSpeed;
-        // Move cost is affected by the weight of the caravan, the more loaded the caravan the slower it is.
-        // As such multiply the move cost by the ratio (current/max) weight.
+        // Apply variance to move cost.
+        int variance = moveCost * moveCostVariancePercentage / 100;
+        moveCost += Random.Range(-variance, variance + 1);
+        if (moveCost <= 0){ moveCost = 1; }
         // Update the time based on the moveCost.
         int cDay = overworldState.GetDay();
         overworldState.AddHours(moveCost);

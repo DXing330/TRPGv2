@@ -38,6 +38,8 @@ public class ActorMaker : MonoBehaviour
         SetActorName(newActor, actorName);
         newActor.SetPersonalName(actorName);
         newActor.SetTeam(team);
+        passiveOrganizer.OrganizeActorPassives(newActor);
+        newActor.ResetStats();
         return newActor;
     }
 
@@ -70,8 +72,6 @@ public class ActorMaker : MonoBehaviour
                     equipmentPrefab.EquipToActor(actors[i]);
                 }
             }
-            passiveOrganizer.OrganizeActorPassives(actors[i]);
-            actors[i].ResetStats();
         }
         return actors;
     }

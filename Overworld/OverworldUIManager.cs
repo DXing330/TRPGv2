@@ -17,14 +17,10 @@ public class OverworldUIManager : MonoBehaviour
     public OverworldState overworldState;
     public OverworldMoveManager moveManager;
     public int state = 0;
-    public GameObject weatherObject;
-    public Image weatherImage;
-    public SpriteContainer weatherSprites;
+    public WeatherFilter weatherFilter;
     public void UpdateWeather()
     {
-        weatherObject.SetActive(true);
-        weatherImage.sprite = weatherSprites.SpriteDictionary(overworldState.GetWeather());
-        if (weatherImage.sprite == null){weatherObject.SetActive(false);}
+        weatherFilter.UpdateFilter(overworldState.GetWeather());
     }
     public RequestDisplay requestDisplay;
     public List<string> requestTypes;

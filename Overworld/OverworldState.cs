@@ -66,7 +66,7 @@ public class OverworldState : SavedData
     public int nightHourEnd = 4;
     public bool Night()
     {
-        return (GetHour() <= nightHourEnd || GetHour() >= nightHourStart);
+        return (GetHour() < nightHourEnd || GetHour() >= nightHourStart);
     }
     public string GetTime()
     {

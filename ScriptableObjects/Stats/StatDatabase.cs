@@ -9,6 +9,7 @@ public class StatDatabase : ScriptableObject
     public bool inputKeysAndValues = false;
     public bool inputBothv2 = false;
     public string allKeysAndValues;
+    public void SetAllData(string newData){allKeysAndValues = newData;}
     public string keyValueDelimiter;
     public string keyDelimiter;
     public string valueDelimiter;

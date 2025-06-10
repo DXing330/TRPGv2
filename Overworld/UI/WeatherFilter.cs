@@ -11,10 +11,13 @@ public class WeatherFilter : MonoBehaviour
     }
     public OverworldState overworldState;
     public SpriteContainer sprites;
+    public GameObject filterObject;
     public Image filter;
     public void UpdateFilter(string weather)
     {
+        filterObject.SetActive(true);
         SetImage(sprites.SpriteDictionary(weather));
+        if (filter.sprite == null){ filterObject.SetActive(false); }
     }
     protected void SetImage(Sprite newSprite) { filter.sprite = newSprite; }
 }

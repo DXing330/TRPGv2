@@ -46,6 +46,8 @@ public class BattleManager : MonoBehaviour
     public void SpawnAndAddActor(int location, string actorName, int team = 0)
     {
         map.AddActorToBattle(actorMaker.SpawnActor(location, actorName, team));
+        // Apply start battle passives since they are just starting the battle.
+        effectManager.StartBattle(map.ReturnLatestActor());
     }
     public bool interactable = true;
     public int roundNumber = 0;

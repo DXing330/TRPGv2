@@ -6,7 +6,12 @@ using UnityEngine;
 public class BattleMap : MapManager
 {
     public string weather;
-    public void SetWeather(string newInfo) { weather = newInfo; }
+    public WeatherFilter weatherFilter;
+    public void SetWeather(string newInfo)
+    {
+        weather = newInfo;
+        weatherFilter.UpdateFilter(weather);
+    }
     public string GetWeather() { return weather; }
     public string time;
     public void SetTime(string newInfo){ time = newInfo; }
@@ -24,6 +29,10 @@ public class BattleMap : MapManager
     }
     public BattleManager battleManager;
     public List<TacticActor> battlingActors;
+    public TacticActor ReturnLatestActor()
+    {
+        return battlingActors[battlingActors.Count - 1];
+    }
     public void AddActorToBattle(TacticActor actor)
     {
         battlingActors.Add(actor);
