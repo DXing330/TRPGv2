@@ -5,6 +5,9 @@ using UnityEngine;
 // Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
+    public string weather;
+    public void SetWeather(string newInfo){weather = newInfo;}
+    public string GetWeather(){return weather;}
     public CombatLog combatLog;
     public StatDatabase terrainEffectData;
     public StatDatabase trapEffectData;
@@ -49,9 +52,14 @@ public class BattleMap : MapManager
     // List of actor directions on tiles.
     public List<string> actorDirections;
     public List<string> terrainEffectTiles;
-    public void ChangeTerrain(int tileNumer, string change)
+    public void ChangeTerrain(int tileNumber, string change)
     {
+        // Straight forward change ignoring everything else.
+        mapInfo[tileNumber] = change;
         // Probably need a table for this.
+        //string changeKey = mapInfo[tileNumber] + change;
+        // string newTerrain = dictionary.ReturnValue(changeKey)
+        // if (newTerrain == ""){return;}
     }
     public void ChangeTerrainEffect(int tileNumber, string newEffect)
     {

@@ -13,6 +13,10 @@ public class TacticActor : ActorStats
     public int team;
     public int GetTeam(){return team;}
     public void SetTeam(int newTeam){team = newTeam;}
+    public int baseActions = 2;
+    public void UpdateBaseActions(int amount){baseActions += amount;}
+    public int GetBaseActions() { return baseActions; }
+    public void SetBaseActions(int newActions){baseActions = newActions;}
     public int actions;
     public void SetActions(int newActions){actions = newActions;}
     public void ResetActions(){actions = 0;}
@@ -49,7 +53,7 @@ public class TacticActor : ActorStats
     public void NewTurn()
     {
         // Default is two actions.
-        actions = Mathf.Max(actions, 2);
+        actions = Mathf.Max(actions, baseActions);
         movement = 0;
         ResetStats();
     }

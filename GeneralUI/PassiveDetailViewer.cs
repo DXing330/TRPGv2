@@ -99,39 +99,43 @@ public class PassiveDetailViewer : MonoBehaviour
         switch (condition)
         {
             case "None":
-            return ".";
+                return ".";
             case "Adjacent Ally":
-            return " if another ally is adjacent.";
+                return " if another ally is adjacent.";
             case "Direction":
                 switch (specifics)
                 {
                     case "Front":
-                    return " if you are facing the front side of the enemy.";
+                        return " if you are facing the front side of the enemy.";
                     case "Back":
-                    return " if you are facing the back side of the enemy.";
+                        return " if you are facing the back side of the enemy.";
                     case "Same":
-                    return " if you are facing the back as the enemy.";
+                        return " if you are facing the back as the enemy.";
                     case "Opposite":
-                    return " if you are facing the enemy.";
+                        return " if you are facing the enemy.";
                 }
                 break;
             case "Distance":
-            return " if within "+specifics+" tile(s).";
+                return " if within " + specifics + " tile(s).";
             //case "Type":
             //return " if the damage is "+damageTypes.ReturnValue(dummyPassive.conditionSpecifics)+".";
             case "Health":
                 switch (specifics)
                 {
                     case "<Half":
-                    return " if health is <50%.";
+                        return " if health is <50%.";
                     case "Full":
-                    return " if health is full.";
+                        return " if health is full.";
                 }
                 break;
             case "Tile":
-            return " if on a "+specifics+" tile.";
+                return " if on a " + specifics + " tile.";
             case "Weapon":
-            return " if a "+specifics+" is equipped.";
+                return " if a " + specifics + " is equipped.";
+            case "Weather":
+                return " if the weather is "+specifics+".";
+            case "Time":
+                return " if the time of day is "+specifics+".";
         }
         return ".";
     }

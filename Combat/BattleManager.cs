@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
+    public BattleState battleState;
     public BattleMap map;
     public ActorAI actorAI;
     public ActorMaker actorMaker;
@@ -21,6 +22,7 @@ public class BattleManager : MonoBehaviour
     void Start()
     {
         // Get a new battle map.
+        map.SetWeather(battleState.GetWeather());
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         moveManager.SetMapInfo(map.mapInfo);
         actorMaker.SetMapSize(map.mapSize);
@@ -67,13 +69,13 @@ public class BattleManager : MonoBehaviour
         turnActor.NewTurn();
         combatLog.UpdateNewestLog(turnActor.GetPersonalName()+"'s Turn");
         // Apply Conditions/Passives.
-        effectManager.StartTurn(turnActor);
+        effectManager.StartTurn(turnActor, map);
         UI.battleStats.SetActor(turnActor);
         UI.UpdateTurnOrder(this);
     }
     public void NextTurn()
     {
-        effectManager.EndTurn(turnActor);
+        effectManager.EndTurn(turnActor, map);
         // This allows for a one turn grace period for immunities to have a chance.
         map.ApplyEndTileEffect(turnActor);
         turnActor.EndTurn();

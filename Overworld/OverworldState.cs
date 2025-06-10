@@ -18,7 +18,7 @@ public class OverworldState : SavedData
     public int restingPeriod = 8;
     public int GetRestingPeriod() { return restingPeriod; }
     public int location;
-    public string GetLocationTerrain(){return savedOverworld.ReturnTerrain(location);}
+    public string GetLocationTerrain() { return savedOverworld.ReturnTerrain(location); }
     public int GetLocation() { return location; }
     public bool SetLocation(int newLocation)
     {
@@ -50,10 +50,27 @@ public class OverworldState : SavedData
             return false;
         }
     }
+    public string season;
+    public void SetSeason(string newInfo){ season = newInfo; }
+    public string GetSeason() { return season; }
+    public string weather;
+    public void SetWeather(string newInfo){ weather = newInfo; }
+    public string GetWeather() { return weather; }
     public int dayCount;
     public int GetDay() { return dayCount; }
     public void SetDay(int newDate) { dayCount = newDate; }
     public int currentHour;
+    public int nightHourStart = 20;
+    public int nightHourEnd = 4;
+    public bool Night()
+    {
+        return (GetHour() <= nightHourEnd || GetHour() >= nightHourStart);
+    }
+    public string GetTime()
+    {
+        if (Night()) { return "Night"; }
+        else { return "Day"; }
+    }
     public void SetHour(int newHour) { currentHour = newHour; }
     public int GetHour() { return currentHour % hoursInDay; }
     // Stored here for convenience.
@@ -101,7 +118,7 @@ public class OverworldState : SavedData
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = location + delimiter + dayCount + delimiter + currentHour + delimiter + battleType;
+        allData = location + delimiter + season + delimiter + weather + delimiter + dayCount + delimiter + currentHour + delimiter + battleType;
         File.WriteAllText(dataPath, allData);
         partyData.Save();
     }
@@ -128,13 +145,19 @@ public class OverworldState : SavedData
             case 0:
                 SetLocation(int.Parse(data));
                 break;
-            case 1:
-                SetDay(int.Parse(data));
+                case 1:
+                SetSeason(data);
                 break;
-            case 2:
-                SetHour(int.Parse(data));
+                case 2:
+                SetWeather(data);
                 break;
             case 3:
+                SetDay(int.Parse(data));
+                break;
+            case 4:
+                SetHour(int.Parse(data));
+                break;
+            case 5:
                 SetBattleType(data);
                 break;
         }

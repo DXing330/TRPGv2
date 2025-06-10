@@ -156,7 +156,8 @@ public class ActorStats : ActorPassives
         else {baseHealth += changeAmount;}
     }
     public int baseEnergy;
-    public void SetBaseEnergy(int newEnergy){baseEnergy = newEnergy;}
+    public void UpdateBaseEnergy(int changeAmount){baseEnergy += changeAmount;}
+    public void SetBaseEnergy(int newEnergy) { baseEnergy = newEnergy; }
     public int GetBaseEnergy(){return baseEnergy;}
     public int baseAttack;
     public void SetBaseAttack(int newAttack){baseAttack = newAttack;}
@@ -335,6 +336,12 @@ public class ActorStats : ActorPassives
     }
     public void RemoveStatus(string statusName)
     {
+        if (statusName == "All")
+        {
+            statusDurations.Clear();
+            statuses.Clear();
+            return;
+        }
         for (int i = statuses.Count - 1; i >= 0; i--)
         {
             if (statuses[i] == statusName)

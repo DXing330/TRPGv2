@@ -28,7 +28,15 @@ public class BattleState : SavedData
     }
     public string GetTerrainType(){return terrainType;}
     public void UpdateTerrainType(){battleMapFeatures.SetTerrainType(terrainType);}
-    public List<string> tiles;
+    public string GetTime()
+    {
+        return overworldState.GetTime();
+    }
+
+    public string GetWeather()
+    {
+        return "";
+    }
 
     public override void NewGame()
     {
@@ -47,7 +55,6 @@ public class BattleState : SavedData
         allData += delimiter;
         allData += terrainType;
         allData += delimiter;
-        allData += String.Join(delimiterTwo, tiles);
         File.WriteAllText(dataPath, allData);
     }
 
@@ -59,7 +66,6 @@ public class BattleState : SavedData
         previousScene = dataList[0];
         enemies = dataList[1].Split(delimiterTwo).ToList();
         terrainType = dataList[2];
-        tiles = dataList[3].Split(delimiterTwo).ToList();
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);

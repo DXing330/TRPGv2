@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 public class DayNightFilter : MonoBehaviour
 {
+    public OverworldState overworldState;
+    void Start()
+    {
+        UpdateFilter(overworldState.GetHour());
+    }
     public Image filter;
     public List<Color> dayNightColors;
     public void UpdateFilter(int hour)

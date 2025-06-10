@@ -93,6 +93,15 @@ public class ActiveManager : MonoBehaviour
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         switch (active.effect)
         {
+            case "Weather":
+                battle.map.SetWeather(active.GetSpecifics());
+                return;
+            case "Tile":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeTerrain(targetedTiles[0], active.GetSpecifics());
+                }
+                return;
             case "Summon":
             // Check if selected tile is free.
             int summonLocation = targetedTiles[0];

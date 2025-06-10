@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Passive", menuName = "ScriptableObjects/BattleLogic/Passive", order = 1)]
 public class PassiveSkill : SkillEffect
 {
-    public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData)
+    public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData, BattleState battleState)
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
         if (startBattlePassives.Count <= 0){return;}
@@ -16,12 +16,12 @@ public class PassiveSkill : SkillEffect
             passiveName = startBattlePassives[i];
             if (passiveName.Length <= 1){continue;}
             passiveData = allData.ReturnStats(passiveName);
-            if (!CheckStartBattleCondition(passiveData[1], passiveData[2], actor)){continue;}
+            if (!CheckStartBattleCondition(passiveData[1], passiveData[2], actor, battleState)){continue;}
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
     }
 
-    public void ApplyPassives(TacticActor actor, StatDatabase allData, string timing)
+    public void ApplyPassives(TacticActor actor, StatDatabase allData, string timing, BattleMap map)
     {
         List<string> passives = new List<string>();
         switch (timing)
@@ -40,7 +40,7 @@ public class PassiveSkill : SkillEffect
             passiveName = passives[i];
             if (passiveName.Length <= 1){continue;}
             passiveData = allData.ReturnStats(passiveName);
-            if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor)){continue;}
+            if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor, map)){continue;}
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
     }
@@ -51,26 +51,32 @@ public class PassiveSkill : SkillEffect
         return specifics == tileType;
     }
 
-    // Start Battle passives only depend on passive user/equipment.
-    public bool CheckStartBattleCondition(string condition, string specifics, TacticActor actor)
+    public bool CheckStartBattleCondition(string condition, string specifics, TacticActor actor, BattleState battleState)
     {
         switch (condition)
         {
             case "Weapon":
-            return specifics == actor.GetWeaponType();
+                return specifics == actor.GetWeaponType();
+            case "Weather":
+                return specifics == battleState.GetWeather();
+            case "Time":
+                return specifics == battleState.GetTime();
         }
         return true;
     }
     
-    // Start/End passives only depend on the passive user.
-    public bool CheckStartEndCondition(string condition, string conditionSpecifics, TacticActor actor)
+    public bool CheckStartEndCondition(string condition, string conditionSpecifics, TacticActor actor, BattleMap map)
     {
         switch (condition)
         {
             case "None":
-            return true;
+                return true;
             case "Health":
-            return CheckHealthConditions(conditionSpecifics, actor);
+                return CheckHealthConditions(conditionSpecifics, actor);
+            case "Tile":
+                return conditionSpecifics == map.GetTileInfoOfActor(actor);
+            case "Weather":
+                return conditionSpecifics == map.GetWeather();
         }
         // Most of them have no condition.
         return true;
