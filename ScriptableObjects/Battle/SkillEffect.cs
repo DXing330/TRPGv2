@@ -10,6 +10,7 @@ public class SkillEffect : ScriptableObject
     public int baseStatusDuration = 3;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1)
     {
+        int changeAmount = 0;
         switch (effect)
         {
             case "Temporary Passive":
@@ -37,6 +38,10 @@ public class SkillEffect : ScriptableObject
             case "RemoveStatus":
                 target.RemoveStatus(effectSpecifics);
                 break;
+            // Temp health is always a shield.
+            case "TempHealth":
+                target.UpdateTempHealth(int.Parse(effectSpecifics));
+                break;
             // Default is increasing health.
             case "Health":
                 target.UpdateHealth(int.Parse(effectSpecifics) * level, false);
@@ -49,6 +54,9 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Attack":
                 target.UpdateAttack(int.Parse(effectSpecifics) * level);
+                break;
+            case "TempDefense":
+                target.UpdateTempDefense(int.Parse(effectSpecifics));
                 break;
             case "Defense":
                 target.UpdateDefense(int.Parse(effectSpecifics) * level);
@@ -75,9 +83,17 @@ public class SkillEffect : ScriptableObject
             case "AttackRange":
                 target.SetAttackRangeMax(int.Parse(effectSpecifics));
                 break;
+            case "TempHealth%":
+                changeAmount = int.Parse(effectSpecifics) * target.GetBaseHealth() / basicDenominator;
+                if (Mathf.Abs(changeAmount) < Mathf.Abs(int.Parse(effectSpecifics)))
+                {
+                    changeAmount = int.Parse(effectSpecifics);
+                }
+                target.UpdateTempHealth(changeAmount);
+                break;
             case "Health%":
                 // % changes should not go below a minimum amount or else low stat characters are effectively immune.
-                int changeAmount = level * int.Parse(effectSpecifics) * target.GetBaseHealth() / basicDenominator;
+                changeAmount = level * int.Parse(effectSpecifics) * target.GetBaseHealth() / basicDenominator;
                 if (Mathf.Abs(changeAmount) < Mathf.Abs(int.Parse(effectSpecifics) * level))
                 {
                     changeAmount = int.Parse(effectSpecifics);
@@ -89,6 +105,9 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Attack%":
                 target.UpdateAttack(level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
+                break;
+            case "TempDefense%":
+                target.UpdateTempDefense((int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
                 break;
             case "Defense%":
                 target.UpdateDefense(level * int.Parse(effectSpecifics) * target.GetBaseDefense() / basicDenominator);

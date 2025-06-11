@@ -115,7 +115,7 @@ public class TacticActor : ActorStats
     public void EndTurn()
     {
         movement = 0;
-        ResetTempAttack();
+        ResetTempStats();
         CheckStatusDuration();
     }
 

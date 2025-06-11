@@ -32,7 +32,7 @@ public class ActorStats : ActorPassives
     {
         ClearStatuses();
         ResetPassives();
-        ResetTempAttack();
+        ResetTempStats();
         stats = newStats;
         for (int i = 0; i < stats.Count; i++)
         {
@@ -140,6 +140,12 @@ public class ActorStats : ActorPassives
         currentSpeed = moveSpeed;
         currentWeight = weight;
     }
+    protected void ResetTempStats()
+    {
+        ResetTempAttack();
+        ResetTempDefense();
+        ResetTempHealth();
+    }
     public List<string> ReturnStats()
     {
         List<string> stats = new List<string>();
@@ -196,13 +202,27 @@ public class ActorStats : ActorPassives
     public void SetInitiative(int newInitiative){initiative = newInitiative;}
     public int GetInitiative(){return initiative;}
     public void ChangeInitiative(int change){initiative += change;}
+    public int tempHealth; // Used specifically for end of turn attack buffs.
+    public void ResetTempHealth(){ tempHealth = 0; }
+    public void UpdateTempHealth(int changeAmount) { tempHealth += changeAmount; }
     public int currentHealth;
     public void SetCurrentHealth(int newHealth){currentHealth = newHealth;}
     public int GetHealth(){return currentHealth;}
     public void UpdateHealth(int changeAmount, bool decrease = true)
     {
-        if (decrease){currentHealth -= changeAmount;}
-        else {currentHealth += changeAmount;}
+        if (decrease)
+        {
+            if (tempHealth > 0)
+            {
+                int temp = tempHealth;
+                tempHealth -= changeAmount;
+                if (tempHealth < 0){ tempHealth = 0; }
+                changeAmount -= temp;
+            }
+            if (changeAmount < 0){ return; }
+            currentHealth -= changeAmount;
+        }
+        else { currentHealth += changeAmount; }
         if (currentHealth > GetBaseHealth()){currentHealth = GetBaseHealth();}
     }
     public void TakeDamage(int damage){UpdateHealth(damage);}
@@ -234,8 +254,11 @@ public class ActorStats : ActorPassives
     public int currentAttack;
     public int GetAttack(){return currentAttack + tempAttack;}
     public void UpdateAttack(int changeAmount){currentAttack += changeAmount;}
+    public int tempDefense; // Used specifically for end of turn attack buffs.
+    public void ResetTempDefense(){ tempDefense = 0; }
+    public void UpdateTempDefense(int changeAmount) { tempDefense += changeAmount; }
     public int currentDefense;
-    public int GetDefense(){return currentDefense;}
+    public int GetDefense(){return currentDefense + tempDefense;}
     public void UpdateDefense(int changeAmount){currentDefense += changeAmount;}
     public int currentSpeed;
     public int GetSpeed(){return currentSpeed;}

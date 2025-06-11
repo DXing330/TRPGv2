@@ -145,37 +145,49 @@ public class PassiveDetailViewer : MonoBehaviour
         switch (effect)
         {
             case "Increase":
-            return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
+                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "Increase%":
-            return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
+                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "Decrease":
-            return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
+                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "Decrease%":
-            return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
+                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "BaseHealth":
-            return " increase maximum health by "+specifics;
+                return " increase maximum health by " + specifics;
             case "Movement":
-            return " gain "+specifics+" movement";
+                return " gain " + specifics + " movement";
             case "Skill":
-            return " gain the "+specifics+" skill";
+                return " gain the " + specifics + " skill";
             case "Status":
-            return " inflict "+specifics;
+                return " inflict " + specifics;
             case "RemoveStatus":
-            return " remove all "+specifics+" status effects";
+                return " remove all " + specifics + " status effects";
             case "Health":
-            return " regain up to "+specifics+" health";
+                return " regain up to " + specifics + " health";
             case "Health%":
-            return " regain up to "+specifics+"% health";
+                return " regain up to " + specifics + "% health";
             case "Attack%":
-            return " increase attack by "+specifics+"%";
+                return " increase attack by " + specifics + "%";
             case "Defense%":
-            return " increase defense by "+specifics+"%";
+                return " increase defense by " + specifics + "%";
             case "MoveType":
-            return " change movement type to "+specifics;
+                return " change movement type to " + specifics;
             case "AttackRange":
-            return " increase Attack Range by up to "+specifics;
+                return " increase Attack Range by up to " + specifics;
             case "BaseSpeed":
-            return " increase Base Speed by up to "+specifics;
+                return " increase Base Speed by up to " + specifics;
+            case "TempAttack%":
+                return " change attack by " + specifics + "%, until the end of next turn";
+            case "TempAttack":
+                return " change attack by " + specifics + ", until the end of next turn";
+            case "TempDefense%":
+                return " change defense by " + specifics + "%, until the end of next turn";
+            case "TempDefense":
+                return " change defense by " + specifics + ", until the end of next turn";
+            case "TempHealth%":
+                return " gain a shield that absorbs damage equal to " + specifics + "% of max health, until the end of next turn";
+            case "TempHealth":
+                return " gain a shield that absorbs damage equal to " + specifics + ", until the end of next turn";
         }
         return " increase "+effect+" by "+specifics;
     }
