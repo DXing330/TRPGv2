@@ -332,7 +332,14 @@ public class BattleManager : MonoBehaviour
             if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
             {
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
-                turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
+                TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
+                if (closestEnemy == null)
+                {
+                    // No more enemies, just end turn.
+                    StartCoroutine(EndTurn());
+                    yield break;
+                }
+                turnActor.SetTarget(closestEnemy);
             }
             // If they can be attacked without moving then attack.
             if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)){ NPCAttackAction(); }

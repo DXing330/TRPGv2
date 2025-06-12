@@ -91,6 +91,7 @@ public class ActorAI : ScriptableObject
                 possibleIndices.Add(i);
             }
         }
+        if (enemies.Count <= 0){ return null; }
         return enemies[possibleIndices[Random.Range(0, possibleIndices.Count)]];
     }
     
