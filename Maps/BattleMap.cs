@@ -18,7 +18,8 @@ public class BattleMap : MapManager
     public string GetTime(){ return time; }
     public CombatLog combatLog;
     public StatDatabase terrainEffectData;
-    public StatDatabase trapEffectData;
+    public StatDatabase terrainWeatherInteractions;
+    public StatDatabase terrainTileInteractions;
     public SkillEffect effect;
     protected override void Start()
     {
@@ -285,9 +286,20 @@ public class BattleMap : MapManager
 
     public void NextRound()
     {
-        // Apply weather effects to terrain.
-        // Apply weather effects to terrain effects.
-        // Spread terrain effects if applicable.
+        // Apply weather/tile to terrain effects.
+        string t_w = "";
+        string t_t = "";
+        for (int i = 0; i < terrainEffectTiles.Count; i++)
+        {
+            if (terrainEffectTiles[i] == ""){ continue; }
+            t_w = terrainEffectTiles[i] + "-" + GetWeather();
+            t_t = terrainEffectTiles[i] + "-" + mapInfo[i];
+            if (terrainWeatherInteractions.ReturnValue(t_w) == "Remove" || terrainTileInteractions.ReturnValue(t_t) == "Remove")
+            {
+                ChangeTerrainEffect(i, "");
+            }
+        }
+        // Apply weather effects to tile?
         UpdateMap();
     }
 }

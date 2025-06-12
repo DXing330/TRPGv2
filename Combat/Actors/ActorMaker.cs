@@ -62,7 +62,7 @@ public class ActorMaker : MonoBehaviour
             {
                 actors[i].SetPersonalName(teamPersonalNames[i]);
             }
-            else{actors[i].SetPersonalName(actors[i].GetSpriteName());}
+            else { actors[i].SetPersonalName(actors[i].GetSpriteName()); }
             if (i < teamEquipment.Count)
             {
                 string[] equipData = teamEquipment[i].Split("@");
@@ -72,6 +72,8 @@ public class ActorMaker : MonoBehaviour
                     equipmentPrefab.EquipToActor(actors[i]);
                 }
             }
+            passiveOrganizer.OrganizeActorPassives(actors[i]);
+            actors[i].ResetStats();
         }
         return actors;
     }
