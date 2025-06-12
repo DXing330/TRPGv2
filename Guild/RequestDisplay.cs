@@ -13,7 +13,7 @@ public class RequestDisplay : MonoBehaviour
     public TMP_Text requestText;
     public GameObject requestCompletedStamp;
     public int selectedQuest = 0;
-    public int GetSelectedQuest(){return selectedQuest;}
+    public int GetSelectedQuest() { return selectedQuest; }
     public void ResetSelectedQuest()
     {
         selectedQuest = 0;
@@ -49,6 +49,8 @@ public class RequestDisplay : MonoBehaviour
                 return UpdateDeliveryDescription();
             case "Defeat":
                 return UpdateDefeatDescription();
+            case "Escort":
+                return UpdateEscortDescription();
         }
         return "";
     }
@@ -84,7 +86,22 @@ public class RequestDisplay : MonoBehaviour
         int direction = overworldTiles.mapUtility.DirectionBetweenLocations(overworldState.GetLocation(), dummyRequest.GetLocation(), overworldTiles.GetSize());
         string directionName = overworldTiles.mapUtility.IntDirectionToString(direction);
         description += ", to the " + directionName + " of here.";
-        description += "\n"+ "Eliminate them within " + dummyRequest.GetDeadline() + " days.";
+        description += "\n" + "Eliminate them within " + dummyRequest.GetDeadline() + " days.";
+        return description;
+    }
+
+    protected string UpdateEscortDescription()
+    {
+        string description = "There is a research expedition";
+        int direction = overworldTiles.mapUtility.DirectionBetweenLocations(overworldState.GetLocation(), dummyRequest.GetLocation(), overworldTiles.GetSize());
+        string directionName = overworldTiles.mapUtility.IntDirectionToString(direction);
+        description += ", to the " + directionName + " of here.";
+        description += "\n" + "Please escort me there within " + dummyRequest.GetDeadline() + " days.";
+        int failPenalty = dummyRequest.GetFailPenalty();
+        if (failPenalty > 0)
+        {
+            description += "\n" + "Note: " + dummyRequest.GetFailPenalty() + " GOLD fine if I am injured or late.";
+        }
         return description;
     }
 }

@@ -169,7 +169,12 @@ public class OverworldMap : MapManager
                 break;
             // Escort quests autocomplete.
             case "Escort":
-                completed = true;
+                Debug.Log("Escort");
+                // Check if the required party member exists.
+                if (partyData.guildCard.CompleteEscortQuest(tile, partyData))
+                {
+                    completed = true;
+                }
                 break;
             // Battle quests start a battle, if you win then it's complete, need data from the battle.
             // Potentially after a winning battle remove any characters, so if the tile is empty of characters the quest is completed.

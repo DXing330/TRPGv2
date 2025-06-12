@@ -103,6 +103,17 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
+    public bool TempPartyMemberExists(string name)
+    {
+        return tempPartyData.MemberExists(name);
+    }
+
+    public void RemoveTempPartyMember(string name)
+    {
+        tempPartyData.RemoveMember(name);
+        SetFullParty();
+    }
+
     public bool OpenSlots()
     {
         // Default is 2 party members, plus 2 permanent for the classic 4?

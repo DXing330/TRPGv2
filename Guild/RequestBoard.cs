@@ -107,6 +107,8 @@ public class RequestBoard : MonoBehaviour
 
     public void GenerateRequests()
     {
+        // Remove any potential lingering merchants, caves and ruins can stay.
+        overworldTiles.RemoveFeatures(deliverFeatureString);
         availableRequests.Clear();
         for (int i = 0; i < baseRequestCount; i++)
         {
@@ -194,7 +196,7 @@ public class RequestBoard : MonoBehaviour
         dummyRequest.SetReward(dummyRequest.GetDeadline() + Random.Range(1, amountVariation + 1));
         // Fail penalty is the cost of hiring someone.
         dummyRequest.SetFailPenalty(escortFailPenalty);
-        // Don't need specifics, amount.
+        dummyRequest.SetGoalSpecifics(escortTempMember);
     }
 
     protected void GenerateDefeatRequest()
@@ -209,6 +211,5 @@ public class RequestBoard : MonoBehaviour
         dummyRequest.SetLocationSpecifics(defeatFeatureString);
         dummyRequest.SetDeadline(overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()) + distanceVariation);
         dummyRequest.SetReward(dummyRequest.GetDeadline() + Random.Range(1, amountVariation + 1));
-        // Don't need specifics, amount or fail penalty.
     }
 }

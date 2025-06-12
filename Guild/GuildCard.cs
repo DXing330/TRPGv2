@@ -95,6 +95,20 @@ public class GuildCard : SavedData
         dummyRequest.Complete();
         acceptedQuests[index] = dummyRequest.ReturnDetails();
     }
+    public bool CompleteEscortQuest(int tileNumber, PartyDataManager partyData)
+    {
+        int index = QuestIndexFromTile(tileNumber);
+        dummyRequest.Load(acceptedQuests[index]);
+        if (dummyRequest.GetCompletion()) { return false; }
+        if (partyData.TempPartyMemberExists(dummyRequest.GetGoalSpecifics()))
+        {
+            partyData.RemoveTempPartyMember(dummyRequest.GetGoalSpecifics());
+            dummyRequest.Complete();
+            acceptedQuests[index] = dummyRequest.ReturnDetails();
+            return true;
+        }
+        return false;
+    }
     public int newQuests = 1;
     public void SubmitQuest(int index)
     {

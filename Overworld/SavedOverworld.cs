@@ -114,6 +114,18 @@ public class SavedOverworld : SavedData
         features.RemoveAt(indexOf);
         QuickSave();
     }
+    public void RemoveFeatures(string featureType)
+    {
+        for (int i = features.Count - 1; i >= 0; i--)
+        {
+            if (features[i] == featureType)
+            {
+                featureLocations.RemoveAt(i);
+                features.RemoveAt(i);
+            }
+        }
+        QuickSave();
+    }
     public string GetFeatureFromLocation(int location)
     {
         int indexOf = featureLocations.IndexOf(location.ToString());

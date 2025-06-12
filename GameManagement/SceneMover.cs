@@ -65,7 +65,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetCurrentScene(hubSceneName);
         permanentParty.ResetCurrentStats();
         mainParty.ResetCurrentStats();
-        tempParty.ClearAllStats();
+        tempParty.ResetCurrentStats();
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(hubSceneName));

@@ -308,6 +308,16 @@ public class PartyData : SavedData
         string[] blocks = stats.Split("|");
         partyCurrentStats.Add(blocks[0]);
     }
+    public bool MemberExists(string spriteName)
+    {
+        int indexOf = partySpriteNames.IndexOf(spriteName);
+        return indexOf >= 0;
+    }
+    public void RemoveMember(string spriteName)
+    {
+        int indexOf = partySpriteNames.IndexOf(spriteName);
+        if (indexOf >= 0) { RemoveStatsAtIndex(indexOf); }
+    }
     public void AddBattleFee(string fee)
     {
         battleFees.Add(fee);
