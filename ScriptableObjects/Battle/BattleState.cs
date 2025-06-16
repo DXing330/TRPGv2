@@ -6,16 +6,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BattleState", menuName = "ScriptableObjects/DataContainers/SavedData/BattleState", order = 1)]
-public class BattleState : SavedData
+public class BattleState : SavedState
 {
-    public string delimiterTwo = "|";
-    public SceneTracker sceneTracker;
     public CharacterList enemyList;
     public OverworldState overworldState;
     public BattleMapFeatures battleMapFeatures;
-    public string previousScene;
-    public void UpdatePreviousScene(){previousScene = sceneTracker.GetPreviousScene();}
-    public void SetPreviousScene(string sceneName){previousScene = sceneName;}
     public List<string> enemies;
     public void AddEnemyName(string newName){enemies.Add(newName);}
     public void SetEnemyNames(List<string> newEnemies){enemies = new List<string>(newEnemies);}

@@ -131,7 +131,7 @@ public class OverworldMap : MapManager
         int tile = partyLocation;
         string feature = overworldData.GetFeatureFromLocation(tile);
         string terrain = overworldData.ReturnTerrain(tile);
-        string featureTerrain = feature+"-"+terrain;
+        string featureTerrain = feature + "-" + terrain;
         string sceneName = featureManager.ReturnSceneName(featureTerrain);
         if (sceneName == "BattleScene")
         {
@@ -147,6 +147,10 @@ public class OverworldMap : MapManager
             overworldState.Save();
             // Move to battle.
             sceneMover.MoveToBattle();
+            return;
+        }
+        else if (sceneName == "Dungeon")
+        {
             return;
         }
     }

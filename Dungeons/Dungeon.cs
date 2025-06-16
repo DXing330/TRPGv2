@@ -14,37 +14,21 @@ public class Dungeon : ScriptableObject
     public string escortName;
     public string GetEscortName(){return escortName;}
     public int dungeonSize;
-    public int GetDungeonSize(){return dungeonSize;}
+    public void SetDungeonSize(int newInfo)
+    {
+        dungeonSize = newInfo;
+        pathfinder.SetMapSize(GetDungeonSize());
+    }
+    public int GetDungeonSize() { return dungeonSize; }
     public void MakeDungeon()
     {
-        dungeonGenerator.SetTreasureCount(1+(currentFloor/2));
+        dungeonGenerator.SetTreasureCount(1 + (currentFloor / 2));
         List<string> newDungeon = dungeonGenerator.GenerateDungeon();
-        dungeonSize = dungeonGenerator.GetSize();
-        pathfinder.SetMapSize(dungeonSize);
-        currentFloorTiles = newDungeon[0].Split("|").ToList();
-        moveCosts.Clear();
-        int bigInt = dungeonSize * dungeonSize;
-        for (int i = 0; i < currentFloorTiles.Count; i++)
-        {
-            if (currentFloorTiles[i] == "1")
-            {
-                currentFloorTiles[i] = type;
-                moveCosts.Add(bigInt);
-            }
-            else
-            {
-                currentFloorTiles[i] = passableTileType;
-                moveCosts.Add(1);
-            }
-        }
+        SetDungeonSize(dungeonGenerator.GetSize());
+        SetFloorTiles(newDungeon[0].Split("|").ToList());
         SetPartyLocation(int.Parse(newDungeon[1]));
-        stairsDown = int.Parse(newDungeon[2]);
-        List<string> tLoc = newDungeon[3].Split("|").ToList();
-        treasureLocations.Clear();
-        for (int i = 0; i < tLoc.Count; i++)
-        {
-            treasureLocations.Add(int.Parse(tLoc[i]));
-        }
+        SetStairsDown(int.Parse(newDungeon[2]));
+        SetTreasureLocations(newDungeon[3].Split("|").ToList());
         goalTile = -1;
         if (currentFloor == goalFloor)
         {
@@ -82,9 +66,11 @@ public class Dungeon : ScriptableObject
     public string GetQuestInfo(){return questInfo;}
     public int goalFloor;
     public int goalTile;
+    public void SetGoalTile(int newInfo){ goalTile = newInfo; }
+    public int GetGoalTile(){ return goalTile; }
     public bool GoalTile(int tileNumber)
     {
-        if (goalFloor != currentFloor){return false;}
+        if (goalFloor != currentFloor) { return false; }
         return tileNumber == goalTile;
     }
     public string questGoal;
@@ -111,15 +97,18 @@ public class Dungeon : ScriptableObject
         questReward = 0;
     }
     public string dungeonName;
-    public void SetDungeonName(string newName)
+    public void SetDungeonName(string newName, bool initial = true)
     {
         dungeonName = newName;
         string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
-        currentFloor = 0;
-        treasuresAcquired = 0;
-        spawnCounter = 0;
-        ResetAllEnemies();
-        ResetQuest();
+        if (initial)
+        {
+            currentFloor = 0;
+            treasuresAcquired = 0;
+            spawnCounter = 0;
+            ResetAllEnemies();
+            ResetQuest();
+        }
         maxFloors = int.Parse(dungeonInfo[0]);
         type = dungeonInfo[1];
         possibleEnemies = dungeonInfo[2].Split(",").ToList();
@@ -128,6 +117,7 @@ public class Dungeon : ScriptableObject
         treasures = dungeonInfo[5].Split(",").ToList();
         maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
     }
+    public string GetDungeonName(){ return dungeonName; }
     public List<string> treasures;
     public List<string> maxPossibleTreasureQuantities;
     public List<string> possibleEnemies;
@@ -166,6 +156,21 @@ public class Dungeon : ScriptableObject
     public void SetFloorTiles(List<string> newTiles, int floor = 0)
     {
         currentFloorTiles = new List<string>(newTiles);
+        moveCosts.Clear();
+        int bigInt = dungeonSize * dungeonSize;
+        for (int i = 0; i < currentFloorTiles.Count; i++)
+        {
+            if (currentFloorTiles[i] == "1")
+            {
+                currentFloorTiles[i] = type;
+                moveCosts.Add(bigInt);
+            }
+            else
+            {
+                currentFloorTiles[i] = passableTileType;
+                moveCosts.Add(1);
+            }
+        }
     }
     // Keep an empty list around for reseting.
     public List<string> allEmptyTiles;
@@ -217,11 +222,30 @@ public class Dungeon : ScriptableObject
     public List<string> allEnemySprites;
     public List<string> allEnemyParties;
     public List<int> allEnemyLocations;
+    public void SetEnemies(List<string> newSprites, List<string> newParties, List<string> newLocations)
+    {
+        allEnemySprites = new List<string>(newSprites);
+        allEnemyParties = new List<string>(newParties);
+        allEnemyLocations.Clear();
+        for (int i = 0; i < newLocations.Count; i++)
+        {
+            allEnemyLocations.Add(int.Parse(newLocations[i]));
+        }
+    }
     public bool EnemyLocation(int nextTile)
     {
         return allEnemyLocations.Contains(nextTile);
     }
     public List<int> treasureLocations;
+    public void SetTreasureLocations(List<string> newInfo)
+    {
+        List<string> tLoc = newInfo;
+        treasureLocations.Clear();
+        for (int i = 0; i < tLoc.Count; i++)
+        {
+            treasureLocations.Add(int.Parse(tLoc[i]));
+        }
+    }
     public bool TreasureLocation(int nextTile)
     {
         return treasureLocations.Contains(nextTile);
@@ -239,6 +263,8 @@ public class Dungeon : ScriptableObject
     }
     public string treasureSprite;
     public int stairsDown;
+    public void SetStairsDown(int newInfo){ stairsDown = newInfo; }
+    public int GetStairsDown(){ return stairsDown; }
     public bool StairsDownLocation(int nextTile)
     {
         return nextTile == stairsDown;

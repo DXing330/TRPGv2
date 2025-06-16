@@ -7,12 +7,13 @@ public class SceneMover : MonoBehaviour
 {
     public LoadingScreen loadingScreen;
     public SceneTracker sceneTracker;
-    public BattleState battleState;
     public bool loadingRequired = false;
     public string overworldSceneName = "Overworld";
     public string hubSceneName = "Hub";
     public string dungeonSceneName = "Dungeon";
+    public BattleState dungeonState;
     public string battleSceneName = "BattleScene";
+    public BattleState battleState;
     public PartyData permanentParty;
     public PartyData mainParty;
     public PartyData tempParty;
@@ -78,7 +79,12 @@ public class SceneMover : MonoBehaviour
 
     public void MoveToDungeon()
     {
-        sceneTracker.SetPreviousScene(hubSceneName);
+        sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        sceneTracker.SetCurrentScene(battleSceneName);
+        sceneTracker.Save();
+        /*
+        dungeonState.Load();
+        */
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(dungeonSceneName));
@@ -121,7 +127,18 @@ public class SceneMover : MonoBehaviour
                 StartCoroutine(LoadAsyncScene("DungeonRewards"));
             }
         }
-        else{ReturnToHub();}
+        else
+        {
+            // Otherwise just go back to the previous scene.
+            if (loadingRequired)
+            {
+                StartCoroutine(LoadingScreenMoveScene(sceneTracker.GetPreviousScene()));
+            }
+            else
+            {
+                StartCoroutine(LoadAsyncScene(sceneTracker.GetPreviousScene()));
+            }
+        }
     }
 
     public void ReturnFromBattle(int victory = 0)
