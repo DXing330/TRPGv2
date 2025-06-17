@@ -20,6 +20,13 @@ public class MapManager : MonoBehaviour
     public List<int> currentTiles;
     [System.NonSerialized]
     public List<string> mapInfo;
+    public void SwitchTile(int tile1, int tile2)
+    {
+        string temp = mapInfo[tile1];
+        mapInfo[tile1] = mapInfo[tile2];
+        mapInfo[tile2] = temp;
+        UpdateMap();
+    }
     [System.NonSerialized]
     public List<string> emptyList;
     protected virtual void InitializeEmptyList()

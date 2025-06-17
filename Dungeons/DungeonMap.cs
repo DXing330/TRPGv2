@@ -18,12 +18,6 @@ public class DungeonMap : MapManager
         InitializeEmptyList();
         dungeon.UpdateEmptyTiles(emptyList);
         centerTile = dungeon.GetPartyLocation();
-        if (dungeon.GetQuestGoal() == "Escort" && dungeon.GetGoalsCompleted() <= 0)
-        {
-            partyDataManager.AddTempPartyMember(dungeon.GetEscortName());
-            dungeon.SetGoalsCompleted(1);
-            actorSpriteHPList.RefreshData();
-        }
         UpdateMap();
     }
 

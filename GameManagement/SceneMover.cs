@@ -11,7 +11,7 @@ public class SceneMover : MonoBehaviour
     public string overworldSceneName = "Overworld";
     public string hubSceneName = "Hub";
     public string dungeonSceneName = "Dungeon";
-    public BattleState dungeonState;
+    public DungeonState dungeonState;
     public string battleSceneName = "BattleScene";
     public BattleState battleState;
     public PartyData permanentParty;
@@ -27,11 +27,23 @@ public class SceneMover : MonoBehaviour
             battleState.Load();
             if (loadingRequired)
             {
-                StartCoroutine(LoadingScreenMoveScene(battleSceneName));
+                StartCoroutine(LoadingScreenMoveScene(currentScene));
             }
             else
             {
-                StartCoroutine(LoadAsyncScene(battleSceneName));
+                StartCoroutine(LoadAsyncScene(currentScene));
+            }
+        }
+        else if (currentScene == dungeonSceneName)
+        {
+            dungeonState.Load();
+            if (loadingRequired)
+            {
+                StartCoroutine(LoadingScreenMoveScene(currentScene));
+            }
+            else
+            {
+                StartCoroutine(LoadAsyncScene(currentScene));
             }
         }
         else
@@ -80,11 +92,10 @@ public class SceneMover : MonoBehaviour
     public void MoveToDungeon()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
-        sceneTracker.SetCurrentScene(battleSceneName);
+        sceneTracker.SetCurrentScene(dungeonSceneName);
         sceneTracker.Save();
-        /*
-        dungeonState.Load();
-        */
+        dungeonState.UpdatePreviousScene();
+        dungeonState.Save();
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(dungeonSceneName));
@@ -94,7 +105,7 @@ public class SceneMover : MonoBehaviour
             StartCoroutine(LoadAsyncScene(dungeonSceneName));
         }
     }
-
+    // Needs another one from the dungeon?
     public void MoveToBattle()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
@@ -104,6 +115,8 @@ public class SceneMover : MonoBehaviour
         battleState.SetTerrainType();
         battleState.UpdateEnemyNames();
         battleState.Save();
+        dungeonState.UpdatePreviousScene();
+        dungeonState.Save();
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(battleSceneName));
@@ -155,6 +168,10 @@ public class SceneMover : MonoBehaviour
         {
             ReturnToHub();
             return;
+        }
+        else if (sceneTracker.GetPreviousScene() == dungeonSceneName)
+        {
+            dungeonState.Load();
         }
         sceneTracker.SetCurrentScene(sceneTracker.GetPreviousScene());
         sceneTracker.Save();

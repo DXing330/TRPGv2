@@ -44,7 +44,7 @@ public class DungeonMiniMap : MonoBehaviour
         int mapCount = 0;
         for (int i = 0; i < dungeon.viewedTiles.Count; i++)
         {
-            if (!dungeon.viewedTiles[i]){miniMapText += "?";}
+            if (dungeon.viewedTiles[i] == 0){miniMapText += "?";}
             else
             {
                 if (i == dungeon.partyLocation){miniMapText += "<color=blue>P</color>";}

@@ -12,12 +12,17 @@ public class DungeonState : SavedState
     public Dungeon dungeon;
     public string dungeonName;
 
+    public override void NewGame()
+    {
+        return;
+    }
+
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
         // Basic info, dungeon type/size/tiles.
         allData = previousScene + delimiter + dungeon.GetDungeonName() + delimiter + dungeon.GetDungeonSize() + delimiter;
-        allData += String.Join(delimiterTwo, dungeon.currentFloorTiles) + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetCurrentFloorTiles()) + delimiter;
         // Locations of party/stairs/treasures.
         allData += dungeon.GetPartyLocation() + delimiter + dungeon.GetStairsDown() + delimiter;
         allData += String.Join(delimiterTwo, dungeon.treasureLocations) + delimiter;
@@ -25,9 +30,18 @@ public class DungeonState : SavedState
         allData += String.Join(delimiterTwo, dungeon.allEnemySprites) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.allEnemyParties) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.allEnemyLocations) + delimiter;
+        // Current floor.
+        allData += dungeon.GetCurrentFloor() + delimiter;
         // Quest/Goal Info // Not always needed.
-        
-        //allData += dungeon.GetGoalTile();
+        allData += dungeon.GetQuestGoal() + delimiter;
+        allData += dungeon.GetGoalsCompleted() + delimiter;
+        allData += dungeon.GetQuestReward() + delimiter;
+        allData += dungeon.GetGoalFloor() + delimiter;
+        allData += dungeon.GetGoalTile() + delimiter;
+        // Collected treasure count.
+        allData += dungeon.GetTreasuresAcquired() + delimiter;
+        // Viewed tiles
+        allData += String.Join(delimiterTwo, dungeon.GetViewedTiles()) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -43,6 +57,13 @@ public class DungeonState : SavedState
         dungeon.SetStairsDown(int.Parse(dataList[5]));
         dungeon.SetTreasureLocations(dataList[6].Split(delimiterTwo).ToList());
         dungeon.SetEnemies(dataList[7].Split(delimiterTwo).ToList(), dataList[8].Split(delimiterTwo).ToList(), dataList[9].Split(delimiterTwo).ToList());
-        //dungeon.SetGoalTile(int.Parse(dataList[7]));
+        dungeon.SetCurrentFloor(int.Parse(dataList[10]));
+        dungeon.SetQuestGoal(dataList[11]);
+        dungeon.SetGoalsCompleted(int.Parse(dataList[12]));
+        dungeon.SetQuestReward(int.Parse(dataList[13]));
+        dungeon.SetGoalFloor(int.Parse(dataList[14]));
+        dungeon.SetGoalTile(int.Parse(dataList[15]));
+        dungeon.SetTreasuresAcquired(int.Parse(dataList[16]));
+        dungeon.SetViewedTiles(dataList[17].Split(delimiterTwo).ToList());
     }
 }

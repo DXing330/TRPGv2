@@ -103,99 +103,99 @@ public class ActiveManager : MonoBehaviour
                 }
                 return;
             case "Summon":
-            // Check if selected tile is free.
-            int summonLocation = targetedTiles[0];
-            if (battle.map.GetActorOnTile(summonLocation) == null)
-            {
-                // Create a new actor on that location on the same team.
-                battle.SpawnAndAddActor(summonLocation, active.GetSpecifics(), skillUser.GetTeam());
-            }
-            return;
-            case "Teleport":
-            // Check if selected tile is free.
-            int target = targetedTiles[0];
-            if (battle.map.GetActorOnTile(target) == null)
-            {
-                skillUser.SetLocation(target);
-                battle.map.UpdateActors();
-            }
-            return;
-            case "Attack":
-            if (targets.Count <= 0){return;}
-            for (int i = 0; i < targets.Count; i++)
-            {
-                for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                // Check if selected tile is free.
+                int summonLocation = targetedTiles[0];
+                if (battle.map.GetActorOnTile(summonLocation) == null)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                    // Create a new actor on that location on the same team.
+                    battle.SpawnAndAddActor(summonLocation, active.GetSpecifics(), skillUser.GetTeam());
                 }
-            }
-            return;
+                return;
+            case "Teleport":
+                // Check if selected tile is free.
+                int target = targetedTiles[0];
+                if (battle.map.GetActorOnTile(target) == null)
+                {
+                    skillUser.SetLocation(target);
+                    battle.map.UpdateActors();
+                }
+                return;
+            case "Attack":
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                    {
+                        battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                    }
+                }
+                return;
             case "Attack+Drain":
-            if (targets.Count <= 0){return;}
-            for (int i = 0; i < targets.Count; i++)
-            {
-                battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
-                skillUser.UpdateHealth(Mathf.Max(1, skillUser.GetAttack() - targets[i].GetDefense()), false);
-            }
-            return;
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                    skillUser.UpdateHealth(Mathf.Max(1, skillUser.GetAttack() - targets[i].GetDefense()), false);
+                }
+                return;
             case "Attack+Status":
-            if (targets.Count <= 0){return;}
-            for (int i = 0; i < targets.Count; i++)
-            {
-                battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
-                active.AffectActor(targets[i], "Status", active.GetSpecifics(), active.GetPower());
-            }
-            return;
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                    active.AffectActor(targets[i], "Status", active.GetSpecifics(), active.GetPower());
+                }
+                return;
             case "Attack+Displace":
-            if (targets.Count <= 0){return;}
-            for (int i = 0; i < targets.Count; i++)
-            {
-                battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
-            }
-            battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
-            return;
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                }
+                battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
+                return;
             case "Attack+Move":
-            if (targets.Count <= 0){return;}
-            for (int i = 0; i < targets.Count; i++)
-            {
-                battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
-            }
-            battle.moveManager.MoveSkill(skillUser, active.GetSpecifics(), active.GetPower(), battle.map);
-            return;
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                }
+                battle.moveManager.MoveSkill(skillUser, active.GetSpecifics(), active.GetPower(), battle.map);
+                return;
             case "Move+Attack":
-            // Move to the tile selected.
-            int prevTile = skillUser.GetLocation();
-            int targetTile = targetedTiles[0];
-            if (battle.map.GetActorOnTile(targetTile) == null)
-            {
-                skillUser.SetLocation(targetTile);
-                // Update the direction to the moving direction.
-                skillUser.SetDirection(battle.moveManager.DirectionBetweenLocations(prevTile, targetTile));
-                battle.map.UpdateActors();
-            }
-            else{return;}
-            // Check if an actor is on the specified tile(s).
-            int attackTargetTile = battle.moveManager.PointInDirection(skillUser.GetLocation(), skillUser.GetDirection());
-            if (battle.map.GetActorOnTile(attackTargetTile) != null)
-            {
-                battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(attackTargetTile), battle.map, battle.moveManager);
-            }
-            return;
+                // Move to the tile selected.
+                int prevTile = skillUser.GetLocation();
+                int targetTile = targetedTiles[0];
+                if (battle.map.GetActorOnTile(targetTile) == null)
+                {
+                    skillUser.SetLocation(targetTile);
+                    // Update the direction to the moving direction.
+                    skillUser.SetDirection(battle.moveManager.DirectionBetweenLocations(prevTile, targetTile));
+                    battle.map.UpdateActors();
+                }
+                else { return; }
+                // Check if an actor is on the specified tile(s).
+                int attackTargetTile = battle.moveManager.PointInDirection(skillUser.GetLocation(), skillUser.GetDirection());
+                if (battle.map.GetActorOnTile(attackTargetTile) != null)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(attackTargetTile), battle.map, battle.moveManager);
+                }
+                return;
             case "Displace":
-            battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
-            return;
+                battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
+                return;
             case "Taunt":
-            for (int i = 0; i < targets.Count; i++)
-            {
-                targets[i].SetTarget(skillUser);
-            }
-            return;
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    targets[i].SetTarget(skillUser);
+                }
+                return;
             case "TerrainEffect":
-            for (int i = 0; i < targetedTiles.Count; i++)
-            {
-                battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
-            }
-            return;
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
+                }
+                return;
             case "Attack+TerrainEffect":
                 for (int i = 0; i < targets.Count; i++)
                 {
@@ -207,11 +207,27 @@ public class ActiveManager : MonoBehaviour
                 }
                 return;
             case "Trap":
-            for (int i = 0; i < targetedTiles.Count; i++)
-            {
-                battle.map.ChangeTrap(targetedTiles[i], active.GetSpecifics());
-            }
-            return;
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeTrap(targetedTiles[i], active.GetSpecifics());
+                }
+                return;
+            case "Swap":
+                if (targetedTiles.Count <= 0){ return; }
+                switch (active.GetSpecifics())
+                {
+                    case "Location":
+                        if (targets.Count <= 0) { break; }
+                        battle.map.SwitchActorLocations(targets[0], skillUser);
+                        break;
+                    case "TerrainEffect":
+                        battle.map.SwitchTerrainEffect(targetedTiles[0], skillUser.GetLocation());
+                        break;
+                    case "Tile":
+                        battle.map.SwitchTile(targetedTiles[0], skillUser.GetLocation());
+                        break;
+                }
+                return;
         }
         active.AffectActors(targets);
     }

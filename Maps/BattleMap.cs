@@ -39,6 +39,13 @@ public class BattleMap : MapManager
         battlingActors.Add(actor);
         UpdateMap();
     }
+    public void SwitchActorLocations(TacticActor actor1, TacticActor actor2)
+    {
+        int temp = actor1.GetLocation();
+        actor1.SetLocation(actor2.GetLocation());
+        actor2.SetLocation(temp);
+        UpdateMap();
+    }
     public int RemoveActorsFromBattle(int turnNumber = -1)
     {
         for (int i = battlingActors.Count - 1; i >= 0; i--)
@@ -77,6 +84,13 @@ public class BattleMap : MapManager
     public void ChangeTerrainEffect(int tileNumber, string newEffect)
     {
         terrainEffectTiles[tileNumber] = newEffect;
+        UpdateMap();
+    }
+    public void SwitchTerrainEffect(int tile1, int tile2)
+    {
+        string temp = terrainEffectTiles[tile1];
+        terrainEffectTiles[tile1] = terrainEffectTiles[tile2];
+        terrainEffectTiles[tile2] = temp;
         UpdateMap();
     }
     protected void UpdateTerrain()
