@@ -52,7 +52,7 @@ public class DungeonState : SavedState
         previousScene = dataList[0];
         dungeon.SetDungeonName(dataList[1], false);
         dungeon.SetDungeonSize(int.Parse(dataList[2]));
-        dungeon.SetFloorTiles(dataList[3].Split(delimiterTwo).ToList());
+        dungeon.LoadFloorTiles(dataList[3].Split(delimiterTwo).ToList());
         dungeon.SetPartyLocation(int.Parse(dataList[4]));
         dungeon.SetStairsDown(int.Parse(dataList[5]));
         dungeon.SetTreasureLocations(dataList[6].Split(delimiterTwo).ToList());

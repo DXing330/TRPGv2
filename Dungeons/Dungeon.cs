@@ -174,7 +174,24 @@ public class Dungeon : ScriptableObject
     }
     [System.NonSerialized]
     public List<string> currentFloorTiles;
-    public List<string> GetCurrentFloorTiles(){return currentFloorTiles;}
+    public void LoadFloorTiles(List<string> newTiles)
+    {
+        currentFloorTiles = new List<string>(newTiles);
+        moveCosts = new List<int>();
+        int bigInt = dungeonSize * dungeonSize;
+        for (int i = 0; i < currentFloorTiles.Count; i++)
+        {
+            if (currentFloorTiles[i] == passableTileType)
+            {
+                moveCosts.Add(1);
+            }
+            else
+            {
+                moveCosts.Add(bigInt);
+            }
+        }
+    }
+    public List<string> GetCurrentFloorTiles() { return currentFloorTiles; }
     [System.NonSerialized]
     public List<int> moveCosts;
     public void SetFloorTiles(List<string> newTiles, int floor = 0)

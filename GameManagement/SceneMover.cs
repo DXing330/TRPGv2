@@ -89,11 +89,13 @@ public class SceneMover : MonoBehaviour
         }
     }
 
+    // Only called when first entering the dungeon from another scene.
     public void MoveToDungeon()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
         sceneTracker.SetCurrentScene(dungeonSceneName);
         sceneTracker.Save();
+        // Only set when first moving to the dungeon.
         dungeonState.UpdatePreviousScene();
         dungeonState.Save();
         if (loadingRequired)
@@ -115,7 +117,6 @@ public class SceneMover : MonoBehaviour
         battleState.SetTerrainType();
         battleState.UpdateEnemyNames();
         battleState.Save();
-        dungeonState.UpdatePreviousScene();
         dungeonState.Save();
         if (loadingRequired)
         {
@@ -142,6 +143,7 @@ public class SceneMover : MonoBehaviour
         }
         else
         {
+            sceneTracker.SetPreviousScene(dungeonState.GetPreviousScene());
             // Otherwise just go back to the previous scene.
             if (loadingRequired)
             {
