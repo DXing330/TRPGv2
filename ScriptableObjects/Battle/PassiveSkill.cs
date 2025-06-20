@@ -8,15 +8,15 @@ public class PassiveSkill : SkillEffect
     public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData, BattleState battleState)
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
-        if (startBattlePassives.Count <= 0){return;}
+        if (startBattlePassives.Count <= 0) { return; }
         string passiveName = "";
         List<string> passiveData = new List<string>();
         for (int i = 0; i < startBattlePassives.Count; i++)
         {
             passiveName = startBattlePassives[i];
-            if (passiveName.Length <= 1){continue;}
+            if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
-            if (!CheckStartBattleCondition(passiveData[1], passiveData[2], actor, battleState)){continue;}
+            if (!CheckStartBattleCondition(passiveData[1], passiveData[2], actor, battleState)) { continue; }
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
     }
@@ -27,11 +27,13 @@ public class PassiveSkill : SkillEffect
         switch (timing)
         {
             case "Start":
-            passives = actor.GetStartTurnPassives();
-            break;
+                passives = actor.GetStartTurnPassives();
+                passives.Add(map.ReturnTerrainStartPassive(actor));
+                break;
             case "End":
-            passives = actor.GetEndTurnPassives();
-            break;
+                passives = actor.GetEndTurnPassives();
+                passives.Add(map.ReturnTerrainEndPassive(actor));
+                break;
         }
         string passiveName = "";
         List<string> passiveData = new List<string>();
@@ -86,7 +88,7 @@ public class PassiveSkill : SkillEffect
         }
         return true;
     }
-    
+
     public bool CheckStartEndCondition(string condition, string conditionSpecifics, TacticActor actor, BattleMap map)
     {
         switch (condition)
@@ -96,11 +98,17 @@ public class PassiveSkill : SkillEffect
             case "Health":
                 return CheckHealthConditions(conditionSpecifics, actor);
             case "Tile":
-                return conditionSpecifics == map.GetTileInfoOfActor(actor);
+                return map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
+            case "Tile<>":
+                return !map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
             case "Weather":
                 return conditionSpecifics == map.GetWeather();
             case "Time":
                 return conditionSpecifics == map.GetTime();
+            case "MoveType":
+                return conditionSpecifics == actor.GetMoveType();
+            case "MoveType<>":
+                return conditionSpecifics != actor.GetMoveType();
         }
         // Most of them have no condition.
         return true;
@@ -111,24 +119,24 @@ public class PassiveSkill : SkillEffect
         switch (condition)
         {
             case "Tile":
-            return CheckConditionSpecifics(conditionSpecifics, map.mapInfo[target.GetLocation()]);
+                return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "Tile<>":
-            return !CheckConditionSpecifics(conditionSpecifics, map.mapInfo[target.GetLocation()]);
+                return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "Adjacent Ally":
-            // Need to check adjacent tiles for allies.
-            return false;
+                // Need to check adjacent tiles for allies.
+                return false;
             case "None":
-            return true;
+                return true;
             case "Distance":
-            return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
+                return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
             case "Distance>":
-            return moveManager.DistanceBetweenActors(target, attacker) >= int.Parse(conditionSpecifics);
+                return moveManager.DistanceBetweenActors(target, attacker) >= int.Parse(conditionSpecifics);
             case "Sprite":
-            return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
+                return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
             case "Direction":
-            return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
+                return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
             case "Health":
-            return CheckHealthConditions(conditionSpecifics, target);
+                return CheckHealthConditions(conditionSpecifics, target);
         }
         return false;
     }
@@ -140,11 +148,11 @@ public class PassiveSkill : SkillEffect
         switch (conditionSpecifics)
         {
             case "<Half":
-            return (currentHealth * 2) < maxHealth;
+                return (currentHealth * 2) < maxHealth;
             case ">Half":
-            return (currentHealth * 2) > maxHealth;
+                return (currentHealth * 2) > maxHealth;
             case "Full":
-            return currentHealth >= maxHealth;
+                return currentHealth >= maxHealth;
         }
         return false;
     }
@@ -154,42 +162,42 @@ public class PassiveSkill : SkillEffect
         switch (condition)
         {
             case "None":
-            return true;
+                return true;
             case "Type":
-            return conditionSpecifics == damageType;
+                return conditionSpecifics == damageType;
             case "<":
-            return int.Parse(conditionSpecifics) < damageAmount;
+                return int.Parse(conditionSpecifics) < damageAmount;
             case ">":
-            return int.Parse(conditionSpecifics) > damageAmount;
+                return int.Parse(conditionSpecifics) > damageAmount;
         }
         return false;
     }
-    
+
     public string CheckRelativeDirections(int dir1, int dir2)
     {
         int directionDiff = Mathf.Abs(dir1 - dir2);
         switch (directionDiff)
         {
             case 0:
-            return "Same";
+                return "Same";
             case 1:
-            return "Back";
+                return "Back";
             case 2:
-            return "Front";
+                return "Front";
             case 3:
-            return "Opposite";
+                return "Opposite";
             case 4:
-            return "Front";
+                return "Front";
             case 5:
-            return "Back";
+                return "Back";
         }
         return "None";
     }
 
     public bool CheckDirectionSpecifics(string conditionSpecifics, string specifics)
     {
-        if (conditionSpecifics == "Back" && specifics == "Same"){return true;}
-        else if (conditionSpecifics == "Front" && specifics == "Opposite"){return true;}
+        if (conditionSpecifics == "Back" && specifics == "Same") { return true; }
+        else if (conditionSpecifics == "Front" && specifics == "Opposite") { return true; }
         return (conditionSpecifics == specifics);
     }
 
@@ -204,18 +212,31 @@ public class PassiveSkill : SkillEffect
         switch (effect)
         {
             case "Increase":
-            affected += power;
-            break;
+                affected += power;
+                break;
             case "Decrease":
-            affected -= power;
-            break;
+                affected -= power;
+                break;
             case "Increase%":
-            affected += power * affected / basicDenominator;
-            break;
+                affected += power * affected / basicDenominator;
+                break;
             case "Decrease%":
-            affected -= power * affected / basicDenominator;
-            break;
+                affected -= power * affected / basicDenominator;
+                break;
         }
         return affected;
+    }
+
+    public void AffectMap(BattleMap map, int location, string effect, string effectSpecifics)
+    {
+        switch (effect)
+        {
+            case "Tile":
+                map.ChangeTerrain(location, effectSpecifics);
+                break;
+            case "TerrainEffect":
+                map.ChangeTerrainEffect(location, effectSpecifics);
+                break;
+        }
     }
 }

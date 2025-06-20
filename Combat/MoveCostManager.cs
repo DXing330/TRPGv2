@@ -6,6 +6,8 @@ public class MoveCostManager : MonoBehaviour
 {
     public PassiveSkill passiveSkill;
     public StatDatabase passiveData;
+    public int bigInt = 999;
+    public List<string> stopDisplacement;
     public int moveTypeIndex;
     public List<string> mapInfo;
     public void SetMapInfo(List<string> newInfo)
@@ -20,91 +22,62 @@ public class MoveCostManager : MonoBehaviour
         teamInfo = newInfo;
     }
     public List<MoveCosts> moveCosts;
-    public List<string> moveTypeTiles;
-    public List<int> moveTypeCosts;
-    public int moveCost;
-    public List<int> mapMoveCosts;
-    public List<int> pathCosts;
-    public List<int> reachableTiles;
-    public ActorPathfinder actorPathfinder;
-
-    protected void UpdateTileTypeList()
+    public StatDatabase allMoveCosts; // Refactor how move costs are determined.
+    public List<int> currentMoveCosts;
+    public void UpdateCurrentMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
-        moveTypeTiles.Clear();
-        for (int i = 0; i < moveCosts[moveTypeIndex].tileTypes.Count; i++)
+        string moveType = actor.GetMoveType();
+        currentMoveCosts.Clear();
+        string combined = "";
+        string value = "";
+        for (int i = 0; i < mapInfo.Count; i++)
         {
-            moveTypeTiles.Add(moveCosts[moveTypeIndex].tileTypes[i]);
+            combined = mapInfo[i] + "-" + moveType;
+            value = allMoveCosts.ReturnValue(combined);
+            if (value == "")
+            {
+                currentMoveCosts.Add(1);
+            }
+            else
+            {
+                currentMoveCosts.Add(int.Parse(value));
+            }
         }
-    }
-
-    protected void UpdateMoveCostList(TacticActor actor)
-    {
         List<string> movingPassives = actor.GetMovingPassives();
-        moveTypeCosts.Clear();
-        for (int i = 0; i < moveCosts[moveTypeIndex].moveCosts.Count; i++)
-        {
-            moveTypeCosts.Add(moveCosts[moveTypeIndex].moveCosts[i]);
-        }
         List<string> passiveInfo = new List<string>();
         for (int i = 0; i < movingPassives.Count; i++)
         {
             passiveInfo = passiveData.ReturnStats(movingPassives[i]);
-            for (int j = 0; j < moveTypeTiles.Count; j++)
+            for (int j = 0; j < currentMoveCosts.Count; j++)
             {
-                if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], moveTypeTiles[j]))
+                if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], mapInfo[j]))
                 {
-                    moveTypeCosts[j] = Mathf.Max(1, passiveSkill.AffectInt(moveTypeCosts[j], passiveInfo[4], passiveInfo[5]));
+                    currentMoveCosts[j] = Mathf.Max(1, passiveSkill.AffectInt(currentMoveCosts[j], passiveInfo[4], passiveInfo[5]));
                 }
             }
         }
-    }
-
-    public int ReturnMoveCost(string tileType)
-    {
-        if (moveTypeIndex < 0){return 1;}
-        int indexOf = moveTypeTiles.IndexOf(tileType);
-        if (indexOf < 0){return 1;}
-        return moveTypeCosts[indexOf];
-    }
-
-    protected void DetermineMoveType(TacticActor actor)
-    {
-        moveTypeIndex = -1;
-        for (int i = 0; i < moveCosts.Count; i++)
-        {
-            if (moveCosts[i].moveType == actor.GetMoveType())
-            {
-                moveTypeIndex = i;
-                return;
-            }
-        }
-    }
-
-    protected void UpdateMoveCosts(TacticActor actor, List<TacticActor> actors)
-    {
-        DetermineMoveType(actor);
-        UpdateTileTypeList();
-        UpdateMoveCostList(actor);
-        mapMoveCosts.Clear();
-        for (int i = 0; i < mapInfo.Count; i++)
-        {
-            mapMoveCosts.Add(ReturnMoveCost(mapInfo[i]));
-        }
         for (int i = 0; i < actors.Count; i++)
         {
-            mapMoveCosts[actors[i].GetLocation()] = 333;
+            currentMoveCosts[actors[i].GetLocation()] = bigInt;
         }
     }
-
+    public List<string> moveTypeTiles;
+    public List<int> moveTypeCosts;
+    public int moveCost;
+    public int GetMoveCost(){ return moveCost; }
+    public List<int> mapMoveCosts;
+    public List<int> pathCosts;
+    public List<int> reachableTiles;
+    public ActorPathfinder actorPathfinder;
     public void GetAllMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
-        UpdateMoveCosts(actor, actors);
-        pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), mapMoveCosts);
+        UpdateCurrentMoveCosts(actor, actors);
+        pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), currentMoveCosts);
     }
 
     public int MoveCostOfTile(int tileIndex)
     {
-        return mapMoveCosts[tileIndex];
+        return currentMoveCosts[tileIndex];
     }
 
     public List<int> GetPrecomputedPath(int startIndex, int endIndex)
@@ -113,7 +86,7 @@ public class MoveCostManager : MonoBehaviour
         List<int> path = actorPathfinder.GetPrecomputedPath(startIndex, endIndex);
         for (int i = 0; i < path.Count; i++)
         {
-            moveCost += mapMoveCosts[path[i]];
+            moveCost += currentMoveCosts[path[i]];
         }
         return path;
     }
@@ -123,22 +96,22 @@ public class MoveCostManager : MonoBehaviour
         moveCost = 0;
         for (int i = 0; i < path.Count; i++)
         {
-            moveCost += mapMoveCosts[path[i]];
+            moveCost += currentMoveCosts[path[i]];
         }
         return moveCost;
     }
 
     public List<int> GetAllReachableTiles(TacticActor actor, List<TacticActor> actors, bool current = true)
     {
-        UpdateMoveCosts(actor, actors);
-        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(current), mapMoveCosts);
+        UpdateCurrentMoveCosts(actor, actors);
+        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(current), currentMoveCosts);
         return reachableTiles;
     }
 
     public List<int> GetReachableTilesBasedOnActions(TacticActor actor, List<TacticActor> actors, int actionCount)
     {
-        UpdateMoveCosts(actor, actors);
-        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRangeBasedOnActions(actionCount), mapMoveCosts);
+        UpdateCurrentMoveCosts(actor, actors);
+        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRangeBasedOnActions(actionCount), currentMoveCosts);
         return reachableTiles;
     }
 
@@ -162,7 +135,7 @@ public class MoveCostManager : MonoBehaviour
 
     public List<int> GetTilesInAttackRange(TacticActor actor, bool current = true)
     {
-        List<int> tiles = actorPathfinder.FindTilesInAttackRange(actor, mapMoveCosts, current);
+        List<int> tiles = actorPathfinder.FindTilesInAttackRange(actor, currentMoveCosts, current);
         return tiles;
     }
 
@@ -258,6 +231,8 @@ public class MoveCostManager : MonoBehaviour
             nextTile = PointInDirection(nextTile, direction);
             // Can't push someone out of bounds.
             if (nextTile < 0) { break; }
+            // Can't push someone over a mountain/wall/etc.
+            if (stopDisplacement.Contains(mapInfo[nextTile])){ break; }
             // Tiles are passable if no one is occupying them.
             if (map.GetActorOnTile(nextTile) == null)
             {
@@ -277,11 +252,21 @@ public class MoveCostManager : MonoBehaviour
         for (int i = 0; i < movingPassives.Count; i++)
         {
             passiveInfo = passiveData.ReturnStats(movingPassives[i]);
-            // Only apply passives that affect the user.
-            if (passiveInfo[3] != "Self"){continue;}
-            if (passiveSkill.CheckMovingCondition(passiveInfo[2], map.mapInfo[location]))
+            // Only apply passives that affect the user or the map.
+            switch (passiveInfo[3])
             {
-                passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
+                case "Self":
+                    if (passiveSkill.CheckMovingCondition(passiveInfo[2], map.mapInfo[location]))
+                    {
+                        passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
+                    }
+                    break;
+                case "Map":
+                    if (passiveSkill.CheckMovingCondition(passiveInfo[2], map.mapInfo[location]))
+                    {
+                        passiveSkill.AffectMap(map, location, passiveInfo[4], passiveInfo[5]);
+                    }
+                    break;
             }
         }
     }

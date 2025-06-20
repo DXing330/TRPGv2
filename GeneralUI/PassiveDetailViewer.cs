@@ -11,10 +11,7 @@ public class PassiveDetailViewer : MonoBehaviour
     public int textSize;
     public void UpdateTextSize()
     {
-        for (int i = 0; i < passiveInfoTexts.Count; i++)
-        {
-            passiveInfoTexts[i].SetTextSize(textSize);
-        }
+        passiveStatTextList.UpdateTextSize();
     }
     public string passiveGroupName;
     public StatTextText passiveGroupText;
@@ -28,34 +25,33 @@ public class PassiveDetailViewer : MonoBehaviour
     public StatDatabase allPassives;
     public GameObject panel;
     public void DisablePanel(){panel.SetActive(false);}
-    public List<GameObject> objects;
-    public List<StatTextText> passiveInfoTexts;
+    public StatTextList passiveStatTextList;
+    //public List<GameObject> objects;
+    //public List<StatTextText> passiveInfoTexts;
 
     public void UpdatePassiveNames(string group, string newLevel)
     {
         SetPassiveGroupName(group);
         SetPassiveLevel(newLevel);
         panel.SetActive(true);
-        for (int i = 0; i < passiveInfoTexts.Count; i++)
-        {
-            passiveInfoTexts[i].Reset();
-        }
         int level = int.Parse(passiveLevel);
         passiveNames.Clear();
         passiveInfo.Clear();
         passiveDescription.Clear();
         // Max level for a passive is 4.
-        for (int i = 1; i < Mathf.Min(5, level+1); i++)
+        for (int i = 0; i < level; i++)
         {
-            passiveNames.Add(passiveNameLevels.GetMultiKeyValue(passiveGroupName, i.ToString()));
-            passiveInfo.Add(allPassives.ReturnValue(passiveNames[i-1]));
+            passiveNames.Add(passiveNameLevels.GetMultiKeyValue(passiveGroupName, (i+1).ToString()));
+            passiveInfo.Add(allPassives.ReturnValue(passiveNames[i]));
+            passiveDescription.Add(ReturnPassiveDetails(passiveInfo[i]));
         }
-        for (int i = 0; i < passiveNames.Count; i++)
+        /*for (int i = 0; i < passiveNames.Count; i++)
         {
             passiveDescription.Add(ReturnPassiveDetails(passiveInfo[i]));
             passiveInfoTexts[i].SetStatText(passiveNames[i]);
             passiveInfoTexts[i].SetText(passiveDescription[i]);
-        }
+        }*/
+        passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
         passiveGroupText.SetStatText(passiveGroupName);
         passiveGroupText.SetText(passiveLevel);
     }

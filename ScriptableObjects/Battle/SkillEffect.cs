@@ -145,6 +145,10 @@ public class SkillEffect : ScriptableObject
             case "Weight":
                 target.UpdateWeight(int.Parse(effectSpecifics));
                 break;
+            case "Death":
+                target.SetCurrentHealth(0);
+                target.ResetActions();
+                break;
         }
     }
 }

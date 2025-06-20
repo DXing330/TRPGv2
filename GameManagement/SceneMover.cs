@@ -117,7 +117,11 @@ public class SceneMover : MonoBehaviour
         battleState.SetTerrainType();
         battleState.UpdateEnemyNames();
         battleState.Save();
-        dungeonState.Save();
+        if (SceneManager.GetActiveScene().name == dungeonSceneName)
+        {
+            // Only save the dungeon state if entering a battle from the dungeon.
+            dungeonState.Save();
+        }
         if (loadingRequired)
         {
             StartCoroutine(LoadingScreenMoveScene(battleSceneName));

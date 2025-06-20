@@ -47,6 +47,7 @@ public class DungeonState : SavedState
 
     public override void Load()
     {
+        dataPath = Application.persistentDataPath + "/" + filename;
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
         previousScene = dataList[0];

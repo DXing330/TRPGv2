@@ -17,6 +17,25 @@ public class BattleMap : MapManager
     public void SetTime(string newInfo){ time = newInfo; }
     public string GetTime(){ return time; }
     public CombatLog combatLog;
+    public TerrainPassivesList terrainPassives;
+    public string ReturnTerrainStartPassive(TacticActor actor)
+    {
+        string terrainType = mapInfo[actor.GetLocation()];
+        if (terrainPassives.TerrainPassivesExist(terrainType))
+        {
+            return terrainPassives.ReturnTerrainPassive(terrainType).GetStartPassive();
+        }
+        return "";
+    }
+    public string ReturnTerrainEndPassive(TacticActor actor)
+    {
+        string terrainType = mapInfo[actor.GetLocation()];
+        if (terrainPassives.TerrainPassivesExist(terrainType))
+        {
+            return terrainPassives.ReturnTerrainPassive(terrainType).GetEndPassive();
+        }
+        return "";
+    }
     public StatDatabase terrainEffectData;
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
@@ -76,10 +95,7 @@ public class BattleMap : MapManager
     {
         // Straight forward change ignoring everything else.
         mapInfo[tileNumber] = change;
-        // Probably need a table for this.
-        //string changeKey = mapInfo[tileNumber] + change;
-        // string newTerrain = dictionary.ReturnValue(changeKey)
-        // if (newTerrain == ""){return;}
+        UpdateMap();
     }
     public void ChangeTerrainEffect(int tileNumber, string newEffect)
     {
