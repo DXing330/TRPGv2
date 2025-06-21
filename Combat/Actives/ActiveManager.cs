@@ -99,7 +99,7 @@ public class ActiveManager : MonoBehaviour
             case "Tile":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrain(targetedTiles[0], active.GetSpecifics());
+                    battle.map.ChangeTerrain(targetedTiles[i], active.GetSpecifics());
                 }
                 return;
             case "Summon":

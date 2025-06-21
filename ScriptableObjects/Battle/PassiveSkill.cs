@@ -208,7 +208,9 @@ public class PassiveSkill : SkillEffect
 
     public int AffectInt(int affected, string effect, string effectSpecifics, int level = 1)
     {
-        int power = int.Parse(effectSpecifics) * level;
+        int power = 0;
+        bool intEffect = int.TryParse(effectSpecifics, out power);
+        if (!intEffect) { return affected; }
         switch (effect)
         {
             case "Increase":

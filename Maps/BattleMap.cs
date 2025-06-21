@@ -90,13 +90,23 @@ public class BattleMap : MapManager
     }
     // List of actor directions on tiles.
     public List<string> actorDirections;
-    public List<string> terrainEffectTiles;
+    public StatDatabase tileTileInteractions;
     public void ChangeTerrain(int tileNumber, string change)
     {
-        // Straight forward change ignoring everything else.
-        mapInfo[tileNumber] = change;
+        string changeKey = mapInfo[tileNumber]+">"+change;
+        string interaction = tileTileInteractions.ReturnValue(changeKey);
+        if (interaction == "")
+        {
+            // Straight forward change ignoring everything else.
+            mapInfo[tileNumber] = change;
+        }
+        else
+        {
+            mapInfo[tileNumber] = interaction;
+        }
         UpdateMap();
     }
+    public List<string> terrainEffectTiles;
     public void ChangeTerrainEffect(int tileNumber, string newEffect)
     {
         terrainEffectTiles[tileNumber] = newEffect;

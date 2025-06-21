@@ -15,34 +15,38 @@ public class ActiveDescriptionViewer : MonoBehaviour
         switch (e)
         {
             case "Attack":
-            return "Attack the target(s) "+ASD(s)+" time(s) with "+APD(p)+"% damage.";
+                return "Attack the target(s) " + ASD(s) + " time(s) with " + APD(p) + "% damage.";
             // The specifics will determine the direction anyway.
             case "Displace":
-            return ASD(s)+" the target(s) with "+APD(p)+" additional force.";
+                return ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Teleport":
-            return "Move to the targeted tile.";
+                return "Move to the targeted tile.";
             case "Status":
-            return "Give the target(s) "+ASD(s)+" for "+APD(p)+" turn(s).";
+                return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turn(s).";
             case "RemoveStatus":
-            return "Remove "+ASD(s)+" from the target(s).";
+                return "Remove " + ASD(s) + " from the target(s).";
             case "Summon":
-            return "Summon a "+ASD(s)+".";
+                return "Summon a " + ASD(s) + ".";
             case "TerrainEffect":
-            return "Create "+ASD(s)+" on targeted tile(s).";
+                return "Create " + ASD(s) + " on targeted tile(s).";
             case "Trap":
-            return "Set up a "+ASD(s)+" trap on the targeted tile(s).";
+                return "Set up a " + ASD(s) + " trap on the targeted tile(s).";
             case "Taunt":
-            return "Make target(s) more likely to attack.";
+                return "Make target(s) more likely to attack.";
             case "Attack+Move":
-            return "Attack the target(s) and move "+ASD(s)+" "+APD(p)+" tile(s).";
+                return "Attack the target(s) and move " + ASD(s) + " " + APD(p) + " tile(s).";
             case "Move+Attack":
-            return "Move to the targeted tile and attack any target in "+ASD(s)+" of the the targeted tile.";
+                return "Move to the targeted tile and attack any target in " + ASD(s) + " of the the targeted tile.";
             case "Temporary Passive":
-            return "Give the target(s) "+ASD(s)+" for "+APD(p)+" turns.";
+                return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turns.";
             case "Attack+Status":
-            return "Attack the target(s) and inflict "+ASD(s)+" for "+APD(p)+" turns.";
+                return "Attack the target(s) and inflict " + ASD(s) + " for " + APD(p) + " turns.";
             case "Attack+Drain":
-            return "Attack the target(s) and absorb some damage as health.";
+                return "Attack the target(s) and absorb some damage as health.";
+            case "Attack+TerrainEffect":
+                return "Attack the target(s) and create " + ASD(s) + " on targeted tile(s).";
+            case "Tile":
+                return "Try to change the targeted tile(s) to " + ASD(s) + ".";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }
