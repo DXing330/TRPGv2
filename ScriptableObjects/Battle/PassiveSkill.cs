@@ -70,9 +70,16 @@ public class PassiveSkill : SkillEffect
     }
 
     // Moving passives usually depend on the tile moved over.
-    public bool CheckMovingCondition(string specifics, string tileType)
+    public bool CheckMovingCondition(string condition, string specifics, string currentTile)
     {
-        return specifics == tileType;
+        switch (condition)
+        {
+            case "Tile":
+                return currentTile.Contains(specifics); // Contains, since DeepWater counts as Water
+            case "Tile<>":
+                return !currentTile.Contains(specifics);
+        }
+        return true;
     }
 
     public bool CheckStartBattleCondition(string condition, string specifics, TacticActor actor, BattleState battleState)

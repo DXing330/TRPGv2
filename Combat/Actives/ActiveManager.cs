@@ -75,13 +75,16 @@ public class ActiveManager : MonoBehaviour
         switch (shape)
         {
             case "Circle":
-            return pathfinder.FindTilesInRange(startTile, range);
+                return pathfinder.FindTilesInRange(startTile, range);
             case "ECircle":
-            return pathfinder.FindTilesInRange(startTile, range);
+                return pathfinder.FindTilesInRange(startTile, range);
             case "Line":
-            return pathfinder.GetTilesInLineRange(startTile, range);
+                return pathfinder.GetTilesInLineRange(startTile, range);
             case "Cone":
-            return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
+                return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
+            case "Beam":
+                int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
+                return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction);
         }
         return new List<int>();
     }

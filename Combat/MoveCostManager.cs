@@ -252,18 +252,20 @@ public class MoveCostManager : MonoBehaviour
         for (int i = 0; i < movingPassives.Count; i++)
         {
             passiveInfo = passiveData.ReturnStats(movingPassives[i]);
+
             // Only apply passives that affect the user or the map.
             switch (passiveInfo[3])
             {
                 case "Self":
-                    if (passiveSkill.CheckMovingCondition(passiveInfo[2], map.mapInfo[location]))
+                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], map.mapInfo[location]))
                     {
                         passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
                     }
                     break;
                 case "Map":
-                    if (passiveSkill.CheckMovingCondition(passiveInfo[2], map.mapInfo[location]))
+                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], map.mapInfo[location]))
                     {
+                        Debug.Log(passiveInfo[2]);
                         passiveSkill.AffectMap(map, location, passiveInfo[4], passiveInfo[5]);
                     }
                     break;

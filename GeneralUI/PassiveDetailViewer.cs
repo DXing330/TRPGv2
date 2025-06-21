@@ -26,8 +26,6 @@ public class PassiveDetailViewer : MonoBehaviour
     public GameObject panel;
     public void DisablePanel(){panel.SetActive(false);}
     public StatTextList passiveStatTextList;
-    //public List<GameObject> objects;
-    //public List<StatTextText> passiveInfoTexts;
 
     public void UpdatePassiveNames(string group, string newLevel)
     {
@@ -45,12 +43,6 @@ public class PassiveDetailViewer : MonoBehaviour
             passiveInfo.Add(allPassives.ReturnValue(passiveNames[i]));
             passiveDescription.Add(ReturnPassiveDetails(passiveInfo[i]));
         }
-        /*for (int i = 0; i < passiveNames.Count; i++)
-        {
-            passiveDescription.Add(ReturnPassiveDetails(passiveInfo[i]));
-            passiveInfoTexts[i].SetStatText(passiveNames[i]);
-            passiveInfoTexts[i].SetText(passiveDescription[i]);
-        }*/
         passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
         passiveGroupText.SetStatText(passiveGroupName);
         passiveGroupText.SetText(passiveLevel);
@@ -113,6 +105,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 break;
             case "Distance":
                 return " if within " + specifics + " tile(s).";
+            case "Distance>":
+                return " if at least " + specifics + " tile(s) away.";
             //case "Type":
             //return " if the damage is "+damageTypes.ReturnValue(dummyPassive.conditionSpecifics)+".";
             case "Health":
@@ -126,12 +120,18 @@ public class PassiveDetailViewer : MonoBehaviour
                 break;
             case "Tile":
                 return " if on a " + specifics + " tile.";
+            case "Tile<>":
+                return " if not on a " + specifics + " tile.";
             case "Weapon":
                 return " if a " + specifics + " is equipped.";
             case "Weather":
-                return " if the weather is "+specifics+".";
+                return " if the weather is " + specifics + ".";
             case "Time":
-                return " if the time of day is "+specifics+".";
+                return " if the time of day is " + specifics + ".";
+            case "MoveType<>":
+                return " if " + specifics + ".";
+            case "MoveType":
+                return " if not " + specifics + ".";
         }
         return ".";
     }
@@ -184,6 +184,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " gain a shield that absorbs damage equal to " + specifics + "% of max health, until the end of next turn";
             case "TempHealth":
                 return " gain a shield that absorbs damage equal to " + specifics + ", until the end of next turn";
+            case "TerrainEffect":
+                return " create "+specifics;
+            case "Tile":
+                return " create "+specifics;
         }
         return " increase "+effect+" by "+specifics;
     }
