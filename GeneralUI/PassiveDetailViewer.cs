@@ -164,6 +164,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " regain up to " + specifics + "% health";
             case "Attack%":
                 return " increase attack by " + specifics + "%";
+            case "BaseAttack%":
+                return " increase base attack by " + specifics + "%";
             case "Defense%":
                 return " increase defense by " + specifics + "%";
             case "MoveType":

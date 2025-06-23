@@ -77,6 +77,9 @@ public class SkillEffect : ScriptableObject
             case "BaseAttack":
                 target.UpdateBaseAttack(int.Parse(effectSpecifics) * level);
                 break;
+            case "BaseAttack%":
+                target.UpdateBaseAttack(level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
+                break;
             case "BaseDefense":
                 target.UpdateBaseDefense(int.Parse(effectSpecifics) * level);
                 break;
@@ -127,7 +130,6 @@ public class SkillEffect : ScriptableObject
                 target.SetMoveSpeedMax(int.Parse(effectSpecifics));
                 break;
             case "Movement":
-                //target.GainMovement(level*int.Parse(effectSpecifics)*target.GetSpeed());
                 target.GainMovement(level * int.Parse(effectSpecifics));
                 break;
             case "BaseActions":
