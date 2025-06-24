@@ -85,7 +85,7 @@ public class MapManager : MonoBehaviour
         currentTiles = currentTileManager.GetCurrentTilesFromCenter(centerTile, mapSize, gridSize);
     }
 
-    protected virtual void UpdateMap()
+    public virtual void UpdateMap()
     {
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);

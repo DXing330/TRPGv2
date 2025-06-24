@@ -159,7 +159,7 @@ public class BattleMap : MapManager
         battlingActors.Clear();
     }
 
-    protected override void UpdateMap()
+    public override void UpdateMap()
     {
         base.UpdateMap();
         UpdateActors();
@@ -223,6 +223,7 @@ public class BattleMap : MapManager
 
     public TacticActor GetActorOnTile(int tileNumber)
     {
+        if (tileNumber < 0){ return null; }
         string actorName = actorTiles[tileNumber];
         for (int i = 0; i < battlingActors.Count; i++)
         {

@@ -21,6 +21,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Teleport":
                 return "Move to the targeted tile.";
+            case "Teleport+Attack":
+                return "Try to move " + ASD(s) + " the target and attack with " + APD(p) + "% damage.";
             case "Status":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turn(s).";
             case "RemoveStatus":
@@ -44,9 +46,13 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Attack+Drain":
                 return "Attack the target(s) and absorb some damage as health.";
             case "Attack+TerrainEffect":
-                return "Attack the target(s) and create " + ASD(s) + " on targeted tile(s).";
+                return "Attack the target(s)  with " + APD(p) + "% damage, create " + ASD(s) + " on targeted tile(s).";
             case "Tile":
                 return "Try to change the targeted tile(s) to " + ASD(s) + ".";
+            case "True Damage":
+                return "Deal damage equal to " + APD(p) + "% of " + ASD(s) + ".";
+            case "Attack+Tile":
+                return "Attack the target(s)  with " + APD(p) + "% damage, and try to change the targeted tile(s) to " + ASD(s) + ".";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

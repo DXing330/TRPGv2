@@ -241,7 +241,7 @@ public class OverworldMap : MapManager
         characterLayer = new List<string>(overworldData.characterLayer);
     }
 
-    protected override void UpdateMap()
+    public override void UpdateMap()
     {
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentOverworldTiles(mapTiles, mapInfo, currentTiles);

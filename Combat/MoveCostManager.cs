@@ -193,6 +193,26 @@ public class MoveCostManager : MonoBehaviour
         map.UpdateActors();
     }
 
+    public bool TeleportToTarget(TacticActor mover, TacticActor target, string direction, BattleMap map)
+    {
+        int dir = -1;
+        int tile = -1;
+        switch (direction)
+        {
+            case "Behind":
+                dir = target.GetDirection();
+                dir = (dir + 3) % 6;
+                break;
+        }
+        if (dir == -1) { return false; }
+        tile = PointInDirection(target.GetLocation(), dir);
+        // Can't teleport is already actor there.
+        if (map.GetActorOnTile(tile) != null) { return false; }
+        mover.SetLocation(tile);
+        map.UpdateMap();
+        return true;
+    }
+
     public void MoveSkill(TacticActor mover, string moveDirection, int distance, BattleMap map)
     {
         int currentLocation = mover.GetLocation();
@@ -200,10 +220,10 @@ public class MoveCostManager : MonoBehaviour
         switch (moveDirection)
         {
             case "Forward":
-            break;
+                break;
             case "Back":
-            moveSkillDirection = (moveSkillDirection + 3)%6;
-            break;
+                moveSkillDirection = (moveSkillDirection + 3) % 6;
+                break;
         }
         // Get the tile to move to.
         int nextLocation = actorPathfinder.GetTileByDirectionDistance(currentLocation, moveSkillDirection, distance);

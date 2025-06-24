@@ -82,7 +82,7 @@ public class DungeonMap : MapManager
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, dungeon.partyLocations, currentTiles);
     }
 
-    protected override void UpdateMap()
+    public override void UpdateMap()
     {
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, dungeon.currentFloorTiles, currentTiles);

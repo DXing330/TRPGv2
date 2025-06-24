@@ -84,7 +84,7 @@ public class ActiveManager : MonoBehaviour
                 return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
             case "Beam":
                 int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
-                return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction);
+                return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction, active.GetSpan());
         }
         return new List<int>();
     }
@@ -94,6 +94,7 @@ public class ActiveManager : MonoBehaviour
         skillUser.SpendEnergy(active.GetEnergyCost());
         skillUser.PayActionCost(active.GetActionCost());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
+        int targetTile = -1;
         switch (active.effect)
         {
             case "Weather":
@@ -103,6 +104,16 @@ public class ActiveManager : MonoBehaviour
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
                     battle.map.ChangeTerrain(targetedTiles[i], active.GetSpecifics());
+                }
+                return;
+            case "Attack+Tile":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeTerrain(targetedTiles[i], active.GetSpecifics());
+                }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
                 }
                 return;
             case "Summon":
@@ -123,6 +134,16 @@ public class ActiveManager : MonoBehaviour
                     battle.map.UpdateActors();
                 }
                 return;
+            // The teleport behind you skill.
+            case "Teleport+Attack":
+                targetTile = targetedTiles[0];
+                TacticActor targetActor = battle.map.GetActorOnTile(targetTile);
+                if (targetActor == null) { return; }
+                if (battle.moveManager.TeleportToTarget(skillUser, targetActor, active.GetSpecifics(), battle.map))
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targetActor, battle.map, battle.moveManager, active.GetPower());
+                }
+                return;
             case "Attack":
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)
@@ -137,7 +158,7 @@ public class ActiveManager : MonoBehaviour
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
                     skillUser.UpdateHealth(Mathf.Max(1, skillUser.GetAttack() - targets[i].GetDefense()), false);
                 }
                 return;
@@ -168,7 +189,7 @@ public class ActiveManager : MonoBehaviour
             case "Move+Attack":
                 // Move to the tile selected.
                 int prevTile = skillUser.GetLocation();
-                int targetTile = targetedTiles[0];
+                targetTile = targetedTiles[0];
                 if (battle.map.GetActorOnTile(targetTile) == null)
                 {
                     skillUser.SetLocation(targetTile);
@@ -202,7 +223,7 @@ public class ActiveManager : MonoBehaviour
             case "Attack+TerrainEffect":
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
                 }
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
@@ -216,7 +237,7 @@ public class ActiveManager : MonoBehaviour
                 }
                 return;
             case "Swap":
-                if (targetedTiles.Count <= 0){ return; }
+                if (targetedTiles.Count <= 0) { return; }
                 switch (active.GetSpecifics())
                 {
                     case "Location":
@@ -229,6 +250,12 @@ public class ActiveManager : MonoBehaviour
                     case "Tile":
                         battle.map.SwitchTile(targetedTiles[0], skillUser.GetLocation());
                         break;
+                }
+                return;
+            case "True Damage":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower(), active.GetSpecifics());
                 }
                 return;
         }

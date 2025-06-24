@@ -99,14 +99,17 @@ public class MapPathfinder : ScriptableObject
         return mapUtility.DirectionBetweenLocations(start, end, mapSize);
     }
 
-    public List<int> GetTilesInBeamRange(int startTile, int direction, int range = -1, int span = 1)
+    public List<int> GetTilesInBeamRange(int startTile, int direction, int span = 1, int range = -1)
     {
         if (range < 0){ range = mapSize; }
         List<int> tiles = new List<int>();
         tiles.AddRange(GetTilesInLineDirection(startTile, direction, range));
         List<int> startingTiles = new List<int>();
-        startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 1) % 6, span));
-        startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 5) % 6, span));
+        if (span > 0)
+        {
+            startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 1) % 6, span));
+            startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 5) % 6, span));
+        }
         for (int i = 0; i < startingTiles.Count; i++)
         {
             tiles.AddRange(GetTilesInLineDirection(startingTiles[i], direction, range - 1));

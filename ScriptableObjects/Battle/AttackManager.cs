@@ -15,25 +15,47 @@ public class AttackManager : ScriptableObject
     protected int advantage;
     protected int baseDamage;
     protected int damageMultiplier;
+
+    public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
+    {
+        if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
+        else { damageMultiplier = attackMultiplier; }
+        // True damage ignores defender/terrain passives, making it even stronger than it should be.
+        CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
+        baseDamage = attacker.GetAttack();
+        switch (type)
+        {
+            case "Health":
+                baseDamage = attacker.GetHealth();
+                break;
+            case "Defense":
+                baseDamage = attacker.GetDefense();
+                break;
+        }
+        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
+        defender.SetTarget(attacker);
+        map.combatLog.UpdateNewestLog(defender.GetSpriteName() + " takes " + baseDamage + " damage.");
+        defender.TakeDamage(baseDamage);
+    }
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         advantage = 0;
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
-        if (attackMultiplier < 0){damageMultiplier = baseMultiplier;}
-        else {damageMultiplier = attackMultiplier;}
+        if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
+        else { damageMultiplier = attackMultiplier; }
         // Forests/other cover will reduce ranged damage greatly.
         baseDamage = attacker.GetAttack();
         CheckTerrainPassives(defender, attacker, map, moveManager);
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
-        if (damageMultiplier < 0){damageMultiplier = 0;}
-        finalDamageCalculation = "Damage Multiplier: "+baseDamage+" * "+damageMultiplier+"% = ";
+        if (damageMultiplier < 0) { damageMultiplier = 0; }
+        finalDamageCalculation = "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         finalDamageCalculation += baseDamage;
-        finalDamageCalculation += "\n"+"Subtract Defense: "+baseDamage+" - "+defender.GetDefense()+" = ";
+        finalDamageCalculation += "\n" + "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
         // Adjust damage based on passives, terrain effects, direction, etc.
         // Check if the passive affects damage.
         baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
@@ -41,7 +63,7 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation += baseDamage;
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
-        map.combatLog.UpdateNewestLog(defender.GetSpriteName()+" takes "+baseDamage+" damage.");
+        map.combatLog.UpdateNewestLog(defender.GetSpriteName() + " takes " + baseDamage + " damage.");
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);

@@ -144,6 +144,10 @@ public class PassiveSkill : SkillEffect
                 return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
             case "Health":
                 return CheckHealthConditions(conditionSpecifics, target);
+            case "Weather":
+                return conditionSpecifics == map.GetWeather();
+            case "Time":
+                return conditionSpecifics == map.GetTime();
         }
         return false;
     }

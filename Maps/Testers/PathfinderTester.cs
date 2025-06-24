@@ -53,7 +53,7 @@ public class PathfinderTester : MonoBehaviour
     {
         if (!debugThis){return;}
         pathfinder.SetMapSize(testSize);
-        List<int> tiles = pathfinder.GetTilesInBeamRange(testTile, testDirection, testRange);
+        List<int> tiles = pathfinder.GetTilesInBeamRange(testTile, testDirection);
         tiles.Sort();
         for (int i = 0; i < tiles.Count; i++)
         {
