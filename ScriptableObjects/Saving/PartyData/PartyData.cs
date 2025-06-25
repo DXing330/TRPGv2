@@ -339,6 +339,15 @@ public class PartyData : SavedData
         partyCurrentStats.Add(currentStats);
         battleFees.Add(fee);
     }
+
+    public void RemoveExhaustion(int index)
+    {
+        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
+        dummyActor.SetStatsFromString(stats);
+        dummyActor.ClearStatuses(exhaustStatus);
+        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+    }
+
     public void Rest(int index, bool eat = true)
     {
         string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];

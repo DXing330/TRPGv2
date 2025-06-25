@@ -99,6 +99,7 @@ public class OverworldState : SavedData
     }
     public override void Rest()
     {
+        partyData.RemoveExhaustion();
         AddHours(GetRestingPeriod());
         partyData.Rest();
     }

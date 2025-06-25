@@ -74,6 +74,17 @@ public class PartyDataManager : MonoBehaviour
         for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].AddHours(hours); }
     }
 
+    public void RemoveExhaustion()
+    {
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            for (int j = allParties[i].PartyCount() - 1; j >= 0; j--)
+            {
+                allParties[i].RemoveExhaustion(j);
+            }
+        }
+    }
+
     public virtual void Rest()
     {
         for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].Rest(); }
