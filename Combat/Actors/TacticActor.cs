@@ -97,8 +97,22 @@ public class TacticActor : ActorStats
     public int direction;
     public int GetDirection(){return direction;}
     public void SetDirection(int newDirection){direction = newDirection;}
+    protected string immuneMentalState = "Calm";
+    public string mentalState;
+    public void ResetMentalState()
+    {
+        if (mentalState == immuneMentalState) { return; }
+        mentalState = "";
+    }
+    public void SetMentalState(string newInfo)
+    {
+        if (mentalState == immuneMentalState) { return; }
+        mentalState = newInfo;
+    }
+    public string GetMentalState(){ return mentalState; }
     public TacticActor target;
-    public void SetTarget(TacticActor newTarget){target = newTarget;}
+    public void ResetTarget(){ target = null; }
+    public void SetTarget(TacticActor newTarget) { target = newTarget; }
     public TacticActor GetTarget(){return target;}
     public bool TargetAlive()
     {
@@ -116,6 +130,7 @@ public class TacticActor : ActorStats
     {
         movement = 0;
         ResetTempStats();
+        ResetMentalState();
         CheckStatusDuration();
     }
 

@@ -62,19 +62,33 @@ public class ActorAI : ScriptableObject
         return path;
     }
 
-    public TacticActor GetClosestEnemy(List<TacticActor> battlingActors, TacticActor currentActor, MoveCostManager moveManager)
+    public TacticActor GetClosestEnemy(List<TacticActor> battlingActors, TacticActor currentActor, MoveCostManager moveManager, bool rage = false)
     {
         List<TacticActor> enemies = new List<TacticActor>();
-        for (int i = 0; i < battlingActors.Count; i++)
+        if (!rage)
         {
-            // Enemies is everyone on a different team? But maybe some teams can be allied in some fights?
-            if (battlingActors[i].GetTeam() != currentActor.GetTeam())
+            for (int i = 0; i < battlingActors.Count; i++)
             {
-                enemies.Add(battlingActors[i]);
+                // Enemies is everyone on a different team? But maybe some teams can be allied in some fights?
+                if (battlingActors[i].GetTeam() != currentActor.GetTeam())
+                {
+                    enemies.Add(battlingActors[i]);
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < battlingActors.Count; i++)
+            {
+                if (battlingActors[i] != currentActor)
+                {
+                    enemies.Add(battlingActors[i]);
+                }
             }
         }
         // If there is only one enemy then thats the target.
-        if (enemies.Count == 1){return enemies[0];}
+        if (enemies.Count == 1) { return enemies[0]; }
+        if (enemies.Count <= 0){ return null; }
         int distance = 9999;
         List<int> possibleIndices = new List<int>();
         for (int i = 0; i < enemies.Count; i++)
@@ -91,7 +105,6 @@ public class ActorAI : ScriptableObject
                 possibleIndices.Add(i);
             }
         }
-        if (enemies.Count <= 0){ return null; }
         return enemies[possibleIndices[Random.Range(0, possibleIndices.Count)]];
     }
     

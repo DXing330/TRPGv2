@@ -151,6 +151,9 @@ public class SkillEffect : ScriptableObject
                 target.SetCurrentHealth(0);
                 target.ResetActions();
                 break;
+            case "MentalState":
+                target.SetMentalState(effectSpecifics);
+                break;
         }
     }
 }

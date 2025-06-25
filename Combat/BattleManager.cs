@@ -99,7 +99,22 @@ public class BattleManager : MonoBehaviour
         ChangeTurn();
         ResetState();
         UI.PlayerTurn();
-        if (turnActor.GetTeam() > 0){NPCTurn();}
+        // Check for mental conditions.
+        string mentalState = turnActor.GetMentalState();
+        switch (mentalState)
+        {
+            case "Fear":
+                return;
+            case "Rage":
+                UI.NPCTurn();
+                StartCoroutine(RageTurn(turnActor.GetActions()));
+                return;
+            case "Charm":
+                UI.NPCTurn();
+                StartCoroutine(CharmedTurn(turnActor.GetActions()));
+                return;
+        }
+        if (turnActor.GetTeam() > 0) { NPCTurn(); }
     }
     protected void NPCTurn()
     {
@@ -318,6 +333,62 @@ public class BattleManager : MonoBehaviour
             activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
             ActivateSkill(actorAI.ReturnAIActiveSkill());
             activeManager.ActivateSkill(this);
+            yield return new WaitForSeconds(0.5f);
+            if (turnActor.GetActions() <= 0){break;}
+        }
+        StartCoroutine(EndTurn());
+    }
+
+    IEnumerator RageTurn(int actionsLeft)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            // Pick the closest target no matter what.
+            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+            TacticActor newTarget = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager, true);
+            if (newTarget == null)
+            {
+                // No more enemies, just end turn.
+                StartCoroutine(EndTurn());
+                yield break;
+            }
+            turnActor.SetTarget(newTarget);
+            // Attack them if you can.
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)) { NPCAttackAction(); }
+            // Else move towards the target.
+            else
+            {
+                List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+                StartCoroutine(MoveAlongPath(turnActor, path));
+            }
+            yield return new WaitForSeconds(0.5f);
+            if (turnActor.GetActions() <= 0){break;}
+        }
+        // Reset targets after you stop raging.
+        turnActor.ResetTarget();
+        StartCoroutine(EndTurn());
+    }
+
+    IEnumerator CharmedTurn(int actionsLeft)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
+            {
+                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+                TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
+                if (closestEnemy == null)
+                {
+                    // No more enemies, just end turn.
+                    StartCoroutine(EndTurn());
+                    yield break;
+                }
+                turnActor.SetTarget(closestEnemy);
+            }
+            // Move towards the target.
+            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+            List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+            StartCoroutine(MoveAlongPath(turnActor, path));
             yield return new WaitForSeconds(0.5f);
             if (turnActor.GetActions() <= 0){break;}
         }
