@@ -104,14 +104,17 @@ public class BattleManager : MonoBehaviour
         switch (mentalState)
         {
             case "Terrified":
+                combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" is Terrified.");
                 UI.NPCTurn();
                 StartCoroutine(TerrifiedTurn(turnActor.GetActions()));
                 return;
             case "Enraged":
+                combatLog.UpdateNewestLog(turnActor.GetPersonalName() + " is Enraged.");
                 UI.NPCTurn();
                 StartCoroutine(EnragedTurn(turnActor.GetActions()));
                 return;
             case "Charmed":
+                combatLog.UpdateNewestLog(turnActor.GetPersonalName() + " is Charmed.");
                 UI.NPCTurn();
                 StartCoroutine(CharmedTurn(turnActor.GetActions()));
                 return;
@@ -470,7 +473,12 @@ public class BattleManager : MonoBehaviour
             activeManager.SetSkillUser(turnActor);
             if (activeManager.CheckSkillCost())
             {
-                activeManager.GetTargetedTiles(turnActor.GetTarget().GetLocation(), moveManager.actorPathfinder);
+                int targetTile = turnActor.GetTarget().GetLocation();
+                if (activeManager.active.GetRange() == 0)
+                {
+                    targetTile = turnActor.GetLocation();
+                }
+                activeManager.GetTargetedTiles(targetTile, moveManager.actorPathfinder);
                 ActivateSkill(attackActive);
                 activeManager.ActivateSkill(this);
                 // Turn to face the target in case the skill is not a real attack or an AOE.

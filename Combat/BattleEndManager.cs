@@ -102,10 +102,10 @@ public class BattleEndManager : MonoBehaviour
     {
         actorNames.Clear();
         skillUpNames.Clear();
-        List<string> spriteNames = partyData.permanentPartyData.GetSpriteNames();
-        List<string> names = partyData.permanentPartyData.GetNames();
-        List<string> baseStats = partyData.permanentPartyData.GetBaseStats();
-        List<string> equipment = partyData.permanentPartyData.GetEquipment();
+        List<string> spriteNames = new List<string>(partyData.permanentPartyData.GetSpriteNames());
+        List<string> names = new List<string>(partyData.permanentPartyData.GetNames());
+        List<string> baseStats = new List<string>(partyData.permanentPartyData.GetBaseStats());
+        List<string> equipment = new List<string>(partyData.permanentPartyData.GetEquipment());
         spriteNames.AddRange(partyData.mainPartyData.GetSpriteNames());
         names.AddRange(partyData.mainPartyData.GetNames());
         baseStats.AddRange(partyData.mainPartyData.GetBaseStats());
