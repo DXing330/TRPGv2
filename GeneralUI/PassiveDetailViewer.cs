@@ -128,10 +128,16 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the weather is " + specifics + ".";
             case "Time":
                 return " if the time of day is " + specifics + ".";
-            case "MoveType<>":
-                return " if " + specifics + ".";
             case "MoveType":
+                return " if " + specifics + ".";
+            case "MoveType<>":
                 return " if not " + specifics + ".";
+            case "MentalState":
+                return " if " + specifics + ".";
+            case "MentalStateA":
+                return " if " + specifics + ".";
+            case "MentalStateD":
+                return " if " + specifics + ".";
         }
         return ".";
     }
@@ -187,9 +193,11 @@ public class PassiveDetailViewer : MonoBehaviour
             case "TempHealth":
                 return " gain a shield that absorbs damage equal to " + specifics + ", until the end of next turn";
             case "TerrainEffect":
-                return " create "+specifics;
+                return " create " + specifics;
             case "Tile":
-                return " create "+specifics;
+                return " create " + specifics;
+            case "MentalState":
+                return "change mental state to "+specifics;
         }
         return " increase "+effect+" by "+specifics;
     }

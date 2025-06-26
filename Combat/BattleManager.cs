@@ -103,13 +103,15 @@ public class BattleManager : MonoBehaviour
         string mentalState = turnActor.GetMentalState();
         switch (mentalState)
         {
-            case "Fear":
-                return;
-            case "Rage":
+            case "Terrified":
                 UI.NPCTurn();
-                StartCoroutine(RageTurn(turnActor.GetActions()));
+                StartCoroutine(TerrifiedTurn(turnActor.GetActions()));
                 return;
-            case "Charm":
+            case "Enraged":
+                UI.NPCTurn();
+                StartCoroutine(EnragedTurn(turnActor.GetActions()));
+                return;
+            case "Charmed":
                 UI.NPCTurn();
                 StartCoroutine(CharmedTurn(turnActor.GetActions()));
                 return;
@@ -339,7 +341,31 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(EndTurn());
     }
 
-    IEnumerator RageTurn(int actionsLeft)
+    IEnumerator TerrifiedTurn(int actionsLeft)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            // Get the closest enemy.
+            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+            TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
+            if (closestEnemy == null)
+            {
+                // No more enemies, just end turn.
+                StartCoroutine(EndTurn());
+                yield break;
+            }
+            turnActor.SetTarget(closestEnemy);
+            // Move away from them the target.
+            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+            List<int> path = actorAI.FindPathAwayFromTarget(turnActor, map, moveManager);
+            StartCoroutine(MoveAlongPath(turnActor, path));
+            yield return new WaitForSeconds(0.5f);
+            if (turnActor.GetActions() <= 0){break;}
+        }
+        StartCoroutine(EndTurn());
+    }
+
+    IEnumerator EnragedTurn(int actionsLeft)
     {
         for (int i = 0; i < actionsLeft; i++)
         {

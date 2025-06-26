@@ -29,6 +29,33 @@ public class ActorAI : ScriptableObject
         return actorAttackSkills.ReturnValue(actor.GetPersonalName());
     }
 
+    public List<int> FindPathAwayFromTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
+    {
+        int originalLocation = currentActor.GetLocation();
+        moveManager.GetAllMoveCosts(currentActor, map.battlingActors);
+        List<int> path = new List<int>();
+        if (currentActor.GetTarget() == null){return path;}
+        // Find the direction to the target.
+        int directionToTarget = moveManager.DirectionBetweenActors(currentActor, currentActor.GetTarget());
+        // Move in the opposite direction.
+        int finalDirection = (directionToTarget + 3) % 6;
+        List<int> fullPath = moveManager.TilesInDirection(originalLocation, finalDirection);
+        int pathCost = 0;
+        for (int i = 0; i < fullPath.Count; i++)
+        {
+            path.Insert(0, fullPath[i]);
+            pathCost += moveManager.MoveCostOfTile(fullPath[i]);
+            if (pathCost > currentActor.GetMoveRange())
+            {
+                path.RemoveAt(0);
+                pathCost -= moveManager.MoveCostOfTile(fullPath[i]);
+                break;
+            }
+        }
+        currentActor.PayMoveCost(pathCost);
+        return path;
+    }
+
     public List<int> FindPathToTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
         int originalLocation = currentActor.GetLocation();
@@ -40,7 +67,7 @@ public class ActorAI : ScriptableObject
         List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, currentActor.GetTarget().GetLocation());
         List<int> path = new List<int>();
         int pathCost = 0;
-        if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), moveManager)){return path;}
+        if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), moveManager)) { return path; }
         for (int i = fullPath.Count - 1; i >= 0; i--)
         {
             path.Insert(0, fullPath[i]);

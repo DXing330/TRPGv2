@@ -43,6 +43,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turns.";
             case "Attack+Status":
                 return "Attack the target(s) and inflict " + ASD(s) + " for " + APD(p) + " turns.";
+            case "Attack+MentalState":
+                return "Attack the target(s) and try to change their mental state to "+ASD(s)+".";
             case "Attack+Drain":
                 return "Attack the target(s) and absorb some damage as health.";
             case "Attack+TerrainEffect":
@@ -53,6 +55,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Deal damage equal to " + APD(p) + "% of " + ASD(s) + ".";
             case "Attack+Tile":
                 return "Attack the target(s)  with " + APD(p) + "% damage, and try to change the targeted tile(s) to " + ASD(s) + ".";
+            case "MentalState":
+                return "Try to change the target(s) mental state to "+ASD(s)+".";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

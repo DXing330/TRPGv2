@@ -243,6 +243,11 @@ public class MoveCostManager : MonoBehaviour
         return actorPathfinder.mapUtility.PointInDirection(current, direction, actorPathfinder.mapSize);
     }
 
+    public List<int> TilesInDirection(int current, int direction)
+    {
+        return actorPathfinder.mapUtility.GetTilesInLineDirection(current, direction, actorPathfinder.mapSize, actorPathfinder.mapSize);
+    }
+
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
         int nextTile = actor.GetLocation();
@@ -252,7 +257,7 @@ public class MoveCostManager : MonoBehaviour
             // Can't push someone out of bounds.
             if (nextTile < 0) { break; }
             // Can't push someone over a mountain/wall/etc.
-            if (stopDisplacement.Contains(mapInfo[nextTile])){ break; }
+            if (stopDisplacement.Contains(mapInfo[nextTile])) { break; }
             // Tiles are passable if no one is occupying them.
             if (map.GetActorOnTile(nextTile) == null)
             {

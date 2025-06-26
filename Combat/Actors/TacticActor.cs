@@ -106,7 +106,18 @@ public class TacticActor : ActorStats
     }
     public void SetMentalState(string newInfo)
     {
-        if (mentalState == immuneMentalState) { return; }
+        // Can change to immune no matter what.
+        if (newInfo == immuneMentalState)
+        {
+            mentalState = immuneMentalState;
+            return;
+        }
+        // Immunity blocks one negative change.
+            if (mentalState == immuneMentalState)
+            {
+                mentalState = "";
+                return;
+            }
         mentalState = newInfo;
     }
     public string GetMentalState(){ return mentalState; }

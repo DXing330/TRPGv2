@@ -170,6 +170,14 @@ public class ActiveManager : MonoBehaviour
                     active.AffectActor(targets[i], "Status", active.GetSpecifics(), active.GetPower());
                 }
                 return;
+            case "Attack+MentalState":
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
+                    active.AffectActor(targets[i], "MentalState", active.GetSpecifics(), active.GetPower());
+                }
+                return;
             case "Attack+Displace":
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)
