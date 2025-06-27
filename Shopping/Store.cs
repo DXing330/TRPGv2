@@ -109,8 +109,8 @@ public class Store : MonoBehaviour
         for (int i = 0; i < equipmentDisplay.GetListLength(); i++)
         {
             string equipName = equipmentDisplay.GetCurrentPageStat(i);
-            if (equipName == ""){break;}
-            quantity = partyData.equipmentInventory.ReturnEquipmentQuantity(equipmentSold[i]);
+            if (equipName == "") { break; }
+            quantity = partyData.equipmentInventory.ReturnEquipmentQuantity(equipName);
             equipmentOwned[i].text = quantity.ToString()+"X";
         }
     }

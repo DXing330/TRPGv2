@@ -100,6 +100,7 @@ public class SelectStatTextList : StatTextList
         data = new List<string>(actor.GetPassiveLevels());
         for (int i = 0; i < stats.Count; i++)
         {
+            if (i >= objects.Count){ break; }
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);
             statTexts[i].SetText(data[i]);
@@ -232,7 +233,8 @@ public class SelectStatTextList : StatTextList
         // Display the levels.
         ResetPage();
         for (int i = 0; i < allPassives.Count; i++)
-        {            
+        {
+            if (i >= objects.Count){ break; }
             objects[i].SetActive(true);
             statTexts[i].SetStatText(allPassives[i]);
             statTexts[i].SetText(allPassiveLevels[i]);

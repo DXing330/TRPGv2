@@ -72,6 +72,7 @@ public class ActiveManager : MonoBehaviour
     {
         int range = active.GetRange(skillUser);
         if (!targetable){range = active.GetSpan();}
+        int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
         switch (shape)
         {
             case "Circle":
@@ -80,10 +81,11 @@ public class ActiveManager : MonoBehaviour
                 return pathfinder.FindTilesInRange(startTile, range);
             case "Line":
                 return pathfinder.GetTilesInLineRange(startTile, range);
+            case "ELine":
+                return pathfinder.GetTilesInLineDirection(skillUser.GetLocation(), direction, active.GetSpan());
             case "Cone":
                 return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
             case "Beam":
-                int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
                 return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction, active.GetSpan());
         }
         return new List<int>();

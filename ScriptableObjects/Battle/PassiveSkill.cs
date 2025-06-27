@@ -38,7 +38,7 @@ public class PassiveSkill : SkillEffect
         string passiveName = "";
         List<string> passiveData = new List<string>();
         List<TacticActor> targets = new List<TacticActor>();
-        for (int i = 0; i < passives.Count; i++)
+        for (int i = passives.Count - 1; i >= 0; i--)
         {
             targets.Clear();
             passiveName = passives[i];

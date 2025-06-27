@@ -89,7 +89,7 @@ public class MapPathfinder : ScriptableObject
         return current;
     }
 
-    protected List<int> GetTilesInLineDirection(int startTile, int direction, int range)
+    public List<int> GetTilesInLineDirection(int startTile, int direction, int range)
     {
         return mapUtility.GetTilesInLineDirection(startTile, direction, range, mapSize);
     }

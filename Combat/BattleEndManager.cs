@@ -83,7 +83,8 @@ public class BattleEndManager : MonoBehaviour
         if (winnerTeam == 0)
         {
             battleResult.text = "<color=green>Victory!</color>";
-            CalculateSkillUps();
+            CalculateSkillUps(true);
+            CalculateSkillUps(false);
         }
         else
         {
@@ -98,18 +99,28 @@ public class BattleEndManager : MonoBehaviour
         sceneMover.ReturnFromBattle(winnerTeam);
     }
 
-    protected void CalculateSkillUps()
+    protected void CalculateSkillUps(bool permanent = true)
     {
-        actorNames.Clear();
-        skillUpNames.Clear();
-        List<string> spriteNames = new List<string>(partyData.permanentPartyData.GetSpriteNames());
-        List<string> names = new List<string>(partyData.permanentPartyData.GetNames());
-        List<string> baseStats = new List<string>(partyData.permanentPartyData.GetBaseStats());
-        List<string> equipment = new List<string>(partyData.permanentPartyData.GetEquipment());
-        spriteNames.AddRange(partyData.mainPartyData.GetSpriteNames());
-        names.AddRange(partyData.mainPartyData.GetNames());
-        baseStats.AddRange(partyData.mainPartyData.GetBaseStats());
-        equipment.AddRange(partyData.mainPartyData.GetEquipment());
+        List<string> spriteNames = new List<string>();
+        List<string> names = new List<string>();
+        List<string> baseStats = new List<string>();
+        List<string> equipment = new List<string>();
+        if (permanent)
+        {
+            actorNames.Clear();
+            skillUpNames.Clear();
+            spriteNames = partyData.permanentPartyData.GetSpriteNames();
+            names = partyData.permanentPartyData.GetNames();
+            baseStats = partyData.permanentPartyData.GetBaseStats();
+            equipment = partyData.permanentPartyData.GetEquipment();
+        }
+        else
+        {
+            spriteNames = partyData.mainPartyData.GetSpriteNames();
+            names = partyData.mainPartyData.GetNames();
+            baseStats = partyData.mainPartyData.GetBaseStats();
+            equipment = partyData.mainPartyData.GetEquipment();
+        }
         for (int i = 0; i < spriteNames.Count; i++)
         {
             dummyActor.SetStatsFromString(baseStats[i]);

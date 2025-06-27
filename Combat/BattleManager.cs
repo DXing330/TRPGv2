@@ -383,7 +383,8 @@ public class BattleManager : MonoBehaviour
             }
             turnActor.SetTarget(newTarget);
             // Attack them if you can.
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)) { NPCAttackAction(); }
+            // You can use a random skill if possible.
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)) { NPCAttackAction(true); }
             // Else move towards the target.
             else
             {
@@ -464,12 +465,25 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(EndTurn());
     }
 
-    protected void NPCAttackAction()
+    protected void NPCAttackAction(bool randomSkill = false)
     {
         string attackActive = actorAI.ReturnAIAttackSkill(turnActor);
+        if (randomSkill)
+        {
+            List<string> turnActorSkills = turnActor.GetActiveSkills();
+            string rSkill = turnActorSkills[Random.Range(0, turnActorSkills.Count - 1)];
+            if (activeManager.SkillExists(rSkill))
+            {
+                activeManager.SetSkillFromName(rSkill);
+                if (activeManager.active.GetSkillType() == "Damage")
+                {
+                    attackActive = rSkill;
+                }
+            }
+        }
         if (activeManager.SkillExists(attackActive))
         {
-            activeManager.SetSkillFromName(actorAI.ReturnAIAttackSkill(turnActor));
+            activeManager.SetSkillFromName(attackActive);
             activeManager.SetSkillUser(turnActor);
             if (activeManager.CheckSkillCost())
             {
