@@ -119,12 +119,15 @@ public class SelectStatTextList : StatTextList
         comparisons = new List<string>();
         for (int i = 0; i < stats.Count; i++)
         {
-            if (i >= objects.Count) { break; }
-            objects[i].SetActive(true);
-            statTexts[i].SetStatText(stats[i]);
-            statTexts[i].SetText(data[i]);
             comparisons.Add("Default");
         }
+        for (int i = 0; i < stats.Count; i++)
+            {
+                if (i >= objects.Count) { break; }
+                objects[i].SetActive(true);
+                statTexts[i].SetStatText(stats[i]);
+                statTexts[i].SetText(data[i]);
+            }
         if (stats.Count > objects.Count){EnableChangePage();}
     }
 

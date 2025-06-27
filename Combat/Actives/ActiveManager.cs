@@ -268,6 +268,9 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower(), active.GetSpecifics());
                 }
                 return;
+            // Remove a random active skill.
+            case "Amnesia":
+                return;
         }
         active.AffectActors(targets);
     }

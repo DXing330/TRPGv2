@@ -16,17 +16,25 @@ public class ActorAI : ScriptableObject
     public bool NormalTurn(TacticActor actor, int roundIndex)
     {
         string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetPersonalName());
-        if (fullSkillRotation == "" || fullSkillRotation == "None"){return true;}
+        if (fullSkillRotation == "" || fullSkillRotation == "-1"){return true;}
         string[] skillRotation = fullSkillRotation.Split("|");
-        activeSkillName = skillRotation[(roundIndex-1)%(skillRotation.Length)];
-        if (activeSkillName == "None"){return true;}
+        int activeSkillIndex = int.Parse(skillRotation[(roundIndex-1)%(skillRotation.Length)]);
+        if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return true; }
+        activeSkillName = actor.GetActiveSkill(activeSkillIndex);
         active.LoadSkill(activeData.ReturnStats(activeSkillName));
         return false;
     }
 
     public string ReturnAIAttackSkill(TacticActor actor)
     {
-        return actorAttackSkills.ReturnValue(actor.GetPersonalName());
+        int activeSkillIndex = int.Parse(actorAttackSkills.ReturnValue(actor.GetPersonalName()));
+        // Check if the skill exists.
+        if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return ""; }
+        // Check if the skill is an attack skill.
+        string skillName = actor.GetActiveSkill(activeSkillIndex);
+        active.LoadSkill(activeData.ReturnStats(skillName));
+        if (active.GetSkillType() != "Damage"){ return ""; }
+        return skillName;
     }
 
     public List<int> FindPathAwayFromTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
