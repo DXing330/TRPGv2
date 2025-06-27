@@ -19,7 +19,7 @@ public class GameObjectTextList : MonoBehaviour
     public void ChangeRight(){ChangePage();}
     [ContextMenu("Left")]
     public void ChangeLeft(){ChangePage(false);}
-    public void ChangePage(bool right = true)
+    public virtual void ChangePage(bool right = true)
     {
         page = utility.ChangePage(page, right, objects, data);
         UpdateCurrentPage();

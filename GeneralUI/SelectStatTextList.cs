@@ -13,6 +13,24 @@ public class SelectStatTextList : StatTextList
         base.ResetPage();
         ResetHighlights();
     }
+    // These are specifically for the passive viewer.
+    public bool useComparisons = false;
+    public List<string> comparisons;
+    protected override void UpdateCurrentPage()
+    {
+        ResetPage();
+        List<int> newPageIndices = new List<int>(utility.GetCurrentPageIndices(page, objects, data));
+        for (int i = 0; i < newPageIndices.Count; i++)
+        {
+            objects[i].SetActive(true);
+            statTexts[i].SetStatText(stats[newPageIndices[i]]);
+            statTexts[i].SetText(data[newPageIndices[i]]);
+            if (useComparisons)
+            {
+                statTexts[i].SetColor(colors.GetColor(comparisons[i+(page*objects.Count)]));
+            }
+        }
+    }
 
     public void ResetHighlights()
     {
@@ -98,12 +116,14 @@ public class SelectStatTextList : StatTextList
         }
         stats = new List<string>(actor.GetPassiveSkills());
         data = new List<string>(actor.GetPassiveLevels());
+        comparisons = new List<string>();
         for (int i = 0; i < stats.Count; i++)
         {
-            if (i >= objects.Count){ break; }
+            if (i >= objects.Count) { break; }
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);
             statTexts[i].SetText(data[i]);
+            comparisons.Add("Default");
         }
         if (stats.Count > objects.Count){EnableChangePage();}
     }
@@ -203,7 +223,7 @@ public class SelectStatTextList : StatTextList
         allPassives = utility.QuickSortByIntStringList(allPassives, allPassiveLevels, 0, allPassives.Count - 1);
         //allPassiveLevels = utility.QuickSortIntStringList(allPassiveLevels, 0, allPassiveLevels.Count - 1);
         // Compare the levels to the previous levels.
-        List<string> comparisons = new List<string>();
+        comparisons = new List<string>();
         int potentialLevel = 0;
         int currentLevel = 0;
         for (int i = 0; i < allPassives.Count; i++)
@@ -231,6 +251,8 @@ public class SelectStatTextList : StatTextList
             }
         }
         // Display the levels.
+        stats = new List<string>(allPassives);
+        data = new List<string>(allPassiveLevels);
         ResetPage();
         for (int i = 0; i < allPassives.Count; i++)
         {
