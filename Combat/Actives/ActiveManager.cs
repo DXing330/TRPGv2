@@ -270,6 +270,23 @@ public class ActiveManager : MonoBehaviour
                 return;
             // Remove a random active skill.
             case "Amnesia":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                    {
+                        targets[i].RemoveRandomActiveSkill();
+                    }
+                }
+                return;
+            case "Attack+Amnesia":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                    for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                    {
+                        targets[i].RemoveRandomActiveSkill();
+                    }
+                }
                 return;
         }
         active.AffectActors(targets);

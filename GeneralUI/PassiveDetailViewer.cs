@@ -161,7 +161,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Skill":
                 return " gain the " + specifics + " skill";
             case "Status":
-                return " inflict " + specifics;
+                return " inflict " + specifics+" on "+target;
             case "RemoveStatus":
                 return " remove all " + specifics + " status effects";
             case "Health":
@@ -197,7 +197,9 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Tile":
                 return " create " + specifics;
             case "MentalState":
-                return "change mental state to "+specifics;
+                return " change mental state to " + specifics;
+            case "Amnesia":
+                return " make "+target+" forget 1 active skill";
         }
         return " increase "+effect+" by "+specifics;
     }

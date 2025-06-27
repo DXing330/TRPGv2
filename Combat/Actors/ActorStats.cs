@@ -264,10 +264,20 @@ public class ActorStats : ActorPassives
     public int GetSpeed(){return currentSpeed;}
     public void UpdateSpeed(int changeAmount){currentSpeed += changeAmount;}
     public List<string> activeSkills;
+    public void RemoveActiveSkill(int index)
+    {
+        activeSkills.RemoveAt(index);
+    }
+    public void RemoveRandomActiveSkill()
+    {
+        if (activeSkills.Count <= 0){ return; }
+        int index = UnityEngine.Random.Range(0, activeSkills.Count);
+        RemoveActiveSkill(index);
+    }
     public void AddActiveSkill(string skillName)
     {
-        if (skillName.Length <= 1){return;}
-        if (activeSkills.Contains(skillName)){return;}
+        if (skillName.Length <= 1) { return; }
+        if (activeSkills.Contains(skillName)) { return; }
         activeSkills.Add(skillName);
     }
     public List<string> tempActives;

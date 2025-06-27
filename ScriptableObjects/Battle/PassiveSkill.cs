@@ -27,11 +27,11 @@ public class PassiveSkill : SkillEffect
         switch (timing)
         {
             case "Start":
-                passives = actor.GetStartTurnPassives();
+                passives = new List<string>(actor.GetStartTurnPassives());
                 passives.Add(map.ReturnTerrainStartPassive(actor));
                 break;
             case "End":
-                passives = actor.GetEndTurnPassives();
+                passives = new List<string>(actor.GetEndTurnPassives());
                 passives.Add(map.ReturnTerrainEndPassive(actor));
                 break;
         }

@@ -154,6 +154,9 @@ public class SkillEffect : ScriptableObject
             case "MentalState":
                 target.SetMentalState(effectSpecifics);
                 break;
+            case "Amnesia":
+                target.RemoveRandomActiveSkill();
+                break;
         }
     }
 }
