@@ -18,7 +18,17 @@ public class ActorAI : ScriptableObject
         string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetPersonalName());
         if (fullSkillRotation == "" || fullSkillRotation == "-1"){return true;}
         string[] skillRotation = fullSkillRotation.Split("|");
-        int activeSkillIndex = int.Parse(skillRotation[(roundIndex-1)%(skillRotation.Length)]);
+        string skillIndexString = skillRotation[(roundIndex - 1) % (skillRotation.Length)];
+        // R for Random.
+        int activeSkillIndex = -1;
+        if (skillIndexString.Contains("R") && actor.GetActiveSkills().Count > 0)
+        {
+            activeSkillIndex = Random.Range(0, actor.GetActiveSkills().Count);
+        }
+        else
+        {
+            activeSkillIndex = int.Parse(skillIndexString);
+        }
         if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return true; }
         activeSkillName = actor.GetActiveSkill(activeSkillIndex);
         active.LoadSkill(activeData.ReturnStats(activeSkillName));
@@ -27,7 +37,7 @@ public class ActorAI : ScriptableObject
 
     public string ReturnAIAttackSkill(TacticActor actor)
     {
-        int activeSkillIndex = int.Parse(actorAttackSkills.ReturnValue(actor.GetPersonalName()));
+        int activeSkillIndex = int.Parse(actorAttackSkills.ReturnValue(actor.GetSpriteName()));
         // Check if the skill exists.
         if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return ""; }
         // Check if the skill is an attack skill.
@@ -159,16 +169,21 @@ public class ActorAI : ScriptableObject
 
     public int ChooseSkillTargetLocation(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
+        if (active.GetRange(currentActor) == 0)
+        {
+            return currentActor.GetLocation();
+        }
         List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
         if (targetableTiles.Count <= 0){return -1;}
+        if (targetableTiles.Count == 1){ return targetableTiles[0]; }
         if (active.GetEffect() == "Summon")
         {
             // Look for an empty tile in range.
             for (int i = targetableTiles.Count - 1; i >= 0; i--)
             {
-                if (map.TileNotEmpty(targetableTiles[i])){targetableTiles.RemoveAt(i);}
+                if (map.TileNotEmpty(targetableTiles[i])) { targetableTiles.RemoveAt(i); }
             }
-            if (targetableTiles.Count <= 0){return -1;}
+            if (targetableTiles.Count <= 0) { return -1; }
             return targetableTiles[Random.Range(0, targetableTiles.Count)];
         }
         return -1;

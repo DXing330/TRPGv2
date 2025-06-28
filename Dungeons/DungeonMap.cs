@@ -10,6 +10,7 @@ public class DungeonMap : MapManager
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
     public SceneMover sceneMover;
+    public bool interactable = true;
     // layers: 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
 
     protected override void Start()
@@ -50,6 +51,7 @@ public class DungeonMap : MapManager
             dungeon.PrepareBattle(newTile);
             dungeon.MovePartyLocation(newTile);
             // Move to battle scene.
+            interactable = false;
             sceneMover.MoveToBattle();
         }
         else
@@ -61,6 +63,7 @@ public class DungeonMap : MapManager
                 // Move to battle if they did.
                 dungeon.EnemyBeginsBattle();
                 UpdateMap();
+                interactable = false;
                 sceneMover.MoveToBattle();
                 return;
             }
@@ -70,6 +73,7 @@ public class DungeonMap : MapManager
 
     public void MoveInDirection(int direction)
     {
+        if (!interactable){ return; }
         int newTile = mapUtility.PointInDirection(dungeon.GetPartyLocation(), direction, mapSize);
         if (newTile < 0 || newTile == dungeon.GetPartyLocation() || !dungeon.TilePassable(newTile)){return;}
         MoveToTile(newTile);

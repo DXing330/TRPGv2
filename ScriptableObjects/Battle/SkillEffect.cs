@@ -29,6 +29,9 @@ public class SkillEffect : ScriptableObject
                     case "Burn":
                         duration = -1;
                         break;
+                    case "Bleed":
+                        duration = -1;
+                        break;
                     case "Stun":
                         target.ResetActions();
                         break;
