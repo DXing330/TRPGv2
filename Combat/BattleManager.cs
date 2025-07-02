@@ -104,7 +104,7 @@ public class BattleManager : MonoBehaviour
         switch (mentalState)
         {
             case "Terrified":
-                combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" is Terrified.");
+                combatLog.UpdateNewestLog(turnActor.GetPersonalName() + " is Terrified.");
                 UI.NPCTurn();
                 StartCoroutine(TerrifiedTurn(turnActor.GetActions()));
                 return;
@@ -117,6 +117,11 @@ public class BattleManager : MonoBehaviour
                 combatLog.UpdateNewestLog(turnActor.GetPersonalName() + " is Charmed.");
                 UI.NPCTurn();
                 StartCoroutine(CharmedTurn(turnActor.GetActions()));
+                return;
+            case "Taunted":
+                combatLog.UpdateNewestLog(turnActor.GetPersonalName() + " is Taunted.");
+                UI.NPCTurn();
+                StartCoroutine(TauntedTurn(turnActor.GetActions()));
                 return;
         }
         if (turnActor.GetTeam() > 0) { NPCTurn(); }
@@ -142,9 +147,10 @@ public class BattleManager : MonoBehaviour
     }
     // None, Move, Attack, SkillSelect, SkillTargeting, Viewing
     public string selectedState;
+    public string GetState(){ return selectedState; }
     public void SetState(string newState)
     {
-        if (newState == selectedState)
+        if (newState == selectedState || !turnActor.ActionsLeft())
         {
             ResetState();
             return;
@@ -153,37 +159,25 @@ public class BattleManager : MonoBehaviour
         switch (selectedState)
         {
             case "Move":
-            if (!turnActor.ActionsLeft() && turnActor.GetMovement() <= 0)
-            {
-                ResetState();
-                return;
-            }
-            StartMoving();
-            break;
+                if (turnActor.GetMovement() <= 0)
+                {
+                    ResetState();
+                    return;
+                }
+                StartMoving();
+                break;
             case "Attack":
-            if (!turnActor.ActionsLeft())
-            {
-                ResetState();
-                return;
-            }
-            StartAttacking();
-            break;
+                StartAttacking();
+                break;
             case "Skill":
-            if (!turnActor.ActionsLeft())
-            {
-                ResetState();
-                return;
-            }
-            map.ResetHighlights();
-            break;
+                map.ResetHighlights();
+                break;
+            case "Spell":
+                map.ResetHighlights();
+                break;
             case "Item":
-            if (!turnActor.ActionsLeft())
-            {
-                ResetState();
-                return;
-            }
-            map.ResetHighlights();
-            break;
+                map.ResetHighlights();
+                break;
         }
     }
     public int selectedTile;
@@ -424,7 +418,38 @@ public class BattleManager : MonoBehaviour
         }
         StartCoroutine(EndTurn());
     }
-    
+
+    IEnumerator TauntedTurn(int actionsLeft)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            // Find a new target if needed.
+            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
+            {
+                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+                TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
+                if (closestEnemy == null)
+                {
+                    // No more enemies, just end turn.
+                    StartCoroutine(EndTurn());
+                    yield break;
+                }
+                turnActor.SetTarget(closestEnemy);
+            }
+            // If they can be attacked without moving then attack.
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)) { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
+            // Otherwise move.
+            else
+            {
+                List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+                StartCoroutine(MoveAlongPath(turnActor, path));
+            }
+            yield return new WaitForSeconds(0.5f);
+            if (turnActor.GetActions() <= 0) { break; }
+        }
+        StartCoroutine(EndTurn());
+    }
+
     IEnumerator StandardNPCAction(int actionsLeft)
     {
         for (int i = 0; i < actionsLeft; i++)
@@ -457,7 +482,6 @@ public class BattleManager : MonoBehaviour
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                     StartCoroutine(MoveAlongPath(turnActor, path));
                 }
-                
             }
             yield return new WaitForSeconds(0.5f);
             if (turnActor.GetActions() <= 0){break;}
@@ -526,13 +550,20 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog(actor.GetPersonalName()+" uses "+skillName+".");
     }
 
+    public void ActivateSpell(TacticActor actor = null)
+    {
+        ResetState();
+        if (actor == null) { actor = turnActor; }
+        combatLog.UpdateNewestLog(actor.GetPersonalName()+" casts a spell.");
+    }
+
     public void ActiveDeathPassives(TacticActor actor)
     {
         activeManager.SetSkillUser(actor);
         List<string> deathPassives = new List<string>(actor.GetDeathPassives());
         for (int i = 0; i < deathPassives.Count; i++)
         {
-            if (deathPassives[i].Length <= 0){continue;}
+            if (deathPassives[i].Length <= 0) { continue; }
             activeManager.SetSkillFromName(deathPassives[i]);
             activeManager.GetTargetedTiles(actor.GetLocation(), moveManager.actorPathfinder);
             ActivateSkill(deathPassives[i], actor);

@@ -19,6 +19,7 @@ public class PartyDataManager : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     public GuildCard guildCard;
     public SavedCaravan caravan;
+    public SpellBook spellBook;
 
     public void Save()
     {

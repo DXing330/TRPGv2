@@ -12,6 +12,7 @@ public class ActiveSelectList : SelectList
     public ActiveDescriptionViewer descriptionViewer;
     public TMP_Text activeDescription;
     public int state;
+    public string spellState = "Spell";
     public Inventory inventory;
     public List<string> useableItems;
     public List<int> useableQuantities;
@@ -27,7 +28,7 @@ public class ActiveSelectList : SelectList
                 useableQuantities.Add(int.Parse(inventory.quantities[i]));
             }
         }
-        for (int i = useableItems.Count -1; i >= 0; i--)
+        for (int i = useableItems.Count - 1; i >= 0; i--)
         {
             if (useableQuantities[i] <= 0)
             {
@@ -52,6 +53,11 @@ public class ActiveSelectList : SelectList
     public override void Select(int index)
     {
         base.Select(index);
+        if (battle.GetState() == spellState)
+        {
+            SelectSpell();
+            return;
+        }
         IncrementState();
         ShowSelected();
         activeManager.SetSkillFromName(selected);
@@ -60,11 +66,30 @@ public class ActiveSelectList : SelectList
         if (!activeManager.CheckSkillCost())
         {
             // Show an error message instead of just returning?
-            if (!activeManager.CheckActionCost()){errorText.text = errorMessages[0];}
-            else {errorText.text = errorMessages[1];}
+            if (!activeManager.CheckActionCost()) { errorText.text = errorMessages[0]; }
+            else { errorText.text = errorMessages[1]; }
             ErrorMessage();
             return;
         }
+        activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
+        activeManager.ResetTargetedTiles();
+        activeManager.CheckIfSingleTargetableTile();
+        battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
+    }
+
+    protected void SelectSpell()
+    {
+        IncrementState();
+        // Show the spell by name.
+        activeManager.SetSpell(selected);
+        if (!activeManager.CheckSpellCost())
+        {
+            // Show an error message instead of just returning?
+            errorText.text = "Not enough resources.";
+            ErrorMessage();
+            return;
+        }
+        activeDescription.text = descriptionViewer.ReturnSpellDescription(activeManager.magicSpell);
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
         activeManager.ResetTargetedTiles();
         activeManager.CheckIfSingleTargetableTile();
@@ -98,7 +123,7 @@ public class ActiveSelectList : SelectList
 
     public void StartSelecting()
     {
-        if (battle.GetTurnActor().ActiveSkillCount() <= 0 || battle.GetTurnActor().GetActions() <= 0){return;}
+        if (battle.GetTurnActor().ActiveSkillCount() <= 0 || battle.GetTurnActor().GetActions() <= 0) { return; }
         IncrementState();
         SetSelectables(battle.GetTurnActor().GetActiveSkills());
         activeManager.SetSkillUser(battle.GetTurnActor());
@@ -109,9 +134,19 @@ public class ActiveSelectList : SelectList
     public void StartSelectingItems()
     {
         UpdateUseableItems();
-        if (useableItems.Count <= 0 || battle.GetTurnActor().GetActions() <= 0){return;}
+        if (useableItems.Count <= 0 || battle.GetTurnActor().GetActions() <= 0) { return; }
         IncrementState();
         SetSelectables(useableItems);
+        activeManager.SetSkillUser(battle.GetTurnActor());
+        activeManager.ResetTargetedTiles();
+        StartingPage();
+    }
+
+    public void StartSelectingSpells()
+    {
+        if (battle.GetTurnActor().SpellCount() <= 0 || battle.GetTurnActor().GetActions() <= 0) { return; }
+        IncrementState();
+        SetSelectables(battle.GetTurnActor().GetSpells());
         activeManager.SetSkillUser(battle.GetTurnActor());
         activeManager.ResetTargetedTiles();
         StartingPage();
@@ -126,14 +161,27 @@ public class ActiveSelectList : SelectList
             ErrorMessage();
             return;
         }
+        // Its a spell then do something a little different
+        if (battle.GetState() == spellState)
+        {
+            ActivateSpell();
+            ResetState();
+            return;
+        }
         battle.ActivateSkill(selected);
         activeManager.ActivateSkill(battle);
         battle.turnNumber = battle.map.RemoveActorsFromBattle(battle.GetTurnIndex());
         // Check if the skill you just used was an item.
         if (inventory.ItemExists(selected))
         {
-            inventory.RemoveItemQuantity(1,selected);
+            inventory.RemoveItemQuantity(1, selected);
         }
         ResetState();
+    }
+
+    public void ActivateSpell()
+    {
+        battle.ActivateSpell();
+        activeManager.ActivateSpell(battle);
     }
 }

@@ -4,6 +4,24 @@ using UnityEngine;
 
 public class ActiveManager : MonoBehaviour
 {
+    public MagicSpell magicSpell;
+    public void SetSpell(string spellInfo)
+    {
+        magicSpell.LoadSkillFromString(spellInfo);
+    }
+    public void ActivateSpell(BattleManager battle)
+    {
+        skillUser.SpendEnergy(magicSpell.GetEnergyCost());
+        skillUser.PayActionCost(magicSpell.GetActionCost());
+        List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
+        List<string> effects = magicSpell.GetAllEffects();
+        List<string> specifics = magicSpell.GetAllSpecifics();
+        List<int> powers = magicSpell.GetAllPowers();
+        for (int i = 0; i < effects.Count; i++)
+        {
+            ApplyActiveEffects(battle, targets, effects[i], specifics[i], powers[i]);
+        }
+    }
     public ActiveSkill active;
     public TacticActor skillUser;
     public void SetSkillUser(TacticActor user){skillUser = user;}
@@ -35,10 +53,14 @@ public class ActiveManager : MonoBehaviour
         targetedTiles.Clear();
     }
 
-    public List<int> GetTargetableTiles(int start, MapPathfinder pathfinder)
+    public List<int> GetTargetableTiles(int start, MapPathfinder pathfinder, bool spell = false)
     {
         targetableTiles = new List<int>(GetTiles(start, active.GetRangeShape(), pathfinder));
-        if (targetableTiles.Count <= 0){targetableTiles.Add(start);}
+        if (spell)
+        {
+            targetableTiles = new List<int>(GetTiles(start, magicSpell.GetRangeShape(), pathfinder));
+        }
+        if (targetableTiles.Count <= 0) { targetableTiles.Add(start); }
         return targetableTiles;
     }
 
@@ -91,31 +113,28 @@ public class ActiveManager : MonoBehaviour
         return new List<int>();
     }
 
-    public void ActivateSkill(BattleManager battle)
+    protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power)
     {
-        skillUser.SpendEnergy(active.GetEnergyCost());
-        skillUser.PayActionCost(active.GetActionCost());
-        List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         int targetTile = -1;
-        switch (active.effect)
+        switch (effect)
         {
             case "Weather":
-                battle.map.SetWeather(active.GetSpecifics());
+                battle.map.SetWeather(specifics);
                 return;
             case "Tile":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrain(targetedTiles[i], active.GetSpecifics());
+                    battle.map.ChangeTerrain(targetedTiles[i], specifics);
                 }
                 return;
             case "Attack+Tile":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrain(targetedTiles[i], active.GetSpecifics());
+                    battle.map.ChangeTerrain(targetedTiles[i], specifics);
                 }
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power);
                 }
                 return;
             case "Summon":
@@ -124,7 +143,7 @@ public class ActiveManager : MonoBehaviour
                 if (battle.map.GetActorOnTile(summonLocation) == null)
                 {
                     // Create a new actor on that location on the same team.
-                    battle.SpawnAndAddActor(summonLocation, active.GetSpecifics(), skillUser.GetTeam());
+                    battle.SpawnAndAddActor(summonLocation, specifics, skillUser.GetTeam());
                 }
                 return;
             case "Teleport":
@@ -141,18 +160,18 @@ public class ActiveManager : MonoBehaviour
                 targetTile = targetedTiles[0];
                 TacticActor targetActor = battle.map.GetActorOnTile(targetTile);
                 if (targetActor == null) { return; }
-                if (battle.moveManager.TeleportToTarget(skillUser, targetActor, active.GetSpecifics(), battle.map))
+                if (battle.moveManager.TeleportToTarget(skillUser, targetActor, specifics, battle.map))
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targetActor, battle.map, battle.moveManager, active.GetPower());
+                    battle.attackManager.ActorAttacksActor(skillUser, targetActor, battle.map, battle.moveManager, power);
                 }
                 return;
             case "Attack":
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                    for (int j = 0; j < int.Parse(specifics); j++)
                     {
-                        battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                        battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power);
                     }
                 }
                 return;
@@ -160,7 +179,7 @@ public class ActiveManager : MonoBehaviour
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power);
                     skillUser.UpdateHealth(Mathf.Max(1, skillUser.GetAttack() - targets[i].GetDefense()), false);
                 }
                 return;
@@ -169,7 +188,7 @@ public class ActiveManager : MonoBehaviour
                 for (int i = 0; i < targets.Count; i++)
                 {
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
-                    active.AffectActor(targets[i], "Status", active.GetSpecifics(), active.GetPower());
+                    active.AffectActor(targets[i], "Status", specifics, power);
                 }
                 return;
             case "Attack+MentalState":
@@ -177,7 +196,11 @@ public class ActiveManager : MonoBehaviour
                 for (int i = 0; i < targets.Count; i++)
                 {
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
-                    active.AffectActor(targets[i], "MentalState", active.GetSpecifics(), active.GetPower());
+                    if (specifics == "Charmed" || specifics == "Taunted")
+                    {
+                        targets[i].SetTarget(skillUser);
+                    }
+                    active.AffectActor(targets[i], "MentalState", specifics, power);
                 }
                 return;
             case "Attack+Displace":
@@ -186,7 +209,7 @@ public class ActiveManager : MonoBehaviour
                 {
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
                 }
-                battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
+                battle.moveManager.DisplaceSkill(skillUser, targetedTiles, specifics, power, battle.map);
                 return;
             case "Attack+Move":
                 if (targets.Count <= 0) { return; }
@@ -194,7 +217,7 @@ public class ActiveManager : MonoBehaviour
                 {
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager);
                 }
-                battle.moveManager.MoveSkill(skillUser, active.GetSpecifics(), active.GetPower(), battle.map);
+                battle.moveManager.MoveSkill(skillUser, specifics, power, battle.map);
                 return;
             case "Move+Attack":
                 // Move to the tile selected.
@@ -216,39 +239,33 @@ public class ActiveManager : MonoBehaviour
                 }
                 return;
             case "Displace":
-                battle.moveManager.DisplaceSkill(skillUser, targetedTiles, active.GetSpecifics(), active.GetPower(), battle.map);
-                return;
-            case "Taunt":
-                for (int i = 0; i < targets.Count; i++)
-                {
-                    targets[i].SetTarget(skillUser);
-                }
+                battle.moveManager.DisplaceSkill(skillUser, targetedTiles, specifics, power, battle.map);
                 return;
             case "TerrainEffect":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
+                    battle.map.ChangeTerrainEffect(targetedTiles[i], specifics);
                 }
                 return;
             case "Attack+TerrainEffect":
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power);
                 }
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrainEffect(targetedTiles[i], active.GetSpecifics());
+                    battle.map.ChangeTerrainEffect(targetedTiles[i], specifics);
                 }
                 return;
             case "Trap":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTrap(targetedTiles[i], active.GetSpecifics());
+                    battle.map.ChangeTrap(targetedTiles[i], specifics);
                 }
                 return;
             case "Swap":
                 if (targetedTiles.Count <= 0) { return; }
-                switch (active.GetSpecifics())
+                switch (specifics)
                 {
                     case "Location":
                         if (targets.Count <= 0) { break; }
@@ -265,36 +282,45 @@ public class ActiveManager : MonoBehaviour
             case "True Damage":
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower(), active.GetSpecifics());
+                    battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, power, specifics);
                 }
                 return;
             // Remove a random active skill.
-            case "Amnesia":
-                for (int i = 0; i < targets.Count; i++)
-                {
-                    for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
-                    {
-                        targets[i].RemoveRandomActiveSkill();
-                    }
-                }
-                return;
             case "Attack+Amnesia":
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, active.GetPower());
-                    for (int j = 0; j < int.Parse(active.GetSpecifics()); j++)
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power);
+                    for (int j = 0; j < int.Parse(specifics); j++)
                     {
                         targets[i].RemoveRandomActiveSkill();
                     }
                 }
                 return;
         }
-        active.AffectActors(targets);
+        // Covers status/mental state/amnesia/stat changes/etc.
+        active.AffectActors(targets, effect, specifics, power);
+    }
+
+    public void ActivateSkill(BattleManager battle)
+    {
+        skillUser.SpendEnergy(active.GetEnergyCost());
+        skillUser.PayActionCost(active.GetActionCost());
+        List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
+        ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower());
     }
 
     public bool CheckSkillCost()
     {
         return (CheckActionCost() && CheckEnergyCost());
+    }
+
+    public bool CheckSpellCost()
+    {
+        // Need to check mana in addition to energy and actions.
+        bool actions = skillUser.GetActions() >= magicSpell.GetActionCost();
+        bool energy = skillUser.GetEnergy() >= magicSpell.GetEnergyCost();
+        // bool mana = ???
+        return (actions && energy);
     }
 
     public bool CheckActionCost()

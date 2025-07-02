@@ -118,6 +118,7 @@ public class ActorStats : ActorPassives
                 SetPassiveLevels(newStat.Split(",").ToList());
                 break;
             case 11:
+                ResetSpells();
                 SetActiveSkills(newStat.Split(",").ToList());
                 break;
             case 12:
@@ -316,6 +317,16 @@ public class ActorStats : ActorPassives
     {
         if (activeSkills.Count == 0) { return ""; }
         return String.Join(",", activeSkills);
+    }
+    public List<string> spells;
+    public void ResetSpells(){ spells.Clear(); }
+    public List<string> GetSpells()
+    {
+        return spells;
+    }
+    public int SpellCount()
+    {
+        return spells.Count;
     }
     public List<string> statuses;
     public List<string> GetStatuses(){return statuses;}

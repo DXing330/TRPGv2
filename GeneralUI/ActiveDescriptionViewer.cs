@@ -4,6 +4,22 @@ using UnityEngine;
 
 public class ActiveDescriptionViewer : MonoBehaviour
 {
+    public string ReturnSpellDescription(MagicSpell spell)
+    {
+        string fullDetails = "";
+        List<string> effects = spell.GetAllEffects();
+        List<string> specifics = spell.GetAllSpecifics();
+        List<int> powers = spell.GetAllPowers();
+        for (int i = 0; i < effects.Count; i++)
+        {
+            fullDetails += AED(effects[i], specifics[i], powers[i].ToString());
+            if (i < effects.Count - 1)
+            {
+                fullDetails += "\n";
+            }
+        }
+        return fullDetails;
+    }
     public string ReturnActiveDescription(ActiveSkill activeSkill)
     {
         return AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
