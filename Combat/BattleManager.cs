@@ -159,7 +159,7 @@ public class BattleManager : MonoBehaviour
         switch (selectedState)
         {
             case "Move":
-                if (turnActor.GetMovement() <= 0)
+                if (turnActor.GetSpeed() <= 0)
                 {
                     ResetState();
                     return;
@@ -221,6 +221,12 @@ public class BattleManager : MonoBehaviour
             ViewActorOnTile(selectedTile);
             return;
             case "Skill":
+            // Target the tile and update the targeted tiles.
+            if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
+            activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
+            map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
+            break;
+            case "Spell":
             // Target the tile and update the targeted tiles.
             if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
             activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);

@@ -71,6 +71,12 @@ public class StatDatabase : ScriptableObject
         return keys.Contains(key);
     }
 
+    public string ReturnRandomKey()
+    {
+        int index = Random.Range(0, keys.Count);
+        return keys[index];
+    }
+
     public string ReturnRandomValue()
     {
         int index = Random.Range(0, values.Count);
