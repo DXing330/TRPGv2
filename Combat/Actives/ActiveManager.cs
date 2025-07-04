@@ -55,11 +55,9 @@ public class ActiveManager : MonoBehaviour
 
     public List<int> GetTargetableTiles(int start, MapPathfinder pathfinder, bool spell = false)
     {
-        targetableTiles = new List<int>(GetTiles(start, active.GetRangeShape(), pathfinder));
-        if (spell)
-        {
-            targetableTiles = new List<int>(GetTiles(start, magicSpell.GetRangeShape(), pathfinder));
-        }
+        string shape = active.GetRangeShape();
+        if (spell){ shape = magicSpell.GetRangeShape(); }
+        targetableTiles = new List<int>(GetTiles(start, shape, pathfinder, true, spell));
         if (targetableTiles.Count <= 0) { targetableTiles.Add(start); }
         return targetableTiles;
     }
@@ -76,12 +74,24 @@ public class ActiveManager : MonoBehaviour
         }
     }
 
-    public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder)
+    public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder, bool spellCast = false)
     {
-        targetedTiles = new List<int>(GetTiles(start, active.GetShape(), pathfinder, false));
-        if (active.GetShape() == "Circle" || active.GetShape() == "None")
+        string shape = active.GetShape();
+        if (spellCast){ shape = magicSpell.GetShape(); }
+        targetedTiles = new List<int>(GetTiles(start, shape, pathfinder, false, spellCast));
+        if (!spellCast)
         {
-            targetedTiles.Add(start);
+            if (active.GetShape() == "Circle" || active.GetShape() == "None")
+            {
+                targetedTiles.Add(start);
+            }
+        }
+        else
+        {
+            if (magicSpell.GetShape() == "Circle" || magicSpell.GetShape() == "None")
+            {
+                targetedTiles.Add(start);
+            }
         }
         return targetedTiles;
     }
@@ -90,10 +100,18 @@ public class ActiveManager : MonoBehaviour
 
     public bool ExistTargetedTiles(){return targetedTiles.Count > 0;}
 
-    protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder, bool targetable = true)
+    protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder, bool targetable = true, bool spellCast = false)
     {
         int range = active.GetRange(skillUser);
-        if (!targetable){range = active.GetSpan();}
+        if (spellCast){ range = magicSpell.GetRange(skillUser); }
+        if (!targetable)
+        {
+            range = active.GetSpan();
+            if (spellCast)
+            {
+                range = magicSpell.GetSpan();
+            }
+        }
         int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
         switch (shape)
         {

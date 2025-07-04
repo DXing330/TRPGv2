@@ -229,7 +229,7 @@ public class BattleManager : MonoBehaviour
             case "Spell":
             // Target the tile and update the targeted tiles.
             if (!activeManager.ReturnTargetableTiles().Contains(selectedTile)){return;}
-            activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder);
+            activeManager.GetTargetedTiles(selectedTile, moveManager.actorPathfinder, true);
             map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
             case "Item":

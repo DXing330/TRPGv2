@@ -77,6 +77,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to make the target forget " + ASD(s) + " active skill(s).";
             case "Attack+Amnesia":
                 return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " active skill(s).";
+            case "Weather":
+                return "Change the weather to "+ASD(s)+".";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

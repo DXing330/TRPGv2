@@ -41,7 +41,9 @@ public class SelectList : MonoBehaviour
         return ((selectable.Count - 1) / textObjects.Count);
     }
     public TMP_Text selectedText;
-    public void ShowSelected(){selectedText.text = selected;}
+    public void ResetSelectedText(){ selectedText.text = ""; }
+    public void UpdateSelectedText(string newInfo) { selectedText.text = newInfo; }
+    public void ShowSelected() { selectedText.text = selected; }
     public void SetSelectables(List<string> newList)
     {
         selectable = new List<string>(newList);

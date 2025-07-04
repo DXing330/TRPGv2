@@ -5,13 +5,16 @@ using UnityEngine;
 public class SpellBookTester : MonoBehaviour
 {
     public SpellBook spellBook;
+    public int testAmount = 6;
     public int testEffectCount = 6;
 
     [ContextMenu("Random Spell")]
-    public string TestRandomSpell()
+    public void TestRandomSpell()
     {
-        string spell = spellBook.ReturnRandomSpell(testEffectCount);
-        Debug.Log(spell);
-        return spell;
+        for (int i = 0; i < testAmount; i++)
+        {
+            string spell = spellBook.ReturnRandomSpell(testEffectCount);
+            Debug.Log(spell);
+        }
     }
 }

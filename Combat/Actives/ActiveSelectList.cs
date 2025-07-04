@@ -82,6 +82,9 @@ public class ActiveSelectList : SelectList
         IncrementState();
         // Show the spell by name.
         activeManager.SetSpell(selected);
+        UpdateSelectedText(activeManager.magicSpell.GetSkillType());
+        Debug.Log(selected);
+        Debug.Log(activeManager.magicSpell.GetSkillType());
         if (!activeManager.CheckSpellCost())
         {
             // Show an error message instead of just returning?
@@ -90,7 +93,7 @@ public class ActiveSelectList : SelectList
             return;
         }
         activeDescription.text = descriptionViewer.ReturnSpellDescription(activeManager.magicSpell);
-        activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
+        activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder, true);
         activeManager.ResetTargetedTiles();
         activeManager.CheckIfSingleTargetableTile();
         battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
