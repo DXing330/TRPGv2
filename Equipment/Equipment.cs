@@ -6,6 +6,7 @@ using UnityEngine;
 public class Equipment : MonoBehaviour
 {
     public string allStats;
+    public string GetStats(){ return allStats; }
     public void SetAllStats(string newStats)
     {
         allStats = newStats;

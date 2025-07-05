@@ -280,10 +280,10 @@ public class BattleManagerTester : MonoBehaviour
         testResults.Add(new TestResult("Invalid Tile Handling", handlesInvalidTile, "State after invalid tile: " + battleManager.GetState()));
         
         // Test valid tile interaction
-        if (testMap != null && testMap.currentTiles != null && testMap.currentTiles.Length > 0)
+        if (testMap != null && testMap.currentTiles != null && testMap.currentTiles.Count > 0)
         {
             int validTileIndex = 0;
-            for (int i = 0; i < testMap.currentTiles.Length; i++)
+            for (int i = 0; i < testMap.currentTiles.Count; i++)
             {
                 if (testMap.currentTiles[i] >= 0)
                 {

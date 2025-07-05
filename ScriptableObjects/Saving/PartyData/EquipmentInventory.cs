@@ -8,6 +8,10 @@ using UnityEngine;
 public class EquipmentInventory : SavedData
 {
     public StatDatabase equipData;
+    public int GetEquipmentCount()
+    {
+        return dataList.Count;
+    }
     public void AddEquipmentByName(string newEquipment)
     {
         dataList.Add(equipData.ReturnValue(newEquipment));

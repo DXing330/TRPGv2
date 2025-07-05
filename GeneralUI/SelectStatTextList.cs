@@ -51,6 +51,7 @@ public class SelectStatTextList : StatTextList
         statTexts[GetSelected()%statTexts.Count].SetColor(colors.GetColor(color));
     }
     public int selectedIndex = -1;
+    public void SetSelected(int index){ selectedIndex = index; }
     public void ResetSelected()
     {
         selectedIndex = -1;

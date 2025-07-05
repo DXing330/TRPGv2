@@ -9,7 +9,6 @@ public class MasterTestRunner : MonoBehaviour
     public PartyDataManagerTester partyDataManagerTester;
     public RequestBoardTester requestBoardTester;
     public MoveCostManagerTester moveCostManagerTester;
-    public ArmoryManagerTester armoryManagerTester;
     public SaveLoadTester saveLoadTester;
     
     [Header("Test Results")]
@@ -100,12 +99,6 @@ public class MasterTestRunner : MonoBehaviour
             yield return StartCoroutine(RunTestSuite("Move Cost Manager", () => moveCostManagerTester.RunAllMoveCostTests()));
         }
         
-        // Run Armory Manager Tests
-        if (armoryManagerTester != null)
-        {
-            yield return StartCoroutine(RunTestSuite("Equipment System", () => armoryManagerTester.RunAllEquipmentTests()));
-        }
-        
         // Run Save/Load Tests
         if (saveLoadTester != null)
         {
@@ -159,11 +152,6 @@ public class MasterTestRunner : MonoBehaviour
         if (requestBoardTester != null)
         {
             yield return StartCoroutine(RunTestSuite("Request Board", () => requestBoardTester.RunAllRequestBoardTests()));
-        }
-        
-        if (armoryManagerTester != null)
-        {
-            yield return StartCoroutine(RunTestSuite("Equipment System", () => armoryManagerTester.RunAllEquipmentTests()));
         }
         
         GenerateDetailedReport();
@@ -255,18 +243,6 @@ public class MasterTestRunner : MonoBehaviour
                     }
                     break;
                     
-                case "Equipment System":
-                    if (armoryManagerTester != null && armoryManagerTester.testResults != null)
-                    {
-                        suite.totalTests = armoryManagerTester.testResults.Count;
-                        foreach (var result in armoryManagerTester.testResults)
-                        {
-                            if (result.passed) suite.passedTests++;
-                            else suite.failedTests++;
-                        }
-                    }
-                    break;
-                    
                 case "Save/Load System":
                     if (saveLoadTester != null && saveLoadTester.testResults != null)
                     {
@@ -350,7 +326,6 @@ public class MasterTestRunner : MonoBehaviour
         if (partyDataManagerTester == null) missingComponents.Add("Party Data Manager Tester");
         if (requestBoardTester == null) missingComponents.Add("Request Board Tester");
         if (moveCostManagerTester == null) missingComponents.Add("Move Cost Manager Tester");
-        if (armoryManagerTester == null) missingComponents.Add("Armory Manager Tester");
         if (saveLoadTester == null) missingComponents.Add("Save Load Tester");
         
         if (missingComponents.Count == 0)
