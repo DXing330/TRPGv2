@@ -122,11 +122,23 @@ public class ActiveManager : MonoBehaviour
             case "Line":
                 return pathfinder.GetTilesInLineRange(startTile, range);
             case "ELine":
-                return pathfinder.GetTilesInLineDirection(skillUser.GetLocation(), direction, active.GetSpan());
+                if (pathfinder.DistanceBetweenTiles(skillUser.GetLocation(), startTile) <= 1)
+                {
+                    return pathfinder.GetTilesInLineDirection(skillUser.GetLocation(), direction, range);
+                }
+                int eLineLocation = pathfinder.PointInDirection(startTile, (direction+3)%6);
+                return pathfinder.GetTilesInLineDirection(eLineLocation, direction, range);
             case "Cone":
-                return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
+                // Check if caster is adjacent to start tile.
+                if (pathfinder.DistanceBetweenTiles(skillUser.GetLocation(), startTile) <= 1)
+                {
+                    return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
+                }
+                // Otherwise pick the tile between the caster and the chosen tile, closest to the chosen tile in the appropriate direction.
+                int coneLocation = pathfinder.PointInDirection(startTile, (direction+3)%6);
+                return pathfinder.GetTilesInConeShape(startTile, range, coneLocation);
             case "Beam":
-                return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction, active.GetSpan());
+                return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction, range);
         }
         return new List<int>();
     }
