@@ -127,7 +127,7 @@ public class PartyDataManagerTester : MonoBehaviour
         if (partyCount > 0 && testEquipment != null)
         {
             // Test equipment assignment
-            string testEquipName = "TestSword";
+            string testEquipName = "Sword|Weapon|Sword|Attack Up|1|1";
             string equipResult = partyDataManager.EquipToPartyMember(testEquipName, 0, testEquipment);
             bool equipSuccessful = !string.IsNullOrEmpty(equipResult);
             testResults.Add(new TestResult("Equip to Party Member", equipSuccessful, "Equip result: " + equipResult));
