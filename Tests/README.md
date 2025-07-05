@@ -160,9 +160,24 @@ Tests are organized into several categories:
 ## 🚀 Running the Tests
 
 ### Prerequisites
-- Unity 2020.3 LTS or later
-- NUnit Test Framework package installed
-- Test Runner window enabled in Unity
+- Unity 2017.1 or later
+- **For Unity 2019.2+**: NUnit Test Framework package (usually pre-installed)
+- **For Unity 2018.1-2019.1**: Install Test Framework via Package Manager
+- **For Unity 2017.x or older**: Use Unity-compatible test files (see Alternative Testing below)
+
+### Unity Version Compatibility
+
+#### Modern Unity (2019.2+) - Recommended
+- Use the original NUnit test files (`*Tests.cs`)
+- Full Test Runner support
+- Best testing experience
+
+#### Older Unity (2017.x-2018.x) - Alternative Approach
+- Use Unity-compatible test files (`*Tests_Unity.cs`)
+- Manual test execution via scripts
+- Basic but functional testing
+
+### Running NUnit Tests (Unity 2018.1+)
 
 ### Running All Tests
 1. Open Unity Test Runner: `Window > General > Test Runner`
@@ -183,6 +198,32 @@ Unity.exe -runTests -batchmode -projectPath /path/to/project -testResults /path/
 # Run specific test category
 Unity.exe -runTests -batchmode -testCategory "BattleSystem" -projectPath /path/to/project
 ```
+
+### Alternative Testing (Older Unity Versions)
+
+If you're getting NUnit errors, use the Unity-compatible test files:
+
+#### Quick Start:
+1. **Add Test Runner to Scene**:
+   - Create empty GameObject
+   - Attach `UnityTestRunner` script
+   - Configure which tests to run in inspector
+   - Play the scene to run tests
+
+2. **Or Run from Menu**:
+   - Go to `Tools > Run Unity Tests` in the menu bar
+   - Watch Console for results
+
+3. **Available Unity-Compatible Tests**:
+   - `BattleManagerTests_Unity.cs` - Core battle system
+   - `EquipmentTests_Unity.cs` - Equipment parsing and handling
+   - `UnityTestRunner.cs` - Test execution manager
+
+#### Unity-Compatible Test Results:
+- ✓ Green checkmarks = Passed tests
+- Red errors = Failed tests
+- Console shows detailed test progress
+- No Test Runner window needed
 
 ## 🔧 Extending the Tests
 
