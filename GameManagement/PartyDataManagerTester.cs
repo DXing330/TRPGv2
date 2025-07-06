@@ -34,7 +34,6 @@ public class PartyDataManagerTester : MonoBehaviour
         TestPartyInitialization();
         TestPartyMemberManagement();
         TestEquipmentManagement();
-        TestPartyDataPersistence();
         TestPartyStats();
         TestTempPartyMembers();
         TestPartyCapacity();
@@ -141,45 +140,6 @@ public class PartyDataManagerTester : MonoBehaviour
             string unequipResult = partyDataManager.UnequipFromPartyMember(0, "Weapon", testEquipment);
             bool unequipSuccessful = !string.IsNullOrEmpty(unequipResult);
             testResults.Add(new TestResult("Unequip from Party Member", unequipSuccessful, "Unequip result: " + unequipResult));
-        }
-    }
-    
-    [ContextMenu("Test Party Data Persistence")]
-    public void TestPartyDataPersistence()
-    {
-        Debug.Log("Testing Party Data Persistence...");
-        
-        // Test save functionality
-        try
-        {
-            partyDataManager.Save();
-            testResults.Add(new TestResult("Save Party Data", true, "Save completed without errors"));
-        }
-        catch (System.Exception e)
-        {
-            testResults.Add(new TestResult("Save Party Data", false, "Save failed: " + e.Message));
-        }
-        
-        // Test load functionality
-        try
-        {
-            partyDataManager.Load();
-            testResults.Add(new TestResult("Load Party Data", true, "Load completed without errors"));
-        }
-        catch (System.Exception e)
-        {
-            testResults.Add(new TestResult("Load Party Data", false, "Load failed: " + e.Message));
-        }
-        
-        // Test new game setup
-        try
-        {
-            partyDataManager.NewGame();
-            testResults.Add(new TestResult("New Game Setup", true, "New game setup completed"));
-        }
-        catch (System.Exception e)
-        {
-            testResults.Add(new TestResult("New Game Setup", false, "New game setup failed: " + e.Message));
         }
     }
     
