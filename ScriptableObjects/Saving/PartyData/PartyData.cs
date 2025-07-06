@@ -233,8 +233,6 @@ public class PartyData : SavedData
     // Give back the old equipment.
     public string EquipToMember(string equip, int memberIndex, Equipment dummyEquip)
     {
-        Debug.Log("BeforeEquipping");
-        Debug.Log(partyEquipment[memberIndex]);
         List<string> currentEquipment = partyEquipment[memberIndex].Split("@").ToList();
         dummyEquip.SetAllStats(equip);
         string newSlot = dummyEquip.GetSlot();
@@ -260,8 +258,6 @@ public class PartyData : SavedData
                 partyEquipment[memberIndex] += "@";
             }
         }
-        Debug.Log("AfterEquipping");
-        Debug.Log(partyEquipment[memberIndex]);
         return oldEquip;
     }
     public string UnequipFromMember(int memberIndex, string slot, Equipment dummyEquip)
