@@ -132,6 +132,13 @@ public class SceneMover : MonoBehaviour
         }
     }
 
+    // Only used in the dungeon rewards scene
+    public void ReturnFromDungeonRewards()
+    {
+        sceneTracker.SetPreviousScene(dungeonState.GetPreviousScene());
+        LoadScene(dungeonState.GetPreviousScene());
+    }
+
     public void ReturnFromDungeon(bool clear = true)
     {
         if (clear)
