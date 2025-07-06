@@ -103,6 +103,16 @@ public class RequestBoard : MonoBehaviour
         int selected = questSelect.GetSelected();
         string selectedRequest = availableRequests[selected];
         questDetails.text = requestDisplay.DisplayRequestDescription(selectedRequest);
+        dummyRequest.Load(selectedRequest);
+        int location = dummyRequest.GetLocation();
+        int row = overworldTiles.mapUtility.GetRow(location, overworldTiles.GetSize());
+        int col = overworldTiles.mapUtility.GetColumn(location, overworldTiles.GetSize());
+        Debug.Log("Quest~Row: " + row + " Col: " + col);
+        location = overworldState.GetLocation();
+        row = overworldTiles.mapUtility.GetRow(location, overworldTiles.GetSize());
+        col = overworldTiles.mapUtility.GetColumn(location, overworldTiles.GetSize());
+        Debug.Log("(YOU)~Row: " + row + " Col: " + col);
+        Debug.Log("Distance: "+overworldTiles.mapUtility.DistanceBetweenTiles(dummyRequest.GetLocation(), overworldState.GetLocation(), overworldTiles.GetSize()));
     }
 
     public void GenerateRequests()

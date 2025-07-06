@@ -14,6 +14,8 @@ public class OverworldMap : MapManager
     public OverworldState overworldState;
     // Sometimes you can add enemies directly.
     public CharacterList enemyList;
+    // Easy to load the dungeon from here, before entering.
+    public Dungeon dungeon;
     public PartyDataManager partyData;
     [System.NonSerialized]
     public List<string> luxuryLayer;
@@ -151,6 +153,10 @@ public class OverworldMap : MapManager
         }
         else if (sceneName == "Dungeon")
         {
+            dungeon.InitializeDungeon(featureManager.ReturnFeatureSpecifics(featureTerrain));
+            dungeon.MakeDungeon();
+            overworldState.Save();
+            sceneMover.MoveToDungeon();
             return;
         }
     }
