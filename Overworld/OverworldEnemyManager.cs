@@ -48,7 +48,7 @@ public class OverworldEnemyManager : SavedData
         }
         return false;
     }
-    public virtual void GenerateEnemies(int index)
+    public virtual void GenerateEnemies()
     {
         int enemyGroupSize = Random.Range(minEnemyGroupSize, maxEnemyGroupSize + 1);
         for (int i = 0; i < enemyGroupSize; i++)
