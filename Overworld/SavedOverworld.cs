@@ -92,10 +92,26 @@ public class SavedOverworld : SavedData
     // Villages, Caves, Ruins, Bandit Camps
     // Note some features can override cities.
     public List<string> features;
+    public int ReturnFeatureCount(string featureType)
+    {
+        return utility.CountStringsInList(features, featureType);
+    }
     public List<string> featureLocations;
+    public List<string> ReturnLocationsOfFeature(string featureType)
+    {
+        List<string> locations = new List<string>();
+        for (int i = 0; i < features.Count; i++)
+        {
+            if (features[i] == featureType)
+            {
+                locations.Add(featureLocations[i]);
+            }
+        }
+        return locations;
+    }
     public bool AddFeature(string newFeature, string newLocation)
     {
-        if (featureLocations.Contains(newLocation)){return false;}
+        if (featureLocations.Contains(newLocation)) { return false; }
         features.Add(newFeature);
         featureLocations.Add(newLocation);
         QuickSave();
@@ -133,10 +149,38 @@ public class SavedOverworld : SavedData
     }
     // Player, Monsters, Bandits, NPCs
     public List<string> characters;
+    public bool SpecificCharacterOnTile(string characterType, int location)
+    {
+        int indexOf = characterLocations.IndexOf(location.ToString());
+        if (indexOf < 0) { return false; }
+        return characters[indexOf] == characterType;
+    }
+    public int ReturnCharacterCount(string characterType)
+    {
+        return utility.CountStringsInList(characters, characterType);
+    }
     public List<string> characterLocations;
+    public List<string> ReturnLocationsOfCharacter(string characterType)
+    {
+        List<string> locations = new List<string>();
+        for (int i = 0; i < characters.Count; i++)
+        {
+            if (characters[i] == characterType)
+            {
+                locations.Add(characterLocations[i]);
+            }
+        }
+        return locations;
+    }
+    public string CharacterOnTile(string location)
+    {
+        int indexOf = characterLocations.IndexOf(location);
+        if (indexOf < 0) { return ""; }
+        return characters[indexOf];
+    }
     public bool AddCharacter(string newChar, string newLocation)
     {
-        if (characterLocations.Contains(newLocation)){return false;}
+        if (characterLocations.Contains(newLocation)) { return false; }
         characters.Add(newChar);
         characterLocations.Add(newLocation);
         QuickSave();
@@ -150,11 +194,31 @@ public class SavedOverworld : SavedData
         characterLocations[indexOf] = newLocation;
         return true;
     }
-    public void RemoveCharacterAtLocation(int location)
+    public bool MoveCharacterInDirection(string currentLocation, int direction = -1)
+    {
+        int indexOf = characterLocations.IndexOf(currentLocation);
+        if (indexOf < 0) { return false; }
+        if (direction < 0){ direction = UnityEngine.Random.Range(0, 6); }
+        int newLocation = mapUtility.PointInDirection(int.Parse(currentLocation), direction, GetSize());
+        if (characterLocations.Contains(newLocation.ToString())){return false;}
+        characterLocations[indexOf] = newLocation.ToString();
+        return true;
+    }
+    public void RemoveCharacterAtLocation(int location, string characterType = "")
     {
         int indexOf = characterLocations.IndexOf(location.ToString());
-        characterLocations.RemoveAt(indexOf);
-        characters.RemoveAt(indexOf);
+        if (indexOf < 0) { return; }
+        if (characterType == "")
+        {
+            characterLocations.RemoveAt(indexOf);
+            characters.RemoveAt(indexOf);
+        }
+        else if (characters[indexOf] == characterType)
+        {
+            characterLocations.RemoveAt(indexOf);
+            characters.RemoveAt(indexOf);
+        }
+        else { return; }
         QuickSave();
     }
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.

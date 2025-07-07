@@ -19,7 +19,7 @@ public class GeneralUtility : ScriptableObject
         else
         {
             if (currentIndex > 0) { return currentIndex - 1; }
-            else{ return maxIndex; }
+            else { return maxIndex; }
         }
     }
 
@@ -198,5 +198,15 @@ public class GeneralUtility : ScriptableObject
     {
         List<string> string_list = string_array.ToList();
         return ConvertListToString(string_list, delimiter);
+    }
+
+    public int CountStringsInList(List<string> list, string specifics)
+    {
+        int count = 0;
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (list[i] == specifics){ count++; }
+        }
+        return count;
     }
 }
