@@ -15,4 +15,12 @@ public class References : MonoBehaviour
             savedDataReferences[i].NewGame();
         }
     }
+
+    public void Save()
+    {
+        for (int i = 0; i < savedDataReferences.Count; i++)
+        {
+            savedDataReferences[i].Save();
+        }
+    }
 }

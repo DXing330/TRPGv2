@@ -12,6 +12,10 @@ public class OverworldEnemyManager : SavedData
     public List<string> spawnableTerrain;
     // How often enemies spawn, maybe make this a setting or adjustable later.
     public int spawnRate;
+    // If you get too close, the enemies will chase you.
+    public int chaseRange = 3;
+    // Different types of enemies have different overworld travelling speed.
+    public int moveSpeed = 1;
     public override void NewDay(int dayCount)
     {
         ResetCurrentEnemies();
@@ -62,7 +66,20 @@ public class OverworldEnemyManager : SavedData
         for (int i = 0; i < enemyLocations.Count; i++)
         {
             if (enemyLocations[i] == except.ToString()){ continue; }
-            savedOverworld.MoveCharacterInDirection(enemyLocations[i]);
+            for (int j = 0; j < moveSpeed; j++)
+            {
+                // Get the distance from the player.
+                if (savedOverworld.ReturnCharacterDistanceFromPlayer(enemyLocations[i]) <= chaseRange)
+                {
+                    int direction = savedOverworld.ReturnCharacterDirectionFromPlayer(enemyLocations[i]);
+                    savedOverworld.MoveCharacterInDirection(enemyLocations[i], direction);
+                }
+                else
+                {
+                    // Move randomly.
+                    savedOverworld.MoveCharacterInDirection(enemyLocations[i]);
+                }
+            }
         }
     }
     public virtual void GenerateSpawner()

@@ -8,6 +8,10 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedOverworld", menuName = "ScriptableObjects/DataContainers/SavedData/SavedOverworld", order = 1)]
 public class SavedOverworld : SavedData
 {
+    // These are basically the same, just split up for convenience.
+    // SavedOverworld is more concerned with tile state.
+    // OverworldState is more concerned with player state.
+    public OverworldState overworldState;
     public string delimiterTwo;
     public OverworldGenerator owGen;
     public MapUtility mapUtility;
@@ -200,7 +204,7 @@ public class SavedOverworld : SavedData
         if (indexOf < 0) { return false; }
         if (direction < 0){ direction = UnityEngine.Random.Range(0, 6); }
         int newLocation = mapUtility.PointInDirection(int.Parse(currentLocation), direction, GetSize());
-        if (characterLocations.Contains(newLocation.ToString())){return false;}
+        if (characterLocations.Contains(newLocation.ToString())) { return false; }
         characterLocations[indexOf] = newLocation.ToString();
         return true;
     }
@@ -220,6 +224,18 @@ public class SavedOverworld : SavedData
         }
         else { return; }
         QuickSave();
+    }
+    public int ReturnCharacterDistanceFromPlayer(string characterLocation)
+    {
+        int cLoc = int.Parse(characterLocation);
+        int distance = mapUtility.DistanceBetweenTiles(cLoc, overworldState.GetLocation(), GetSize());
+        return distance;
+    }
+    public int ReturnCharacterDirectionFromPlayer(string characterLocation)
+    {
+        int cLoc = int.Parse(characterLocation);
+        int direction = mapUtility.DirectionBetweenLocations(cLoc, overworldState.GetLocation(), GetSize());
+        return direction;
     }
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.
     public List<string> cityLuxuryDemands;
