@@ -198,15 +198,15 @@ public class SavedOverworld : SavedData
         characterLocations[indexOf] = newLocation;
         return true;
     }
-    public bool MoveCharacterInDirection(string currentLocation, int direction = -1)
+    public string MoveCharacterInDirection(string currentLocation, int direction = -1)
     {
         int indexOf = characterLocations.IndexOf(currentLocation);
-        if (indexOf < 0) { return false; }
+        if (indexOf < 0) { return currentLocation; }
         if (direction < 0){ direction = UnityEngine.Random.Range(0, 6); }
         int newLocation = mapUtility.PointInDirection(int.Parse(currentLocation), direction, GetSize());
-        if (characterLocations.Contains(newLocation.ToString())) { return false; }
+        if (characterLocations.Contains(newLocation.ToString())) { return currentLocation; }
         characterLocations[indexOf] = newLocation.ToString();
-        return true;
+        return newLocation.ToString();
     }
     public void RemoveCharacterAtLocation(int location, string characterType = "")
     {
@@ -234,7 +234,9 @@ public class SavedOverworld : SavedData
     public int ReturnCharacterDirectionFromPlayer(string characterLocation)
     {
         int cLoc = int.Parse(characterLocation);
-        int direction = mapUtility.DirectionBetweenLocations(cLoc, overworldState.GetLocation(), GetSize());
+        int pLoc = overworldState.GetLocation();
+        if (cLoc == pLoc){ return -1; }
+        int direction = mapUtility.DirectionBetweenLocations(cLoc, pLoc, GetSize());
         return direction;
     }
     public List<string> cityLuxurySupplys; // List of what luxury the city exports.

@@ -31,6 +31,14 @@ public class OverworldMap : MapManager
     public FeatureManager featureManager;
     public int partyLocation;
 
+    protected void RandomEncounter()
+    {
+        Debug.Log(partyLocation);
+        overworldState.ResetBattleType();
+        overworldState.Save();
+        sceneMover.MoveToBattle();
+    }
+
     public void Rest()
     {
         int cDay = overworldState.GetDay();
@@ -48,9 +56,7 @@ public class OverworldMap : MapManager
         // Trigger resting events.
         if (enemies)
         {
-            overworldState.ResetBattleType();
-            overworldState.Save();
-            sceneMover.MoveToBattle();
+            RandomEncounter();
             return;
         }
     }
@@ -89,9 +95,7 @@ public class OverworldMap : MapManager
         UpdateMap();
         if (enemies)
         {
-            overworldState.ResetBattleType();
-            overworldState.Save();
-            sceneMover.MoveToBattle();
+            RandomEncounter();
             return;
         }
         /*if (overworldData.CenterCity(newTile))

@@ -72,12 +72,13 @@ public class OverworldEnemyManager : SavedData
                 if (savedOverworld.ReturnCharacterDistanceFromPlayer(enemyLocations[i]) <= chaseRange)
                 {
                     int direction = savedOverworld.ReturnCharacterDirectionFromPlayer(enemyLocations[i]);
-                    savedOverworld.MoveCharacterInDirection(enemyLocations[i], direction);
+                    if (direction < 0){ continue; }
+                    enemyLocations[i] = savedOverworld.MoveCharacterInDirection(enemyLocations[i], direction);
                 }
                 else
                 {
                     // Move randomly.
-                    savedOverworld.MoveCharacterInDirection(enemyLocations[i]);
+                    enemyLocations[i] = savedOverworld.MoveCharacterInDirection(enemyLocations[i]);
                 }
             }
         }
