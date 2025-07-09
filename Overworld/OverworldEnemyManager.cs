@@ -66,20 +66,21 @@ public class OverworldEnemyManager : SavedData
         for (int i = 0; i < enemyLocations.Count; i++)
         {
             if (enemyLocations[i] == except.ToString()){ continue; }
-            for (int j = 0; j < moveSpeed; j++)
+            if (savedOverworld.ReturnCharacterDistanceFromPlayer(enemyLocations[i]) <= chaseRange)
             {
-                // Get the distance from the player.
-                if (savedOverworld.ReturnCharacterDistanceFromPlayer(enemyLocations[i]) <= chaseRange)
+                Debug.Log(savedOverworld.ReturnCharacterDistanceFromPlayer(enemyLocations[i]));
+                for (int j = 0; j < moveSpeed; j++)
                 {
                     int direction = savedOverworld.ReturnCharacterDirectionFromPlayer(enemyLocations[i]);
-                    if (direction < 0){ continue; }
+                    if (direction < 0) { continue; }
                     enemyLocations[i] = savedOverworld.MoveCharacterInDirection(enemyLocations[i], direction);
+                    Debug.Log(savedOverworld.ReturnCharacterDistanceFromPlayer(enemyLocations[i]));
                 }
-                else
-                {
-                    // Move randomly.
-                    enemyLocations[i] = savedOverworld.MoveCharacterInDirection(enemyLocations[i]);
-                }
+            }
+            else
+            {
+                // Move randomly.
+                enemyLocations[i] = savedOverworld.MoveCharacterInDirection(enemyLocations[i]);
             }
         }
     }
@@ -98,7 +99,7 @@ public class OverworldEnemyManager : SavedData
     public virtual void SpawnEnemies()
     {
         // Check if the max amount of enemies has been reached.
-        if (savedOverworld.ReturnFeatureCount(overworldEnemySprite) >= maxEnemies) { return; }
+        if (savedOverworld.ReturnCharacterCount(overworldEnemySprite) >= maxEnemies) { return; }
         // Create enemies at spawner locations.
         List<string> spawnerLocations = savedOverworld.ReturnLocationsOfFeature(overworldSpawnerSprite);
         for (int i = 0; i < spawnerLocations.Count; i++)

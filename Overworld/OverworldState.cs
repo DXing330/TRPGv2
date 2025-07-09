@@ -20,10 +20,12 @@ public class OverworldState : SavedData
     public int location;
     public string GetLocationTerrain() { return savedOverworld.ReturnTerrain(location); }
     public int GetLocation() { return location; }
-    public bool SetLocation(int newLocation)
+    public void SetLocation(int newLocation)
     {
         location = newLocation;
-        // Check if there are any enemies;
+    }
+    public bool EnemiesAtLocation()
+    {
         bool enemies = false;
         List<int> enemyManagerIndices = new List<int>();
         for (int i = 0; i < enemyManagers.Count; i++)
@@ -103,7 +105,7 @@ public class OverworldState : SavedData
         AddHours(GetRestingPeriod());
         partyData.Rest();
     }
-    public void UpdateEnemies(int except)
+    public void UpdateEnemies(int except = -1)
     {
         for (int i = 0; i < enemyManagers.Count; i++)
         {

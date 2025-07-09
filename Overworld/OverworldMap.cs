@@ -49,7 +49,7 @@ public class OverworldMap : MapManager
         }
         dayNightFilter.UpdateFilter(overworldState.GetHour());
         bool enemies = false;
-        enemies = overworldState.SetLocation(partyLocation);
+        enemies = overworldState.EnemiesAtLocation();
         UpdateData();
         characterLayer[partyLocation] = partySprite;
         UpdateMap();
@@ -76,14 +76,14 @@ public class OverworldMap : MapManager
         int cDay = overworldState.GetDay();
         overworldState.AddHours(moveCost);
         partyData.caravan.ConsumeMuleEnergy(moveCost);
-        // Don't move any enemies that are on the player's tile, those are guaranteed fights.
+        overworldState.SetLocation(newTile);
         if (cDay != overworldState.GetDay())
         {
             overworldState.UpdateEnemies(newTile);
         }
         dayNightFilter.UpdateFilter(overworldState.GetHour());
         bool enemies = false;
-        enemies = overworldState.SetLocation(newTile);
+        enemies = overworldState.EnemiesAtLocation();
         UpdateData();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
@@ -98,11 +98,7 @@ public class OverworldMap : MapManager
             RandomEncounter();
             return;
         }
-        /*if (overworldData.CenterCity(newTile))
-        {
-            sceneMover.ReturnToHub();
-        }
-        else if (cityLocations.Contains(newTile.ToString()))
+        /*if (cityLocations.Contains(newTile.ToString()))
         {
             // Move into the city.
             // Keep track of what resources are low/high price in that city.
