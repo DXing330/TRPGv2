@@ -126,10 +126,14 @@ public class SavedOverworld : SavedData
         int indexOf = featureLocations.IndexOf(location.ToString());
         return indexOf >= 0;
     }
+    public void PlayerClearsDungeon()
+    {
+        RemoveFeatureAtLocation(overworldState.GetLocation());
+    }
     public void RemoveFeatureAtLocation(int location)
     {
         int indexOf = featureLocations.IndexOf(location.ToString());
-        if (indexOf < 0){ return; }
+        if (indexOf < 0) { return; }
         featureLocations.RemoveAt(indexOf);
         features.RemoveAt(indexOf);
         QuickSave();
@@ -204,6 +208,7 @@ public class SavedOverworld : SavedData
         if (indexOf < 0) { return currentLocation; }
         if (direction < 0){ direction = UnityEngine.Random.Range(0, 6); }
         int newLocation = mapUtility.PointInDirection(int.Parse(currentLocation), direction, GetSize());
+        if (newLocation < 0){ return currentLocation; }
         if (characterLocations.Contains(newLocation.ToString())) { return currentLocation; }
         characterLocations[indexOf] = newLocation.ToString();
         return newLocation.ToString();

@@ -51,7 +51,7 @@ public class GuildCard : SavedData
         for (int i = 0; i < acceptedQuests.Count; i++)
         {
             dummyRequest.Load(acceptedQuests[i]);
-            if (dummyRequest.GetLocation() == tileNumber){ return true; }
+            if (dummyRequest.GetLocation() == tileNumber && !dummyRequest.GetCompletion()){ return true; }
         }
         return false;
     }

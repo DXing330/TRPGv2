@@ -183,7 +183,6 @@ public class OverworldMap : MapManager
                 break;
             // Escort quests autocomplete.
             case "Escort":
-                Debug.Log("Escort");
                 // Check if the required party member exists.
                 if (partyData.guildCard.CompleteEscortQuest(tile, partyData))
                 {

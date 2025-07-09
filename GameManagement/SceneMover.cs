@@ -9,6 +9,7 @@ public class SceneMover : MonoBehaviour
     public SceneTracker sceneTracker;
     public bool loadingRequired = false;
     public string overworldSceneName = "Overworld";
+    public OverworldState overworldState;
     public string hubSceneName = "Hub";
     public string dungeonSceneName = "Dungeon";
     public DungeonState dungeonState;
@@ -174,6 +175,9 @@ public class SceneMover : MonoBehaviour
         {
             mainParty.ClearAllStats();
             // If you die in the dungeon, basically game over, go back home.
+            // Need to set the overworldstate location to the hub location.
+            overworldState.SetLocation(overworldState.savedOverworld.GetCenterCityLocation());
+            // Maybe lose some supplies/goods.
             ReturnToHub();
             return;
         }
