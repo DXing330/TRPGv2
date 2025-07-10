@@ -150,7 +150,13 @@ public class BattleManager : MonoBehaviour
     public string GetState(){ return selectedState; }
     public void SetState(string newState)
     {
-        if (newState == selectedState || !turnActor.ActionsLeft())
+        if (newState == selectedState)
+        {
+            ResetState();
+            return;
+        }
+        // The only action you can take without actionsleft is moving, assuming you have movement remaining.
+        else if (newState != "Move" && !turnActor.ActionsLeft())
         {
             ResetState();
             return;
