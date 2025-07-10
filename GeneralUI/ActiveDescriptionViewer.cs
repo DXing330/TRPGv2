@@ -22,7 +22,11 @@ public class ActiveDescriptionViewer : MonoBehaviour
     }
     public string ReturnActiveDescription(ActiveSkill activeSkill)
     {
-        return AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
+        string activeDescription = AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
+        activeDescription += "\n" + "Action Cost: " + activeSkill.GetActionCost();
+        //+"; Actions Left: " +activeSkill;
+        activeDescription += "\n"+"Energy Cost: "+activeSkill.GetEnergyCost();
+        return activeDescription;
     }
 
     // ActiveEffectDescription

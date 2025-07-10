@@ -64,8 +64,13 @@ public class ActiveSkill : SkillEffect
         if (span.Length <= 0){return 0;}
         return int.Parse(span);
     }
+    int selectedTile;
+    public void ResetSelectedTile(){ selectedTile = -1; }
+    public void SetSelectedTile(int newInfo) { selectedTile = newInfo; }
+    public int GetSelectedTile(){ return selectedTile; }
     List<int> targetedTiles;
     public void SetTargetedTiles(List<int> newTiles){targetedTiles = newTiles;}
+    public List<int> GetTargetedTiles(){ return targetedTiles; }
     // Return a list of actors on those tiles.
     List<TacticActor> targetedActors;
     public void SetTargetedActors(List<TacticActor> newTargets){targetedActors = newTargets;}

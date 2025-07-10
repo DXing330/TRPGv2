@@ -134,7 +134,7 @@ public class SkillEffect : ScriptableObject
                 target.SetMoveSpeedMax(int.Parse(effectSpecifics));
                 break;
             case "Movement":
-                target.GainMovement(level * int.Parse(effectSpecifics));
+                AffectActorMovement(target, effectSpecifics, level);
                 break;
             case "BaseActions":
                 target.UpdateBaseActions(level * int.Parse(effectSpecifics));
@@ -162,5 +162,36 @@ public class SkillEffect : ScriptableObject
                 target.RemoveRandomActiveSkill();
                 break;
         }
+    }
+
+    public int SafeParseInt(string intString, int defaultValue = 1)
+    {
+        try
+        {
+            return int.Parse(intString);
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
+
+    protected void AffectActorMovement(TacticActor target, string effectSpecifics, int power = 1)
+    {
+        int amount = SafeParseInt(effectSpecifics, -1);
+        if (amount > 0)
+        {
+            target.GainMovement(power * amount);
+            return;
+        }
+        switch (effectSpecifics)
+        {
+            case "Speed":
+                amount = target.GetSpeed();
+                break;
+        }
+        // You never lose movement, except by moving, if you want someone to stop moving you affect their speed, not their movement.
+        if (amount <= 0) { amount = 1; }
+        target.GainMovement(power * amount);
     }
 }

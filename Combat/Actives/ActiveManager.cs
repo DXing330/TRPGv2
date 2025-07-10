@@ -19,7 +19,7 @@ public class ActiveManager : MonoBehaviour
         List<int> powers = magicSpell.GetAllPowers();
         for (int i = 0; i < effects.Count; i++)
         {
-            ApplyActiveEffects(battle, targets, effects[i], specifics[i], powers[i]);
+            ApplyActiveEffects(battle, targets, effects[i], specifics[i], powers[i], magicSpell.GetSelectedTile());
         }
     }
     public ActiveSkill active;
@@ -76,8 +76,13 @@ public class ActiveManager : MonoBehaviour
 
     public List<int> GetTargetedTiles(int start, MapPathfinder pathfinder, bool spellCast = false)
     {
+        active.SetSelectedTile(start);
         string shape = active.GetShape();
-        if (spellCast){ shape = magicSpell.GetShape(); }
+        if (spellCast)
+        {
+            magicSpell.SetSelectedTile(start);
+            shape = magicSpell.GetShape();
+        }
         targetedTiles = new List<int>(GetTiles(start, shape, pathfinder, false, spellCast));
         if (!spellCast)
         {
@@ -143,7 +148,7 @@ public class ActiveManager : MonoBehaviour
         return new List<int>();
     }
 
-    protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power)
+    protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power, int selectedTile = -1)
     {
         int targetTile = -1;
         switch (effect)
@@ -169,7 +174,7 @@ public class ActiveManager : MonoBehaviour
                 return;
             case "Summon":
                 // Check if selected tile is free.
-                int summonLocation = targetedTiles[0];
+                int summonLocation = selectedTile;
                 if (battle.map.GetActorOnTile(summonLocation) == null)
                 {
                     // Create a new actor on that location on the same team.
@@ -336,7 +341,7 @@ public class ActiveManager : MonoBehaviour
         skillUser.SpendEnergy(active.GetEnergyCost());
         skillUser.PayActionCost(active.GetActionCost());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
-        ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower());
+        ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower(), active.GetSelectedTile());
     }
 
     public bool CheckSkillCost()

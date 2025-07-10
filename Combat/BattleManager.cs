@@ -183,7 +183,7 @@ public class BattleManager : MonoBehaviour
     public int selectedTile;
     public TacticActor selectedActor;
 
-    protected void ResetState()
+    public void ResetState()
     {
         selectedState = "";
         selectedTile = -1;

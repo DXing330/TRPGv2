@@ -103,7 +103,7 @@ public class ActiveSelectList : SelectList
     {
         DecrementState();
         battle.map.ResetHighlights();
-        StartingPage();
+        //StartingPage();
     }
 
     protected void DecrementState()
