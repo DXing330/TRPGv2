@@ -205,8 +205,25 @@ public class GeneralUtility : ScriptableObject
         int count = 0;
         for (int i = 0; i < list.Count; i++)
         {
-            if (list[i] == specifics){ count++; }
+            if (list[i] == specifics) { count++; }
         }
         return count;
+    }
+
+    public int SafeParseInt(string intString, int defaultValue = 0)
+    {
+        try
+        {
+            return int.Parse(intString);
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
+
+    public int SumDescending(int lastValue)
+    {
+        return (lastValue) * (lastValue + 1) / 2;
     }
 }

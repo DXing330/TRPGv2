@@ -108,13 +108,23 @@ public class PartyData : SavedData
         }
     }
     // This basically acts as full heal, setting all current healths to base healths.
-    public void ResetCurrentStats()
+    public void ResetCurrentStats(bool defeated = false)
     {
         ClearCurrentStats();
         for (int i = 0; i < partyBaseStats.Count; i++)
         {
-            string[] splitData = partyBaseStats[i].Split("|");
-            partyCurrentStats[i] = (splitData[0]);
+            // Heal to full.
+            if (!defeated)
+            {
+                string[] splitData = partyBaseStats[i].Split("|");
+                partyCurrentStats[i] = (splitData[0]);
+            }
+            // Remain barely alive.
+            // This can be gamed to cure status effects?
+            else
+            {
+                partyCurrentStats[i] = "1";
+            }
         }
     }
     public override void Save()

@@ -17,6 +17,7 @@ public class PassiveOrganizer : ScriptableObject
     public List<string> takeDamagePassives;
     public List<string> movingPassives;
     public List<string> deathPassives;
+    public List<string> outOfCombatPassives;
 
     protected void ClearLists()
     {
@@ -28,6 +29,7 @@ public class PassiveOrganizer : ScriptableObject
         takeDamagePassives.Clear();
         movingPassives.Clear();
         deathPassives.Clear();
+        outOfCombatPassives.Clear();
     }
 
     public void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
@@ -49,29 +51,32 @@ public class PassiveOrganizer : ScriptableObject
         switch (timing)
         {
             case "Moving":
-            movingPassives.Add(passive);
-            break;
+                movingPassives.Add(passive);
+                break;
             case "Start":
-            startTurnPassives.Add(passive);
-            break;
+                startTurnPassives.Add(passive);
+                break;
             case "End":
-            endTurnPassives.Add(passive);
-            break;
+                endTurnPassives.Add(passive);
+                break;
             case "Attacking":
-            attackingPassives.Add(passive);
-            break;
+                attackingPassives.Add(passive);
+                break;
             case "Defending":
-            defendingPassives.Add(passive);
-            break;
+                defendingPassives.Add(passive);
+                break;
             case "BattleStart":
-            startBattlePassives.Add(passive);
-            break;
+                startBattlePassives.Add(passive);
+                break;
             case "TakeDamage":
-            takeDamagePassives.Add(passive);
-            break;
+                takeDamagePassives.Add(passive);
+                break;
             case "Death":
-            deathPassives.Add(passive);
-            break;
+                deathPassives.Add(passive);
+                break;
+            case "OOC":
+                outOfCombatPassives.Add(passive);
+                break;
         }
     }
 
@@ -85,7 +90,7 @@ public class PassiveOrganizer : ScriptableObject
         actor.SetDefendingPassives(defendingPassives);
         actor.SetTakeDamagePassives(takeDamagePassives);
         actor.SetMovingPassives(movingPassives);
-        // TODO: implement death passive effects
         actor.SetDeathPassives(deathPassives);
+        actor.SetOOCPassives(outOfCombatPassives);
     }
 }

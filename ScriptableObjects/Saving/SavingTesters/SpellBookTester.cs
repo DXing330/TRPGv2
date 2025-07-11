@@ -5,6 +5,7 @@ using UnityEngine;
 public class SpellBookTester : MonoBehaviour
 {
     public SpellBook spellBook;
+    public TacticActor dummyActor;
     public int testAmount = 6;
     public int testEffectCount = 6;
 
@@ -16,5 +17,11 @@ public class SpellBookTester : MonoBehaviour
             string spell = spellBook.ReturnRandomSpell(testEffectCount);
             Debug.Log(spell);
         }
+    }
+
+    [ContextMenu("Check Spell Slots")]
+    public void TestSpellSlots()
+    {
+        Debug.Log(spellBook.ReturnActorSpellSlots(dummyActor));
     }
 }

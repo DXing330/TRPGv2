@@ -250,8 +250,8 @@ public class PartyDataManager : MonoBehaviour
     public void PartyDefeated()
     {
         fullParty.ResetLists();
-        permanentPartyData.ResetCurrentStats();
-        mainPartyData.ResetCurrentStats();
+        permanentPartyData.ResetCurrentStats(true);
+        mainPartyData.ResetCurrentStats(true);
         tempPartyData.ClearAllStats();
         SetFullParty();
     }

@@ -7,6 +7,14 @@ using UnityEngine;
 
 public class ActorStats : ActorPassives
 {
+    public GeneralUtility utility;
+    public string allStatNames;
+    [ContextMenu("LoadStatNames")]
+    protected void LoadStatNames()
+    {
+        statNames = allStatNames.Split("|").ToList();
+    }
+    public List<string> statNames;
     public List<string> stats;
     public void ReloadPassives()
     {
@@ -18,7 +26,7 @@ public class ActorStats : ActorPassives
         string allStats = "";
         for (int i = 0; i < stats.Count; i++)
         {
-            stats[i] = GetStat(i);
+            stats[i] = GetStat(statNames[i]);
             allStats += stats[i];
             if (i < stats.Count - 1){allStats+="|";}
         }
@@ -28,15 +36,19 @@ public class ActorStats : ActorPassives
     {
         SetStats(newStats.Split("|").ToList());
     }
-    public void SetStats(List<string> newStats)
+    public void SetStats(List<string> newStats, List<string> newStatNames = null)
     {
+        if (newStatNames == null)
+        {
+            newStatNames = new List<string>(statNames);
+        }
         ClearStatuses();
         ResetPassives();
         ResetTempStats();
         stats = newStats;
         for (int i = 0; i < stats.Count; i++)
         {
-            SetStat(stats[i], i);
+            SetStat(stats[i], newStatNames[i]);
         }
         if (currentHealth <= 0) { currentHealth = GetBaseHealth(); }
         else if (currentHealth > GetBaseHealth()) { currentHealth = GetBaseHealth(); }
@@ -45,86 +57,90 @@ public class ActorStats : ActorPassives
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
     }
-    protected string GetStat(int index)
+    protected string GetStat(string statName)
     {
-        switch (index)
+        switch (statName)
         {
-            case 0:
+            case "Health":
                 return GetBaseHealth().ToString();
-            case 1:
+            case "Energy":
                 return GetBaseEnergy().ToString();
-            case 2:
+            case "Attack":
                 return GetBaseAttack().ToString();
-            case 3:
+            case "Range":
                 return GetAttackRange().ToString();
-            case 4:
+            case "Defense":
                 return GetBaseDefense().ToString();
-            case 5:
+            case "Movement":
                 return GetMoveSpeed().ToString();
-            case 6:
+            case "MoveType":
                 return GetMoveType();
-            case 7:
+            case "Weight":
                 return GetWeight().ToString();
-            case 8:
+            case "Initiative":
                 return GetInitiative().ToString();
-            case 9:
+            case "Passives":
                 return GetPassiveString();
-            case 10:
+            case "PassiveLevels":
                 return GetPassiveLevelString();
-            case 11:
+            case "Actives":
                 return GetActivesString();
-            case 12:
+            case "Spells":
+                return GetSpellsString();
+            case "CurrentHealth":
                 return GetHealth().ToString();
-            case 13:
+            case "Curses":
                 return GetCurseString();
         }
         return "";
     }
-    protected void SetStat(string newStat, int index)
+    protected void SetStat(string newStat, string statName)
     {
-        switch (index)
+        switch (statName)
         {
-            case 0:
-                SetBaseHealth(int.Parse(newStat));
+            case "Health":
+                SetBaseHealth(utility.SafeParseInt(newStat));
                 break;
-            case 1:
-                SetBaseEnergy(int.Parse(newStat));
+            case "Energy":
+                SetBaseEnergy(utility.SafeParseInt(newStat));
                 break;
-            case 2:
-                SetBaseAttack(int.Parse(newStat));
+            case "Attack":
+                SetBaseAttack(utility.SafeParseInt(newStat));
                 break;
-            case 3:
-                SetAttackRange(int.Parse(newStat));
+            case "Range":
+                SetAttackRange(utility.SafeParseInt(newStat));
                 break;
-            case 4:
-                SetBaseDefense(int.Parse(newStat));
+            case "Defense":
+                SetBaseDefense(utility.SafeParseInt(newStat));
                 break;
-            case 5:
-                SetMoveSpeed(int.Parse(newStat));
+            case "Movement":
+                SetMoveSpeed(utility.SafeParseInt(newStat));
                 break;
-            case 6:
+            case "MoveType":
                 SetMoveType(newStat);
                 break;
-            case 7:
-                SetWeight(int.Parse(newStat));
+            case "Weight":
+                SetWeight(utility.SafeParseInt(newStat));
                 break;
-            case 8:
-                SetInitiative(int.Parse(newStat));
+            case "Initiative":
+                SetInitiative(utility.SafeParseInt(newStat));
                 break;
-            case 9:
+            case "Passives":
                 SetPassiveSkills(newStat.Split(",").ToList());
                 break;
-            case 10:
+            case "PassiveLevels":
                 SetPassiveLevels(newStat.Split(",").ToList());
                 break;
-            case 11:
-                ResetSpells();
+            case "Actives":
                 SetActiveSkills(newStat.Split(",").ToList());
                 break;
-            case 12:
-                SetCurrentHealth(int.Parse(newStat));
+            case "Spells":
+                SetSpells(newStat.Split(",").ToList());
                 break;
-            case 13:
+            case "CurrentHealth":
+                SetCurrentHealth(utility.SafeParseInt(newStat));
+                break;
+            case "Curses":
                 // If they were kept then they must have had infinite duration.
                 List<string> curses = newStat.Split(",").ToList();
                 for (int i = 0; i < curses.Count; i++)
@@ -156,7 +172,7 @@ public class ActorStats : ActorPassives
         return stats;
     }
     public int baseHealth;
-    public void SetBaseHealth(int newHealth){baseHealth = newHealth;}
+    public void SetBaseHealth(int newHealth) { baseHealth = newHealth; }
     public int GetBaseHealth(){return baseHealth;}
     public void UpdateBaseHealth(int changeAmount, bool decrease = true)
     {
@@ -306,7 +322,11 @@ public class ActorStats : ActorPassives
             if (activeSkills[i].Length <= 1){activeSkills.RemoveAt(i);}
         }
     }
-    public string GetActiveSkill(int index){return activeSkills[index];}
+    public string GetActiveSkill(int index)
+    {
+        if (index < 0 || index >= activeSkills.Count){ return ""; }
+        return activeSkills[index];
+    }
     public List<string> GetActiveSkills()
     {
         List<string> allActives = new List<string>(activeSkills);
@@ -323,6 +343,20 @@ public class ActorStats : ActorPassives
     public List<string> GetSpells()
     {
         return spells;
+    }
+    public string GetSpellsString()
+    {
+        if (spells.Count == 0) { return ""; }
+        return String.Join(",", spells);
+    }
+    public void SetSpells(List<string> newSkills)
+    {
+        spells = newSkills;
+        if (spells.Count == 0) { return; }
+        for (int i = spells.Count - 1; i >= 0; i--)
+        {
+            if (spells[i].Length <= 1) { spells.RemoveAt(i); }
+        }
     }
     public int SpellCount()
     {

@@ -7,6 +7,21 @@ public class SpellBook : SavedData
 {
     public StatDatabase spellComponents;
     public MagicSpell magicSpell;
+    // Passive names that determine how many spells slots a character has.
+    public List<string> spellSlotPassives;
+    public int ReturnActorSpellSlots(TacticActor actor)
+    {
+        int slots = 0;
+        for (int i = 0; i < actor.GetPassiveSkills().Count; i++)
+        {
+            string passiveName = actor.GetPassiveAtIndex(i);
+            if (spellSlotPassives.Contains(passiveName))
+            {
+                slots += utility.SumDescending(actor.GetLevelFromPassive(passiveName));
+            }
+        }
+        return slots;
+    }
     public List<string> currentComponents;
     // Constants.
     // Action cost and energy default to 1 cost.
@@ -18,16 +33,6 @@ public class SpellBook : SavedData
 
     public string ReturnRandomSpell(int effectCount = 3)
     {
-        /*skillType = skillData[0];
-        energyCost = skillData[1];
-        actionCost = skillData[2];
-        range = skillData[3];
-        rangeShape = skillData[4];
-        shape = skillData[5];
-        span = skillData[6];
-        effect = skillData[7];
-        specifics = skillData[8];
-        power = skillData[9];*/
         string effectDelimiter = magicSpell.delimiter;
         string spell = "SpellName|1|1|";
         spell += ranges[Random.Range(0, ranges.Count)] + "|";
