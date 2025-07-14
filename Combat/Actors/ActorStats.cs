@@ -171,6 +171,15 @@ public class ActorStats : ActorPassives
         stats.Add(GetDefense().ToString());
         return stats;
     }
+    public void FullRestore()
+    {
+        SetCurrentHealth(GetBaseHealth());
+        ClearStatuses();
+    }
+    public void NearDeath()
+    {
+        SetCurrentHealth(1);
+    }
     public int baseHealth;
     public void SetBaseHealth(int newHealth) { baseHealth = newHealth; }
     public int GetBaseHealth(){return baseHealth;}
@@ -364,12 +373,18 @@ public class ActorStats : ActorPassives
     }
     public List<string> statuses;
     public List<string> GetStatuses(){return statuses;}
+    public string curseStatName;
+    public void SetCurses(string newInfo)
+    {
+        int index = statNames.IndexOf(curseStatName);
+        stats[index] = newInfo;
+    }
     public List<string> GetCurses()
     {
         List<string> curses = new List<string>();
         for (int i = 0; i < statuses.Count; i++)
         {
-            if (statusDurations[i] < 0){curses.Add(statuses[i]);}
+            if (statusDurations[i] < 0 && statuses[i].Length > 0) { curses.Add(statuses[i]); }
         }
         return curses;
     }
@@ -377,11 +392,11 @@ public class ActorStats : ActorPassives
     {
         List<string> curses = GetCurses();
         string curseString = "";
-        if (curses.Count <= 0){return curseString;}
+        if (curses.Count <= 0) { return curseString; }
         for (int i = 0; i < curses.Count; i++)
         {
             curseString += curses[i];
-            if (i < curses.Count - 1){curseString += ",";}
+            if (i < curses.Count - 1) { curseString += ","; }
         }
         return curseString;
     }

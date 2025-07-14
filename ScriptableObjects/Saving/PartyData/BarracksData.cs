@@ -18,7 +18,7 @@ public class BarracksData : PartyData
     {
         partyNames.Add(personalName);
         partySpriteNames.Add(spriteName);
-        partyBaseStats.Add(baseStats);
+        partyStats.Add(baseStats);
         // If equipment is empty this could cause an issue.
         if (partyEquipment.Count >= partyNames.Count)
         {
@@ -28,13 +28,11 @@ public class BarracksData : PartyData
         {
             partyEquipment.Add(equipment);
         }
-        partyCurrentStats.Add(currentStats);
-        battleFees.Add(fee);
     }
 
     public void AddFromBarracks(int index, PartyDataManager partyDataManager)
     {
-        partyDataManager.mainPartyData.AddAllStats(partyNames[index], partySpriteNames[index], partyBaseStats[index], partyEquipment[index], partyCurrentStats[index], battleFees[index]);
+        partyDataManager.mainPartyData.AddAllStats(partyNames[index], partySpriteNames[index], partyStats[index], partyEquipment[index]);
         RemoveStatsAtIndex(index);
         partyDataManager.Save();
         Save();

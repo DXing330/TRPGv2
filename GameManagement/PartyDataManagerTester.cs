@@ -344,7 +344,7 @@ public class PartyDataManagerTester : MonoBehaviour
     {
         Debug.Log("Testing Guild Card...");
         // Test if a quest can be added properly.
-        string dummyQuestString = "";
+        //string dummyQuestString = "";
     }
 
     private void LogTestResults()

@@ -135,7 +135,6 @@ public class PartyDataManager : MonoBehaviour
     public void HireMember(string name, string stats, string personalName, string fee)
     {
         mainPartyData.AddMember(name, stats, personalName);
-        mainPartyData.AddBattleFee(fee);
         SetFullParty();
     }
 
@@ -217,7 +216,11 @@ public class PartyDataManager : MonoBehaviour
 
     public void UpdatePartyAfterBattle(List<string> names, List<string> stats)
     {
-        for (int i = 0; i < allParties.Count; i++) { allParties[i].ClearCurrentStats(); }
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            // Assume everyone dies at the end of every battle.
+            allParties[i].ResetDefeatedMemberTracker();
+        }
         int partyIndex = -1;
         int memberIndex = -1;
         for (int i = 0; i < names.Count; i++)
@@ -231,6 +234,8 @@ public class PartyDataManager : MonoBehaviour
                 if (memberIndex >= 0)
                 {
                     partyIndex = j;
+                    // If they are alive then don't remove them.
+                    allParties[j].UpdateDefeatedMemberTracker(i);
                     break;
                 }
             }

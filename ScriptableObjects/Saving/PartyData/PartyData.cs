@@ -8,7 +8,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PartyData", menuName = "ScriptableObjects/DataContainers/SavedData/PartyData", order = 1)]
 public class PartyData : SavedData
 {
-    public bool hiringFees = false;
     public int restHealth;
     public string exhaustStatus;
     public int exhaustDamage;
@@ -25,117 +24,122 @@ public class PartyData : SavedData
     public List<string> GetNames() { return partyNames; }
     public List<string> partySpriteNames;
     public List<string> GetSpriteNames() { return partySpriteNames; }
-    public List<string> partyBaseStats;
-    public List<string> GetBaseStats() { return partyBaseStats; }
+    public List<string> partyStats;
+    public List<string> GetBaseStats() { return partyStats; }
     public void ChangeBaseStats(string newStats, int index)
     {
-        partyBaseStats[index] = newStats;
+        partyStats[index] = newStats;
     }
     // Equipment goes here?
     public List<string> partyEquipment;
     public List<string> GetEquipment() { return partyEquipment; }
-    public List<string> partyCurrentStats;
-    // Hiring costs go here.
-    // Might change with promotions.
-    public List<string> battleFees;
-    public List<string> GetBattleFees() { return battleFees; }
+    // This is not needed, we can store everything in the stats.
+    //public List<string> partyCurrentStats;
     public void SetCurrentStats(string newStats, int index)
     {
-        partyCurrentStats[index] = newStats;
+        dummyActor.SetStatsFromString(partyStats[index]);
+        string[] newCurrentStats = newStats.Split("|");
+        dummyActor.SetCurrentHealth(utility.SafeParseInt(newCurrentStats[0]));
+        dummyActor.SetCurses(newCurrentStats[1]);
+        partyStats[index] = dummyActor.GetStats();
     }
     public void ClearAllStats()
     {
         partyNames.Clear();
         partySpriteNames.Clear();
-        partyBaseStats.Clear();
+        partyStats.Clear();
         partyEquipment.Clear();
-        partyCurrentStats.Clear();
-        if (hiringFees) { battleFees.Clear(); }
     }
     public List<string> GetStatsAtIndex(int index)
     {
         List<string> allStats = new List<string>();
         allStats.Add(partyNames[index]);
         allStats.Add(partySpriteNames[index]);
-        allStats.Add(partyBaseStats[index]);
+        allStats.Add(partyStats[index]);
         allStats.Add(partyEquipment[index]);
-        allStats.Add(partyCurrentStats[index]);
-        allStats.Add(battleFees[index]);
         return allStats;
     }
     public void RemoveStatsAtIndex(int index)
     {
         partyNames.RemoveAt(index);
         partySpriteNames.RemoveAt(index);
-        partyBaseStats.RemoveAt(index);
+        partyStats.RemoveAt(index);
         partyEquipment.RemoveAt(index);
-        partyCurrentStats.RemoveAt(index);
-        if (hiringFees) { battleFees.RemoveAt(index); }
     }
+    // Acts as a full restore.
     public void ClearCurrentStats()
     {
-        partyCurrentStats.Clear();
-        for (int i = 0; i < partyBaseStats.Count; i++)
+        for (int i = 0; i < partyStats.Count; i++)
         {
-            partyCurrentStats.Add("");
+            // Load the actor.
+            dummyActor.SetStatsFromString(partyStats[i]);
+            // Remove any statuses.
+            // Reset current health.
+            dummyActor.FullRestore();
+            // Save back the actor.
+            partyStats[i] = dummyActor.GetStats();
         }
     }
     public void ReviveDefeatedMembers()
     {
-        for (int i = 0; i < partyBaseStats.Count; i++)
+        for (int i = 0; i < partyStats.Count; i++)
         {
             // Don't keep track of empty members.
-            if (partyBaseStats[i].Length < 1) { continue; }
-            if (partyCurrentStats[i].Length < 1)
+            if (defeatedMemberTracker[i])
             {
-                partyCurrentStats[i] = "1";
-                continue;
+                // Load the actor.
+                dummyActor.SetStatsFromString(partyStats[i]);
+                // Set health to 1.
+                dummyActor.NearDeath();
+                // Save back the actor.
+                partyStats[i] = dummyActor.GetStats();
             }
         }
     }
+    protected List<bool> defeatedMemberTracker;
+    public void ResetDefeatedMemberTracker()
+    {
+        defeatedMemberTracker = new List<bool>();
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            defeatedMemberTracker.Add(true);
+        }
+    }
+    public void UpdateDefeatedMemberTracker(int index)
+    {
+        defeatedMemberTracker[index] = false;
+    }
+
     public void RemoveDefeatedMembers()
     {
-        if (partyCurrentStats.Count <= 0)
+        if (partyStats.Count <= 0){ return; }
+        for (int i = partyStats.Count; i >= 0; i--)
         {
-            ClearAllStats();
-            return;
-        }
-        for (int i = partyCurrentStats.Count - 1; i >= 0; i--)
-        {
-            if (partyCurrentStats[i].Length < 1)
+            if (defeatedMemberTracker[i])
             {
                 RemoveStatsAtIndex(i);
             }
         }
     }
-    // This basically acts as full heal, setting all current healths to base healths.
     public void ResetCurrentStats(bool defeated = false)
     {
-        ClearCurrentStats();
-        for (int i = 0; i < partyBaseStats.Count; i++)
+        // Heal to full.
+        if (!defeated)
         {
-            // Heal to full.
-            if (!defeated)
-            {
-                string[] splitData = partyBaseStats[i].Split("|");
-                partyCurrentStats[i] = (splitData[0]);
-            }
-            // Remain barely alive.
-            // This can be gamed to cure status effects?
-            else
-            {
-                partyCurrentStats[i] = "1";
-            }
+            ClearCurrentStats();
+        }
+        if (defeated)
+        {
+            // Set HP to 1.
+            ReviveDefeatedMembers();
         }
     }
     public override void Save()
     {
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
-        partyBaseStats = utility.RemoveEmptyListItems(partyBaseStats);
-        partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
+        partyStats = utility.RemoveEmptyListItems(partyStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
-        battleFees = utility.RemoveEmptyListItems(battleFees);
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
         string tempData = "";
@@ -156,8 +160,8 @@ public class PartyData : SavedData
         tempData = "";
         for (int i = 0; i < partyNames.Count; i++)
         {
-            tempData += partyBaseStats[i];
-            if (i < partyBaseStats.Count - 1) { tempData += delimiterTwo; }
+            tempData += partyStats[i];
+            if (i < partyStats.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
         tempData = "";
@@ -167,23 +171,6 @@ public class PartyData : SavedData
             if (i < partyEquipment.Count - 1) { tempData += delimiterTwo; }
         }
         allData += tempData + delimiter;
-        tempData = "";
-        for (int i = 0; i < partyNames.Count; i++)
-        {
-            tempData += partyCurrentStats[i];
-            if (i < partyCurrentStats.Count - 1) { tempData += delimiterTwo; }
-        }
-        allData += tempData + delimiter;
-        if (hiringFees)
-        {
-            tempData = "";
-            for (int i = 0; i < partyNames.Count; i++)
-            {
-                tempData += battleFees[i];
-                if (i < battleFees.Count - 1) { tempData += delimiterTwo; }
-            }
-            allData += tempData + delimiter;
-        }
         File.WriteAllText(dataPath, allData);
     }
     public override void NewGame()
@@ -193,9 +180,8 @@ public class PartyData : SavedData
         else { return; }
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
-        partyBaseStats = dataList[2].Split(delimiterTwo).ToList();
+        partyStats = dataList[2].Split(delimiterTwo).ToList();
         partyEquipment = dataList[3].Split(delimiterTwo).ToList();
-        partyCurrentStats = dataList[4].Split(delimiterTwo).ToList();
         Save();
         Load();
     }
@@ -208,37 +194,19 @@ public class PartyData : SavedData
         else { return; }
         partyNames = dataList[0].Split(delimiterTwo).ToList();
         partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
-        partyBaseStats = dataList[2].Split(delimiterTwo).ToList();
+        partyStats = dataList[2].Split(delimiterTwo).ToList();
         partyEquipment = dataList[3].Split(delimiterTwo).ToList();
-        partyCurrentStats = dataList[4].Split(delimiterTwo).ToList();
-        if (hiringFees && dataList.Count > 6)
-        {
-            battleFees = dataList[5].Split(delimiterTwo).ToList();
-        }
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
-        partyBaseStats = utility.RemoveEmptyListItems(partyBaseStats);
-        partyCurrentStats = utility.RemoveEmptyListItems(partyCurrentStats);
+        partyStats = utility.RemoveEmptyListItems(partyStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
-        battleFees = utility.RemoveEmptyListItems(battleFees);
     }
     public List<string> GetStats(string joiner = "|")
     {
-        List<string> stats = new List<string>();
-        for (int i = 0; i < partyBaseStats.Count; i++)
-        {
-            stats.Add(partyBaseStats[i] + joiner + partyCurrentStats[i]);
-        }
-        return stats;
+        return partyStats;
     }
     public List<string> GetEquipmentStats(string joiner = "@")
     {
-        /*List<string> stats = new List<string>();
-        for (int i = 0; i < partyBaseStats.Count; i++)
-        {
-            stats.Add(+joiner+joiner);
-        }
-        return stats;*/
         return partyEquipment;
     }
     // Give back the old equipment.
@@ -309,20 +277,9 @@ public class PartyData : SavedData
     public void AddMember(string spriteName, string stats, string personalName = "")
     {
         partySpriteNames.Add(spriteName);
-        // This is not good because it results in the stat list being too long.
-        // This is because currenthealth was added to the base stats.
-        // We need to not add the last parts of the base stats.
-        // For now just remove the last two, current health and curses.
-        // Can make this more elegant later.
-        List<string> statList = stats.Split("|").ToList();
-        statList.RemoveAt(statList.Count - 1);
-        statList.RemoveAt(statList.Count - 1);
-        stats = String.Join("|", statList);
-        partyBaseStats.Add(stats);
+        partyStats.Add(stats);
         partyNames.Add(personalName);
         partyEquipment.Add("");
-        string[] blocks = stats.Split("|");
-        partyCurrentStats.Add(blocks[0]);
     }
     public bool MemberExists(string spriteName)
     {
@@ -334,14 +291,10 @@ public class PartyData : SavedData
         int indexOf = partySpriteNames.IndexOf(spriteName);
         if (indexOf >= 0) { RemoveStatsAtIndex(indexOf); }
     }
-    public void AddBattleFee(string fee)
-    {
-        battleFees.Add(fee);
-    }
-    public void AddAllStats(string personalName, string spriteName, string baseStats, string equipment, string currentStats, string fee)
+    public void AddAllStats(string personalName, string spriteName, string baseStats, string equipment)
     {
         partySpriteNames.Add(spriteName);
-        partyBaseStats.Add(baseStats);
+        partyStats.Add(baseStats);
         partyNames.Add(personalName);
         // If equipment is empty this could cause an issue.
         if (partyEquipment.Count >= partyNames.Count)
@@ -352,36 +305,31 @@ public class PartyData : SavedData
         {
             partyEquipment.Add(equipment);
         }
-        partyCurrentStats.Add(currentStats);
-        battleFees.Add(fee);
     }
 
     public void RemoveExhaustion(int index)
     {
-        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
-        dummyActor.SetStatsFromString(stats);
+        dummyActor.SetStatsFromString(partyStats[index]);
         dummyActor.ClearStatuses(exhaustStatus);
-        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+        partyStats[index] = dummyActor.GetStats();
     }
 
     public void Rest(int index, bool eat = true)
     {
-        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
-        dummyActor.SetStatsFromString(stats);
+        dummyActor.SetStatsFromString(partyStats[index]);
         if (eat)
         {
             dummyActor.UpdateHealth(restHealth, false);
             dummyActor.ClearStatuses(hungerStatus);
         }
         dummyActor.ClearStatuses(exhaustStatus);
-        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+        partyStats[index] = dummyActor.GetStats();
     }
     public int Hunger(int index)
     {
-        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
-        dummyActor.SetStatsFromString(stats);
+        dummyActor.SetStatsFromString(partyStats[index]);
         dummyActor.AddStatus(hungerStatus, -1);
-        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+        partyStats[index] = dummyActor.GetStats();
         int count = 0;
         for (int i = 0; i < dummyActor.statuses.Count; i++)
         {
@@ -391,8 +339,7 @@ public class PartyData : SavedData
     }
     public void Exhaust(int index, bool death = false)
     {
-        string stats = partyBaseStats[index] + "|" + partyCurrentStats[index];
-        dummyActor.SetStatsFromString(stats);
+        dummyActor.SetStatsFromString(partyStats[index]);
         if (dummyActor.statuses.Contains(exhaustStatus))
         {
             dummyActor.UpdateHealth(exhaustDamage, true);
@@ -414,6 +361,6 @@ public class PartyData : SavedData
         {
             dummyActor.AddStatus(exhaustStatus, -1);
         }
-        partyCurrentStats[index] = dummyActor.ReturnPersistentStats();
+        partyStats[index] = dummyActor.GetStats();
     }
 }
