@@ -235,7 +235,7 @@ public class PartyDataManager : MonoBehaviour
                 {
                     partyIndex = j;
                     // If they are alive then don't remove them.
-                    allParties[j].UpdateDefeatedMemberTracker(i);
+                    allParties[j].UpdateDefeatedMemberTracker(memberIndex);
                     break;
                 }
             }
@@ -256,8 +256,9 @@ public class PartyDataManager : MonoBehaviour
     {
         fullParty.ResetLists();
         permanentPartyData.ResetCurrentStats(true);
-        mainPartyData.ResetCurrentStats(true);
+        mainPartyData.ClearAllStats();
         tempPartyData.ClearAllStats();
+        Save();
         SetFullParty();
     }
 

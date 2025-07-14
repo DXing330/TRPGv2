@@ -9,12 +9,12 @@ public class BarracksData : PartyData
     {
         // Get the data from the PartyDataManager.mainPartyData
         List<string> allStats = partyDataManager.mainPartyData.GetStatsAtIndex(index);
-        AddToBarracks(allStats[0],allStats[1],allStats[2],allStats[3],allStats[4],allStats[5]);
+        AddToBarracks(allStats[0],allStats[1],allStats[2],allStats[3]);
         partyDataManager.mainPartyData.RemoveStatsAtIndex(index);
         partyDataManager.Save();
         Save();
     }
-    protected void AddToBarracks(string personalName, string spriteName, string baseStats, string equipment, string currentStats, string fee)
+    protected void AddToBarracks(string personalName, string spriteName, string baseStats, string equipment)
     {
         partyNames.Add(personalName);
         partySpriteNames.Add(spriteName);

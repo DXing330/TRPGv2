@@ -40,7 +40,11 @@ public class PartyData : SavedData
         dummyActor.SetStatsFromString(partyStats[index]);
         string[] newCurrentStats = newStats.Split("|");
         dummyActor.SetCurrentHealth(utility.SafeParseInt(newCurrentStats[0]));
-        dummyActor.SetCurses(newCurrentStats[1]);
+        // There are not always curses.
+        if (newCurrentStats.Length > 1)
+        {
+            dummyActor.SetCurses(newCurrentStats[1]);
+        }
         partyStats[index] = dummyActor.GetStats();
     }
     public void ClearAllStats()
@@ -80,12 +84,20 @@ public class PartyData : SavedData
             partyStats[i] = dummyActor.GetStats();
         }
     }
-    public void ReviveDefeatedMembers()
+    public void ReviveDefeatedMembers(bool all = false)
     {
         for (int i = 0; i < partyStats.Count; i++)
         {
+            if (all)
+            {
+                dummyActor.SetStatsFromString(partyStats[i]);
+                // Set health to 1.
+                dummyActor.NearDeath();
+                // Save back the actor.
+                partyStats[i] = dummyActor.GetStats();
+            }
             // Don't keep track of empty members.
-            if (defeatedMemberTracker[i])
+            else if (defeatedMemberTracker[i])
             {
                 // Load the actor.
                 dummyActor.SetStatsFromString(partyStats[i]);
@@ -96,7 +108,7 @@ public class PartyData : SavedData
             }
         }
     }
-    protected List<bool> defeatedMemberTracker;
+    public List<bool> defeatedMemberTracker;
     public void ResetDefeatedMemberTracker()
     {
         defeatedMemberTracker = new List<bool>();
@@ -109,11 +121,10 @@ public class PartyData : SavedData
     {
         defeatedMemberTracker[index] = false;
     }
-
     public void RemoveDefeatedMembers()
     {
         if (partyStats.Count <= 0){ return; }
-        for (int i = partyStats.Count; i >= 0; i--)
+        for (int i = partyStats.Count - 1; i >= 0; i--)
         {
             if (defeatedMemberTracker[i])
             {
@@ -131,7 +142,7 @@ public class PartyData : SavedData
         if (defeated)
         {
             // Set HP to 1.
-            ReviveDefeatedMembers();
+            ReviveDefeatedMembers(true);
         }
     }
     public override void Save()
@@ -306,14 +317,12 @@ public class PartyData : SavedData
             partyEquipment.Add(equipment);
         }
     }
-
     public void RemoveExhaustion(int index)
     {
         dummyActor.SetStatsFromString(partyStats[index]);
         dummyActor.ClearStatuses(exhaustStatus);
         partyStats[index] = dummyActor.GetStats();
     }
-
     public void Rest(int index, bool eat = true)
     {
         dummyActor.SetStatsFromString(partyStats[index]);
