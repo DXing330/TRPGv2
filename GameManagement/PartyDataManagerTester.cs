@@ -338,12 +338,20 @@ public class PartyDataManagerTester : MonoBehaviour
             testResults.Add(new TestResult("Set Full Party", false, "Set full party failed: " + e.Message));
         }
     }
-    
+
+    [ContextMenu("Test Guild Card")]
+    public void TestGuildCard()
+    {
+        Debug.Log("Testing Guild Card...");
+        // Test if a quest can be added properly.
+        string dummyQuestString = "";
+    }
+
     private void LogTestResults()
     {
         Debug.Log("=== Test Results Summary ===");
         int passed = 0, failed = 0;
-        
+
         foreach (TestResult result in testResults)
         {
             if (result.passed)
@@ -357,7 +365,7 @@ public class PartyDataManagerTester : MonoBehaviour
                 Debug.LogError($"✗ {result.testName}: FAILED - {result.details}");
             }
         }
-        
+
         Debug.Log($"=== Total: {passed} passed, {failed} failed ===");
     }
 }

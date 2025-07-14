@@ -144,7 +144,7 @@ public class OverworldMap : MapManager
             overworldState.EnterBattleFromFeature();
             if (quest)
             {
-                overworldState.EnterBattleFromFeature();
+                overworldState.EnterBattleFromQuest();
             }
             overworldState.Save();
             // Move to battle.
@@ -197,6 +197,7 @@ public class OverworldMap : MapManager
                 // Else its complete.
                 else
                 {
+                    partyData.guildCard.CompleteDefeatQuest(tile);
                     completed = true;
                 }
                 break;

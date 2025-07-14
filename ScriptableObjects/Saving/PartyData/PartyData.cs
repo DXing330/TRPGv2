@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
@@ -308,6 +309,15 @@ public class PartyData : SavedData
     public void AddMember(string spriteName, string stats, string personalName = "")
     {
         partySpriteNames.Add(spriteName);
+        // This is not good because it results in the stat list being too long.
+        // This is because currenthealth was added to the base stats.
+        // We need to not add the last parts of the base stats.
+        // For now just remove the last two, current health and curses.
+        // Can make this more elegant later.
+        List<string> statList = stats.Split("|").ToList();
+        statList.RemoveAt(statList.Count - 1);
+        statList.RemoveAt(statList.Count - 1);
+        stats = String.Join("|", statList);
         partyBaseStats.Add(stats);
         partyNames.Add(personalName);
         partyEquipment.Add("");

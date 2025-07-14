@@ -90,7 +90,7 @@ public class GuildCard : SavedData
     public void CompleteDefeatQuest(int tileNumber)
     {
         int index = QuestIndexFromTile(tileNumber);
-        if (index == -1){ return; }
+        if (index == -1) { return; }
         dummyRequest.Load(acceptedQuests[index]);
         dummyRequest.Complete();
         acceptedQuests[index] = dummyRequest.ReturnDetails();
