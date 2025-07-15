@@ -9,6 +9,7 @@ public class SpellStore : MonoBehaviour
     {
         CheckIfCastersInParty();
         UpdateCurrency();
+        spellStoreOptionsObject.SetActive(false);
     }
     public PartyDataManager partyData;
     public TacticActor dummyActor;
@@ -53,6 +54,8 @@ public class SpellStore : MonoBehaviour
     public void SelectCaster()
     {
         selectedCaster = partyCasters.GetSelected();
+        dummyActor.SetStatsFromString(partyCasters.GetSelectedData());
         spellStoreOptionsObject.SetActive(true);
     }
+    public SelectList spellsList;
 }

@@ -21,7 +21,7 @@ public class SelectList : MonoBehaviour
     public List<string> errorMessages;
     public List<string> selectable;
     public int selectedIndex = -1;
-    public void ResetSelected()
+    public virtual void ResetSelected()
     {
         selectedIndex = -1;
         selected = "";
@@ -63,7 +63,7 @@ public class SelectList : MonoBehaviour
     public List<GameObject> changePageObjects;
     public List<GameObject> textObjects;
     public List<TMP_Text> textList;
-    public void ResetHighlights()
+    public virtual void ResetHighlights()
     {
         for (int i = 0; i < textList.Count; i++)
         {
@@ -74,7 +74,7 @@ public class SelectList : MonoBehaviour
     {
         textList[index].color = colors.GetColor(color);
     }
-    public void HighlightSelected(string color = "Highlight")
+    public virtual void HighlightSelected(string color = "Highlight")
     {
         ResetHighlights();
         if (GetSelected() < 0){return;}

@@ -8,8 +8,8 @@ public class ActorSpriteHPList : MonoBehaviour
     public GeneralUtility utility;
     public ColorDictionary colors;
     public int page = 0;
-    protected void DisableChangePage(){utility.DisableGameObjects(changePageObjects);}
-    protected void EnableChangePage(){utility.EnableGameObjects(changePageObjects);}
+    protected void DisableChangePage() { utility.DisableGameObjects(changePageObjects); }
+    protected void EnableChangePage() { utility.EnableGameObjects(changePageObjects); }
     public void ChangePage(bool right = true)
     {
         page = utility.ChangePage(page, right, objects, allActorNames);
@@ -31,8 +31,8 @@ public class ActorSpriteHPList : MonoBehaviour
     protected void HighlightSelected()
     {
         ResetHighlights();
-        if (GetSelected() < 0){return;}
-        actors[GetSelected()%objects.Count].ChangeTextColor(colors.GetColor("Highlight"));
+        if (GetSelected() < 0) { return; }
+        actors[GetSelected() % objects.Count].ChangeTextColor(colors.GetColor("Highlight"));
     }
     public List<GameObject> objects;
     public List<ActorSprite> actors;
@@ -116,5 +116,10 @@ public class ActorSpriteHPList : MonoBehaviour
     public int GetSelected()
     {
         return selectedIndex;
+    }
+
+    public string GetSelectedData()
+    {
+        return actorData[selectedIndex];
     }
 }
