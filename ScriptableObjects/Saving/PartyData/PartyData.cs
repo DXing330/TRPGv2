@@ -153,35 +153,10 @@ public class PartyData : SavedData
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
-        string tempData = "";
-        // Use partyNames to count for everything, as they should always be the same count, if this causes an error then thats a problem.
-        for (int i = 0; i < partyNames.Count; i++)
-        {
-            tempData += partyNames[i];
-            if (i < partyNames.Count - 1) { tempData += delimiterTwo; }
-        }
-        allData += tempData + delimiter;
-        tempData = "";
-        for (int i = 0; i < partyNames.Count; i++)
-        {
-            tempData += partySpriteNames[i];
-            if (i < partySpriteNames.Count - 1) { tempData += delimiterTwo; }
-        }
-        allData += tempData + delimiter;
-        tempData = "";
-        for (int i = 0; i < partyNames.Count; i++)
-        {
-            tempData += partyStats[i];
-            if (i < partyStats.Count - 1) { tempData += delimiterTwo; }
-        }
-        allData += tempData + delimiter;
-        tempData = "";
-        for (int i = 0; i < partyNames.Count; i++)
-        {
-            tempData += partyEquipment[i];
-            if (i < partyEquipment.Count - 1) { tempData += delimiterTwo; }
-        }
-        allData += tempData + delimiter;
+        allData += String.Join(delimiterTwo, partyNames)+delimiter;
+        allData += String.Join(delimiterTwo, partySpriteNames)+delimiter;
+        allData += String.Join(delimiterTwo, partyStats)+delimiter;
+        allData += String.Join(delimiterTwo, partyEquipment)+delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public override void NewGame()

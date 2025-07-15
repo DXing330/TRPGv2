@@ -29,15 +29,15 @@ public class PartyDataManager : MonoBehaviour
 
     public void Load()
     {
-        for (int i = 0; i < allParties.Count; i++){allParties[i].Load();}
-        for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].Load();}
+        for (int i = 0; i < allParties.Count; i++) { allParties[i].Load(); }
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].Load(); }
         SetFullParty();
     }
 
     public void NewGame()
     {
-        for (int i = 0; i < allParties.Count; i++){allParties[i].NewGame();}
-        for (int i = 0; i < otherPartyData.Count; i++){otherPartyData[i].NewGame();}
+        for (int i = 0; i < allParties.Count; i++) { allParties[i].NewGame(); }
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].NewGame(); }
     }
 
     public virtual void NewDay(int dayCount)
@@ -106,6 +106,12 @@ public class PartyDataManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool PartyMemberClassExists(string spriteName)
+    {
+        if (permanentPartyData.MemberExists(spriteName) || mainPartyData.MemberExists(spriteName)){ return true; }
+        return false;
     }
 
     public void AddTempPartyMember(string name)

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ActorSpriteHPList : MonoBehaviour
 {
+    public bool startUp = true;
     public GeneralUtility utility;
     public ColorDictionary colors;
     public int page = 0;
@@ -55,13 +56,33 @@ public class ActorSpriteHPList : MonoBehaviour
 
     void Start()
     {
-        RefreshData();
+        if (startUp)
+        {
+            RefreshData();
+        }
     }
 
-    public void RefreshData()
+    public void RefreshData(List<string> specificCharacters = null)
     {
-        allActorNames = new List<string>(savedData.characters);
-        allActorData = new List<string>(savedData.stats);
+        if (specificCharacters == null)
+        {
+            allActorNames = new List<string>(savedData.characters);
+            allActorData = new List<string>(savedData.stats);
+        }
+        else
+        {
+            page = 0;
+            allActorNames = new List<string>();
+            allActorData = new List<string>();
+            for (int i = 0; i < savedData.characters.Count; i++)
+            {
+                if (specificCharacters.Contains(savedData.characters[i]))
+                {
+                    allActorNames.Add(savedData.characters[i]);
+                    allActorData.Add(savedData.stats[i]);
+                }
+            }
+        }
         ResetSelected();
         UpdateList();
     }
@@ -70,8 +91,8 @@ public class ActorSpriteHPList : MonoBehaviour
     {
         utility.DisableGameObjects(objects);
         DisableChangePage();
-        actorNames = utility.GetCurrentPageStrings(page, objects, savedData.characters);
-        actorData = utility.GetCurrentPageStrings(page, objects, savedData.stats);
+        actorNames = utility.GetCurrentPageStrings(page, objects, allActorNames);
+        actorData = utility.GetCurrentPageStrings(page, objects, allActorData);
         for (int i = 0; i < actorNames.Count; i++)
         {
             objects[i].SetActive(true);
