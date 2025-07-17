@@ -347,11 +347,23 @@ public class ActorStats : ActorPassives
         if (activeSkills.Count == 0) { return ""; }
         return String.Join(",", activeSkills);
     }
+    protected string activeSkillDelimiter = "_";
     public List<string> spells;
     public void ResetSpells(){ spells.Clear(); }
     public List<string> GetSpells()
     {
         return spells;
+    }
+    public List<string> GetSpellNames()
+    {
+        List<string> spellNames = new List<string>();
+        if (spells.Count <= 0) { return spellNames; }
+        for (int i = 0; i < spells.Count; i++)
+        {
+            string[] blocks = spells[i].Split(activeSkillDelimiter);
+            spellNames.Add(blocks[0]);
+        }
+        return spellNames;
     }
     public string GetSpellsString()
     {

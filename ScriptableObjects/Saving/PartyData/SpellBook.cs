@@ -33,12 +33,13 @@ public class SpellBook : SavedData
 
     public string ReturnRandomSpell(int effectCount = 3)
     {
-        string effectDelimiter = magicSpell.delimiter;
-        string spell = "SpellName|1|1|";
-        spell += ranges[Random.Range(0, ranges.Count)] + "|";
-        spell += shapes[Random.Range(0, shapes.Count)] + "|";
-        spell += eShapes[Random.Range(0, eShapes.Count)] + "|";
-        spell += spans[Random.Range(0, spans.Count)] + "|";
+        string activeDelimiter = magicSpell.activeSkillDelimiter;
+        string effectDelimiter = magicSpell.effectDelimiter;
+        string spell = "SpellName" + activeDelimiter + "1" + activeDelimiter + "1" + activeDelimiter;
+        spell += ranges[Random.Range(0, ranges.Count)] + activeDelimiter;
+        spell += shapes[Random.Range(0, shapes.Count)] + activeDelimiter;
+        spell += eShapes[Random.Range(0, eShapes.Count)] + activeDelimiter;
+        spell += spans[Random.Range(0, spans.Count)] + activeDelimiter;
         string effects = "";
         string specifics = "";
         string newPowers = "";
@@ -46,7 +47,7 @@ public class SpellBook : SavedData
         {
             string effectAndSpecifics = ReturnRandomEffectAndSpecifics();
             // split
-            string[] blocks = effectAndSpecifics.Split("|");
+            string[] blocks = effectAndSpecifics.Split(activeDelimiter);
             effects += blocks[0];
             specifics += blocks[1];
             newPowers += powers[Random.Range(0, powers.Count)];
@@ -57,7 +58,7 @@ public class SpellBook : SavedData
                 newPowers += effectDelimiter;
             }
         }
-        spell += effects + "|" + specifics + "|" + newPowers + "|";
+        spell += effects + activeDelimiter + specifics + activeDelimiter + newPowers + activeDelimiter;
         return spell;
     }
 
@@ -67,7 +68,7 @@ public class SpellBook : SavedData
         string effect = spellComponents.ReturnRandomKey();
         List<string> possibleSpecifics = spellComponents.ReturnStats(effect);
         string specifics = possibleSpecifics[Random.Range(0, possibleSpecifics.Count)];
-        effectAndSpecifics = effect + "|" + specifics;
+        effectAndSpecifics = effect + magicSpell.activeSkillDelimiter + specifics;
         return effectAndSpecifics;
     }
 }

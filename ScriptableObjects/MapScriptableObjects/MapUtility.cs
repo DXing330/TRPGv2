@@ -8,7 +8,7 @@ public class MapUtility : ScriptableObject
 {
     public int DistanceBetweenTiles(int tileOne, int tileTwo, int size)
     {
-        return (Mathf.Abs(GetHexQ(tileOne, size)-GetHexQ(tileTwo, size))+Mathf.Abs(GetHexR(tileOne, size)-GetHexR(tileTwo, size))+Mathf.Abs(GetHexS(tileOne, size)-GetHexS(tileTwo, size)))/2;
+        return (Mathf.Abs(GetHexQ(tileOne, size) - GetHexQ(tileTwo, size)) + Mathf.Abs(GetHexR(tileOne, size) - GetHexR(tileTwo, size)) + Mathf.Abs(GetHexS(tileOne, size) - GetHexS(tileTwo, size))) / 2;
     }
 
     public int ReturnTileNumberFromRowCol(int row, int col, int size)
@@ -31,19 +31,19 @@ public class MapUtility : ScriptableObject
                 row++;
                 tile -= size;
             }
-            else{break;}
+            else { break; }
         }
         return row;
     }
 
     public int GetColumn(int tile, int size)
     {
-        return tile%size;
+        return tile % size;
     }
 
     public int ReturnTileNumberFromQRS(int Q, int R, int S, int size)
     {
-        return ReturnTileNumberFromRowCol(GetRowFromQRS(Q,R,S,size), GetColFromQRS(Q,R,S,size), size);
+        return ReturnTileNumberFromRowCol(GetRowFromQRS(Q, R, S, size), GetColFromQRS(Q, R, S, size), size);
     }
 
     public int GetColFromQRS(int Q, int R, int S, int size)
@@ -53,7 +53,7 @@ public class MapUtility : ScriptableObject
 
     public int GetRowFromQRS(int Q, int R, int S, int size)
     {
-        return R + (Q - Q%2)/2;
+        return R + (Q - Q % 2) / 2;
     }
 
     public int GetHexQ(int location, int size)
@@ -63,12 +63,12 @@ public class MapUtility : ScriptableObject
 
     public int GetHexR(int location, int size)
     {
-        return GetRow(location, size) - (GetColumn(location, size) - GetColumn(location, size)%2) / 2;
+        return GetRow(location, size) - (GetColumn(location, size) - GetColumn(location, size) % 2) / 2;
     }
 
     public int GetHexS(int location, int size)
     {
-        return -GetHexQ(location, size)-GetHexR(location, size);
+        return -GetHexQ(location, size) - GetHexR(location, size);
     }
 
     public int PointInDirection(int location, int direction, int size)
@@ -80,22 +80,22 @@ public class MapUtility : ScriptableObject
         {
             // Up.
             case 0:
-                return ReturnTileNumberFromQRS(hexQ, hexR-1, hexS+1, size);
+                return ReturnTileNumberFromQRS(hexQ, hexR - 1, hexS + 1, size);
             // UpRight.
             case 1:
-                return ReturnTileNumberFromQRS(hexQ+1, hexR-1, hexS, size);
+                return ReturnTileNumberFromQRS(hexQ + 1, hexR - 1, hexS, size);
             // DownRight.
             case 2:
-                return ReturnTileNumberFromQRS(hexQ+1, hexR, hexS-1, size);
+                return ReturnTileNumberFromQRS(hexQ + 1, hexR, hexS - 1, size);
             // Down.
             case 3:
-                return ReturnTileNumberFromQRS(hexQ, hexR+1, hexS-1, size);
+                return ReturnTileNumberFromQRS(hexQ, hexR + 1, hexS - 1, size);
             // DownLeft.
             case 4:
-                return ReturnTileNumberFromQRS(hexQ-1, hexR+1, hexS, size);
+                return ReturnTileNumberFromQRS(hexQ - 1, hexR + 1, hexS, size);
             // UpLeft.
             case 5:
-                return ReturnTileNumberFromQRS(hexQ-1, hexR, hexS+1, size);
+                return ReturnTileNumberFromQRS(hexQ - 1, hexR, hexS + 1, size);
         }
         return location;
     }
@@ -122,8 +122,8 @@ public class MapUtility : ScriptableObject
         List<int> rightCone = new List<int>();
         List<int> forwardCone = new List<int>();
         int mainDirection = DirectionBetweenLocations(coneCenter, startTile, size);
-        int leftDirection = (mainDirection+5)%6;
-        int rightDirection = (mainDirection+1)%6;
+        int leftDirection = (mainDirection + 5) % 6;
+        int rightDirection = (mainDirection + 1) % 6;
         forwardCone.AddRange(GetTilesInLineDirection(coneCenter, mainDirection, range, size));
         leftCone.AddRange(GetTilesInLineDirection(coneCenter, leftDirection, range, size));
         rightCone.AddRange(GetTilesInLineDirection(coneCenter, rightDirection, range, size));
@@ -140,8 +140,8 @@ public class MapUtility : ScriptableObject
         listCount = forwardCone.Count;
         for (int i = 0; i < listCount; i++)
         {
-            forwardCone.AddRange(GetTilesInLineDirection(forwardCone[i], (leftDirection+3)%6, (i+1), size));
-            forwardCone.AddRange(GetTilesInLineDirection(forwardCone[i], (rightDirection+3)%6, (i+1), size));
+            forwardCone.AddRange(GetTilesInLineDirection(forwardCone[i], (leftDirection + 3) % 6, (i + 1), size));
+            forwardCone.AddRange(GetTilesInLineDirection(forwardCone[i], (rightDirection + 3) % 6, (i + 1), size));
         }
         tiles.AddRange(leftCone);
         tiles.AddRange(rightCone);
@@ -149,14 +149,14 @@ public class MapUtility : ScriptableObject
         tiles = tiles.Distinct().ToList();
         return tiles;
     }
-    
+
     public List<int> GetTilesInCircleShape(int startTile, int range, int size)
     {
         List<int> tiles = new List<int>();
         for (int i = 0; i < 6; i++)
         {
             int nextTile = PointInDirection(startTile, i, size);
-            if (nextTile == startTile){continue;}
+            if (nextTile == startTile) { continue; }
             tiles.AddRange(GetTilesInConeShape(nextTile, range, startTile, size));
         }
         tiles = tiles.Distinct().ToList();
@@ -167,8 +167,8 @@ public class MapUtility : ScriptableObject
     {
         List<int> tiles = new List<int>();
         tiles = GetTilesInCircleShape(startTile, range, size);
-        if (width >= range){ return tiles; }
-        tiles = tiles.Except(GetTilesInCircleShape(startTile, range-width,size)).ToList();
+        if (width >= range) { return tiles; }
+        tiles = tiles.Except(GetTilesInCircleShape(startTile, range - width, size)).ToList();
         tiles = tiles.Distinct().ToList();
         return tiles;
     }
@@ -195,19 +195,19 @@ public class MapUtility : ScriptableObject
         int s2 = GetHexS(end, size);
         if (q1 == q2)
         {
-            if (r1 > r2 && s1 < s2){return 0;}
-            else if (r1 < r2 && s1 > s2){return 3;}
+            if (r1 > r2 && s1 < s2) { return 0; }
+            else if (r1 < r2 && s1 > s2) { return 3; }
         }
         // Needs more edge case testing.
         else if (q1 < q2)
         {
-            if (r1 <= r2 && s1 > s2){return 2;}
-            else{return 1;}
+            if (r1 <= r2 && s1 > s2) { return 2; }
+            else { return 1; }
         }
         else if (q1 > q2)
         {
-            if (r1 < r2 && s1 >= s2){return 4;}
-            else{return 5;}
+            if (r1 < r2 && s1 >= s2) { return 4; }
+            else { return 5; }
         }
         return -1;
     }
@@ -250,11 +250,11 @@ public class MapUtility : ScriptableObject
         int leftUp = PointInDirection(location, 5, size);
         int leftDown = PointInDirection(location, 4, size);
         // No points.
-        if (leftUp < 0 && leftDown < 0){return location;}
-        if (leftUp >= 0 && leftDown < 0){return leftUp;}
-        if (leftUp < 0 && leftDown >= 0){return leftDown;}
+        if (leftUp < 0 && leftDown < 0) { return location; }
+        if (leftUp >= 0 && leftDown < 0) { return leftUp; }
+        if (leftUp < 0 && leftDown >= 0) { return leftDown; }
         int choice = Random.Range(0, 2);
-        if (choice == 0){return leftUp;}
+        if (choice == 0) { return leftUp; }
         return leftDown;
     }
 
@@ -263,11 +263,11 @@ public class MapUtility : ScriptableObject
         int up = PointInDirection(location, 1, size);
         int down = PointInDirection(location, 2, size);
         // No points.
-        if (up < 0 && down < 0){return location;}
-        if (up >= 0 && down < 0){return up;}
-        if (up < 0 && down >= 0){return down;}
+        if (up < 0 && down < 0) { return location; }
+        if (up >= 0 && down < 0) { return up; }
+        if (up < 0 && down >= 0) { return down; }
         int choice = Random.Range(0, 2);
-        if (choice == 0){return up;}
+        if (choice == 0) { return up; }
         return down;
     }
 
@@ -275,24 +275,60 @@ public class MapUtility : ScriptableObject
     {
         int choice = Random.Range(2, 5);
         int newPoint = PointInDirection(location, choice, size);
-        if (newPoint >= 0){return newPoint;}
+        if (newPoint >= 0) { return newPoint; }
         return location;
     }
 
     public int RandomPointUp(int location, int size)
     {
-        int choice = Random.Range(5, 8)%6;
+        int choice = Random.Range(5, 8) % 6;
         int newPoint = PointInDirection(location, choice, size);
-        if (newPoint >= 0){return newPoint;}
+        if (newPoint >= 0) { return newPoint; }
         return location;
     }
-    
+
     public int DetermineCenterTile(int size)
     {
-        if (size%2 == 1)
+        if (size % 2 == 1)
         {
-            return (size*size)/2;
+            return (size * size) / 2;
         }
-        return ReturnTileNumberFromRowCol(size/2, size/2, size);
+        return ReturnTileNumberFromRowCol(size / 2, size / 2, size);
+    }
+
+    public int CountTilesByShapeSpan(string shape, int span)
+    {
+        if (span <= 0) { return 1; }
+        switch (shape)
+        {
+            case "None":
+                return 1;
+            case "Circle":
+                return CountTilesInCircleSpan(span);
+            case "ECircle":
+                return CountTilesInCircleSpan(span) - 1;
+            case "Line":
+                return CountTilesInLineSpan(span);
+            case "ELine":
+                return span;
+            case "Cone":
+                return CountTilesInConeSpan(span);
+        }
+        return 1;
+    }
+
+    protected int CountTilesInCircleSpan(int span)
+    {
+        return 1 + (3 * span * (span + 1));
+    }
+
+    protected int CountTilesInLineSpan(int span)
+    {
+        return 6 * span;
+    }
+
+    protected int CountTilesInConeSpan(int span)
+    {
+        return ((span + 1)*(span + 1))-1;
     }
 }

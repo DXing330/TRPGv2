@@ -6,9 +6,13 @@ using UnityEngine;
 public class CharacterList : ScriptableObject
 {
     public List<string> characterNames;
+    public List<string> GetCharacterNames(){ return characterNames; }
     public List<string> characters;
+    public List<string> GetCharacterSprites(){ return characters; }
     public List<string> stats;
+    public List<string> GetCharacterStats(){ return stats; }
     public List<string> equipment;
+    public List<string> GetCharacterEquipment(){ return equipment; }
 
     public void ResetLists()
     {

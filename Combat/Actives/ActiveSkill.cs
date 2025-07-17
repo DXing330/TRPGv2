@@ -5,11 +5,12 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Active", menuName = "ScriptableObjects/BattleLogic/Active", order = 1)]
 public class ActiveSkill : SkillEffect
 {
+    public string activeSkillDelimiter = "_";
     public string skillType;
     public string GetSkillType(){return skillType;}
-    public void LoadSkillFromString(string skillData, string delimiter = "|")
+    public void LoadSkillFromString(string skillData)
     {
-        LoadSkill(new List<string>(skillData.Split(delimiter)));
+        LoadSkill(new List<string>(skillData.Split(activeSkillDelimiter)));
     }
     public void LoadSkill(List<string> skillData)
     {
@@ -23,6 +24,21 @@ public class ActiveSkill : SkillEffect
         effect = skillData[7];
         specifics = skillData[8];
         power = skillData[9];
+    }
+    public string GetStat(string statName)
+    {
+        switch (statName)
+        {
+            case "Range":
+                return range.ToString();
+            case "RangeShape":
+                return rangeShape.ToString();
+            case "EffectShape":
+                return shape.ToString();
+            case "EffectSpan":
+                return span.ToString();
+        }
+        return "";
     }
     public string energyCost;
     public int GetEnergyCost()
