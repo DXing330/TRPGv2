@@ -47,13 +47,12 @@ public class SelectList : MonoBehaviour
     public void SetSelectables(List<string> newList)
     {
         selectable = new List<string>(newList);
-        currentPage = 0;
-        UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
+        StartingPage();
         if (newList.Count > textObjects.Count)
         {
             utility.EnableGameObjects(changePageObjects);
         }
-        else{utility.DisableGameObjects(changePageObjects);}
+        else { utility.DisableGameObjects(changePageObjects); }
     }
     public void UpdateSelectables(List<string> newList)
     {

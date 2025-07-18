@@ -5,6 +5,7 @@ using UnityEngine;
 public class ActorSpriteHPList : MonoBehaviour
 {
     public bool startUp = true;
+    public bool spritesNameDisplay = true;
     public GeneralUtility utility;
     public ColorDictionary colors;
     public int page = 0;
@@ -51,7 +52,9 @@ public class ActorSpriteHPList : MonoBehaviour
     public CharacterList savedData;
     public List<string> allActorNames;
     public List<string> allActorData;
+    public List<string> allActorSpriteNames;
     public List<string> actorNames;
+    public List<string> actorSpriteNames;
     public List<string> actorData;
 
     void Start()
@@ -62,27 +65,12 @@ public class ActorSpriteHPList : MonoBehaviour
         }
     }
 
-    public void RefreshData(List<string> specificCharacters = null)
+    public void RefreshData()
     {
-        if (specificCharacters == null)
-        {
-            allActorNames = new List<string>(savedData.characters);
-            allActorData = new List<string>(savedData.stats);
-        }
-        else
-        {
-            page = 0;
-            allActorNames = new List<string>();
-            allActorData = new List<string>();
-            for (int i = 0; i < savedData.characters.Count; i++)
-            {
-                if (specificCharacters.Contains(savedData.characters[i]))
-                {
-                    allActorNames.Add(savedData.characters[i]);
-                    allActorData.Add(savedData.stats[i]);
-                }
-            }
-        }
+        page = 0;
+        allActorNames = new List<string>(savedData.characterNames);
+        allActorSpriteNames = new List<string>(savedData.characters);
+        allActorData = new List<string>(savedData.stats);
         ResetSelected();
         UpdateList();
     }
@@ -92,12 +80,13 @@ public class ActorSpriteHPList : MonoBehaviour
         utility.DisableGameObjects(objects);
         DisableChangePage();
         actorNames = utility.GetCurrentPageStrings(page, objects, allActorNames);
+        actorSpriteNames = utility.GetCurrentPageStrings(page, objects, allActorSpriteNames);
         actorData = utility.GetCurrentPageStrings(page, objects, allActorData);
         for (int i = 0; i < actorNames.Count; i++)
         {
             objects[i].SetActive(true);
             dummyActor.SetPersonalName(actorNames[i]);
-            dummyActor.SetSpriteName((actorNames[i]));
+            dummyActor.SetSpriteName((actorSpriteNames[i]));
             dummyActor.SetStatsFromString(actorData[i]);
             actors[i].ShowActorInfo(dummyActor);
         }
