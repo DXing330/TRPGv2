@@ -39,9 +39,7 @@ public class ActorPassives : MonoBehaviour
     }
     public List<string> GetPassiveSkills()
     {
-        List<string> allPassives = new List<string>(passiveSkills);
-        allPassives.AddRange(tempPassives);
-        return allPassives;
+        return passiveSkills;
     }
     public string GetPassiveString()
     {
@@ -65,12 +63,7 @@ public class ActorPassives : MonoBehaviour
     }
     public List<string> GetPassiveLevels()
     {
-        List<string> allLevels = new List<string>(passiveLevels);
-        for (int i = 0; i < tempPassives.Count; i++)
-        {
-            allLevels.Add("1");
-        }
-        return allLevels;
+        return passiveLevels;
     }
     public string GetPassiveLevelString()
     {
@@ -106,20 +99,86 @@ public class ActorPassives : MonoBehaviour
         }
     }
     // If any temp passives expire then reorganize the passives.
-    public bool DecreaseTempPassiveDurations()
+    public List<string> DecreaseTempPassiveDurations()
     {
-        bool removed = false;
+        List<string> removed = new List<string>();
         for (int i = tempPassiveDurations.Count - 1; i >= 0; i--)
         {
             tempPassiveDurations[i] -= 1;
             if (tempPassiveDurations[i] == 0)
             {
-                removed = true;
+                removed.Add(tempPassives[i]);
                 tempPassiveDurations.RemoveAt(i);
                 tempPassives.RemoveAt(i);
             }
         }
         return removed;
+    }
+    public void AddSortedPassive(string passiveName, string type)
+    {
+        switch (type)
+        {
+            case "Moving":
+                movingPassives.Remove(passiveName);
+                break;
+            case "Start":
+                startTurnPassives.Add(passiveName);
+                break;
+            case "End":
+                endTurnPassives.Add(passiveName);
+                break;
+            case "Attacking":
+                attackingPassives.Add(passiveName);
+                break;
+            case "Defending":
+                defendingPassives.Add(passiveName);
+                break;
+            case "BattleStart":
+                startBattlePassives.Add(passiveName);
+                break;
+            case "TakeDamage":
+                takeDamagePassives.Add(passiveName);
+                break;
+            case "Death":
+                deathPassives.Add(passiveName);
+                break;
+            case "OOC":
+                outOfCombatPassives.Add(passiveName);
+                break;
+        }
+    }
+    public void RemoveSortedPassive(string passiveName, string type)
+    {
+        switch (type)
+        {
+            case "Moving":
+                movingPassives.Remove(passiveName);
+                break;
+            case "Start":
+                startTurnPassives.Remove(passiveName);
+                break;
+            case "End":
+                endTurnPassives.Remove(passiveName);
+                break;
+            case "Attacking":
+                attackingPassives.Remove(passiveName);
+                break;
+            case "Defending":
+                defendingPassives.Remove(passiveName);
+                break;
+            case "BattleStart":
+                startBattlePassives.Remove(passiveName);
+                break;
+            case "TakeDamage":
+                takeDamagePassives.Remove(passiveName);
+                break;
+            case "Death":
+                deathPassives.Remove(passiveName);
+                break;
+            case "OOC":
+                outOfCombatPassives.Remove(passiveName);
+                break;
+        }
     }
     public string GetPassiveSkill(int index) { return passiveSkills[index]; }
     public List<string> startBattlePassives;

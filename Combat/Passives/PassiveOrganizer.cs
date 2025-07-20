@@ -8,6 +8,7 @@ public class PassiveOrganizer : ScriptableObject
     public List<string> testPassiveList;
     public List<string> testPassiveLevels;
     public MultiKeyStatDatabase passiveNameLevels;
+    public StatDatabase passiveNames;
     public StatDatabase passiveTiming;
     public List<string> startBattlePassives;
     public List<string> startTurnPassives;
@@ -32,7 +33,7 @@ public class PassiveOrganizer : ScriptableObject
         outOfCombatPassives.Clear();
     }
 
-    public void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
+    protected void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
     {
         ClearLists();
         string passiveName = "";
@@ -44,6 +45,18 @@ public class PassiveOrganizer : ScriptableObject
                 SortPassive(passiveName, passiveTiming.ReturnValue(passiveName));
             }
         }
+    }
+
+    public void AddSortedPassive(TacticActor actor, string passiveName)
+    {
+        string timing = passiveTiming.ReturnValue(passiveName);
+        actor.AddSortedPassive(passiveName, timing);
+    }
+
+    public void RemoveSortedPassive(TacticActor actor, string passiveName)
+    {
+        string timing = passiveTiming.ReturnValue(passiveName);
+        actor.RemoveSortedPassive(passiveName, timing);
     }
 
     protected void SortPassive(string passive, string timing)

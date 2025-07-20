@@ -28,9 +28,13 @@ public class EffectManager : MonoBehaviour
     {
         status.ApplyEffects(actor, statusData, "End");
         passive.ApplyPassives(actor, passiveData, "End", map);
-        if (actor.DecreaseTempPassiveDurations())
+        List<string> removedPassives = actor.DecreaseTempPassiveDurations();
+        if (removedPassives.Count > 0)
         {
-            passiveOrganizer.OrganizeActorPassives(actor);
+            for (int i = 0; i < removedPassives.Count; i++)
+            {
+                passiveOrganizer.RemoveSortedPassive(actor, removedPassives[i]);
+            }
         }
     }
 }
