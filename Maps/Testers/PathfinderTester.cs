@@ -35,45 +35,10 @@ public class PathfinderTester : MonoBehaviour
         }
     }
 
-    [ContextMenu("Test Line Range")]
-    public void TestLineRange()
-    {
-        if (!debugThis){return;}
-        pathfinder.SetMapSize(testSize);
-        List<int> tiles = pathfinder.GetTilesInLineRange(testTile, testRange);
-        tiles.Sort();
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            Debug.Log(tiles[i]);
-        }
-    }
-
     [ContextMenu("Test Beam Range")]
     public void TestBeamRange()
     {
         if (!debugThis){return;}
         pathfinder.SetMapSize(testSize);
-        List<int> tiles = pathfinder.GetTilesInBeamRange(testTile, testDirection);
-        tiles.Sort();
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            Debug.Log(tiles[i]);
-        }
-    }
-
-
-    [ContextMenu("Test Cone Range")]
-    public void TestConeRange()
-    {
-        if (!debugThis){return;}
-        pathfinder.SetMapSize(testSize);
-        List<int> tiles = pathfinder.GetTilesInConeShape(testTile, testRange, testConeStart);
-        tiles.Sort();
-        string tilesString = "";
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            tilesString += tiles[i]+" ";
-        }
-        Debug.Log(tilesString);
     }
 }

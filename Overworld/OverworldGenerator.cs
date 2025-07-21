@@ -195,7 +195,7 @@ public class OverworldGenerator : ScriptableObject
             biomeTiles.AddRange(mapUtility.GetTilesInConeShape(startTile, biomeSize, startingTile, GetSize()));
             break;
             case "Ring":
-            biomeTiles.AddRange(mapUtility.GetTileInRingShape(startingTile, biomeSize, GetSize()));
+            biomeTiles.AddRange(mapUtility.GetTilesInRingShape(startingTile, biomeSize, GetSize()));
             biomeTiles.Remove(startingTile);
             break;
             case "River":

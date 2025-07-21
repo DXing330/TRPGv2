@@ -118,34 +118,7 @@ public class ActiveManager : MonoBehaviour
             }
         }
         int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
-        switch (shape)
-        {
-            case "Circle":
-                return pathfinder.FindTilesInRange(startTile, range);
-            case "ECircle":
-                return pathfinder.FindTilesInRange(startTile, range);
-            case "Line":
-                return pathfinder.GetTilesInLineRange(startTile, range);
-            case "ELine":
-                if (pathfinder.DistanceBetweenTiles(skillUser.GetLocation(), startTile) <= 1)
-                {
-                    return pathfinder.GetTilesInLineDirection(skillUser.GetLocation(), direction, range);
-                }
-                int eLineLocation = pathfinder.PointInDirection(startTile, (direction+3)%6);
-                return pathfinder.GetTilesInLineDirection(eLineLocation, direction, range);
-            case "Cone":
-                // Check if caster is adjacent to start tile.
-                if (pathfinder.DistanceBetweenTiles(skillUser.GetLocation(), startTile) <= 1)
-                {
-                    return pathfinder.GetTilesInConeShape(startTile, range, skillUser.GetLocation());
-                }
-                // Otherwise pick the tile between the caster and the chosen tile, closest to the chosen tile in the appropriate direction.
-                int coneLocation = pathfinder.PointInDirection(startTile, (direction+3)%6);
-                return pathfinder.GetTilesInConeShape(startTile, range, coneLocation);
-            case "Beam":
-                return pathfinder.GetTilesInBeamRange(skillUser.GetLocation(), direction, range);
-        }
-        return new List<int>();
+        return pathfinder.mapUtility.GetTilesByShapeSpan(startTile, shape, range, pathfinder.mapSize, skillUser.GetLocation());
     }
 
     protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power, int selectedTile = -1)

@@ -109,25 +109,6 @@ public class MapPathfinder : ScriptableObject
         return mapUtility.PointInDirection(start, direction, mapSize);
     }
 
-    public List<int> GetTilesInBeamRange(int startTile, int direction, int span = 1, int range = -1)
-    {
-        if (range < 0) { range = mapSize; }
-        List<int> tiles = new List<int>();
-        tiles.AddRange(GetTilesInLineDirection(startTile, direction, range));
-        List<int> startingTiles = new List<int>();
-        if (span > 0)
-        {
-            startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 1) % 6, span));
-            startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 5) % 6, span));
-        }
-        for (int i = 0; i < startingTiles.Count; i++)
-        {
-            tiles.AddRange(GetTilesInLineDirection(startingTiles[i], direction, range - 1));
-        }
-        tiles.AddRange(startingTiles);
-        return tiles;
-    }
-
     public List<int> GetTilesInLineRange(int startTile, int range, List<int> directions = null)
     {
         List<int> tiles = new List<int>();
@@ -146,42 +127,6 @@ public class MapPathfinder : ScriptableObject
                 tiles.AddRange(GetTilesInLineDirection(start, directions[i], range));
             }
         }
-        return tiles;
-    }
-
-    public List<int> GetTilesInConeShape(int startTile, int range, int currentLocation)
-    {
-        List<int> tiles = new List<int>();
-        List<int> leftCone = new List<int>();
-        List<int> rightCone = new List<int>();
-        List<int> forwardCone = new List<int>();
-        int mainDirection = mapUtility.DirectionBetweenLocations(currentLocation, startTile, mapSize);
-        int leftDirection = (mainDirection + 5) % 6;
-        int rightDirection = (mainDirection + 1) % 6;
-        // Get the tiles adjacent in the direction of the startTile.
-        forwardCone.AddRange(GetTilesInLineDirection(currentLocation, mainDirection, range));
-        leftCone.AddRange(GetTilesInLineDirection(currentLocation, leftDirection, range));
-        rightCone.AddRange(GetTilesInLineDirection(currentLocation, rightDirection, range));
-        int listCount = leftCone.Count;
-        for (int i = 0; i < listCount; i++)
-        {
-            leftCone.AddRange(GetTilesInLineDirection(leftCone[i], rightDirection, range));
-        }
-        listCount = rightCone.Count;
-        for (int i = 0; i < listCount; i++)
-        {
-            rightCone.AddRange(GetTilesInLineDirection(rightCone[i], leftDirection, range));
-        }
-        listCount = forwardCone.Count;
-        for (int i = 0; i < listCount; i++)
-        {
-            forwardCone.AddRange(GetTilesInLineDirection(forwardCone[i], (leftDirection + 3) % 6, (i + 1)));
-            forwardCone.AddRange(GetTilesInLineDirection(forwardCone[i], (rightDirection + 3) % 6, (i + 1)));
-        }
-        tiles.AddRange(leftCone);
-        tiles.AddRange(rightCone);
-        tiles.AddRange(forwardCone);
-        tiles = tiles.Distinct().ToList();
         return tiles;
     }
 }

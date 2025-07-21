@@ -58,14 +58,14 @@ public class ActiveSkill : SkillEffect
         switch (range)
         {
             case "Move":
-            if (skillUser == null){return 0;}
-            return skillUser.GetSpeed();
+                if (skillUser == null) { return 1; }
+                return skillUser.GetSpeed();
             case "AttackRange":
-            if (skillUser == null){return 0;}
-            return skillUser.GetAttackRange();
+                if (skillUser == null) { return 1; }
+                return skillUser.GetAttackRange();
             case "AttackRange+":
-            if (skillUser == null){return 0;}
-            return (skillUser.GetAttackRange()+1);
+                if (skillUser == null) { return 1; }
+                return (skillUser.GetAttackRange() + 1);
         }
         return int.Parse(range);
     }

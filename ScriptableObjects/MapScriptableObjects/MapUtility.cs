@@ -163,13 +163,42 @@ public class MapUtility : ScriptableObject
         return tiles;
     }
 
-    public List<int> GetTileInRingShape(int startTile, int range, int size, int width = 1)
+    public List<int> GetTilesInRingShape(int startTile, int range, int size, int width = 1)
     {
         List<int> tiles = new List<int>();
         tiles = GetTilesInCircleShape(startTile, range, size);
         if (width >= range) { return tiles; }
         tiles = tiles.Except(GetTilesInCircleShape(startTile, range - width, size)).ToList();
         tiles = tiles.Distinct().ToList();
+        return tiles;
+    }
+
+    public List<int> GetTilesInLineShape(int startTile, int range, int size)
+    {
+        List<int> tiles = new List<int>();
+        int start = startTile;
+        for (int i = 0; i < 6; i++)
+        {
+            tiles.AddRange(GetTilesInLineDirection(start, i, range, size));
+        }
+        return tiles;
+    }
+
+    public List<int> GetTilesInBeamShape(int startTile, int direction, int span, int size)
+    {
+        List<int> tiles = new List<int>();
+        tiles.AddRange(GetTilesInLineDirection(startTile, direction, size, size));
+        List<int> startingTiles = new List<int>();
+        if (span > 0)
+        {
+            startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 1) % 6, span, size));
+            startingTiles.AddRange(GetTilesInLineDirection(startTile, (direction + 5) % 6, span, size));
+        }
+        for (int i = 0; i < startingTiles.Count; i++)
+        {
+            tiles.AddRange(GetTilesInLineDirection(startingTiles[i], direction, size - 1, size));
+        }
+        tiles.AddRange(startingTiles);
         return tiles;
     }
 
@@ -294,6 +323,44 @@ public class MapUtility : ScriptableObject
             return (size * size) / 2;
         }
         return ReturnTileNumberFromRowCol(size / 2, size / 2, size);
+    }
+
+    public List<int> GetTilesByShapeSpan(int selected, string shape, int span, int size, int start = -1)
+    {
+        List<int> tiles = new List<int>();
+        int direction = DirectionBetweenLocations(start, selected, size);
+        switch (shape)
+        {
+            case "Circle":
+                return GetTilesInCircleShape(selected, span, size);
+            case "ECircle":
+                tiles = GetTilesInCircleShape(selected, span, size);
+                tiles.Remove(selected);
+                return tiles;
+            case "Line":
+                return GetTilesInLineShape(selected, span, size);
+            case "ELine":
+                if (DistanceBetweenTiles(start, selected, size) <= 1)
+                {
+                    // Then go in the direction from the starting tile.
+                    return GetTilesInLineDirection(start, direction, span, size);
+                }
+                else
+                {
+                    int eLineLocation = PointInDirection(selected, (direction + 3) % 6, size);
+                    return GetTilesInLineDirection(eLineLocation, direction, span, size);
+                }
+            case "Cone":
+                if (DistanceBetweenTiles(start, selected, size) <= 1)
+                {
+                    return GetTilesInConeShape(selected, span, start, size);
+                }
+                int coneLocation = PointInDirection(selected, (direction + 3) % 6, size);
+                return GetTilesInConeShape(selected, span, coneLocation, size);
+            case "Beam":
+                return GetTilesInBeamShape(start, direction, span, size);
+        }
+        return tiles;
     }
 
     public int CountTilesByShapeSpan(string shape, int span)
