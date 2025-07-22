@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class SpellTesterMap : MapManager
 {
     protected override void Start()
     {
-        ResetAll();
+        //ResetAll();
     }
-    protected void ResetAll()
+    public void ResetAll()
     {
         mapInfo = new List<string>();
         emptyList = new List<string>();
@@ -60,6 +61,7 @@ public class SpellTesterMap : MapManager
     {
         dummySpell.LoadSkillFromString(newInfo);
         UpdateTargetableTiles();
+        spellDescription.text = descriptionViewer.ReturnSpellDescription(dummySpell);
     }
     public List<int> targetableTiles;
     public void UpdateTargetableTiles()
@@ -84,4 +86,6 @@ public class SpellTesterMap : MapManager
         targetedTiles = mapUtility.GetTilesByShapeSpan(targetedTile, shape, range, mapSize, centerTile);
         UpdateHighlights(targetedTiles, "Attack", 4);
     }
+    public ActiveDescriptionViewer descriptionViewer;
+    public TMP_Text spellDescription;
 }

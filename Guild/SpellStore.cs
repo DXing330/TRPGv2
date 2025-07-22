@@ -17,6 +17,7 @@ public class SpellStore : MonoBehaviour
     public SpellBook spellBook;
     public CharacterList spellCasterList;
     public TacticActor dummyActor;
+    public MagicSpell dummySpell;
     public TMP_Text spellSlots;
     public void UpdateSpellSlots()
     {
@@ -108,6 +109,7 @@ public class SpellStore : MonoBehaviour
     public SelectList spellsList;
     protected List<string> currentActorSpells;
     public SpellDetailViewer spellDetails;
+    public SpellTesterMap testMap;
     public void StartViewingSpells()
     {
         // Get the list of spells from the actor.
@@ -119,7 +121,14 @@ public class SpellStore : MonoBehaviour
     public void ViewSelectedSpell()
     {
         int index = spellsList.GetSelected();
-        spellDetails.LoadSpell(currentActorSpells[index]);
+        dummySpell.LoadSkillFromString(currentActorSpells[index]);
+        spellDetails.LoadSpell(dummySpell);
+    }
+    public void PreviewSelectedSpell()
+    {
+        testMap.ResetAll();
+        testMap.SetActorSpriteName(dummyActor.GetSpriteName());
+        testMap.LoadSpell(dummySpell.GetSkillInfo());
     }
     public void StartUpgradingSpells()
     {

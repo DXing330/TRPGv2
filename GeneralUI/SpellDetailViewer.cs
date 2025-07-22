@@ -17,15 +17,14 @@ public class SpellDetailViewer : ActiveDescriptionViewer
             spellStats[i].ResetText();
         }
     }
-    public void LoadSpell(string spellData)
+    public void LoadSpell(MagicSpell newSpell)
     {
-        dummySpell.LoadSkillFromString(spellData);
         // Update all the spells stats;
-        spellEffects.text = ReturnSpellDescription(dummySpell);
-        spellStats[0].SetText(dummySpell.ReturnManaCost().ToString());
+        spellEffects.text = ReturnSpellDescription(newSpell);
+        spellStats[0].SetText(newSpell.ReturnManaCost().ToString());
         for (int i = 1; i < spellStats.Count; i++)
         {
-            spellStats[i].SetText(dummySpell.GetStat(spellStatNames[i]));
+            spellStats[i].SetText(newSpell.GetStat(spellStatNames[i]));
         }
     }
 }

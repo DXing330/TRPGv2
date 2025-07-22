@@ -6,10 +6,13 @@ using UnityEngine;
 public class ActiveSkill : SkillEffect
 {
     public string activeSkillDelimiter = "_";
+    public string skillInfo;
+    public string GetSkillInfo(){return skillInfo;}
     public string skillType;
     public string GetSkillType(){return skillType;}
     public void LoadSkillFromString(string skillData)
     {
+        skillInfo = skillData;
         LoadSkill(new List<string>(skillData.Split(activeSkillDelimiter)));
     }
     public void LoadSkill(List<string> skillData)
