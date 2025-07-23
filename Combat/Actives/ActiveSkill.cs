@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,12 +10,29 @@ public class ActiveSkill : SkillEffect
     public string activeSkillDelimiter = "_";
     public string skillInfo;
     public string GetSkillInfo(){return skillInfo;}
+    public List<string> skillInfoList;
+    public List<string> GetSkillInfoList(){ return skillInfoList; }
+    public void RefreshSkillInfo()
+    {
+        skillInfoList[0] = skillType;
+        skillInfoList[1] = energyCost;
+        skillInfoList[2] = actionCost;
+        skillInfoList[3] = range;
+        skillInfoList[4] = rangeShape;
+        skillInfoList[5] = shape;
+        skillInfoList[6] = span;
+        skillInfoList[7] = effect;
+        skillInfoList[8] = specifics;
+        skillInfoList[9] = power;
+        skillInfo = String.Join(activeSkillDelimiter, skillInfoList);
+    }
     public string skillType;
     public string GetSkillType(){return skillType;}
     public void LoadSkillFromString(string skillData)
     {
         skillInfo = skillData;
-        LoadSkill(new List<string>(skillData.Split(activeSkillDelimiter)));
+        skillInfoList = new List<string>(skillData.Split(activeSkillDelimiter));
+        LoadSkill(skillInfoList);
     }
     public void LoadSkill(List<string> skillData)
     {
@@ -55,9 +74,14 @@ public class ActiveSkill : SkillEffect
     }
     // Get all the tiles that are being targeted.
     public string range;
+    public void SetRange(string newInfo)
+    {
+        range = newInfo;
+        RefreshSkillInfo();
+    }
     public int GetRange(TacticActor skillUser = null)
     {
-        if (range == ""){return 0;}
+        if (range == "") { return 0; }
         switch (range)
         {
             case "Move":
@@ -73,14 +97,29 @@ public class ActiveSkill : SkillEffect
         return int.Parse(range);
     }
     public string rangeShape;
-    public string GetRangeShape(){return rangeShape;}
+    public void SetRangeShape(string newInfo)
+    {
+        rangeShape = newInfo;
+        RefreshSkillInfo();
+    }
+    public string GetRangeShape() { return rangeShape; }
     public int targetTile;
     public string shape;
-    public string GetShape(){return shape;}
+    public void SetShape(string newInfo)
+    {
+        shape = newInfo;
+        RefreshSkillInfo();
+    }
+    public string GetShape() { return shape; }
     public string span;
+    public void SetSpan(string newInfo)
+    {
+        span = newInfo;
+        RefreshSkillInfo();
+    }
     public int GetSpan()
     {
-        if (span.Length <= 0){return 0;}
+        if (span.Length <= 0) { return 0; }
         return int.Parse(span);
     }
     int selectedTile;

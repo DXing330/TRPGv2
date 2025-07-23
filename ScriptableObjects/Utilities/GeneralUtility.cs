@@ -23,6 +23,22 @@ public class GeneralUtility : ScriptableObject
         }
     }
 
+    public string GetNextItemInList(List<string> allItems, string currentItem, bool increase = true)
+    {
+        if (allItems.Count <= 0){ return ""; }
+        int indexOf = allItems.IndexOf(currentItem);
+        if (indexOf < 0) { return allItems[0]; }
+        if (increase)
+        {
+            indexOf = (indexOf + 1) % allItems.Count;
+        }
+        else
+        {
+            indexOf = (indexOf + allItems.Count - 1) % allItems.Count;
+        }
+        return allItems[indexOf];
+    }
+
     public int ChangePage(int currentPage, bool right, List<GameObject> pageLength, List<string> dataList)
     {
         int maxPage = dataList.Count / pageLength.Count;

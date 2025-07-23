@@ -331,9 +331,6 @@ public class MapUtility : ScriptableObject
         int direction = DirectionBetweenLocations(start, selected, size);
         switch (shape)
         {
-            case "None":
-                tiles.Add(selected);
-                return tiles;
             case "Circle":
                 return GetTilesInCircleShape(selected, span, size);
             case "ECircle":
@@ -363,6 +360,7 @@ public class MapUtility : ScriptableObject
             case "Beam":
                 return GetTilesInBeamShape(start, direction, span, size);
         }
+        tiles.Add(selected);
         return tiles;
     }
 

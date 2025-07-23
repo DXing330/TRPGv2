@@ -18,6 +18,8 @@ public class SpellStore : MonoBehaviour
     public CharacterList spellCasterList;
     public TacticActor dummyActor;
     public MagicSpell dummySpell;
+    public MagicSpell secondDummySpell;
+    public MagicSpell previewBeforeChangingSpell;
     public TMP_Text spellSlots;
     public void UpdateSpellSlots()
     {
@@ -25,7 +27,13 @@ public class SpellStore : MonoBehaviour
     }
     public bool OpenSpellSlots()
     {
-        return dummyActor.GetSpells().Count < spellBook.ReturnActorSpellSlots(dummyActor);
+        bool openSpellSlots = dummyActor.GetSpells().Count < spellBook.ReturnActorSpellSlots(dummyActor);
+        if (!openSpellSlots)
+        {
+            ResetState();
+            NoSpellSlotError();
+        }
+        return openSpellSlots;
     }
     public TMP_Text tomes;
     public string tomeString = "Tome";
@@ -130,28 +138,70 @@ public class SpellStore : MonoBehaviour
         testMap.SetActorSpriteName(dummyActor.GetSpriteName());
         testMap.LoadSpell(dummySpell.GetSkillInfo());
     }
+    public void PreviewOriginalSpell()
+    {
+        testMap.ResetAll();
+        testMap.SetActorSpriteName(dummyActor.GetSpriteName());
+        int index = upgradeSpellList.GetSelected();
+        dummySpell.LoadSkillFromString(currentActorSpells[index]);
+        testMap.LoadSpell(dummySpell.GetSkillInfo());
+    }
+    public void PreviewSpellPotential()
+    {
+        testMap.ResetAll();
+        testMap.SetActorSpriteName(dummyActor.GetSpriteName());
+        testMap.LoadSpell(previewBeforeChangingSpell.GetSkillInfo());
+    }
+    public SpellUpgradeManager upgradeManager;
+    public SelectList upgradeSpellList;
+    public SpellDetailViewer currentDetails;
+    public SpellDetailViewer potentialDetails;
     public void StartUpgradingSpells()
     {
-        if (!OpenSpellSlots())
-        {
-            NoSpellSlotError();
-            return;
-        }
+        if (!OpenSpellSlots()){ return; }
+        currentActorSpells = new List<string>(dummyActor.GetSpells());
+        upgradeSpellList.SetSelectables(dummyActor.GetSpellNames());
+        currentDetails.ResetDetails();
+        potentialDetails.ResetDetails();
+    }
+    public void SelectSpellToUpgrade()
+    {
+        int index = upgradeSpellList.GetSelected();
+        dummySpell.LoadSkillFromString(currentActorSpells[index]);
+        previewBeforeChangingSpell.LoadSkillFromString(currentActorSpells[index]);
+        currentDetails.LoadSpell(dummySpell);
+        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+    }
+    public void ChangeSpellRangeShape(bool increase = true)
+    {
+        if (upgradeSpellList.GetSelected() < 0) { return; }
+        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "RangeShape", increase);
+        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+    }
+    public void ChangeSpellRange(bool increase = true)
+    {
+        if (upgradeSpellList.GetSelected() < 0) { return; }
+        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "Range", increase);
+        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+    }
+    public void ChangeSpellEffectShape(bool increase = true)
+    {
+        if (upgradeSpellList.GetSelected() < 0) { return; }
+        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "EffectShape", increase);
+        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+    }
+    public void ChangeSpellSpan(bool increase = true)
+    {
+        if (upgradeSpellList.GetSelected() < 0) { return; }
+        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "Span", increase);
+        potentialDetails.LoadSpell(previewBeforeChangingSpell);
     }
     public void StartLearningSpells()
     {
-        if (!OpenSpellSlots())
-        {
-            NoSpellSlotError();
-            return;
-        }
+        if (!OpenSpellSlots()) { return; }
     }
     public void StartCombiningSpells()
     {
-        if (!OpenSpellSlots())
-        {
-            NoSpellSlotError();
-            return;
-        }
+        if (!OpenSpellSlots()){ return; }
     }
 }

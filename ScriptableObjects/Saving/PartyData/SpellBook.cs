@@ -25,10 +25,26 @@ public class SpellBook : SavedData
     public List<string> currentComponents;
     // Constants.
     // Action cost and energy default to 1 cost.
-    public List<string> shapes;
-    public List<string> eShapes;
+    public List<string> rangeShapes;
+    public List<string> GetRangeShapes()
+    {
+        return rangeShapes;
+    }
+    public List<string> effectShapes;
+    public List<string> GetEffectShapes()
+    {
+        return effectShapes;
+    }
     public List<string> ranges;
+    public List<string> GetRanges()
+    {
+        return ranges;
+    }
     public List<string> spans;
+    public List<string> GetSpans()
+    {
+        return spans;
+    }
     public List<string> powers;
 
     public string ReturnRandomSpell(int effectCount = 3)
@@ -37,8 +53,8 @@ public class SpellBook : SavedData
         string effectDelimiter = magicSpell.effectDelimiter;
         string spell = "SpellName" + activeDelimiter + "1" + activeDelimiter + "1" + activeDelimiter;
         spell += ranges[Random.Range(0, ranges.Count)] + activeDelimiter;
-        spell += shapes[Random.Range(0, shapes.Count)] + activeDelimiter;
-        spell += eShapes[Random.Range(0, eShapes.Count)] + activeDelimiter;
+        spell += rangeShapes[Random.Range(0, rangeShapes.Count)] + activeDelimiter;
+        spell += effectShapes[Random.Range(0, effectShapes.Count)] + activeDelimiter;
         spell += spans[Random.Range(0, spans.Count)] + activeDelimiter;
         string effects = "";
         string specifics = "";
