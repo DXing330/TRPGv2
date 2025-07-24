@@ -5,6 +5,7 @@ using UnityEngine;
 public class MultiLevelDBInitializer : MonoBehaviour
 {
     public List<DatabaseInitializer> allDBInit;
+    public List<SpriteContainer> spriteContainers;
 
     [ContextMenu("Initialize")]
     public void Initialize()
@@ -12,6 +13,10 @@ public class MultiLevelDBInitializer : MonoBehaviour
         for (int i = 0; i < allDBInit.Count; i++)
         {
             allDBInit[i].Initialize();
+        }
+        for (int i = 0; i < spriteContainers.Count; i++)
+        {
+            spriteContainers[i].Initialize();
         }
     }
 }

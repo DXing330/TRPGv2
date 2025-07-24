@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,15 @@ using UnityEngine.UI;
 public class SpriteContainer : ScriptableObject
 {
     public List<Sprite> sprites;
+    public string allKeysAndValues;
+    public string delimiter;
+    public string delimiterTwo;
+    public void Initialize()
+    {
+        string[] blocks = allKeysAndValues.Split(delimiter);
+        keys = blocks[0].Split(delimiterTwo).ToList();
+        values = blocks[1].Split(delimiterTwo).ToList();
+    }
     public List<string> keys;
     public List<string> values;
 

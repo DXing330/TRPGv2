@@ -80,6 +80,18 @@ public class Inventory : SavedData
         return ReturnQuantityOfItem(itemName) >= quantity;
     }
 
+    public bool MultiQuantityExists(List<string> itemNames, List<int> quantities)
+    {
+        for (int i = 0; i < itemNames.Count; i++)
+        {
+            if (!QuantityExists(quantities[i], itemNames[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Should only be called after confirming that the quantity exists.
     public void RemoveItemQuantity(int quantity, string itemName = "Gold")
     {
@@ -88,13 +100,21 @@ public class Inventory : SavedData
         quantities[indexOf] = (currentQuantity - quantity).ToString();
     }
 
+    public void RemoveMultiItems(List<string> itemNames, List<int> quantities)
+    {
+        for (int i = 0; i < itemNames.Count; i++)
+        {
+            RemoveItemQuantity(quantities[i], itemNames[i]);
+        }
+    }
+
     public void LoseGold(int amount = -1)
     {
         if (amount < 0)
         {
             RemoveItemQuantity(ReturnQuantityOfItem(goldString));
         }
-        else{ RemoveItemQuantity(amount); }
+        else { RemoveItemQuantity(amount); }
     }
 
     public void GainGold(int amount)

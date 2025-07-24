@@ -5,12 +5,10 @@ using TMPro;
 
 public class SpellTesterMap : MapManager
 {
-    protected override void Start()
-    {
-        //ResetAll();
-    }
+    protected override void Start(){}
     public void ResetAll()
     {
+        learnSpellPanel.SetActive(false);
         mapInfo = new List<string>();
         emptyList = new List<string>();
         actorTiles = new List<string>();
@@ -88,4 +86,13 @@ public class SpellTesterMap : MapManager
     }
     public ActiveDescriptionViewer descriptionViewer;
     public TMP_Text spellDescription;
+    public GameObject learnSpellPanel;
+    public void LearnSpellChance(string tomeC = "1", string manaC = "1")
+    {
+        learnSpellPanel.SetActive(true);
+        tomeCost.text = tomeC;
+        manaCost.text = manaC;
+    }
+    public TMP_Text tomeCost;
+    public TMP_Text manaCost;
 }

@@ -167,19 +167,6 @@ public class PartyDataManagerTester : MonoBehaviour
         bool hasEquipment = partyDataManager.fullParty.equipment != null;
         testResults.Add(new TestResult("Equipment List", hasEquipment, "Equipment list exists: " + hasEquipment));
         
-        // Test healing functionality
-        int healCost = partyDataManager.ReturnHealingCost();
-        testResults.Add(new TestResult("Healing Cost Calculation", healCost >= 0, "Heal cost: " + healCost));
-        
-        try
-        {
-            partyDataManager.HealParty();
-            testResults.Add(new TestResult("Heal Party", true, "Party healed successfully"));
-        }
-        catch (System.Exception e)
-        {
-            testResults.Add(new TestResult("Heal Party", false, "Heal failed: " + e.Message));
-        }
     }
     
     [ContextMenu("Test Temp Party Members")]

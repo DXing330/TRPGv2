@@ -206,10 +206,23 @@ public class PartyDataManager : MonoBehaviour
         return mainPartyData.partyEquipment[selected];
     }
 
-    public int ReturnHealingCost()
+    public void AddSpellToPartyMember(string newInfo, int selected)
     {
-        int healCost = 0;
-        return healCost;
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            permanentPartyData.MemberLearnsSpell(newInfo, selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            mainPartyData.MemberLearnsSpell(newInfo, selected - permanentCount);
+        }
+        else
+        {
+            tempPartyData.MemberLearnsSpell(newInfo, selected - permanentCount - mainCount);
+        }
     }
 
     public void HealParty()

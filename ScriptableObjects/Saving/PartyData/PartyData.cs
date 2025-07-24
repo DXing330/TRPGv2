@@ -251,6 +251,12 @@ public class PartyData : SavedData
         }
         return oldEquip;
     }
+    public void MemberLearnsSpell(string newSpell, int index)
+    {
+        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.LearnSpell(newSpell);
+        partyStats[index] = dummyActor.GetStats();
+    }
     public bool PartyMemberIncluded(string memberName)
     {
         return (partyNames.Contains(memberName));

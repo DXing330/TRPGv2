@@ -350,6 +350,10 @@ public class ActorStats : ActorPassives
     protected string activeSkillDelimiter = "_";
     public List<string> spells;
     public void ResetSpells(){ spells.Clear(); }
+    public void LearnSpell(string newInfo)
+    {
+        spells.Add(newInfo);
+    }
     public List<string> GetSpells()
     {
         return spells;

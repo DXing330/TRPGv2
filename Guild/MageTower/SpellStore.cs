@@ -20,6 +20,8 @@ public class SpellStore : MonoBehaviour
     public MagicSpell dummySpell;
     public MagicSpell secondDummySpell;
     public MagicSpell previewBeforeChangingSpell;
+    public List<string> spellComponents;
+    public List<int> spellComponentCosts;
     public TMP_Text spellSlots;
     public void UpdateSpellSlots()
     {
@@ -47,12 +49,16 @@ public class SpellStore : MonoBehaviour
     public GameObject casterSelectObject;
     public ActorSpriteHPList partyCasters;
     public GameObject noCasterErrorObject;
+    public List<string> casterNames;
+    public List<string> casterStats;
+    // Track the indexes so you know which party member to upgrade when adding spells.
+    public List<int> casterPartyIndexes;
     public void CheckIfCastersInParty()
     {
         bool casters = false;
-        List<string> casterStats = new List<string>();
+        casterStats = new List<string>();
         List<string> casterSprites = new List<string>();
-        List<string> casterNames = new List<string>();
+        casterNames = new List<string>();
         List<string> characterStats = partyData.fullParty.GetCharacterStats();
         List<string> characterSprites = partyData.fullParty.GetCharacterSprites();
         List<string> characterNames = partyData.fullParty.GetCharacterNames();
@@ -65,6 +71,7 @@ public class SpellStore : MonoBehaviour
                 casterStats.Add(characterStats[i]);
                 casterSprites.Add(characterSprites[i]);
                 casterNames.Add(characterNames[i]);
+                casterPartyIndexes.Add(i);
             }
         }
         if (casters)
@@ -87,6 +94,11 @@ public class SpellStore : MonoBehaviour
     protected void NoSpellSlotError()
     {
         errorPopUp.SetMessage("No Spell Slots Available");
+        ResetState();
+    }
+    protected void NoCurrencyError()
+    {
+        errorPopUp.SetMessage("Not Enough Resources");
         ResetState();
     }
     public void SelectCaster()
@@ -146,9 +158,20 @@ public class SpellStore : MonoBehaviour
         dummySpell.LoadSkillFromString(currentActorSpells[index]);
         testMap.LoadSpell(dummySpell.GetSkillInfo());
     }
+    public List<int> CalculateUpgradeCost()
+    {
+        List<int> costs = new List<int>();
+        int baseCost = (int)Mathf.Sqrt(previewBeforeChangingSpell.ReturnManaCost());
+        costs.Add(baseCost);
+        int manaCost = baseCost * 6;
+        costs.Add(manaCost);
+        return costs;
+    }
     public void PreviewSpellPotential()
     {
         testMap.ResetAll();
+        spellComponentCosts = CalculateUpgradeCost();
+        testMap.LearnSpellChance(spellComponentCosts[0].ToString(), spellComponentCosts[1].ToString());
         testMap.SetActorSpriteName(dummyActor.GetSpriteName());
         testMap.LoadSpell(previewBeforeChangingSpell.GetSkillInfo());
     }
@@ -196,12 +219,41 @@ public class SpellStore : MonoBehaviour
         upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "Span", increase);
         potentialDetails.LoadSpell(previewBeforeChangingSpell);
     }
+    public void LearnUpgradedSpell()
+    {
+        // Get the cost of the spell.
+        spellComponentCosts = CalculateUpgradeCost();
+        // Try to pay the cost.
+        if (!partyData.inventory.MultiQuantityExists(spellComponents, spellComponentCosts))
+        {
+            NoCurrencyError();
+            return;
+        }
+        partyData.inventory.RemoveMultiItems(spellComponents, spellComponentCosts);
+        // Get the spell info.
+        previewBeforeChangingSpell.RefreshSkillInfo();
+        string newSpell = previewBeforeChangingSpell.GetSkillInfo();
+        // Get the actor from the party data.
+        int partyIndex = casterPartyIndexes[selectedCaster];
+        // Add the spell to them.
+        partyData.AddSpellToPartyMember(newSpell, partyIndex);
+        // Refresh the party.
+        partyData.SetFullParty();
+        CheckIfCastersInParty();
+        UpdateSpellSlots();
+        UpdateCurrency();
+        ResetState();
+
+    }
     public void StartLearningSpells()
     {
         if (!OpenSpellSlots()) { return; }
     }
+    public SelectList combineSpell1;
+    public SelectList combineSpell2;
+    public SpellDetailViewer combinedSpellDetails;
     public void StartCombiningSpells()
     {
-        if (!OpenSpellSlots()){ return; }
+        if (!OpenSpellSlots()) { return; }
     }
 }
