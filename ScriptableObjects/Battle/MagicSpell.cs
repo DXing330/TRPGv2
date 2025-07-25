@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,13 +18,32 @@ public class MagicSpell : ActiveSkill
         return ((int) Mathf.Sqrt(totalTiles))*effectCount;
     }
     public string effectDelimiter = "?";
+    public void AddEffects(string newInfo)
+    {
+        effect += effectDelimiter + newInfo;
+        RefreshSkillInfo();
+    }
     public List<string> GetAllEffects()
     {
         return GetEffect().Split(effectDelimiter).ToList();
     }
+    public void AddSpecifics(string newInfo)
+    {
+        specifics += effectDelimiter + newInfo;
+        RefreshSkillInfo();
+    }
     public List<string> GetAllSpecifics()
     {
         return GetSpecifics().Split(effectDelimiter).ToList();
+    }
+    public void AddPowers(string newInfo)
+    {
+        power += effectDelimiter + newInfo;
+        RefreshSkillInfo();
+    }
+    public string GetAllPowersString()
+    {
+        return String.Join(effectDelimiter, GetAllPowers());
     }
     public List<int> GetAllPowers()
     {

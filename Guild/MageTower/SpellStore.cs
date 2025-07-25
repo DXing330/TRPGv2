@@ -250,10 +250,40 @@ public class SpellStore : MonoBehaviour
         if (!OpenSpellSlots()) { return; }
     }
     public SelectList combineSpell1;
+    public void SelectSpellToCombineOne()
+    {
+        if (combineSpell2.GetSelected() >= 0)
+        {
+            ShowCombinedSpell();
+        }
+    }
     public SelectList combineSpell2;
+    public void SelectSpellToCombineTwo()
+    {
+        if (combineSpell1.GetSelected() >= 0)
+        {
+            ShowCombinedSpell();
+        }
+    }
     public SpellDetailViewer combinedSpellDetails;
+    public void ShowCombinedSpell()
+    {
+        // Get the combined spells.
+        dummySpell.LoadSkillFromString(currentActorSpells[combineSpell1.GetSelected()]);
+        secondDummySpell.LoadSkillFromString(currentActorSpells[combineSpell2.GetSelected()]);
+        spellBook.CombineSpells(dummySpell, secondDummySpell, previewBeforeChangingSpell);
+        combinedSpellDetails.LoadSpell(previewBeforeChangingSpell);
+    }
+    protected void UpdateCombinedSpell()
+    {
+
+    }
     public void StartCombiningSpells()
     {
         if (!OpenSpellSlots()) { return; }
+        currentActorSpells = new List<string>(dummyActor.GetSpells());
+        combineSpell1.SetSelectables(dummyActor.GetSpellNames());
+        combineSpell2.SetSelectables(dummyActor.GetSpellNames());
+        combinedSpellDetails.ResetDetails();
     }
 }

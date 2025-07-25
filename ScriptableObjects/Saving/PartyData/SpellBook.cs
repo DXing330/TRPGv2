@@ -87,4 +87,12 @@ public class SpellBook : SavedData
         effectAndSpecifics = effect + magicSpell.activeSkillDelimiter + specifics;
         return effectAndSpecifics;
     }
+
+    public void CombineSpells(MagicSpell spell1, MagicSpell spell2, MagicSpell combinedSpell)
+    {
+        combinedSpell.LoadSkillFromString(spell1.GetSkillInfo());
+        combinedSpell.AddEffects(spell2.GetEffect());
+        combinedSpell.AddSpecifics(spell2.GetSpecifics());
+        combinedSpell.AddPowers(spell2.GetAllPowersString());
+    }
 }
