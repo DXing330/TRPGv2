@@ -118,6 +118,8 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics != actor.GetMoveType();
             case "MentalState":
                 return conditionSpecifics == actor.GetMentalState();
+            case "Status":
+                return actor.StatusExists(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;
@@ -154,6 +156,10 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == attacker.GetMentalState();
             case "MentalStateD":
                 return conditionSpecifics == target.GetMentalState();
+            case "StatusA":
+                return attacker.StatusExists(conditionSpecifics);
+            case "StatusD":
+                return target.StatusExists(conditionSpecifics);
         }
         return false;
     }

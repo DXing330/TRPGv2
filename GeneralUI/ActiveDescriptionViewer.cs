@@ -44,7 +44,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Teleport+Attack":
                 return "Try to move " + ASD(s) + " the target and attack with " + APD(p) + "% damage.";
             case "Status":
-                return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turn(s).";
+                return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
             case "RemoveStatus":
                 return "Remove " + ASD(s) + " from the target(s).";
             case "Summon":
@@ -62,7 +62,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Temporary Passive":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turns.";
             case "Attack+Status":
-                return "Attack the target(s) and inflict " + ASD(s) + " for " + APD(p) + " turns.";
+                return "Attack the target(s) and inflict " + ASD(s) + " for " + APD(p,e) + " turns.";
             case "Attack+MentalState":
                 return "Attack the target(s) and try to change their mental state to " + ASD(s) + ".";
             case "Attack+Drain":
@@ -96,9 +96,12 @@ public class ActiveDescriptionViewer : MonoBehaviour
     }
 
     // ActivePowerDescription
-    public string APD(string power)
+    public string APD(string power, string effect = "")
     {
-
+        if (power == "-1" && effect.Contains("Status"))
+        {
+            return "ALL";
+        }
         return power;
     }
 }

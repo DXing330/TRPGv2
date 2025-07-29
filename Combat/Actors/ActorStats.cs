@@ -28,7 +28,7 @@ public class ActorStats : ActorPassives
         {
             stats[i] = GetStat(statNames[i]);
             allStats += stats[i];
-            if (i < stats.Count - 1){allStats+="|";}
+            if (i < stats.Count - 1) { allStats += "|"; }
         }
         return allStats;
     }
@@ -182,58 +182,58 @@ public class ActorStats : ActorPassives
     }
     public int baseHealth;
     public void SetBaseHealth(int newHealth) { baseHealth = newHealth; }
-    public int GetBaseHealth(){return baseHealth;}
+    public int GetBaseHealth() { return baseHealth; }
     public void UpdateBaseHealth(int changeAmount, bool decrease = true)
     {
-        if (decrease){baseHealth -= changeAmount;}
-        else {baseHealth += changeAmount;}
+        if (decrease) { baseHealth -= changeAmount; }
+        else { baseHealth += changeAmount; }
     }
     public int baseEnergy;
-    public void UpdateBaseEnergy(int changeAmount){baseEnergy += changeAmount;}
+    public void UpdateBaseEnergy(int changeAmount) { baseEnergy += changeAmount; }
     public void SetBaseEnergy(int newEnergy) { baseEnergy = newEnergy; }
-    public int GetBaseEnergy(){return baseEnergy;}
+    public int GetBaseEnergy() { return baseEnergy; }
     public int baseAttack;
-    public void SetBaseAttack(int newAttack){baseAttack = newAttack;}
-    public int GetBaseAttack(){return baseAttack;}
-    public void UpdateBaseAttack(int changeAmount){baseAttack += changeAmount;}
+    public void SetBaseAttack(int newAttack) { baseAttack = newAttack; }
+    public int GetBaseAttack() { return baseAttack; }
+    public void UpdateBaseAttack(int changeAmount) { baseAttack += changeAmount; }
     public int attackRange;
-    public void SetAttackRange(int newRange){attackRange = newRange;}
+    public void SetAttackRange(int newRange) { attackRange = newRange; }
     public void SetAttackRangeMax(int newRange)
     {
         attackRange = Mathf.Max(attackRange, newRange);
     }
-    public int GetAttackRange(){return attackRange;}
-    public void UpdateAttackRange(int changeAmount){attackRange += changeAmount;}
+    public int GetAttackRange() { return attackRange; }
+    public void UpdateAttackRange(int changeAmount) { attackRange += changeAmount; }
     public int baseDefense;
-    public void SetBaseDefense(int newDefense){baseDefense = newDefense;}
-    public int GetBaseDefense(){return baseDefense;}
-    public void UpdateBaseDefense(int changeAmount){baseDefense += changeAmount;}
+    public void SetBaseDefense(int newDefense) { baseDefense = newDefense; }
+    public int GetBaseDefense() { return baseDefense; }
+    public void UpdateBaseDefense(int changeAmount) { baseDefense += changeAmount; }
     public int moveSpeed;
-    public void SetMoveSpeed(int newMoveSpeed){moveSpeed = newMoveSpeed;}
+    public void SetMoveSpeed(int newMoveSpeed) { moveSpeed = newMoveSpeed; }
     public void SetMoveSpeedMax(int newMax)
     {
         moveSpeed = Mathf.Max(moveSpeed, newMax);
     }
-    public void UpdateBaseSpeed(int changeAmount){moveSpeed += changeAmount;}
-    public int GetMoveSpeed(){return moveSpeed;}
+    public void UpdateBaseSpeed(int changeAmount) { moveSpeed += changeAmount; }
+    public int GetMoveSpeed() { return moveSpeed; }
     public string moveType;
-    public void SetMoveType(string newMoveType){moveType = newMoveType;}
-    public string GetMoveType(){return moveType;}
+    public void SetMoveType(string newMoveType) { moveType = newMoveType; }
+    public string GetMoveType() { return moveType; }
     public int weight;
-    public void SetWeight(int newWeight){weight = newWeight;}
+    public void SetWeight(int newWeight) { weight = newWeight; }
     public int currentWeight;
-    public void UpdateWeight(int changeAmount){currentWeight += changeAmount;}
-    public int GetWeight(){return currentWeight;}
+    public void UpdateWeight(int changeAmount) { currentWeight += changeAmount; }
+    public int GetWeight() { return currentWeight; }
     public int initiative;
-    public void SetInitiative(int newInitiative){initiative = newInitiative;}
-    public int GetInitiative(){return initiative;}
-    public void ChangeInitiative(int change){initiative += change;}
+    public void SetInitiative(int newInitiative) { initiative = newInitiative; }
+    public int GetInitiative() { return initiative; }
+    public void ChangeInitiative(int change) { initiative += change; }
     public int tempHealth; // Used specifically for end of turn attack buffs.
-    public void ResetTempHealth(){ tempHealth = 0; }
+    public void ResetTempHealth() { tempHealth = 0; }
     public void UpdateTempHealth(int changeAmount) { tempHealth += changeAmount; }
     public int currentHealth;
-    public void SetCurrentHealth(int newHealth){currentHealth = newHealth;}
-    public int GetHealth(){return currentHealth;}
+    public void SetCurrentHealth(int newHealth) { currentHealth = newHealth; }
+    public int GetHealth() { return currentHealth; }
     public void UpdateHealth(int changeAmount, bool decrease = true)
     {
         if (decrease)
@@ -242,29 +242,29 @@ public class ActorStats : ActorPassives
             {
                 int temp = tempHealth;
                 tempHealth -= changeAmount;
-                if (tempHealth < 0){ tempHealth = 0; }
+                if (tempHealth < 0) { tempHealth = 0; }
                 changeAmount -= temp;
             }
-            if (changeAmount < 0){ return; }
+            if (changeAmount < 0) { return; }
             currentHealth -= changeAmount;
         }
         else { currentHealth += changeAmount; }
-        if (currentHealth > GetBaseHealth()){currentHealth = GetBaseHealth();}
+        if (currentHealth > GetBaseHealth()) { currentHealth = GetBaseHealth(); }
     }
-    public void TakeDamage(int damage){UpdateHealth(damage);}
+    public void TakeDamage(int damage) { UpdateHealth(damage); }
     public int currentEnergy;
     public void UpdateEnergy(int changeAmount, bool decrease = false)
     {
-        if (decrease){LoseEnergy(changeAmount);}
-        else {currentEnergy += changeAmount;}
-        if (currentEnergy > GetBaseEnergy()){currentEnergy = GetBaseEnergy();}
+        if (decrease) { LoseEnergy(changeAmount); }
+        else { currentEnergy += changeAmount; }
+        if (currentEnergy > GetBaseEnergy()) { currentEnergy = GetBaseEnergy(); }
     }
     public void LoseEnergy(int amount)
     {
         currentEnergy -= amount;
-        if (currentEnergy < 0){ currentEnergy = 0; }
+        if (currentEnergy < 0) { currentEnergy = 0; }
     }
-    public int GetEnergy(){return currentEnergy;}
+    public int GetEnergy() { return currentEnergy; }
     public bool SpendEnergy(int energyCost)
     {
         if (GetEnergy() >= energyCost)
@@ -275,20 +275,20 @@ public class ActorStats : ActorPassives
         return false;
     }
     public int tempAttack; // Used specifically for end of turn attack buffs.
-    public void ResetTempAttack(){ tempAttack = 0; }
+    public void ResetTempAttack() { tempAttack = 0; }
     public void UpdateTempAttack(int changeAmount) { tempAttack += changeAmount; }
     public int currentAttack;
-    public int GetAttack(){return currentAttack + tempAttack;}
-    public void UpdateAttack(int changeAmount){currentAttack += changeAmount;}
+    public int GetAttack() { return currentAttack + tempAttack; }
+    public void UpdateAttack(int changeAmount) { currentAttack += changeAmount; }
     public int tempDefense; // Used specifically for end of turn attack buffs.
-    public void ResetTempDefense(){ tempDefense = 0; }
+    public void ResetTempDefense() { tempDefense = 0; }
     public void UpdateTempDefense(int changeAmount) { tempDefense += changeAmount; }
     public int currentDefense;
-    public int GetDefense(){return currentDefense + tempDefense;}
-    public void UpdateDefense(int changeAmount){currentDefense += changeAmount;}
+    public int GetDefense() { return currentDefense + tempDefense; }
+    public void UpdateDefense(int changeAmount) { currentDefense += changeAmount; }
     public int currentSpeed;
-    public int GetSpeed(){return currentSpeed;}
-    public void UpdateSpeed(int changeAmount){currentSpeed += changeAmount;}
+    public int GetSpeed() { return currentSpeed; }
+    public void UpdateSpeed(int changeAmount) { currentSpeed += changeAmount; }
     public List<string> activeSkills;
     public void RemoveActiveSkill(int index)
     {
@@ -296,7 +296,7 @@ public class ActorStats : ActorPassives
     }
     public void RemoveRandomActiveSkill()
     {
-        if (activeSkills.Count <= 0){ return; }
+        if (activeSkills.Count <= 0) { return; }
         int index = UnityEngine.Random.Range(0, activeSkills.Count);
         RemoveActiveSkill(index);
     }
@@ -309,7 +309,7 @@ public class ActorStats : ActorPassives
     public List<string> tempActives;
     public void AddTempActive(string skillName)
     {
-        if (skillName.Length <= 1){return;}
+        if (skillName.Length <= 1) { return; }
         tempActives.Add(skillName);
     }
     public int ActiveSkillCount()
@@ -317,7 +317,7 @@ public class ActorStats : ActorPassives
         int count = 0;
         for (int i = 0; i < activeSkills.Count; i++)
         {
-            if (activeSkills[i].Length <= 0){continue;}
+            if (activeSkills[i].Length <= 0) { continue; }
             count++;
         }
         return count;
@@ -325,15 +325,15 @@ public class ActorStats : ActorPassives
     public void SetActiveSkills(List<string> newSkills)
     {
         activeSkills = newSkills;
-        if (activeSkills.Count == 0){return;}
+        if (activeSkills.Count == 0) { return; }
         for (int i = activeSkills.Count - 1; i >= 0; i--)
         {
-            if (activeSkills[i].Length <= 1){activeSkills.RemoveAt(i);}
+            if (activeSkills[i].Length <= 1) { activeSkills.RemoveAt(i); }
         }
     }
     public string GetActiveSkill(int index)
     {
-        if (index < 0 || index >= activeSkills.Count){ return ""; }
+        if (index < 0 || index >= activeSkills.Count) { return ""; }
         return activeSkills[index];
     }
     public List<string> GetActiveSkills()
@@ -349,7 +349,7 @@ public class ActorStats : ActorPassives
     }
     protected string activeSkillDelimiter = "_";
     public List<string> spells;
-    public void ResetSpells(){ spells.Clear(); }
+    public void ResetSpells() { spells.Clear(); }
     public void LearnSpell(string newInfo)
     {
         spells.Add(newInfo);
@@ -388,7 +388,11 @@ public class ActorStats : ActorPassives
         return spells.Count;
     }
     public List<string> statuses;
-    public List<string> GetStatuses(){return statuses;}
+    public List<string> GetStatuses() { return statuses; }
+    public bool StatusExists(string statusName)
+    {
+        return statuses.Contains(statusName);
+    }
     public string curseStatName;
     public void SetCurses(string newInfo)
     {
@@ -429,6 +433,8 @@ public class ActorStats : ActorPassives
     }
     public void AddStatus(string newCondition, int duration)
     {
+        // Don't add blank statuses.
+        if (newCondition.Length <= 0) { return; }
         // Permanent statuses can stack up infinitely and are a win condition.
         if (duration < 0)
         {

@@ -138,6 +138,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if " + specifics + ".";
             case "MentalStateD":
                 return " if " + specifics + ".";
+            case "Status":
+                return " if you have " + specifics + " status.";
+            case "StatusA":
+                return " if you have " + specifics + " status.";
+            case "StatusD":
+                return " if the target has " + specifics + " status.";
         }
         return ".";
     }

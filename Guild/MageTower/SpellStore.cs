@@ -14,6 +14,8 @@ public class SpellStore : MonoBehaviour
     }
     public GeneralUtility utility;
     public PartyDataManager partyData;
+    public StatDatabase spellNamePrices;
+    public StatDatabase spellNameDetails;
     public SpellBook spellBook;
     public CharacterList spellCasterList;
     public TacticActor dummyActor;
@@ -181,7 +183,7 @@ public class SpellStore : MonoBehaviour
     public SpellDetailViewer potentialDetails;
     public void StartUpgradingSpells()
     {
-        if (!OpenSpellSlots()){ return; }
+        if (!OpenSpellSlots()) { return; }
         currentActorSpells = new List<string>(dummyActor.GetSpells());
         upgradeSpellList.SetSelectables(dummyActor.GetSpellNames());
         currentDetails.ResetDetails();
@@ -274,10 +276,6 @@ public class SpellStore : MonoBehaviour
         spellBook.CombineSpells(dummySpell, secondDummySpell, previewBeforeChangingSpell);
         combinedSpellDetails.LoadSpell(previewBeforeChangingSpell);
     }
-    protected void UpdateCombinedSpell()
-    {
-
-    }
     public void StartCombiningSpells()
     {
         if (!OpenSpellSlots()) { return; }
@@ -285,5 +283,13 @@ public class SpellStore : MonoBehaviour
         combineSpell1.SetSelectables(dummyActor.GetSpellNames());
         combineSpell2.SetSelectables(dummyActor.GetSpellNames());
         combinedSpellDetails.ResetDetails();
+    }
+    public void StartLearningSpells()
+    {
+
+    }
+    public void StartRenamingSpells()
+    {
+        
     }
 }

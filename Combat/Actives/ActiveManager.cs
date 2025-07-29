@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -98,6 +99,7 @@ public class ActiveManager : MonoBehaviour
                 targetedTiles.Add(start);
             }
         }
+        targetedTiles = targetedTiles.Distinct().ToList();
         return targetedTiles;
     }
 
