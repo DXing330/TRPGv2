@@ -14,14 +14,16 @@ public class SpellStore : MonoBehaviour
     }
     public GeneralUtility utility;
     public PartyDataManager partyData;
+    public string baseSpellStats;
     public StatDatabase spellNamePrices;
+    public StatDatabase spellNameManaCosts;
     public StatDatabase spellNameDetails;
     public SpellBook spellBook;
     public CharacterList spellCasterList;
     public TacticActor dummyActor;
     public MagicSpell dummySpell;
     public MagicSpell secondDummySpell;
-    public MagicSpell previewBeforeChangingSpell;
+    public MagicSpell previewSpell;
     public List<string> spellComponents;
     public List<int> spellComponentCosts;
     public TMP_Text spellSlots;
@@ -43,6 +45,7 @@ public class SpellStore : MonoBehaviour
     public string tomeString = "Tome";
     public TMP_Text mana;
     public string manaString = "Mana";
+    public int practiceToMasteryIterations = 6;
     public void UpdateCurrency()
     {
         tomes.text = partyData.inventory.ReturnQuantityOfItem(tomeString).ToString();
@@ -163,9 +166,9 @@ public class SpellStore : MonoBehaviour
     public List<int> CalculateUpgradeCost()
     {
         List<int> costs = new List<int>();
-        int baseCost = (int)Mathf.Sqrt(previewBeforeChangingSpell.ReturnManaCost());
+        int baseCost = (int)Mathf.Sqrt(previewSpell.ReturnManaCost());
         costs.Add(baseCost);
-        int manaCost = baseCost * 6;
+        int manaCost = baseCost * practiceToMasteryIterations;
         costs.Add(manaCost);
         return costs;
     }
@@ -175,7 +178,16 @@ public class SpellStore : MonoBehaviour
         spellComponentCosts = CalculateUpgradeCost();
         testMap.LearnSpellChance(spellComponentCosts[0].ToString(), spellComponentCosts[1].ToString());
         testMap.SetActorSpriteName(dummyActor.GetSpriteName());
-        testMap.LoadSpell(previewBeforeChangingSpell.GetSkillInfo());
+        testMap.LoadSpell(previewSpell.GetSkillInfo());
+    }
+    public void PreviewNewSpell()
+    {
+        testMap.ResetAll();
+        string spellName = previewSpell.GetSpellName();
+        int manaCost = int.Parse(spellNameManaCosts.ReturnValue(spellName));
+        testMap.LearnSpellChance(spellNamePrices.ReturnValue(spellName), (manaCost * practiceToMasteryIterations).ToString());
+        testMap.SetActorSpriteName(dummyActor.GetSpriteName());
+        testMap.LoadSpell(previewSpell.GetSkillInfo());
     }
     public SpellUpgradeManager upgradeManager;
     public SelectList upgradeSpellList;
@@ -193,33 +205,33 @@ public class SpellStore : MonoBehaviour
     {
         int index = upgradeSpellList.GetSelected();
         dummySpell.LoadSkillFromString(currentActorSpells[index]);
-        previewBeforeChangingSpell.LoadSkillFromString(currentActorSpells[index]);
+        previewSpell.LoadSkillFromString(currentActorSpells[index]);
         currentDetails.LoadSpell(dummySpell);
-        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+        potentialDetails.LoadSpell(previewSpell);
     }
     public void ChangeSpellRangeShape(bool increase = true)
     {
         if (upgradeSpellList.GetSelected() < 0) { return; }
-        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "RangeShape", increase);
-        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+        upgradeManager.UpgradeSpell(dummySpell, previewSpell, "RangeShape", increase);
+        potentialDetails.LoadSpell(previewSpell);
     }
     public void ChangeSpellRange(bool increase = true)
     {
         if (upgradeSpellList.GetSelected() < 0) { return; }
-        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "Range", increase);
-        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+        upgradeManager.UpgradeSpell(dummySpell, previewSpell, "Range", increase);
+        potentialDetails.LoadSpell(previewSpell);
     }
     public void ChangeSpellEffectShape(bool increase = true)
     {
         if (upgradeSpellList.GetSelected() < 0) { return; }
-        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "EffectShape", increase);
-        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+        upgradeManager.UpgradeSpell(dummySpell, previewSpell, "EffectShape", increase);
+        potentialDetails.LoadSpell(previewSpell);
     }
     public void ChangeSpellSpan(bool increase = true)
     {
         if (upgradeSpellList.GetSelected() < 0) { return; }
-        upgradeManager.UpgradeSpell(dummySpell, previewBeforeChangingSpell, "Span", increase);
-        potentialDetails.LoadSpell(previewBeforeChangingSpell);
+        upgradeManager.UpgradeSpell(dummySpell, previewSpell, "Span", increase);
+        potentialDetails.LoadSpell(previewSpell);
     }
     public void LearnUpgradedSpell()
     {
@@ -233,8 +245,8 @@ public class SpellStore : MonoBehaviour
         }
         partyData.inventory.RemoveMultiItems(spellComponents, spellComponentCosts);
         // Get the spell info.
-        previewBeforeChangingSpell.RefreshSkillInfo();
-        string newSpell = previewBeforeChangingSpell.GetSkillInfo();
+        previewSpell.RefreshSkillInfo();
+        string newSpell = previewSpell.GetSkillInfo();
         // Get the actor from the party data.
         int partyIndex = casterPartyIndexes[selectedCaster];
         // Add the spell to them.
@@ -247,9 +259,22 @@ public class SpellStore : MonoBehaviour
         ResetState();
 
     }
+    public SelectList basicSpellList;
+    public SpellDetailViewer basicSpellDetails;
     public void StartLearningSpells()
     {
         if (!OpenSpellSlots()) { return; }
+        basicSpellList.SetSelectables(spellNamePrices.ReturnAllKeys());
+        basicSpellDetails.ResetDetails();
+    }
+    public void SelectSpellToLearn()
+    {
+        int index = basicSpellList.GetSelected();
+        string spellName = spellNameDetails.ReturnKeyAtIndex(index);
+        string spellInfo = spellName + baseSpellStats + spellNameDetails.ReturnValue(spellName);
+        previewSpell.LoadSkillFromString(spellInfo);
+        previewSpell.SetEnergyCost(spellNameManaCosts.ReturnValue(spellName));
+        basicSpellDetails.LoadSpell(previewSpell);
     }
     public SelectList combineSpell1;
     public void SelectSpellToCombineOne()
@@ -273,8 +298,8 @@ public class SpellStore : MonoBehaviour
         // Get the combined spells.
         dummySpell.LoadSkillFromString(currentActorSpells[combineSpell1.GetSelected()]);
         secondDummySpell.LoadSkillFromString(currentActorSpells[combineSpell2.GetSelected()]);
-        spellBook.CombineSpells(dummySpell, secondDummySpell, previewBeforeChangingSpell);
-        combinedSpellDetails.LoadSpell(previewBeforeChangingSpell);
+        spellBook.CombineSpells(dummySpell, secondDummySpell, previewSpell);
+        combinedSpellDetails.LoadSpell(previewSpell);
     }
     public void StartCombiningSpells()
     {
@@ -283,10 +308,6 @@ public class SpellStore : MonoBehaviour
         combineSpell1.SetSelectables(dummyActor.GetSpellNames());
         combineSpell2.SetSelectables(dummyActor.GetSpellNames());
         combinedSpellDetails.ResetDetails();
-    }
-    public void StartLearningSpells()
-    {
-
     }
     public void StartRenamingSpells()
     {

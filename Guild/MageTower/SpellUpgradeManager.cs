@@ -61,6 +61,7 @@ public class SpellUpgradeManager : MonoBehaviour
         {
             range = originalRange + 1;
         }
+        if (range < 0){ range = 0; }
         return range;
     }
     protected int ChangeSpan(MagicSpell original, MagicSpell potential, bool increase = true)
@@ -84,6 +85,7 @@ public class SpellUpgradeManager : MonoBehaviour
         {
             span = originalSpan + 1;
         }
+        if (span < 0){ span = 0; }
         return span;
     }
 }

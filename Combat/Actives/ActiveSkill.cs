@@ -63,9 +63,19 @@ public class ActiveSkill : SkillEffect
         return "";
     }
     public string energyCost;
+    public void SetEnergyCost(string newInfo)
+    {
+        energyCost = newInfo;
+        RefreshSkillInfo();
+    }
     public int GetEnergyCost()
     {
         return int.Parse(energyCost);
+    }
+    public void AddEnergyCost(int newInfo)
+    {
+        energyCost = (newInfo + GetEnergyCost()).ToString();
+        RefreshSkillInfo();
     }
     public string actionCost;
     public int GetActionCost()

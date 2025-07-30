@@ -59,13 +59,6 @@ public class StatDatabase : ScriptableObject
         return stats;
     }
 
-    public string ReturnValue(string key)
-    {
-        int indexOf = keys.IndexOf(key);
-        if (indexOf < 0){return "";}
-        return values[indexOf];
-    }
-
     public bool KeyExists(string key)
     {
         return keys.Contains(key);
@@ -75,6 +68,27 @@ public class StatDatabase : ScriptableObject
     {
         int index = Random.Range(0, keys.Count);
         return keys[index];
+    }
+
+    public string ReturnKeyAtIndex(int index)
+    {
+        if (index >= 0 && index < keys.Count)
+        {
+            return keys[index];
+        }
+        return "";
+    }
+
+    public List<string> ReturnAllKeys()
+    {
+        return keys;
+    }
+
+    public string ReturnValue(string key)
+    {
+        int indexOf = keys.IndexOf(key);
+        if (indexOf < 0){return "";}
+        return values[indexOf];
     }
 
     public string ReturnRandomValue()

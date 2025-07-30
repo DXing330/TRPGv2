@@ -159,6 +159,7 @@ public class MapUtility : ScriptableObject
             if (nextTile == startTile) { continue; }
             tiles.AddRange(GetTilesInConeShape(nextTile, range, startTile, size));
         }
+        tiles.Add(startTile);
         tiles = tiles.Distinct().ToList();
         return tiles;
     }
