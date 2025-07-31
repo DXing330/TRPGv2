@@ -42,14 +42,16 @@ public class BattleEndManager : MonoBehaviour
             PartyDefeated();
             return;
         }
-        List<string> names = new List<string>();
+        List<string> codeNames = new List<string>();
+        List<string> spriteNames = new List<string>();
         List<string> stats = new List<string>();
         for (int i = 0; i < actors.Count; i++)
         {
-            names.Add(actors[i].GetPersonalName());
+            codeNames.Add(actors[i].GetPersonalName());
+            spriteNames.Add(actors[i].GetSpriteName());
             stats.Add(actors[i].ReturnPersistentStats());
         }
-        partyData.UpdatePartyAfterBattle(names, stats);
+        partyData.UpdatePartyAfterBattle(codeNames, spriteNames, stats);
     }
 
     public void UpdateOverworldAfterBattle(int winningTeam)

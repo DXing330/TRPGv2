@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MasterTestRunner : MonoBehaviour
 {
-    [Header("Test Components")]
+    /*[Header("Test Components")]
     public BattleManagerTester battleManagerTester;
     public PartyDataManagerTester partyDataManagerTester;
     public RequestBoardTester requestBoardTester;
@@ -349,5 +349,5 @@ public class MasterTestRunner : MonoBehaviour
         Debug.Log($"🖥️ Platform: {Application.platform}");
         
         Debug.Log("=== END QUICK CHECK ===");
-    }
+    }*/
 }

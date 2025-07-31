@@ -22,8 +22,16 @@ public class PartyData : SavedData
         Save();
     }
     public List<string> GetNames() { return partyNames; }
+    public string GetNameAtIndex(int index)
+    {
+        return partyNames[index];
+    }
     public List<string> partySpriteNames;
     public List<string> GetSpriteNames() { return partySpriteNames; }
+    public string GetSpriteNameAtIndex(int index)
+    {
+        return partySpriteNames[index];
+    }
     public List<string> partyStats;
     public List<string> GetBaseStats() { return partyStats; }
     public void ChangeBaseStats(string newStats, int index)
@@ -46,6 +54,7 @@ public class PartyData : SavedData
             dummyActor.SetCurses(newCurrentStats[1]);
         }
         partyStats[index] = dummyActor.GetStats();
+        UpdateDefeatedMemberTracker(index);
     }
     public void ClearAllStats()
     {
@@ -256,6 +265,10 @@ public class PartyData : SavedData
         dummyActor.SetStatsFromString(partyStats[index]);
         dummyActor.LearnSpell(newSpell);
         partyStats[index] = dummyActor.GetStats();
+    }
+    public void SetMemberStats(TacticActor newDummy, int index)
+    {
+        partyStats[index] = newDummy.GetStats();
     }
     public bool PartyMemberIncluded(string memberName)
     {

@@ -309,8 +309,36 @@ public class SpellStore : MonoBehaviour
         combineSpell2.SetSelectables(dummyActor.GetSpellNames());
         combinedSpellDetails.ResetDetails();
     }
+    public NameRater nameRater;
+    public SelectList renamingList;
+    public SpellDetailViewer renamingDetails;
     public void StartRenamingSpells()
     {
-        
+        currentActorSpells = new List<string>(dummyActor.GetSpells());
+        renamingList.SetSelectables(dummyActor.GetSpellNames());
+        renamingDetails.ResetDetails();
+    }
+    public void SelectSpellToRename()
+    {
+        dummySpell.LoadSkillFromString(currentActorSpells[renamingList.GetSelected()]);
+        renamingDetails.LoadSpell(dummySpell);
+        nameRater.ResetNewName();
+    }
+    public void RenameSpell()
+    {
+        string newName = nameRater.ConfirmName();
+        // Avoid blank names.
+        if (newName == "") { return; }
+        if (utility.CountCharactersInString(newName) == newName.Length) { return; }
+        dummySpell.SetSpellName(newName);
+        currentActorSpells[renamingList.GetSelected()] = dummySpell.GetSkillInfo();
+        dummyActor.SetSpells(currentActorSpells);
+        // Get the actor from the party data.
+        int partyIndex = casterPartyIndexes[selectedCaster];
+        // Set the dummyActor data to the right slot.
+        partyData.UpdatePartyMember(dummyActor, partyIndex);
+        // Refresh the party.
+        partyData.SetFullParty();
+        StartRenamingSpells();
     }
 }

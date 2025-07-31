@@ -226,6 +226,19 @@ public class GeneralUtility : ScriptableObject
         return count;
     }
 
+    public int CountCharactersInString(string dummyString, char specifics = ' ')
+    {
+        int count = 0;
+        for (int i = 0; i < dummyString.Length; i++)
+        {
+            if (dummyString[i] == specifics)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public int SafeParseInt(string intString, int defaultValue = 0)
     {
         try

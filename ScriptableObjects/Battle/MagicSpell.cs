@@ -16,6 +16,11 @@ public class MagicSpell : ActiveSkill
         return ((int) Mathf.Sqrt(totalTiles))*GetEnergyCost();
     }
     public string effectDelimiter = "?";
+    public void SetSpellName(string newInfo)
+    {
+        skillType = newInfo;
+        RefreshSkillInfo();
+    }
     public string GetSpellName()
     {
         return skillType;
