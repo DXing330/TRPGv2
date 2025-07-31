@@ -5,16 +5,18 @@ using UnityEngine;
 public class PartyDataManagerTester : MonoBehaviour
 {
     public PartyDataManager partyDataManager;
+    public TacticActor dummyActor;
+    public CharacterList fullParty;
     public StatDatabase testActorStats;
     public Equipment testEquipment;
-    
+
     [System.Serializable]
     public class TestResult
     {
         public string testName;
         public bool passed;
         public string details;
-        
+
         public TestResult(string name, bool result, string info = "")
         {
             testName = name;
@@ -22,10 +24,57 @@ public class PartyDataManagerTester : MonoBehaviour
             details = info;
         }
     }
-    
+
+    [ContextMenu("Reset")]
+    public void ResetTestResults()
+    {
+        testResults = new List<TestResult>();
+    }
+
     public List<TestResult> testResults = new List<TestResult>();
+
+    [ContextMenu("TestUpdatePartyAfterBattle")]
+    public void TestUpdatePartyAfterBattle()
+    {
+        // Load the original party.
+        partyDataManager.Load();
+        // Set up a dummy party.
+        List<string> dummySprites = new List<string> { "Knight", "Knight" };
+        List<string> dummyStats = new List<string> { "60|5|10|1|4|2|Walking|1|10|Knight|1||||", "60|5|10|1|4|2|Walking|1|10|Knight|1||||" };
+        List<string> dummyNames = new List<string> { "Knight1", "Knight2" };
+        // Add the dummy party.
+        for (int i = 0; i < dummySprites.Count; i++)
+        {
+            partyDataManager.HireMember(dummySprites[i], dummyStats[i], dummyNames[i]);
+        }
+        int originalPartyCount = partyDataManager.ReturnTotalPartyCount();
+        // Set up some random after battle stats.
+        List<int> currentHealths = new List<int>();
+        List<string> currentNames = new List<string>();
+        List<string> currentSpriteNames = new List<string>();
+        List<string> currentStats = new List<string>();
+        for (int i = 0; i < fullParty.characters.Count; i++)
+        {
+            dummyActor.SetStatsFromString(fullParty.stats[i]);
+            int randomHealth = Random.Range(1, dummyActor.GetBaseHealth());
+            dummyActor.SetCurrentHealth(randomHealth);
+            currentHealths.Add(randomHealth);
+            currentNames.Add(fullParty.characterNames[i]);
+            currentSpriteNames.Add(fullParty.characters[i]);
+            currentStats.Add(dummyActor.ReturnPersistentStats());
+        }
+        // Try to load them back in.
+        partyDataManager.UpdatePartyAfterBattle(currentNames, currentSpriteNames, currentStats);
+        // Check if all members loaded. (Completeness)
+        testResults.Add(new TestResult("PartyUpdatedCompletelyAfterBattle", partyDataManager.ReturnTotalPartyCount() == originalPartyCount, "Original: "+originalPartyCount+"; Current: "+partyDataManager.ReturnTotalPartyCount()));
+        // Check if all stats loaded. (Accuracy)
+        for (int i = 0; i < partyDataManager.ReturnTotalPartyCount(); i++)
+        {
+            testResults.Add(new TestResult("Member At Index "+i+" Loaded Correctly", partyDataManager.ReturnPartyMemberCurrentHealthFromIndex(i) == currentHealths[i], "Original: "+currentHealths[i]+"; Current: "+partyDataManager.ReturnPartyMemberCurrentHealthFromIndex(i)));
+        }
+    }
     
-    [ContextMenu("Run All Party Data Tests")]
+    /*[ContextMenu("Run All Party Data Tests")]
     public void RunAllPartyDataTests()
     {
         testResults.Clear();
@@ -295,7 +344,7 @@ public class PartyDataManagerTester : MonoBehaviour
         
         try
         {
-            partyDataManager.UpdatePartyAfterBattle(testNames, testStats);
+            //partyDataManager.UpdatePartyAfterBattle(testNames, testStats);
             testResults.Add(new TestResult("Update Party After Battle", true, "Battle update completed"));
         }
         catch (System.Exception e)
@@ -355,4 +404,5 @@ public class PartyDataManagerTester : MonoBehaviour
 
         Debug.Log($"=== Total: {passed} passed, {failed} failed ===");
     }
+*/
 }

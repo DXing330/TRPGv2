@@ -138,9 +138,9 @@ public class PartyDataManager : MonoBehaviour
         return mainPartyData.PartyCount() < guildCard.GetGuildRank() + 2;
     }
 
-    public void HireMember(string name, string stats, string personalName, string fee)
+    public void HireMember(string spriteName, string stats, string personalName)
     {
-        mainPartyData.AddMember(name, stats, personalName);
+        mainPartyData.AddMember(spriteName, stats, personalName);
         SetFullParty();
     }
 
@@ -186,7 +186,6 @@ public class PartyDataManager : MonoBehaviour
     {
         int permanentCount = permanentPartyData.PartyCount();
         int mainCount = mainPartyData.PartyCount();
-        int tempCount = tempPartyData.PartyCount();
         if (selected < permanentCount)
         {
             return permanentPartyData.partyEquipment[selected];
@@ -201,9 +200,36 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public int ReturnPartyMemberCurrentHealthFromIndex(int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            return permanentPartyData.GetCurrentHealthAtIndex(selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            return mainPartyData.GetCurrentHealthAtIndex(selected - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.GetCurrentHealthAtIndex(selected - permanentCount - mainCount);
+        }
+    }
+
     public string ReturnMainPartyEquipment(int selected)
     {
         return mainPartyData.partyEquipment[selected];
+    }
+
+    public int ReturnTotalPartyCount()
+    {
+        int count = 0;
+        count += permanentPartyData.PartyCount();
+        count += mainPartyData.PartyCount();
+        count += tempPartyData.PartyCount();
+        return count;
     }
 
     public void AddSpellToPartyMember(string newInfo, int selected)
@@ -225,6 +251,25 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public void UpdatePartyMember(TacticActor dummyActor, int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            permanentPartyData.SetMemberStats(dummyActor, selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            mainPartyData.SetMemberStats(dummyActor, selected - permanentCount);
+        }
+        else
+        {
+            tempPartyData.SetMemberStats(dummyActor, selected - permanentCount - mainCount);
+        }
+    }
+
     public void HealParty()
     {
         permanentPartyData.ResetCurrentStats();
@@ -233,42 +278,129 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
-    public void UpdatePartyAfterBattle(List<string> names, List<string> stats)
+    public void UpdatePartyAfterBattle(List<string> codeNames, List<string> spriteNames, List<string> stats)
     {
         for (int i = 0; i < allParties.Count; i++)
         {
             // Assume everyone dies at the end of every battle.
             allParties[i].ResetDefeatedMemberTracker();
         }
-        int partyIndex = -1;
-        int memberIndex = -1;
-        for (int i = 0; i < names.Count; i++)
+        // Match each code/spritename to an index.
+        List<int> allIndices = new List<int>();
+        // Remove the index after it have been taken.
+        List<int> allPossibleIndices = new List<int>();
+        for (int i = 0; i < ReturnTotalPartyCount(); i++)
         {
-            partyIndex = -1;
-            memberIndex = -1;
-            // Check which party they are in.
-            for (int j = 0; j < allParties.Count; j++)
+            allIndices.Add(-1);
+            allPossibleIndices.Add(i);
+        }
+        // TODO: fix this in case some members have the same code name.
+        // Issue if some members have both the same sprite and code name.
+        // Need a mapping from stats to partyIndices.
+        for (int i = 0; i < codeNames.Count; i++)
+        {
+            for (int j = allPossibleIndices.Count - 1; j >= 0; j--)
             {
-                memberIndex = allParties[j].PartyMemberIndex(names[i]);
-                if (memberIndex >= 0)
+                if (MatchCodeAndSpriteName(codeNames[i], spriteNames[i], allPossibleIndices[j]))
                 {
-                    partyIndex = j;
-                    // If they are alive then don't remove them.
-                    allParties[j].UpdateDefeatedMemberTracker(memberIndex);
+                    allIndices[i] = allPossibleIndices[j];
+                    allPossibleIndices.RemoveAt(j);
                     break;
                 }
             }
-            // Update their health if applicable.
-            if (partyIndex >= 0)
-            {
-                allParties[partyIndex].SetCurrentStats(stats[i], memberIndex);
-            }
+        }
+        for (int i = 0; i < codeNames.Count; i++)
+        {
+            UpdatePartyMemberAfterBattle(stats[i], allIndices[i]);
         }
         // Permanent Parties Members Survive With 1 HP, Main Character Power.
         permanentPartyData.ReviveDefeatedMembers();
         mainPartyData.RemoveDefeatedMembers();
         tempPartyData.RemoveDefeatedMembers();
         SetFullParty();
+    }
+
+    protected string CodeNameAtIndex(int index)
+    {
+        if (index < 0){ return ""; }
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (index < permanentCount)
+        {
+            return permanentPartyData.GetNameAtIndex(index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            return mainPartyData.GetNameAtIndex(index - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.GetNameAtIndex(index - permanentCount - mainCount);
+        }
+    }
+
+    protected string SpriteNameAtIndex(int index)
+    {
+        if (index < 0){ return ""; }
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (index < permanentCount)
+        {
+            return permanentPartyData.GetSpriteNameAtIndex(index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            return mainPartyData.GetSpriteNameAtIndex(index - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.GetSpriteNameAtIndex(index - permanentCount - mainCount);
+        }
+    }
+
+    protected bool MatchCodeAndSpriteName(string codeName, string spriteName, int index)
+    {
+        if (index < 0) { return false; }
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        string testCodeName = "";
+        string testSpriteName = "";
+        if (index < permanentCount)
+        {
+            testCodeName = permanentPartyData.GetNameAtIndex(index);
+            testSpriteName = permanentPartyData.GetSpriteNameAtIndex(index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            testCodeName = mainPartyData.GetNameAtIndex(index - permanentCount);
+            testSpriteName = mainPartyData.GetSpriteNameAtIndex(index - permanentCount);
+        }
+        else
+        {
+            testCodeName = tempPartyData.GetNameAtIndex(index - permanentCount - mainCount);
+            testSpriteName = tempPartyData.GetSpriteNameAtIndex(index - permanentCount - mainCount);
+        }
+        return (testCodeName == codeName && testSpriteName == spriteName);
+    }
+
+    protected void UpdatePartyMemberAfterBattle(string stats, int index)
+    {
+        if (index < 0){ return; }
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (index < permanentCount)
+        {
+            permanentPartyData.SetCurrentStats(stats, index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            mainPartyData.SetCurrentStats(stats, index - permanentCount);
+        }
+        else
+        {
+            tempPartyData.SetCurrentStats(stats, index - permanentCount - mainCount);
+        }
     }
 
     public void PartyDefeated()
