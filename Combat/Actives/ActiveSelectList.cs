@@ -66,9 +66,9 @@ public class ActiveSelectList : SelectList
         if (!activeManager.CheckSkillCost())
         {
             // Show an error message instead of just returning?
-            if (!activeManager.CheckActionCost()) { errorText.text = errorMessages[0]; }
-            else { errorText.text = errorMessages[1]; }
-            ErrorMessage();
+            if (!activeManager.CheckActionCost()) { ErrorMessage(errorMessages[0]); }
+            else { ErrorMessage(errorMessages[1]); }
+            ResetState();
             return;
         }
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
@@ -81,15 +81,13 @@ public class ActiveSelectList : SelectList
     {
         IncrementState();
         // Show the spell by name.
-        activeManager.SetSpell(selected);
+        activeManager.SetSpell(battle.GetTurnActor().GetSpells()[selectedIndex]);
         UpdateSelectedText(activeManager.magicSpell.GetSkillType());
-        Debug.Log(selected);
-        Debug.Log(activeManager.magicSpell.GetSkillType());
-        if (!activeManager.CheckSpellCost())
+        if (!activeManager.CheckSpellCost(inventory))
         {
             // Show an error message instead of just returning?
-            errorText.text = "Not enough resources.";
-            ErrorMessage();
+            ErrorMessage("Not enough mana.");
+            ResetState();
             return;
         }
         activeDescription.text = descriptionViewer.ReturnSpellDescription(activeManager.magicSpell);
@@ -121,7 +119,6 @@ public class ActiveSelectList : SelectList
     public void ResetState()
     {
         SetState(0);
-        ErrorMessage(false);
     }
 
     public void StartSelecting()
@@ -149,7 +146,7 @@ public class ActiveSelectList : SelectList
     {
         if (battle.GetTurnActor().SpellCount() <= 0 || battle.GetTurnActor().GetActions() <= 0) { return; }
         IncrementState();
-        SetSelectables(battle.GetTurnActor().GetSpells());
+        SetSelectables(battle.GetTurnActor().GetSpellNames());
         activeManager.SetSkillUser(battle.GetTurnActor());
         activeManager.ResetTargetedTiles();
         StartingPage();
@@ -160,8 +157,8 @@ public class ActiveSelectList : SelectList
         // Don't do anything unless a target has been selected.
         if (!activeManager.ExistTargetedTiles())
         {
-            errorText.text = errorMessages[2];
-            ErrorMessage();
+            ErrorMessage(errorMessages[2]);
+            ResetState();
             return;
         }
         // Its a spell then do something a little different
@@ -184,6 +181,7 @@ public class ActiveSelectList : SelectList
 
     public void ActivateSpell()
     {
+        inventory.RemoveItemQuantity(activeManager.magicSpell.ReturnManaCost(), "Mana");
         battle.ActivateSpell();
         activeManager.ActivateSpell(battle);
     }

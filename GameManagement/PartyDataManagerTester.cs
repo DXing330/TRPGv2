@@ -77,7 +77,7 @@ public class PartyDataManagerTester : MonoBehaviour
     /*[ContextMenu("Run All Party Data Tests")]
     public void RunAllPartyDataTests()
     {
-        testResults.Clear();
+        ResetTestResults();
         Debug.Log("=== Running Party Data Manager Tests ===");
         
         TestPartyInitialization();

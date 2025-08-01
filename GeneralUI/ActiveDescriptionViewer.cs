@@ -18,6 +18,9 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 fullDetails += "\n";
             }
         }
+        fullDetails += "\n" + "Action Cost: " + spell.GetActionCost();
+        //+"; Actions Left: " +activeSkill;
+        fullDetails += "\n"+"Mana Cost: "+spell.ReturnManaCost();
         return fullDetails;
     }
     public string ReturnActiveDescription(ActiveSkill activeSkill)

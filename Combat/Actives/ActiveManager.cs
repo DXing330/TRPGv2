@@ -324,13 +324,13 @@ public class ActiveManager : MonoBehaviour
         return (CheckActionCost() && CheckEnergyCost());
     }
 
-    public bool CheckSpellCost()
+    public bool CheckSpellCost(Inventory inventory)
     {
         // Need to check mana in addition to energy and actions.
         bool actions = skillUser.GetActions() >= magicSpell.GetActionCost();
-        bool energy = skillUser.GetEnergy() >= magicSpell.GetEnergyCost();
         // bool mana = ???
-        return (actions && energy);
+        bool mana = inventory.QuantityExists(magicSpell.ReturnManaCost(), "Mana");
+        return (actions && mana);
     }
 
     public bool CheckActionCost()

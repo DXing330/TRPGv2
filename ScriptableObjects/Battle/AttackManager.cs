@@ -34,7 +34,7 @@ public class AttackManager : ScriptableObject
         }
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         defender.SetTarget(attacker);
-        map.combatLog.UpdateNewestLog(defender.GetSpriteName() + " takes " + baseDamage + " damage.");
+        map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         defender.TakeDamage(baseDamage);
     }
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1)
@@ -63,7 +63,7 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation += baseDamage;
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
-        map.combatLog.UpdateNewestLog(defender.GetSpriteName() + " takes " + baseDamage + " damage.");
+        map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);

@@ -15,9 +15,11 @@ public class SelectList : MonoBehaviour
     {
         utility.SetTextSizes(textList, textSize);
     }
-    public GameObject errorMsgPanel;
-    public void ErrorMessage(bool show = true){errorMsgPanel.SetActive(show);}
-    public TMP_Text errorText;
+    public PopUpMessage errorMsgPanel;
+    public void ErrorMessage(string message)
+    {
+        errorMsgPanel.SetMessage(message);
+    }
     public List<string> errorMessages;
     public List<string> selectable;
     public int selectedIndex = -1;

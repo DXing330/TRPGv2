@@ -232,6 +232,26 @@ public class PartyDataManager : MonoBehaviour
         return count;
     }
 
+    public void RenamePartyMember(string newInfo, int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            permanentPartyData.ChangeName(newInfo, selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            mainPartyData.ChangeName(newInfo, selected - permanentCount);
+        }
+        else
+        {
+            tempPartyData.ChangeName(newInfo, selected - permanentCount - mainCount);
+        }
+        SetFullParty();
+    }
+
     public void AddSpellToPartyMember(string newInfo, int selected)
     {
         int permanentCount = permanentPartyData.PartyCount();

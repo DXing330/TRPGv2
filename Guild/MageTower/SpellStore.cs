@@ -272,6 +272,7 @@ public class SpellStore : MonoBehaviour
         int index = basicSpellList.GetSelected();
         string spellName = spellNameDetails.ReturnKeyAtIndex(index);
         string spellInfo = spellName + baseSpellStats + spellNameDetails.ReturnValue(spellName);
+        Debug.Log(spellInfo);
         previewSpell.LoadSkillFromString(spellInfo);
         previewSpell.SetEnergyCost(spellNameManaCosts.ReturnValue(spellName));
         basicSpellDetails.LoadSpell(previewSpell);
