@@ -111,4 +111,9 @@ public class ActorSpriteHPList : MonoBehaviour
     {
         return actorData[selectedIndex];
     }
+
+    public string GetSelectedName()
+    {
+        return actorNames[selectedIndex];
+    }
 }

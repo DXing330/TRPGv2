@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HexMapAdjustor : MonoBehaviour
 {
+    public Sprite defaultSprite;
     public int gridSize = 9;
     public List<RectTransform> hexTiles;
     public List<MapTile> mapTiles;
@@ -32,6 +34,7 @@ public class HexMapAdjustor : MonoBehaviour
                 }
                 hexTiles[tileIndex].pivot = new Vector2(xPivot, yPivot);
                 mapTiles[tileIndex].SetTileNumber(tileIndex);
+                mapTiles[tileIndex].UpdateLayerSprite(defaultSprite);
                 mapTiles[tileIndex].UpdateText(tileIndex.ToString());
                 //tiles[tileIndex].SetTileText("("+GetHexQ(tileIndex)+","+GetHexR(tileIndex)+","+GetHexS(tileIndex)+")");
                 tileIndex++;

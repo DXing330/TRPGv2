@@ -11,6 +11,16 @@ public class MapUtility : ScriptableObject
         return (Mathf.Abs(GetHexQ(tileOne, size) - GetHexQ(tileTwo, size)) + Mathf.Abs(GetHexR(tileOne, size) - GetHexR(tileTwo, size)) + Mathf.Abs(GetHexS(tileOne, size) - GetHexS(tileTwo, size))) / 2;
     }
 
+    public int HorizontalDistanceBetweenTiles(int tileOne, int tileTwo, int size)
+    {
+        return GetColumn(tileTwo, size) - GetColumn(tileOne, size);
+    }
+
+    public int VerticalDistanceBetweenTiles(int tileOne, int tileTwo, int size)
+    {
+        return GetRow(tileTwo, size) - GetRow(tileOne, size);
+    }
+
     public int ReturnTileNumberFromRowCol(int row, int col, int size)
     {
         // Out of bounds.
@@ -19,6 +29,18 @@ public class MapUtility : ScriptableObject
             return -1;
         }
         return (row * size) + col;
+    }
+
+    public int RandomTileInColumn(int col, int size)
+    {
+        int row = Random.Range(0, size);
+        return ReturnTileNumberFromRowCol(row, col, size);
+    }
+
+    public int RandomTileInRow(int row, int size)
+    {
+        int col = Random.Range(0, size);
+        return ReturnTileNumberFromRowCol(row, col, size);
     }
 
     public int GetRow(int tile, int size)
@@ -277,15 +299,15 @@ public class MapUtility : ScriptableObject
 
     public int RandomPointLeft(int location, int size)
     {
-        int leftUp = PointInDirection(location, 5, size);
-        int leftDown = PointInDirection(location, 4, size);
+        int up = PointInDirection(location, 5, size);
+        int down = PointInDirection(location, 4, size);
         // No points.
-        if (leftUp < 0 && leftDown < 0) { return location; }
-        if (leftUp >= 0 && leftDown < 0) { return leftUp; }
-        if (leftUp < 0 && leftDown >= 0) { return leftDown; }
+        if (up < 0 && down < 0) { return location; }
+        if (up >= 0 && down < 0) { return up; }
+        if (up < 0 && down >= 0) { return down; }
         int choice = Random.Range(0, 2);
-        if (choice == 0) { return leftUp; }
-        return leftDown;
+        if (choice == 0) { return up; }
+        return down;
     }
 
     public int RandomPointRight(int location, int size)

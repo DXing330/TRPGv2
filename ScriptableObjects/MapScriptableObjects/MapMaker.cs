@@ -7,7 +7,7 @@ public class MapMaker : ScriptableObject
 {
     public MapUtility mapUtility;
     public SpriteContainer possibleSprites;
-    public void SetPossibleSprites(SpriteContainer newSprites){possibleSprites = newSprites;}
+    public void SetPossibleSprites(SpriteContainer newSprites) { possibleSprites = newSprites; }
     public List<string> possibleTiles;
     protected int defaultSize = 36;
     public int mapSize = 36;
@@ -17,15 +17,15 @@ public class MapMaker : ScriptableObject
     public List<string> MakeRandomMap(int newSize = -1)
     {
         UpdatePossibleTiles();
-        if (newSize > 0){mapSize = newSize;}
-        else {mapSize = defaultSize;}
+        if (newSize > 0) { mapSize = newSize; }
+        else { mapSize = defaultSize; }
         List<string> mapTiles = new List<string>();
         // Add a bunch of tiles.
         for (int i = 0; i < mapSize; i++)
         {
             for (int j = 0; j < mapSize; j++)
             {
-                mapTiles.Add(possibleTiles[Random.Range(0,possibleTiles.Count)]);
+                mapTiles.Add(possibleTiles[Random.Range(0, possibleTiles.Count)]);
             }
         }
         return mapTiles;
@@ -43,10 +43,10 @@ public class MapMaker : ScriptableObject
     public List<string> MakeBasicMap(int newSize = -1, string baseTerrain = "")
     {
         UpdatePossibleTiles();
-        if (newSize > 0){mapSize = newSize;}
-        else {mapSize = defaultSize;}
+        if (newSize > 0) { mapSize = newSize; }
+        else { mapSize = defaultSize; }
         List<string> mapTiles = new List<string>();
-        if (baseTerrain == ""){ baseTerrain = possibleTiles[0]; }
+        if (baseTerrain == "") { baseTerrain = possibleTiles[0]; }
         // Add a bunch of tiles.
         for (int i = 0; i < mapSize; i++)
         {
@@ -63,20 +63,20 @@ public class MapMaker : ScriptableObject
         switch (pattern)
         {
             case "River":
-            return AddRiver(originalMap, featureType, patternSpecifics);
+                return AddRiver(originalMap, featureType, patternSpecifics);
             case "Forest":
-            return AddForest(originalMap, featureType, patternSpecifics);
+                return AddForest(originalMap, featureType, patternSpecifics);
             case "Wall":
-            return AddWall(originalMap, featureType, patternSpecifics);
+                return AddWall(originalMap, featureType, patternSpecifics);
             case "Border":
-            return AddBorder(originalMap, featureType, patternSpecifics);
+                return AddBorder(originalMap, featureType, patternSpecifics);
         }
         return originalMap;
     }
 
     protected List<string> AddForest(List<string> originalMap, string featureType, string specifics)
     {
-        int startTile = (Random.Range(1, mapSize-1)*mapSize)+Random.Range(1, mapSize-1);
+        int startTile = (Random.Range(1, mapSize - 1) * mapSize) + Random.Range(1, mapSize - 1);
         List<int> allTiles = mapUtility.AdjacentTiles(startTile, mapSize);
         allTiles.Add(startTile);
         for (int i = 0; i < allTiles.Count; i++)
@@ -90,13 +90,13 @@ public class MapMaker : ScriptableObject
     protected List<string> AddRiver(List<string> originalMap, string featureType, string specifics)
     {
         // Pick a starting point.
-        int currentPoint = Random.Range(1, mapSize-1) * mapSize;
+        int currentPoint = Random.Range(1, mapSize - 1) * mapSize;
         int newPoint = -1;
         for (int i = 0; i < mapSize; i++)
         {
             originalMap[currentPoint] = featureType;
             newPoint = mapUtility.RandomPointRight(currentPoint, mapSize);
-            if (newPoint == currentPoint){break;}
+            if (newPoint == currentPoint) { break; }
             currentPoint = newPoint;
         }
         return originalMap;
@@ -107,11 +107,11 @@ public class MapMaker : ScriptableObject
     {
         int currentPoint = Random.Range(1, mapSize - 1);
         int newPoint = -1;
-        for (int i = 0; i < 2*mapSize; i++)
+        for (int i = 0; i < 2 * mapSize; i++)
         {
             originalMap[currentPoint] = featureType;
             newPoint = mapUtility.RandomPointDown(currentPoint, mapSize);
-            if (newPoint == currentPoint){break;}
+            if (newPoint == currentPoint) { break; }
             currentPoint = newPoint;
         }
         return originalMap;
@@ -123,29 +123,109 @@ public class MapMaker : ScriptableObject
         int currentPoint = 0;
         originalMap[currentPoint] = featureType;
         // Top
-        for (int i = 0; i < mapSize-1; i++)
+        for (int i = 0; i < mapSize - 1; i++)
         {
             currentPoint++;
             originalMap[currentPoint] = featureType;
         }
         // Right
-        for (int i = 0; i < mapSize-1; i++)
+        for (int i = 0; i < mapSize - 1; i++)
         {
             currentPoint += mapSize;
             originalMap[currentPoint] = featureType;
         }
         // Bottom
-        for (int i = 0; i < mapSize-1; i++)
+        for (int i = 0; i < mapSize - 1; i++)
         {
             currentPoint--;
             originalMap[currentPoint] = featureType;
         }
         // Left
-        for (int i = 0; i < mapSize-1; i++)
+        for (int i = 0; i < mapSize - 1; i++)
         {
             currentPoint -= mapSize;
             originalMap[currentPoint] = featureType;
         }
         return originalMap;
+    }
+
+    public List<int> CreatePath(int startPoint, int endPoint, int size, bool right = true)
+    {
+        List<int> path = new List<int>();
+        path.Add(startPoint);
+        // Get the horizontal/vertical distance between the points.
+        int horiDist = size - 1;//Mathf.Abs(mapUtility.HorizontalDistanceBetweenTiles(startPoint, endPoint, size));
+        int vertDist = mapUtility.VerticalDistanceBetweenTiles(startPoint, endPoint, size);
+        int nextPoint = startPoint;
+        for (int i = horiDist - 1; i >= 0; i--)
+        {
+            // Make sure you don't go too far up or down.
+            // Check if your verticality is too much.
+            vertDist = mapUtility.VerticalDistanceBetweenTiles(startPoint, endPoint, size);
+            if (Mathf.Abs(vertDist) > i / 2)
+            {
+                if (vertDist < 0)
+                {
+                    // Go up.
+                    if (right)
+                    {
+                        nextPoint = mapUtility.PointInDirection(nextPoint, 1, size);
+                    }
+                    else
+                    {
+                        nextPoint = mapUtility.PointInDirection(nextPoint, 5, size);
+                    }
+                }
+                else if (vertDist > 0)
+                {
+                    // Go down.
+                    if (right)
+                    {
+                        nextPoint = mapUtility.PointInDirection(nextPoint, 2, size);
+                    }
+                    else
+                    {
+                        nextPoint = mapUtility.PointInDirection(nextPoint, 4, size);
+                    }
+                }
+                else
+                {
+                    if (right)
+                    {
+                        nextPoint = mapUtility.RandomPointRight(nextPoint, size);
+                    }
+                    else
+                    {
+                        nextPoint = mapUtility.RandomPointLeft(nextPoint, size);
+                    }
+                }
+            }
+            else
+            {
+                // If not too far then distance go rightup or rightdown.
+                if (right)
+                {
+                    nextPoint = mapUtility.RandomPointRight(nextPoint, size);
+                }
+                else
+                {
+                    nextPoint = mapUtility.RandomPointLeft(nextPoint, size);
+                }
+            }
+            if (nextPoint < 0)
+            {
+                if (right)
+                {
+                    nextPoint = mapUtility.RandomPointRight(nextPoint, size);
+                }
+                else
+                {
+                    nextPoint = mapUtility.RandomPointLeft(nextPoint, size);
+                }
+            }
+            path.Add(nextPoint);
+        }
+        path.Add(endPoint);
+        return path;
     }
 }

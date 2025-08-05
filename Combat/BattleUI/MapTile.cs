@@ -26,13 +26,26 @@ public class MapTile : MonoBehaviour
         }
     }
 
+    public void EnableLayer(int layer = 0)
+    {
+        layerObjects[layer].SetActive(true);
+    }
+
+    public void EnableLayers()
+    {
+        for (int i = 0; i < layers.Count; i++)
+        {
+            layerObjects[i].SetActive(true);
+        }
+    }
+
     public void UpdateDirectionArrow(string direction)
     {
         for (int i = 0; i < directionObjects.Count; i++)
         {
             directionObjects[i].SetActive(false);
         }
-        if (direction == ""){return;}
+        if (direction == "") { return; }
         int dirInt = int.Parse(direction);
         if (dirInt >= 0 && dirInt < directionObjects.Count)
         {

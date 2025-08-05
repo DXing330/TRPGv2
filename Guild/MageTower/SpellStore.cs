@@ -110,6 +110,7 @@ public class SpellStore : MonoBehaviour
     {
         selectedCaster = partyCasters.GetSelected();
         dummyActor.SetStatsFromString(partyCasters.GetSelectedData());
+        dummyActor.SetPersonalName(partyCasters.GetSelectedName());
         spellStoreOptionsObject.SetActive(true);
         casterSpriteAndName.ShowActorInfo(dummyActor);
         UpdateSpellSlots();
