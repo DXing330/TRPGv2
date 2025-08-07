@@ -35,7 +35,7 @@ public class HexMapAdjustor : MonoBehaviour
                 hexTiles[tileIndex].pivot = new Vector2(xPivot, yPivot);
                 mapTiles[tileIndex].SetTileNumber(tileIndex);
                 mapTiles[tileIndex].UpdateLayerSprite(defaultSprite);
-                mapTiles[tileIndex].UpdateText(tileIndex.ToString());
+                //mapTiles[tileIndex].UpdateText(tileIndex.ToString());
                 //tiles[tileIndex].SetTileText("("+GetHexQ(tileIndex)+","+GetHexR(tileIndex)+","+GetHexS(tileIndex)+")");
                 tileIndex++;
                 xPivot += 1f/(gridSize - 1);

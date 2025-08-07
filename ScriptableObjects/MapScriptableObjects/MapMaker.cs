@@ -157,7 +157,7 @@ public class MapMaker : ScriptableObject
         int horiDist = size - 1;//Mathf.Abs(mapUtility.HorizontalDistanceBetweenTiles(startPoint, endPoint, size));
         int vertDist = mapUtility.VerticalDistanceBetweenTiles(startPoint, endPoint, size);
         int nextPoint = startPoint;
-        for (int i = horiDist - 1; i >= 0; i--)
+        for (int i = horiDist - 1; i >= 1; i--)
         {
             // Make sure you don't go too far up or down.
             // Check if your verticality is too much.
@@ -223,7 +223,17 @@ public class MapMaker : ScriptableObject
                     nextPoint = mapUtility.RandomPointLeft(nextPoint, size);
                 }
             }
+            // Make sure the next point is adjacent to the previous point or restart.
+            if (mapUtility.DistanceBetweenTiles(nextPoint, path[path.Count - 1], size) > 1)
+            {
+                return CreatePath(startPoint, endPoint, size, right);
+            }
             path.Add(nextPoint);
+        }
+        // Make sure the end point is adjacent to the next point or restart.
+        if (mapUtility.DistanceBetweenTiles(nextPoint, endPoint, size) > 1)
+        {
+            return CreatePath(startPoint, endPoint, size, right);
         }
         path.Add(endPoint);
         return path;

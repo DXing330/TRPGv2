@@ -14,12 +14,17 @@ public class MapManager : MonoBehaviour
     {
         for (int i = 0; i < mapTiles.Count; i++)
         {
+            mapTiles[i].UpdateText();
             mapTiles[i].DisableLayers();
         }
     }
     public List<int> currentTiles;
-    [System.NonSerialized]
     public List<string> mapInfo;
+    public virtual void InitializeMapInfo()
+    {
+        InitializeEmptyList();
+        mapInfo = new List<string>(emptyList);
+    }
     public void SwitchTile(int tile1, int tile2)
     {
         string temp = mapInfo[tile1];
