@@ -6,7 +6,7 @@ public class StSLikeMap : MapManager
 {
     protected override void Start()
     {
-        ResetPartyLocation();
+        UpdateMap();
     }
     public override void UpdateMap()
     {
@@ -26,7 +26,28 @@ public class StSLikeMap : MapManager
     }
     public List<string> nonRepeatableTileTypes;
     // Store and load the data as needed.
-    // public SavedData savedData;
+    public StSState savedState;
+    public void ResetAll()
+    {
+        ResetPartyLocation();
+        ResetAllLayers();
+        ResetHighlights();
+        InitializeMapInfo();
+    }
+    public void SaveState()
+    {
+        savedState.SetDataFromMap(this);
+    }
+    public void LoadState()
+    {
+        ResetAll();
+        savedState.Load();
+        mapInfo = new List<string>(savedState.mapInfo);
+        partyPathing = new List<int>(savedState.partyPathing);
+        partyLocation = partyPathing[partyPathing.Count - 1];
+        UpdateMap();
+        UpdateHighlights(partyPathing);
+    }
     // The party can only move to adjacent right tiles unless a relic/effect says otherwise.
     public int partyLocation = -1;
     public List<int> partyPathing;
@@ -48,7 +69,6 @@ public class StSLikeMap : MapManager
     }
     public override void ClickOnTile(int tileNumber)
     {
-        Debug.Log(tileNumber);
         if (partyLocation < 0)
         {
             // At the start, you can only move into the first column.
@@ -75,9 +95,15 @@ public class StSLikeMap : MapManager
         // Update the highlights.
         UpdateHighlights(partyPathing);
     }
+    public void ResetHighlights()
+    {
+        if (emptyList == null || emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
+        List<string> highlightedTiles = new List<string>(emptyList);
+        mapDisplayers[1].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+    }
     public void UpdateHighlights(List<int> newTiles, int layer = 1)
     {
-        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
+        if (emptyList == null || emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         List<string> highlightedTiles = new List<string>(emptyList);
         for (int i = 0; i < newTiles.Count; i++)
         {
@@ -92,10 +118,7 @@ public class StSLikeMap : MapManager
     [ContextMenu("GeneratePaths")]
     public void GeneratePaths()
     {
-        // Disable all tiles.
-        ResetPartyLocation();
-        ResetAllLayers();
-        InitializeMapInfo();
+        ResetAll();
         for (int i = 0; i < testPathCount; i++)
         {
             GeneratePath();
@@ -118,7 +141,7 @@ public class StSLikeMap : MapManager
         for (int i = 0; i < pathTiles.Count; i++)
         {
             // Initially all the path tiles are random.
-            string tileType = tileTypes[Random.Range(0, tileTypes.Count)];
+            string tileType = RandomTileType();
             // Ensure that no two adjacent tiles are the same.
             if (i > 0)
             {
@@ -127,14 +150,6 @@ public class StSLikeMap : MapManager
             mapInfo[pathTiles[i]] = tileType;
             mapTiles[pathTiles[i]].EnableLayer();
         }
-        /* Get path other direction.
-        pathTiles = mapMaker.CreatePath(end, start, mapSize, false);
-        // Enable path.
-        for (int i = 0; i < pathTiles.Count; i++)
-        {
-            mapInfo[pathTiles[i]] = tileTypes[Random.Range(0, tileTypes.Count)];
-            mapTiles[pathTiles[i]].EnableLayer();
-        }*/
         // Some path values are fixed.
         // Middle = Treasure.
         mapInfo[pathTiles[pathTiles.Count / 2]] = "Treasure";

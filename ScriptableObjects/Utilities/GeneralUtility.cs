@@ -205,6 +205,16 @@ public class GeneralUtility : ScriptableObject
         return ConvertListToString(string_list, delimiter);
     }
 
+    public List<int> ConvertStringListToIntList(List<string> string_list)
+    {
+        List<int> int_list = new List<int>();
+        for (int i = 0; i < string_list.Count; i++)
+        {
+            int_list.Add(SafeParseInt(string_list[i]));
+        }
+        return int_list;
+    }
+
     public string ConvertListToString(List<string> string_list, string delimiter = "|")
     {
         return String.Join(delimiter, string_list);
