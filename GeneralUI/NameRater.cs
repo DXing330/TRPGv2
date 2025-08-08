@@ -10,16 +10,18 @@ public class NameRater : MonoBehaviour
     public int characterLimit = 13;
     public bool upperCase = true;
     public TMP_Text caseText;
+    public string upperCaseString = "BIG LETTERS";
+    public string lowerCaseString = "small letters";
     public void ToggleCase()
     {
         upperCase = !upperCase;
         if (upperCase)
         {
-            caseText.text = "UPPERCASE";
+            caseText.text = upperCaseString;
         }
         else
         {
-            caseText.text = "lowercase";
+            caseText.text = lowerCaseString;
         }
     }
 
