@@ -8,14 +8,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StSState", menuName = "ScriptableObjects/DataContainers/SavedData/StSState", order = 1)]
 public class StSState : SavedState
 {
-    // Save the map, the floor, the party location.
-
+    // Save the map, the floor, the party location, the store items, the random event details.
     public override void NewGame()
     {
         return;
     }
     public List<string> mapInfo;
     public List<int> partyPathing;
+    public List<string> storeInfo;
+    public List<int> storePrices;
+    public int eventIndex;
     public void SetDataFromMap(StSLikeMap map)
     {
         mapInfo = new List<string>(map.mapInfo);
@@ -35,6 +37,11 @@ public class StSState : SavedState
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
         mapInfo = dataList[0].Split(delimiterTwo).ToList();
+        if (dataList[1].Length <= 0)
+        {
+            partyPathing = new List<int>();
+            return;
+        }
         partyPathing = utility.ConvertStringListToIntList(dataList[1].Split(delimiterTwo).ToList());
     }
 }

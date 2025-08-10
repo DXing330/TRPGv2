@@ -50,6 +50,10 @@ public class PassiveDetailViewer : MonoBehaviour
 
     public string ReturnPassiveDetails(string passiveInfo)
     {
+        if (!passiveInfo.Contains("|"))
+        {
+            return "";
+        }
         string[] dataBlocks = passiveInfo.Split("|");
         string description = "";
         description += PassiveTiming(dataBlocks[0]);

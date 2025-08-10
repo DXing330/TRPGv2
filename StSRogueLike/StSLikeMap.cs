@@ -44,10 +44,15 @@ public class StSLikeMap : MapManager
         savedState.Load();
         mapInfo = new List<string>(savedState.mapInfo);
         partyPathing = new List<int>(savedState.partyPathing);
-        partyLocation = partyPathing[partyPathing.Count - 1];
+        if (partyPathing.Count <= 0) { partyLocation = -1; }
+        else
+        {
+            partyLocation = partyPathing[partyPathing.Count - 1];
+        }
         UpdateMap();
         UpdateHighlights(partyPathing);
     }
+    public PopUpMessage popUp;
     // The party can only move to adjacent right tiles unless a relic/effect says otherwise.
     public int partyLocation = -1;
     public List<int> partyPathing;
@@ -94,6 +99,27 @@ public class StSLikeMap : MapManager
         }
         // Update the highlights.
         UpdateHighlights(partyPathing);
+        switch (mapInfo[partyLocation])
+        {
+            case "Enemy":
+                popUp.SetMessage("Enter A Battle");
+                break;
+            case "Treasure":
+                popUp.SetMessage("Gain Relic&Equipment&Money");
+                break;
+            case "Rest":
+                popUp.SetMessage("Restore Health & Train Skills & Change Equipment");
+                break;
+            case "Store":
+                popUp.SetMessage("Buy Equipment*Relics");
+                break;
+            case "Elite":
+                popUp.SetMessage("Enter Hard Battle");
+                break;
+            case "Event":
+                popUp.SetMessage("Random Event");
+                break;
+        }
     }
     public void ResetHighlights()
     {
@@ -103,6 +129,7 @@ public class StSLikeMap : MapManager
     }
     public void UpdateHighlights(List<int> newTiles, int layer = 1)
     {
+        if (partyLocation < 0){ return; }
         if (emptyList == null || emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         List<string> highlightedTiles = new List<string>(emptyList);
         for (int i = 0; i < newTiles.Count; i++)

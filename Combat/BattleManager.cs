@@ -67,12 +67,13 @@ public class BattleManager : MonoBehaviour
         map.NextRound();
     }
     // Updates stats UI inbetween turns.
+    // Also applies new turn effects to the next actor.
     protected void ChangeTurn()
     {
         combatLog.AddNewLog();
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
-        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+"'s Turn");
+        combatLog.UpdateNewestLog(turnActor.GetPersonalName() + "'s Turn");
         // Apply Conditions/Passives.
         effectManager.StartTurn(turnActor, map);
         UI.battleStats.SetActor(turnActor);
