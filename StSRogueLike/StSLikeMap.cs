@@ -6,6 +6,16 @@ public class StSLikeMap : MapManager
 {
     protected override void Start()
     {
+        savedState.Load();
+        if (savedState.StartingNewGame())
+        {
+            GeneratePaths();
+            SaveState();
+        }
+        else
+        {
+            LoadState();
+        }
         UpdateMap();
     }
     public override void UpdateMap()
@@ -14,6 +24,11 @@ public class StSLikeMap : MapManager
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
     }
+    public SceneMover sceneMover;
+    public string restSceneName;
+    public string storeSceneName;
+    public string treasureSceneName;
+    public string eventSceneName;
     public List<string> tileTypes;
     public string RandomTileType(string except = "")
     {
@@ -48,6 +63,7 @@ public class StSLikeMap : MapManager
         else
         {
             partyLocation = partyPathing[partyPathing.Count - 1];
+            // Enter the event/rest/store.
         }
         UpdateMap();
         UpdateHighlights(partyPathing);
@@ -97,21 +113,23 @@ public class StSLikeMap : MapManager
             }
             SetPartyLocation(tileNumber);
         }
+        SaveState();
         // Update the highlights.
         UpdateHighlights(partyPathing);
         switch (mapInfo[partyLocation])
         {
             case "Enemy":
-                popUp.SetMessage("Enter A Battle");
+                popUp.SetMessage("Enter Battle");
                 break;
             case "Treasure":
-                popUp.SetMessage("Gain Relic&Equipment&Money");
+                popUp.SetMessage("Equipment & Money");
                 break;
             case "Rest":
                 popUp.SetMessage("Restore Health & Train Skills & Change Equipment");
+                sceneMover.LoadScene(restSceneName);
                 break;
             case "Store":
-                popUp.SetMessage("Buy Equipment*Relics");
+                popUp.SetMessage("Buy Equipment & Hire Grunts");
                 break;
             case "Elite":
                 popUp.SetMessage("Enter Hard Battle");

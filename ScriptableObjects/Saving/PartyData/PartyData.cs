@@ -34,6 +34,10 @@ public class PartyData : SavedData
     }
     public List<string> partyStats;
     public List<string> GetBaseStats() { return partyStats; }
+    public string GetMemberStatsAtIndex(int index)
+    {
+        return partyStats[index];
+    }
     public int GetCurrentHealthAtIndex(int index)
     {
         dummyActor.SetStatsFromString(partyStats[index]);

@@ -1,0 +1,94 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
+
+public class StSLikeRestScene : MonoBehaviour
+{
+    /* In this scene:
+    -select each party member
+    -choose an option for them to take while resting
+        -see the potential effects of each action on their stats
+    -confirm your choices
+    -open the armory panel
+    -rearrange equipment if needed
+    */
+    void Start()
+    {
+        restingChoices = new List<string>();
+        for (int i = 0; i < partyData.ReturnTotalPartyCount(); i++)
+        {
+            restingChoices.Add("");
+        }
+    }
+    public PartyDataManager partyData;
+    public TacticActor dummyActor;
+    public ActorSpriteHPList actorSelectList;
+    public SelectStatTextList statList;
+    // Keep track of what each party member does during the downtime.
+    public List<string> restingChoices;
+    public List<TMP_Text> restEffects;
+    public void ResetRestEffects()
+    {
+        for (int i = 0; i < restEffects.Count; i++)
+        {
+            restEffects[i].text = "";
+        }
+    }
+    public void UpdateRestingChoices(string newInfo)
+    {
+        int index = actorSelectList.GetSelected();
+        if (index == -1) { return; }
+        restingChoices[index] = newInfo;
+        ResetRestEffects();
+        UpdateRestingEffects();
+    }
+    public void UpdateRestingEffects()
+    {
+        int index = actorSelectList.GetSelected();
+        if (index == -1) { return; }
+        switch (restingChoices[index])
+        {
+            case "Rest":
+                restEffects[0].text = "+" + (dummyActor.GetBaseHealth() / 2).ToString();
+                break;
+            case "Attack":
+                restEffects[1].text = "+" + (Mathf.Max(1, dummyActor.GetBaseAttack() / 5)).ToString();
+                break;
+            case "Defense":
+                restEffects[2].text = "+" + (Mathf.Max(1, dummyActor.GetBaseDefense() / 5)).ToString();
+                break;
+            case "Energy":
+                restEffects[3].text = "+" + (Mathf.Max(1, dummyActor.GetBaseEnergy() / 5)).ToString();
+                break;
+            case "Initiative":
+                restEffects[4].text = "+" + (Mathf.Max(1, dummyActor.GetInitiative()/5)).ToString();
+                break;
+        }
+    }
+    public void ViewStats()
+    {
+        int index = actorSelectList.GetSelected();
+        if (index == -1) { return; }
+        ResetRestEffects();
+        dummyActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(index));
+        List<string> stats = new List<string>();
+        List<string> data = new List<string>();
+        stats.Add("Current Health");
+        stats.Add("Health");
+        stats.Add("Attack");
+        stats.Add("Defense");
+        stats.Add("Energy");
+        stats.Add("Move Speed");
+        stats.Add("Initiative");
+        data.Add(dummyActor.GetHealth().ToString());
+        data.Add(dummyActor.GetBaseHealth().ToString());
+        data.Add(dummyActor.GetBaseAttack().ToString());
+        data.Add(dummyActor.GetBaseDefense().ToString());
+        data.Add(dummyActor.GetBaseEnergy().ToString());
+        data.Add(dummyActor.GetMoveSpeed().ToString());
+        data.Add(dummyActor.GetInitiative().ToString());
+        statList.SetStatsAndData(stats, data);
+        UpdateRestingEffects();
+    }
+}

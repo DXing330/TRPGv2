@@ -31,7 +31,6 @@ public class SelectStatTextList : StatTextList
             }
         }
     }
-
     public void ResetHighlights()
     {
         for (int i = 0; i < statTexts.Count; i++)
@@ -99,7 +98,6 @@ public class SelectStatTextList : StatTextList
             statTexts[i].SetText(data[i]);
         }
     }
-
     public void UpdateActorPassiveTexts(TacticActor actor, string currentlyEquipped = "")
     {
         page = 0;
@@ -131,7 +129,6 @@ public class SelectStatTextList : StatTextList
             }
         if (stats.Count > objects.Count){EnableChangePage();}
     }
-
     public void UpdateActorEquipmentTexts(string selectedActorEquipment)
     {
         page = 0;
@@ -172,7 +169,6 @@ public class SelectStatTextList : StatTextList
         page = 0;
         UpdateStatPortion();
     }
-
     public void UpdatePotentialPassives(TacticActor actor, string currentEquipment, string newEquipment)
     {
         // Keep track of the base actor passive stats.

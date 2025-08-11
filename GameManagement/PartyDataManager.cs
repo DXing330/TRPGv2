@@ -340,9 +340,28 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
+    public string ReturnPartyMemberStatsAtIndex(int index)
+    {
+        if (index < 0) { return ""; }
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (index < permanentCount)
+        {
+            return permanentPartyData.GetMemberStatsAtIndex(index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            return mainPartyData.GetMemberStatsAtIndex(index - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.GetMemberStatsAtIndex(index - permanentCount - mainCount);
+        }
+    }
+
     protected string CodeNameAtIndex(int index)
     {
-        if (index < 0){ return ""; }
+        if (index < 0) { return ""; }
         int permanentCount = permanentPartyData.PartyCount();
         int mainCount = mainPartyData.PartyCount();
         if (index < permanentCount)
