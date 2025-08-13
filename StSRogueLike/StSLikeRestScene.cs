@@ -13,6 +13,36 @@ public class StSLikeRestScene : MonoBehaviour
     -open the armory panel
     -rearrange equipment if needed
     */
+    public SceneMover sceneMover;
+    public string StSMapSceneName;
+    public int statGainPercentage = 10;
+    public void FinishRest()
+    {
+        // Update stats based on chosen downtime activities.
+        for (int i = 0; i < restingChoices.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(i));
+            switch (restingChoices[i])
+            {
+                case "Rest":
+                    dummyActor.UpdateHealth(dummyActor.GetBaseHealth() / 2, false);
+                    break;
+                case "Health":
+                    dummyActor.UpdateBaseHealth(Mathf.Max(1, dummyActor.GetBaseHealth() / statGainPercentage), false);
+                    break;
+                case "Attack":
+                    dummyActor.UpdateBaseAttack(Mathf.Max(1, dummyActor.GetBaseAttack() / statGainPercentage));
+                    break;
+                case "Defense":
+                    dummyActor.UpdateBaseDefense(Mathf.Max(1, dummyActor.GetBaseDefense() / statGainPercentage));
+                    break;
+                case "Energy":
+                    dummyActor.UpdateBaseEnergy(Mathf.Max(1, dummyActor.GetBaseEnergy() / statGainPercentage));
+                    break;
+            }
+            partyData.UpdatePartyMember(dummyActor, i);
+        }
+    }
     void Start()
     {
         restingChoices = new List<string>();
@@ -52,18 +82,19 @@ public class StSLikeRestScene : MonoBehaviour
             case "Rest":
                 restEffects[0].text = "+" + (dummyActor.GetBaseHealth() / 2).ToString();
                 break;
+            case "Health":
+                restEffects[1].text = "+" + (Mathf.Max(1, dummyActor.GetBaseHealth()/ statGainPercentage)).ToString();
+                break;
             case "Attack":
-                restEffects[1].text = "+" + (Mathf.Max(1, dummyActor.GetBaseAttack() / 5)).ToString();
+                restEffects[2].text = "+" + (Mathf.Max(1, dummyActor.GetBaseAttack() / statGainPercentage)).ToString();
                 break;
             case "Defense":
-                restEffects[2].text = "+" + (Mathf.Max(1, dummyActor.GetBaseDefense() / 5)).ToString();
+                restEffects[3].text = "+" + (Mathf.Max(1, dummyActor.GetBaseDefense() / statGainPercentage)).ToString();
                 break;
             case "Energy":
-                restEffects[3].text = "+" + (Mathf.Max(1, dummyActor.GetBaseEnergy() / 5)).ToString();
+                restEffects[4].text = "+" + (Mathf.Max(1, dummyActor.GetBaseEnergy() / statGainPercentage)).ToString();
                 break;
-            case "Initiative":
-                restEffects[4].text = "+" + (Mathf.Max(1, dummyActor.GetInitiative()/5)).ToString();
-                break;
+            
         }
     }
     public void ViewStats()

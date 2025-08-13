@@ -452,6 +452,7 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
+    [ContextMenu("SetParty")]
     public void SetFullParty()
     {
         fullParty.ResetLists();

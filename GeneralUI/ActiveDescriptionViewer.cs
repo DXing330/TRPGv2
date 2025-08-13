@@ -23,12 +23,16 @@ public class ActiveDescriptionViewer : MonoBehaviour
         fullDetails += "\n"+"Mana Cost: "+spell.ReturnManaCost();
         return fullDetails;
     }
+    public string ReturnActiveDescriptionOnly(ActiveSkill activeSkill)
+    {
+        return AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
+    }
     public string ReturnActiveDescription(ActiveSkill activeSkill)
     {
         string activeDescription = AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
         activeDescription += "\n" + "Action Cost: " + activeSkill.GetActionCost();
         //+"; Actions Left: " +activeSkill;
-        activeDescription += "\n"+"Energy Cost: "+activeSkill.GetEnergyCost();
+        activeDescription += "\n" + "Energy Cost: " + activeSkill.GetEnergyCost();
         return activeDescription;
     }
 

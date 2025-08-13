@@ -49,6 +49,11 @@ public class ActorSpriteHPList : MonoBehaviour
     public List<GameObject> changePageObjects;
     public TacticActor dummyActor;
     public int selectedIndex = -1;
+    public void SetSelectedIndex(int newInfo)
+    {
+        selectedIndex = newInfo;
+        HighlightSelected();
+    }
     public CharacterList savedData;
     public List<string> allActorNames;
     public List<string> allActorData;
