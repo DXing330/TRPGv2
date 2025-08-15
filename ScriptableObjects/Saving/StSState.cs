@@ -20,6 +20,14 @@ public class StSState : SavedState
         return newGame == 1;
     }
     public List<string> mapInfo;
+    public string ReturnCurrentTile()
+    {
+        if (partyPathing.Count <= 0)
+        {
+            return "";
+        }
+        return mapInfo[partyPathing[partyPathing.Count - 1]];
+    }
     public List<int> partyPathing;
     public List<string> storeInfo;
     public List<int> storePrices;

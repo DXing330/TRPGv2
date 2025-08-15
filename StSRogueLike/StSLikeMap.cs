@@ -17,12 +17,32 @@ public class StSLikeMap : MapManager
             LoadState();
         }
         UpdateMap();
+        UpdateDirectionalArrows();
     }
     public override void UpdateMap()
     {
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+    }
+    protected void UpdateDirectionalArrows()
+    {
+        int nextTile = -1;
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].ResetDirectionArrows();
+            if (mapInfo[i] == "") { continue; }
+            nextTile = mapUtility.PointInDirection(i, 1, mapSize);
+            if (nextTile != i && nextTile >= 0 && mapInfo[nextTile] != "")
+            {
+                mapTiles[i].ActivateDirectionArrow(1);
+            }
+            nextTile = mapUtility.PointInDirection(i, 2, mapSize);
+            if (nextTile != i && nextTile >= 0 && mapInfo[nextTile] != "")
+            {
+                mapTiles[i].ActivateDirectionArrow(2);
+            }
+        }
     }
     public SceneMover sceneMover;
     public string restSceneName;
@@ -125,7 +145,7 @@ public class StSLikeMap : MapManager
                 popUp.SetMessage("Equipment & Money");
                 break;
             case "Rest":
-                popUp.SetMessage("Restore Health & Train Skills & Change Equipment");
+                //popUp.SetMessage("Restore Health & Train Skills & Change Equipment");
                 sceneMover.LoadScene(restSceneName);
                 break;
             case "Store":
@@ -169,6 +189,7 @@ public class StSLikeMap : MapManager
             GeneratePath();
         }
         UpdateMap();
+        UpdateDirectionalArrows();
     }
 
     [ContextMenu("GeneratePath")]

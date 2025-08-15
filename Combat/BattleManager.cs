@@ -11,6 +11,7 @@ public class BattleManager : MonoBehaviour
     public BattleMapFeatures battleMapFeatures;
     public InitiativeTracker initiativeTracker;
     public CombatLog combatLog;
+    public PopUpMessage popUpMessage;
     public CharacterList playerParty;
     public CharacterList enemyParty;
     public EffectManager effectManager;
@@ -168,6 +169,7 @@ public class BattleManager : MonoBehaviour
             case "Move":
                 if (turnActor.GetSpeed() <= 0)
                 {
+                    popUpMessage.SetMessage("No Movespeed");
                     ResetState();
                     return;
                 }

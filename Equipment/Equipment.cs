@@ -24,6 +24,7 @@ public class Equipment : MonoBehaviour
         passives = dataBlocks[3].Split(",").ToList();
         passiveLevels = dataBlocks[4].Split(",").ToList();
         maxLevel = dataBlocks[5];
+        rarity = dataBlocks[6];
     }
     public string equipName;
     public string GetName(){return equipName;}
@@ -40,11 +41,29 @@ public class Equipment : MonoBehaviour
         }
     }
     public List<string> passiveLevels;
+    public int GetCurrentLevel()
+    {
+        int level = 0;
+        for (int i = 0; i < passiveLevels.Count; i++)
+        {
+            level += int.Parse(passiveLevels[i]);
+        }
+        return level;
+    }
     public string maxLevel;
+    public int GetMaxLevel()
+    {
+        return int.Parse(maxLevel);
+    }
+    public string rarity;
+    public int GetRarity()
+    {
+        return int.Parse(rarity);
+    }
 
     public void EquipToActor(TacticActor actor)
     {
-        if (allStats.Length < 6){return;}
+        if (allStats.Length < 6) { return; }
         if (slot == "Weapon")
         {
             actor.SetWeaponType(type);
