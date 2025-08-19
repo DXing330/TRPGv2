@@ -33,14 +33,22 @@ public class Equipment : MonoBehaviour
     public string type;
     public string GetEquipType(){return type;}
     public List<string> passives;
+    public List<string> GetPassives()
+    {
+        return passives;
+    }
     public void DebugPassives()
     {
         for (int i = 0; i < passives.Count; i++)
         {
-            Debug.Log(passives[i]+":"+passiveLevels[i]);
+            Debug.Log(passives[i] + ":" + passiveLevels[i]);
         }
     }
     public List<string> passiveLevels;
+    public List<string> GetPassiveLevels()
+    {
+        return passiveLevels;
+    }
     public int GetCurrentLevel()
     {
         int level = 0;

@@ -13,4 +13,11 @@ public class EquipmentTester : MonoBehaviour
     {
         dummyInventory.AddEquipmentByName(equipName);
     }
+    public EquipmentPassiveViewer dummyEquipViewer;
+    public List<string> testEquipment;
+    [ContextMenu("Test Setting Equipment")]
+    public void TestSetEquipment()
+    {
+        dummyEquipViewer.SetAllEquipment(testEquipment);
+    }
 }
