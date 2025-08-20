@@ -5,6 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class SceneMover : MonoBehaviour
 {
+    public string mainMenuSceneName = "Start";
+    public void ReturnToMainMenu()
+    {
+        StartCoroutine(LoadAsyncScene(mainMenuSceneName));
+    }
     public LoadingScreen loadingScreen;
     public SceneTracker sceneTracker;
     public bool loadingRequired = false;

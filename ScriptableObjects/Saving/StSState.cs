@@ -12,6 +12,7 @@ public class StSState : SavedState
     public override void NewGame()
     {
         newGame = 1;
+        Save();
         return;
     }
     public int newGame = 1;

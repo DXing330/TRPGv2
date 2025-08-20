@@ -142,7 +142,8 @@ public class StSLikeMap : MapManager
                 popUp.SetMessage("Enter Battle");
                 break;
             case "Treasure":
-                popUp.SetMessage("Equipment & Money");
+                //popUp.SetMessage("Equipment & Money");
+                sceneMover.LoadScene(treasureSceneName);
                 break;
             case "Rest":
                 //popUp.SetMessage("Restore Health & Train Skills & Change Equipment");
