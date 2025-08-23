@@ -5,6 +5,8 @@ using TMPro;
 
 public class BattleEndManager : MonoBehaviour
 {
+    public bool test = false;
+    public BattleStatsTracker battleStatsTracker;
     public PartyDataManager partyData;
     public TacticActor dummyActor;
     public Equipment dummyEquip;
@@ -37,11 +39,17 @@ public class BattleEndManager : MonoBehaviour
 
     public void UpdatePartyAfterBattle(List<TacticActor> actors, int winningTeam = 0)
     {
-        if (winningTeam != 0)
+        if (test)
         {
-            PartyDefeated();
+            // Update the details.
+            // Reset the battle.
             return;
         }
+        if (winningTeam != 0)
+            {
+                PartyDefeated();
+                return;
+            }
         List<string> codeNames = new List<string>();
         List<string> spriteNames = new List<string>();
         List<string> stats = new List<string>();
@@ -81,6 +89,13 @@ public class BattleEndManager : MonoBehaviour
 
     public void EndBattle(int winningTeam)
     {
+        if (test)
+        {
+            // Update the details.
+            battleStatsTracker.DisplayDamageStats();
+            // Reset the battle.
+            return;
+        }
         SetWinnerTeam(winningTeam);
         if (winnerTeam == 0)
         {

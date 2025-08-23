@@ -64,6 +64,7 @@ public class AttackManager : ScriptableObject
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);

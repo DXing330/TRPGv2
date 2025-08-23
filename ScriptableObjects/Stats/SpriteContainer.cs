@@ -18,6 +18,10 @@ public class SpriteContainer : ScriptableObject
         values = blocks[1].Split(delimiterTwo).ToList();
     }
     public List<string> keys;
+    public string RandomSpriteName()
+    {
+        return sprites[Random.Range(0, sprites.Count)].name;
+    }
     public List<string> values;
 
     public string SpriteNameByIndex(int index)

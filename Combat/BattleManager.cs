@@ -7,10 +7,12 @@ public class BattleManager : MonoBehaviour
     public BattleState battleState;
     public BattleMap map;
     public ActorAI actorAI;
+    public bool autoBattle = false;
     public ActorMaker actorMaker;
     public BattleMapFeatures battleMapFeatures;
     public InitiativeTracker initiativeTracker;
     public CombatLog combatLog;
+    public BattleStatsTracker battleStatsTracker;
     public PopUpMessage popUpMessage;
     public CharacterList playerParty;
     public CharacterList enemyParty;
@@ -23,6 +25,7 @@ public class BattleManager : MonoBehaviour
     void Start()
     {
         // Get a new battle map.
+        map.ForceStart();
         map.SetWeather(battleState.GetWeather());
         map.SetTime(battleState.GetTime());
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
@@ -34,6 +37,7 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
         actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
         for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        battleStatsTracker.InitializeTracker(map.battlingActors);
         // Apply start of battle passives.
         for (int i = 0; i < map.battlingActors.Count; i++)
         {
@@ -42,7 +46,7 @@ public class BattleManager : MonoBehaviour
         // Start the combat.
         NextRound();
         ChangeTurn();
-        if (turnActor.GetTeam() > 0){NPCTurn();}
+        if (turnActor.GetTeam() > 0 || autoBattle){NPCTurn();}
     }
     public void SpawnAndAddActor(int location, string actorName, int team = 0)
     {
@@ -51,6 +55,9 @@ public class BattleManager : MonoBehaviour
         effectManager.StartBattle(map.ReturnLatestActor());
     }
     public bool interactable = true;
+    public bool longDelays = true;
+    public float longDelayTime = 0.1f;
+    public float shortDelayTime = 0.01f;
     public int roundNumber = 0;
     public int GetRoundNumber(){return roundNumber;}
     public int turnNumber = 0;
@@ -126,7 +133,7 @@ public class BattleManager : MonoBehaviour
                 StartCoroutine(TauntedTurn(turnActor.GetActions()));
                 return;
         }
-        if (turnActor.GetTeam() > 0) { NPCTurn(); }
+        if (turnActor.GetTeam() > 0 || autoBattle) { NPCTurn(); }
     }
     protected void NPCTurn()
     {
@@ -144,7 +151,14 @@ public class BattleManager : MonoBehaviour
     }
     IEnumerator EndTurn()
     {
-        yield return new WaitForSeconds(1.0f);
+        if (longDelays)
+        {
+            yield return new WaitForSeconds(longDelayTime * 10);
+        }
+        else
+        {
+            yield return new WaitForSeconds(shortDelayTime * 10);
+        }
         NextTurn();
     }
     // None, Move, Attack, SkillSelect, SkillTargeting, Viewing
@@ -347,7 +361,14 @@ public class BattleManager : MonoBehaviour
             activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
             ActivateSkill(actorAI.ReturnAIActiveSkill());
             activeManager.ActivateSkill(this);
-            yield return new WaitForSeconds(0.5f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
             if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
@@ -371,7 +392,14 @@ public class BattleManager : MonoBehaviour
             moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
             List<int> path = actorAI.FindPathAwayFromTarget(turnActor, map, moveManager);
             StartCoroutine(MoveAlongPath(turnActor, path));
-            yield return new WaitForSeconds(0.5f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
             if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
@@ -400,7 +428,14 @@ public class BattleManager : MonoBehaviour
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
             }
-            yield return new WaitForSeconds(0.5f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
             if (turnActor.GetActions() <= 0){break;}
         }
         // Reset targets after you stop raging.
@@ -428,7 +463,14 @@ public class BattleManager : MonoBehaviour
             moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
             List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
             StartCoroutine(MoveAlongPath(turnActor, path));
-            yield return new WaitForSeconds(0.5f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
             if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
@@ -459,7 +501,14 @@ public class BattleManager : MonoBehaviour
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
             }
-            yield return new WaitForSeconds(0.5f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
             if (turnActor.GetActions() <= 0) { break; }
         }
         StartCoroutine(EndTurn());
@@ -498,7 +547,14 @@ public class BattleManager : MonoBehaviour
                     StartCoroutine(MoveAlongPath(turnActor, path));
                 }
             }
-            yield return new WaitForSeconds(0.5f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
             if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
@@ -552,7 +608,14 @@ public class BattleManager : MonoBehaviour
             map.ApplyTerrainEffect(actor, path[i]);
             map.UpdateActors();
             if (map.ApplyTrapEffect(actor, path[i])){break;}
-            yield return new WaitForSeconds(0.1f);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime);
+            }
         }
         interactable = true;
         ResetState();

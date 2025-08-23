@@ -10,14 +10,14 @@ public class Equipment : MonoBehaviour
     public void SetAllStats(string newStats)
     {
         allStats = newStats;
-        if (allStats.Length < 6)
+        string[] dataBlocks = allStats.Split("|");
+        if (allStats.Length < 6 || dataBlocks.Length < 7)
         {
             equipName = "None";
             slot = "-1";
             type = "-1";
             return;
         }
-        string[] dataBlocks = allStats.Split("|");
         equipName = dataBlocks[0];
         slot = dataBlocks[1];
         type = dataBlocks[2];

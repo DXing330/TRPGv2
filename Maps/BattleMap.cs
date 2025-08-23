@@ -17,6 +17,7 @@ public class BattleMap : MapManager
     public void SetTime(string newInfo){ time = newInfo; }
     public string GetTime(){ return time; }
     public CombatLog combatLog;
+    public BattleStatsTracker damageTracker;
     public TerrainPassivesList terrainPassives;
     public string ReturnTerrainStartPassive(TacticActor actor)
     {
@@ -40,6 +41,13 @@ public class BattleMap : MapManager
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
     public SkillEffect effect;
+    [ContextMenu("ForceStart")]
+    public void ForceStart()
+    {
+        InitializeEmptyList();
+        terrainEffectTiles = new List<string>(emptyList);
+        trappedTiles = new List<string>(emptyList);
+    }
     protected override void Start()
     {
         InitializeEmptyList();
@@ -138,7 +146,7 @@ public class BattleMap : MapManager
 
     protected virtual void GetActorTiles()
     {
-        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
+        if (emptyList == null || emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         actorTiles = new List<string>(emptyList);
         actorDirections = new List<string>(emptyList);
         for (int i = 0; i < battlingActors.Count; i++)
