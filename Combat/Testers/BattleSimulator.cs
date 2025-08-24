@@ -4,18 +4,82 @@ using UnityEngine;
 
 public class BattleSimulator : MonoBehaviour
 {
+    void Start()
+    {
+        partyOneList.ResetLists();
+        partyTwoList.ResetLists();
+        partyOneSelect.RefreshData();
+        partyTwoSelect.RefreshData();
+        selectedActorName = "";
+        actorSelect.SetData(actorStats.ReturnAllKeys(), actorStats.ReturnAllKeys(), actorStats.values);
+    }
     // Determine the characters.
     public StatDatabase actorStats;
-    public List<string> partyOne;
-    public List<string> partyTwo;
+    public ActorSpriteHPList actorSelect;
+    public string selectedActorName;
+    public ActorSpriteHPList partyOneSelect;
+    public ActorSpriteHPList partyTwoSelect;
     public CharacterList partyOneList;
     public CharacterList partyTwoList;
-    // Create the map.
-    public BattleMap battleMap;
-    // Spawn in the characters.
-    public ActorMaker actorMaker;
-    // Take turns in order until the battle is over.
-    public BattleEndManager battleEndManager;
-    public ActorAI actorAI;
-    public AttackManager attackManager;
+    public BattleManager battleManager;
+    public GameObject battleManagerObject;
+    public GameObject simulatorPanel;
+    public void StartBattle()
+    {
+        // Don't start unless there are members on both sides.
+        if (partyOneList.characters.Count <= 0 || partyTwoList.characters.Count <= 0)
+        {
+            return;
+        }
+        simulatorPanel.SetActive(false);
+        battleManagerObject.SetActive(true);
+        //battleManager.ForceStart();
+    }
+    public void RemoveFromPartyOne()
+    {
+        if (partyOneSelect.GetSelected() < 0)
+        {
+            return;
+        }
+        partyOneList.RemoveFromParty(partyOneSelect.GetSelected());
+        partyOneSelect.RefreshData();
+    }
+    public void RemoveFromPartyTwo()
+    {
+        if (partyTwoSelect.GetSelected() < 0)
+        {
+            return;
+        }
+        partyTwoList.RemoveFromParty(partyTwoSelect.GetSelected());
+        partyTwoSelect.RefreshData();
+        // Disable what is needed.
+    }
+    public void SelectActorToAdd()
+    {
+        if (actorSelect.GetSelected() < 0)
+        {
+            return;
+        }
+        selectedActorName = actorStats.ReturnKeyAtIndex(actorSelect.GetSelected());
+    }
+    public void AddToPartyOne()
+    {
+        if (selectedActorName.Length <= 0)
+        {
+            return;
+        }
+        string stats = actorStats.ReturnValue(selectedActorName);
+        partyOneList.AddMemberToParty(selectedActorName + " " + Random.Range(0, 999), stats, selectedActorName);
+        partyOneSelect.RefreshData();
+    }
+    public void AddToPartyTwo()
+    {
+        if (selectedActorName.Length <= 0)
+        {
+            return;
+        }
+        string stats = actorStats.ReturnValue(selectedActorName);
+        partyTwoList.AddMemberToParty(selectedActorName + " " + Random.Range(0, 999), stats, selectedActorName);
+        partyTwoSelect.RefreshData();
+    }
 }

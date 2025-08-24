@@ -10,6 +10,10 @@ public class SceneMover : MonoBehaviour
     {
         StartCoroutine(LoadAsyncScene(mainMenuSceneName));
     }
+    public void DebugMoveToScene(string sceneName)
+    {
+        StartCoroutine(LoadAsyncScene(sceneName));
+    }
     public LoadingScreen loadingScreen;
     public SceneTracker sceneTracker;
     public bool loadingRequired = false;

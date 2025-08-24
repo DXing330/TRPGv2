@@ -50,11 +50,27 @@ public class CharacterList : ScriptableObject
         }
     }
 
+    public void AddMemberToParty(string newName, string newStats, string spriteName, string newEquip = "")
+    {
+        characterNames.Add(newName);
+        characters.Add(spriteName);
+        stats.Add(newStats);
+        equipment.Add(newEquip);
+    }
+
+    public void RemoveFromParty(int index)
+    {
+        characterNames.RemoveAt(index);
+        characters.RemoveAt(index);
+        equipment.RemoveAt(index);
+        stats.RemoveAt(index);
+    }
+
     public void AddCharacters(List<string> newCharacters, List<string> newStats = null, List<string> newNames = null, List<string> newEquipment = null)
     {
         for (int i = 0; i < newCharacters.Count; i++)
         {
-            if (newCharacters[i].Length < 1){continue;}
+            if (newCharacters[i].Length < 1) { continue; }
             characters.Add(newCharacters[i]);
             // Add the other stuff later in harder dungeons/fights.
         }

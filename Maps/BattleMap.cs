@@ -89,6 +89,31 @@ public class BattleMap : MapManager
         }
         return turnNumber;
     }
+    public bool AllyAdjacentToActor(TacticActor actor)
+    {
+        List<TacticActor> adjacentActors = GetAdjacentActors(actor.GetLocation());
+        for (int i = 0; i < adjacentActors.Count; i++)
+        {
+            if (adjacentActors[i].GetTeam() == actor.GetTeam())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool AllyAdjacentWithSpriteName(TacticActor actor, string specificSprite)
+    {
+        List<TacticActor> adjacentActors = GetAdjacentActors(actor.GetLocation());
+        int team = actor.GetTeam();
+        for (int i = 0; i < adjacentActors.Count; i++)
+        {
+            if (adjacentActors[i].GetTeam() == team && adjacentActors[i].GetSpriteName() == specificSprite)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     // List of actor names on tiles.
     public List<string> actorTiles;
     public bool TileNotEmpty(int tileNumber)

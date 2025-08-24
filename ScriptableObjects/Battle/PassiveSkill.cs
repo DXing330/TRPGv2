@@ -120,6 +120,10 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == actor.GetMentalState();
             case "Status":
                 return actor.StatusExists(conditionSpecifics);
+            case "Adjacent Ally Sprite":
+                return map.AllyAdjacentWithSpriteName(actor, conditionSpecifics);
+            case "Adjacent Ally":
+                return map.AllyAdjacentToActor(actor);
         }
         // Most of them have no condition.
         return true;

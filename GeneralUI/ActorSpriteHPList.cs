@@ -80,6 +80,16 @@ public class ActorSpriteHPList : MonoBehaviour
         UpdateList();
     }
 
+    public void SetData(List<string> spriteNames, List<string> characterNames, List<string> stats)
+    {
+        page = 0;
+        allActorNames = new List<string>(characterNames);
+        allActorSpriteNames = new List<string>(spriteNames);
+        allActorData = new List<string>(stats);
+        ResetSelected();
+        UpdateList();
+    }
+
     public void UpdateList()
     {
         utility.DisableGameObjects(objects);

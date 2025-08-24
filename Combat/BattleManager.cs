@@ -22,7 +22,11 @@ public class BattleManager : MonoBehaviour
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
     public BattleUIManager UI;
-    void Start()
+    public void ForceStart()
+    {
+        Start();
+    }
+    protected void Start()
     {
         // Get a new battle map.
         map.ForceStart();
@@ -34,9 +38,10 @@ public class BattleManager : MonoBehaviour
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
-        for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
+        actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
-        for (int i = 0; i < actors.Count; i++){map.AddActorToBattle(actors[i]);}
+        for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
         battleStatsTracker.InitializeTracker(map.battlingActors);
         // Apply start of battle passives.
         for (int i = 0; i < map.battlingActors.Count; i++)
@@ -46,7 +51,7 @@ public class BattleManager : MonoBehaviour
         // Start the combat.
         NextRound();
         ChangeTurn();
-        if (turnActor.GetTeam() > 0 || autoBattle){NPCTurn();}
+        if (turnActor.GetTeam() > 0 || autoBattle) { NPCTurn(); }
     }
     public void SpawnAndAddActor(int location, string actorName, int team = 0)
     {

@@ -297,6 +297,11 @@ public class MapUtility : ScriptableObject
         return adjacent;
     }
 
+    public bool TilesAdjacent(int location, int location2, int size)
+    {
+        return AdjacentTiles(location, size).Contains(location2);
+    }
+
     public int RandomPointLeft(int location, int size)
     {
         int up = PointInDirection(location, 5, size);
