@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ActorAI", menuName = "ScriptableObjects/BattleLogic/ActorAI", order = 1)]
 public class ActorAI : ScriptableObject
 {
+    public GeneralUtility utility;
     public string AIType;
     public string activeSkillName;
     public string ReturnAIActiveSkill(){return activeSkillName;}
@@ -37,7 +38,7 @@ public class ActorAI : ScriptableObject
 
     public string ReturnAIAttackSkill(TacticActor actor)
     {
-        int activeSkillIndex = int.Parse(actorAttackSkills.ReturnValue(actor.GetSpriteName()));
+        int activeSkillIndex = utility.SafeParseInt(actorAttackSkills.ReturnValue(actor.GetSpriteName()),-1);
         // Check if the skill exists.
         if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return ""; }
         // Check if the skill is an attack skill.

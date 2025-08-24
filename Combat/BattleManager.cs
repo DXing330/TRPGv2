@@ -37,7 +37,7 @@ public class BattleManager : MonoBehaviour
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats);
+        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
         for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
         actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
