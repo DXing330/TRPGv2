@@ -16,19 +16,19 @@ public class BattleState : SavedState
     public void SetEnemyNames(List<string> newEnemies){enemies = new List<string>(newEnemies);}
     public void UpdateEnemyNames(){enemies = new List<string>(enemyList.characters);}
     public string terrainType;
-    public void SetTerrainType()
+    public virtual void SetTerrainType()
     {
         terrainType = overworldState.GetLocationTerrain();
         battleMapFeatures.SetTerrainType(terrainType);
     }
-    public string GetTerrainType(){return terrainType;}
+    public virtual string GetTerrainType(){return terrainType;}
     public void UpdateTerrainType(){battleMapFeatures.SetTerrainType(terrainType);}
-    public string GetTime()
+    public virtual string GetTime()
     {
         return overworldState.GetTime();
     }
 
-    public string GetWeather()
+    public virtual string GetWeather()
     {
         return overworldState.GetWeather();
     }

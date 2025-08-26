@@ -10,7 +10,7 @@ public class ArmoryUI : MonoBehaviour
     public SelectStatTextList actorStats;
     public SelectStatTextList actorPassives;
     public SelectStatTextList actorEquipment;
-    void Start()
+    protected virtual void Start()
     {
         allActors.UpdateTextSize();
         actorStats.UpdateTextSize();
@@ -26,7 +26,7 @@ public class ArmoryUI : MonoBehaviour
     public string selectedPassiveLevel;
     public PassiveDetailViewer detailViewer;
 
-    public void UpdateSelectedActor()
+    public virtual void UpdateSelectedActor()
     {
         EndSelectingEquipment();
         detailViewer.DisablePanel();
@@ -37,7 +37,7 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.ResetSelected();
     }
 
-    public void ViewPassiveDetails()
+    public virtual void ViewPassiveDetails()
     {
         if (allActors.GetSelected() < 0){return;}
         selectedPassive = actorPassives.statTexts[actorPassives.GetSelected()].GetStatText();
@@ -45,7 +45,7 @@ public class ArmoryUI : MonoBehaviour
         detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
     }
 
-    public void BeginSelectingEquipment()
+    public virtual void BeginSelectingEquipment()
     {
         if (allActors.GetSelected() < 0){return;}
         if (actorEquipment.GetSelected() < 0){return;}
@@ -72,7 +72,7 @@ public class ArmoryUI : MonoBehaviour
         selectEquipment.ResetSelected();
     }
 
-    public void EndSelectingEquipment()
+    public virtual void EndSelectingEquipment()
     {
         selectEquipment.ResetSelected();
         selectEquipObject.SetActive(false);
@@ -83,7 +83,7 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
     }
 
-    public void PreviewEquippedPassives()
+    public virtual void PreviewEquippedPassives()
     {
         selectEquipment.ResetHighlights();
         selectEquipment.HighlightIndex(selectEquipment.GetSelected());
@@ -91,7 +91,7 @@ public class ArmoryUI : MonoBehaviour
         actorPassives.UpdatePotentialPassives(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()), selectEquipment.data[selectEquipment.GetSelected()]);
     }
 
-    public void ConfirmEquipSelection()
+    public virtual void ConfirmEquipSelection()
     {
         if (selectEquipment.GetSelected() < 0){return;}
         // take the selected index and pull the equipment from the equipment inventory
@@ -104,7 +104,7 @@ public class ArmoryUI : MonoBehaviour
         EndSelectingEquipment();
     }
 
-    public void UnequipSelected()
+    public virtual void UnequipSelected()
     {
         if (allActors.GetSelected() < 0){return;}
         if (actorEquipment.GetSelected() < 0){return;}

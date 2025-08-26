@@ -8,6 +8,19 @@ public class BattleManager : MonoBehaviour
     public BattleMap map;
     public ActorAI actorAI;
     public bool autoBattle = false;
+    public bool pause = false;
+    public void PauseButton()
+    {
+        if (pause)
+        {
+            pause = false;
+            NextTurn();
+        }
+        else
+        {
+            pause = true;
+        }
+    }
     public ActorMaker actorMaker;
     public BattleMapFeatures battleMapFeatures;
     public InitiativeTracker initiativeTracker;
@@ -94,6 +107,7 @@ public class BattleManager : MonoBehaviour
     }
     public void NextTurn()
     {
+        if (pause){ return; }
         turnActor.EndTurn(); // End turn first before passives apply, so that end of turn buffs can stick around til the next round.
         effectManager.EndTurn(turnActor, map);
         // This allows for a one turn grace period for immunities to have a chance.

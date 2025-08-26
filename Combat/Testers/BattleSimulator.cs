@@ -8,11 +8,13 @@ public class BattleSimulator : MonoBehaviour
     {
         partyOneList.ResetLists();
         partyTwoList.ResetLists();
+        simulatorState.Load();
         partyOneSelect.RefreshData();
         partyTwoSelect.RefreshData();
         selectedActorName = "";
         actorSelect.SetData(actorStats.ReturnAllKeys(), actorStats.ReturnAllKeys(), actorStats.values);
     }
+    public BattleSimulatorState simulatorState;
     // Determine the characters.
     public StatDatabase actorStats;
     public ActorSpriteHPList actorSelect;
@@ -27,13 +29,14 @@ public class BattleSimulator : MonoBehaviour
     public void StartBattle()
     {
         // Don't start unless there are members on both sides.
+        simulatorState.Save();
         if (partyOneList.characters.Count <= 0 || partyTwoList.characters.Count <= 0)
         {
             return;
         }
         simulatorPanel.SetActive(false);
+        simulatorState.SetTerrainType();
         battleManagerObject.SetActive(true);
-        //battleManager.ForceStart();
     }
     public void RemoveFromPartyOne()
     {

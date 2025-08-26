@@ -40,7 +40,7 @@ public class SelectStatTextList : StatTextList
     }
     public void HighlightIndex(int index, string color = "Highlight")
     {
-        statTexts[index].SetColor(colors.GetColor(color));
+        statTexts[index%objects.Count].SetColor(colors.GetColor(color));
     }
     public void HighlightSelected(string color = "Highlight")
     {

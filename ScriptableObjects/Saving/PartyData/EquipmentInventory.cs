@@ -28,41 +28,50 @@ public class EquipmentInventory : SavedData
         dataList.RemoveAt(index);
         SortEquipment();
     }
-    public string TakeEquipment(int index, int slot)
+    public string TakeEquipment(int index, int slot, bool remove = false)
     {
         switch (slot)
         {
             case 0:
-            return TakeWeapon(index);
+            return TakeWeapon(index, remove);
             case 1:
-            return TakeArmor(index);
+            return TakeArmor(index, remove);
             case 2:
-            return TakeCharm(index);
+            return TakeCharm(index, remove);
         }
         return "";
     }
-    public string TakeWeapon(int otherIndex)
+    public string TakeWeapon(int otherIndex, bool remove = true)
     {
         string data = allWeapons[otherIndex];
         int indexOf = dataList.IndexOf(allWeapons[otherIndex]);
-        allWeapons.RemoveAt(otherIndex);
-        RemoveEquipment(indexOf);
+        if (remove)
+        {
+            allWeapons.RemoveAt(otherIndex);
+            RemoveEquipment(indexOf);
+        }
         return data;
     }
-    public string TakeArmor(int otherIndex)
+    public string TakeArmor(int otherIndex, bool remove = true)
     {
         string data = allArmor[otherIndex];
         int indexOf = dataList.IndexOf(allArmor[otherIndex]);
-        allArmor.RemoveAt(otherIndex);
-        RemoveEquipment(indexOf);
+        if (remove)
+        {
+            allArmor.RemoveAt(otherIndex);
+            RemoveEquipment(indexOf);
+        }
         return data;
     }
-    public string TakeCharm(int otherIndex)
+    public string TakeCharm(int otherIndex, bool remove = true)
     {
         string data = allCharms[otherIndex];
         int indexOf = dataList.IndexOf(allCharms[otherIndex]);
-        allCharms.RemoveAt(otherIndex);
-        RemoveEquipment(indexOf);
+        if (remove)
+        {
+            allCharms.RemoveAt(otherIndex);
+            RemoveEquipment(indexOf);
+        }
         return data;
     }
     public List<string> allWeapons;

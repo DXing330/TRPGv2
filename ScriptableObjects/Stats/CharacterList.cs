@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,13 +8,88 @@ using UnityEngine;
 public class CharacterList : ScriptableObject
 {
     public List<string> characterNames;
-    public List<string> GetCharacterNames(){ return characterNames; }
+    public void SetCharacterNames(List<string> newInfo)
+    {
+        characterNames = new List<string>(newInfo);
+    }
+    public List<string> GetCharacterNames() { return characterNames; }
     public List<string> characters;
-    public List<string> GetCharacterSprites(){ return characters; }
+    public void SetCharacterSprites(List<string> newInfo)
+    {
+        characters = new List<string>(newInfo);
+    }
+    public List<string> GetCharacterSprites() { return characters; }
     public List<string> stats;
-    public List<string> GetCharacterStats(){ return stats; }
+    public void SetCharacterStats(List<string> newInfo)
+    {
+        stats = new List<string>(newInfo);
+    }
+    public List<string> GetCharacterStats() { return stats; }
     public List<string> equipment;
-    public List<string> GetCharacterEquipment(){ return equipment; }
+    public void SetCharacterEquipment(List<string> newInfo)
+    {
+        equipment = new List<string>(newInfo);
+    }
+    public List<string> GetCharacterEquipment() { return equipment; }
+    public string ReturnPartyMemberEquipFromIndex(int selected)
+    {
+        return equipment[selected];
+    }
+    public string EquipToMember(string equip, int memberIndex, Equipment dummyEquip)
+    {
+        List<string> currentEquipment = equipment[memberIndex].Split("@").ToList();
+        dummyEquip.SetAllStats(equip);
+        string newSlot = dummyEquip.GetSlot();
+        string oldEquip = "";
+        for (int i = 0; i < currentEquipment.Count; i++)
+        {
+            if (currentEquipment[i].Length < 6) { continue; }
+            dummyEquip.SetAllStats(currentEquipment[i]);
+            string oldSlot = dummyEquip.GetSlot();
+            if (oldSlot == newSlot)
+            {
+                oldEquip = currentEquipment[i];
+                currentEquipment.RemoveAt(i);
+                break;
+            }
+        }
+        equipment[memberIndex] = equip + "@";
+        for (int i = 0; i < currentEquipment.Count; i++)
+        {
+            equipment[memberIndex] += currentEquipment[i];
+            if (i < currentEquipment.Count - 1)
+            {
+                equipment[memberIndex] += "@";
+            }
+        }
+        return oldEquip;
+    }
+    public string UnequipFromMember(int index, string slot, Equipment dummyEquip)
+    {
+        string oldEquip = "";
+        List<string> currentEquipment = equipment[index].Split("@").ToList();
+        for (int i = 0; i < currentEquipment.Count; i++)
+        {
+            if (currentEquipment[i].Length < 7) { continue; }
+            dummyEquip.SetAllStats(currentEquipment[i]);
+            if (slot == dummyEquip.GetSlot())
+            {
+                oldEquip = currentEquipment[i];
+                currentEquipment.RemoveAt(i);
+                break;
+            }
+        }
+        equipment[index] = "";
+        for (int i = 0; i < currentEquipment.Count; i++)
+        {
+            equipment[index] += currentEquipment[i];
+            if (i < currentEquipment.Count - 1)
+            {
+                equipment[index] += "@";
+            }
+        }
+        return oldEquip;
+    }
 
     public void ResetLists()
     {
