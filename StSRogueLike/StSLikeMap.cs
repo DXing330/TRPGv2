@@ -150,7 +150,8 @@ public class StSLikeMap : MapManager
                 sceneMover.LoadScene(restSceneName);
                 break;
             case "Store":
-                popUp.SetMessage("Buy Equipment & Hire Grunts");
+                //popUp.SetMessage("Buy Equipment & Hire Grunts");
+                sceneMover.LoadScene(storeSceneName);
                 break;
             case "Elite":
                 popUp.SetMessage("Enter Hard Battle");

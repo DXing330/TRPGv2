@@ -6,7 +6,7 @@ using TMPro;
 
 public class Store : MonoBehaviour
 {
-    void Start(){LoadStore();}
+    protected virtual void Start(){LoadStore();}
     public string storeName;
     public int baseEquipStock;
     public int baseItemStock;
@@ -16,7 +16,7 @@ public class Store : MonoBehaviour
     public InventoryUI inventoryUI;
     public ItemDetailViewer itemDetailViewer;
     public StatDatabase storeData;
-    protected void LoadStore()
+    protected virtual void LoadStore()
     {
         string[] blocks = storeData.ReturnValue(storeName).Split("|");
         if (blocks.Length < 4){return;}

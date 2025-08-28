@@ -16,12 +16,30 @@ public class ItemDetailViewer : MonoBehaviour
     public StatDatabase itemData;
     public ActiveSkill active;
     public ActiveDescriptionViewer itemDescriptions;
+    public SelectStatTextList passiveSelect;
+    public PassiveDetailViewer passiveDetails;
 
     public void ResetView()
     {
         itemName.text = "";
         itemInfo.text = "";
     }
+
+    public void ShowEquipmentInfo(string newInfo)
+    {
+        equipment.SetAllStats(newInfo);
+        itemName.text = equipment.GetName();
+        itemInfo.text = "Grants the user: ";
+        passiveSelect.SetStatsAndData(equipment.GetPassives(), equipment.GetPassiveLevels());
+    }
+
+    public void ViewPassiveDetails()
+    {
+        int index = passiveSelect.GetSelected();
+        if (index < 0) { return; }
+        passiveDetails.UpdatePassiveNames(equipment.GetPassives()[index], equipment.GetPassiveLevels()[index]);
+    }
+
     public void ShowInfo(string newItem)
     {
         string data = "";

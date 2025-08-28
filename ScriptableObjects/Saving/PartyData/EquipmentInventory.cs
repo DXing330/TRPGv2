@@ -28,7 +28,7 @@ public class EquipmentInventory : SavedData
         dataList.RemoveAt(index);
         SortEquipment();
     }
-    public string TakeEquipment(int index, int slot, bool remove = false)
+    public string TakeEquipment(int index, int slot, bool remove = true)
     {
         switch (slot)
         {
