@@ -11,7 +11,6 @@ public class BattleSimulatorState : BattleState
     public string delimiterThree;
     public CharacterList partyOneList;
     public CharacterList partyTwoList;
-    public List<string> terrainTypes;
     public override void SetTerrainType()
     {
         battleMapFeatures.SetTerrainType(GetTerrainType());
@@ -20,12 +19,10 @@ public class BattleSimulatorState : BattleState
     {
         return terrainTypes[UnityEngine.Random.Range(0, terrainTypes.Count)];
     }
-    public List<string> weatherTypes;
     public override string GetWeather()
     {
         return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
     }
-    public List<string> timeOfDayTypes;
     public override string GetTime()
     {
         return timeOfDayTypes[UnityEngine.Random.Range(0, timeOfDayTypes.Count)];

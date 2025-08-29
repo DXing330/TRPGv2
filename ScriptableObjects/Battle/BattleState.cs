@@ -16,20 +16,35 @@ public class BattleState : SavedState
     public void SetEnemyNames(List<string> newEnemies){enemies = new List<string>(newEnemies);}
     public void UpdateEnemyNames(){enemies = new List<string>(enemyList.characters);}
     public string terrainType;
+    public List<string> terrainTypes;
     public virtual void SetTerrainType()
     {
+        if (overworldState == null)
+        {
+            terrainType = terrainTypes[UnityEngine.Random.Range(0, terrainTypes.Count)];
+            return;
+        }
         terrainType = overworldState.GetLocationTerrain();
         battleMapFeatures.SetTerrainType(terrainType);
     }
     public virtual string GetTerrainType(){return terrainType;}
     public void UpdateTerrainType(){battleMapFeatures.SetTerrainType(terrainType);}
+    public List<string> timeOfDayTypes;
     public virtual string GetTime()
     {
+        if (overworldState == null)
+        {
+            return timeOfDayTypes[UnityEngine.Random.Range(0, timeOfDayTypes.Count)];
+        }
         return overworldState.GetTime();
     }
-
+    public List<string> weatherTypes;
     public virtual string GetWeather()
     {
+        if (overworldState == null)
+        {
+            return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
+        }
         return overworldState.GetWeather();
     }
 

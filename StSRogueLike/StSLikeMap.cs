@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,6 +46,31 @@ public class StSLikeMap : MapManager
         }
     }
     public SceneMover sceneMover;
+    public string battleSceneName;
+    public CharacterList enemyList;
+    public void GenerateEnemies(int difficulty)
+    {
+        enemyList.ResetLists();
+        string allEnemies = "";
+        switch (savedState.ReturnCurrentFloor())
+        {
+            case 1:
+                allEnemies = floorOneEnemies.ReturnRandomKey();
+                if (int.Parse(floorOneEnemies.ReturnValue(allEnemies)) > difficulty)
+                {
+                    GenerateEnemies(difficulty);
+                }
+                else
+                {
+                    enemyList.AddCharacters(allEnemies.Split("|").ToList());
+                }
+                return;
+        }
+        allEnemies = floorOneEnemies.ReturnRandomKey();
+        enemyList.AddCharacters(allEnemies.Split("|").ToList());
+    }
+    public StatDatabase floorOneEnemies;
+    public StatDatabase floorOneElites;
     public string restSceneName;
     public string storeSceneName;
     public string treasureSceneName;
@@ -139,7 +165,10 @@ public class StSLikeMap : MapManager
         switch (mapInfo[partyLocation])
         {
             case "Enemy":
-                popUp.SetMessage("Enter Battle");
+                //popUp.SetMessage("Enter Battle");
+                // Generate enemies based on various factors.
+                GenerateEnemies(savedState.ReturnCurrentDifficulty());
+                sceneMover.MoveToBattle();
                 break;
             case "Treasure":
                 //popUp.SetMessage("Equipment & Money");

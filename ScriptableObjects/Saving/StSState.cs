@@ -12,10 +12,33 @@ public class StSState : SavedState
     public override void NewGame()
     {
         newGame = 1;
+        currentFloor = 1;
+        battlesFought = 0;
         Save();
         return;
     }
     public int newGame = 1;
+    public int currentFloor = 1;
+    public int ReturnCurrentFloor()
+    {
+        return currentFloor;
+    }
+    public void CompleteFloor()
+    {
+        currentFloor++;
+        battlesFought = 0;
+        Save();
+    }
+    public int battlesFought = 0;
+    public void CompleteBattle()
+    {
+        battlesFought++;
+        Save();
+    }
+    public int ReturnCurrentDifficulty()
+    {
+        return (int)Mathf.Sqrt(battlesFought);
+    }
     public bool StartingNewGame()
     {
         return newGame == 1;
@@ -30,8 +53,6 @@ public class StSState : SavedState
         return mapInfo[partyPathing[partyPathing.Count - 1]];
     }
     public List<int> partyPathing;
-    public List<string> storeInfo;
-    public List<int> storePrices;
     public int eventIndex;
     public void SetDataFromMap(StSLikeMap map)
     {
@@ -40,11 +61,10 @@ public class StSState : SavedState
         partyPathing = new List<int>(map.partyPathing);
         Save();
     }
-
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = newGame + delimiter + String.Join(delimiterTwo, mapInfo) + delimiter + String.Join(delimiterTwo, partyPathing);
+        allData = newGame + delimiter + String.Join(delimiterTwo, mapInfo) + delimiter + String.Join(delimiterTwo, partyPathing) + delimiter + currentFloor + delimiter + battlesFought;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -57,8 +77,12 @@ public class StSState : SavedState
         if (dataList[2].Length <= 0)
         {
             partyPathing = new List<int>();
-            return;
         }
-        partyPathing = utility.ConvertStringListToIntList(dataList[2].Split(delimiterTwo).ToList());
+        else
+        {
+            partyPathing = utility.ConvertStringListToIntList(dataList[2].Split(delimiterTwo).ToList());
+        }
+        currentFloor = int.Parse(dataList[3]);
+        battlesFought = int.Parse(dataList[4]);
     }
 }

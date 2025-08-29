@@ -6,6 +6,7 @@ using TMPro;
 public class BattleEndManager : MonoBehaviour
 {
     public bool test = false;
+    public bool subGame = false;
     public BattleStatsTracker battleStatsTracker;
     public PartyDataManager partyData;
     public TacticActor dummyActor;
