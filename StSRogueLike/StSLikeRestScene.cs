@@ -42,6 +42,7 @@ public class StSLikeRestScene : MonoBehaviour
             }
             partyData.UpdatePartyMember(dummyActor, i);
         }
+        partyData.SetFullParty();
     }
     void Start()
     {

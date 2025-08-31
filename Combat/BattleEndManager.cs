@@ -114,6 +114,7 @@ public class BattleEndManager : MonoBehaviour
 
     public void ReturnFromBattle()
     {
+        partyData.SetFullParty();
         sceneMover.ReturnFromBattle(winnerTeam);
     }
 
@@ -186,6 +187,7 @@ public class BattleEndManager : MonoBehaviour
             }
         }
         if (actorNames.Count <= 0) { allSkillUps.Disable(); return; }
+        allSkillUps.Enable();
         allSkillUps.SetStatsAndData(actorNames, skillUpNames);
     }
 

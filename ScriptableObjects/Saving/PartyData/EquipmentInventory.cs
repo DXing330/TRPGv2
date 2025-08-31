@@ -10,6 +10,7 @@ public class EquipmentInventory : SavedData
     public StatDatabase equipData;
     public List<string> GetAllEquipment()
     {
+        utility.RemoveEmptyListItems(dataList);
         return new List<string>(dataList);
     }
     public int GetEquipmentCount()
@@ -96,6 +97,7 @@ public class EquipmentInventory : SavedData
 
     public void SortEquipment()
     {
+        utility.RemoveEmptyListItems(dataList);
         allWeapons.Clear();
         allArmor.Clear();
         allCharms.Clear();

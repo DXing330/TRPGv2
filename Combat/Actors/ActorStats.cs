@@ -398,6 +398,11 @@ public class ActorStats : ActorPassives
     {
         int index = statNames.IndexOf(curseStatName);
         stats[index] = newInfo;
+        string[] blocks = newInfo.Split(",");
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            AddStatus(blocks[i], -1);
+        }
     }
     public List<string> GetCurses()
     {

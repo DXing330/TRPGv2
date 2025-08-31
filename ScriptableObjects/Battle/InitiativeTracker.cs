@@ -14,7 +14,27 @@ public class InitiativeTracker : ScriptableObject
         {
             initiative.Add(actors[i].GetInitiative());
         }
-        return QuickSortActorsByIntList(actors, initiative, 0, actors.Count - 1);
+        return InsertionSortActorsByIntList(actors, initiative);
+    }
+
+    public List<TacticActor> InsertionSortActorsByIntList(List<TacticActor> actors, List<int> stats)
+    {
+        int n = stats.Count;
+        for (int i = 1; i < n; i++)
+        {
+            int key = stats[i];
+            TacticActor actorKey = actors[i];
+            int j = i - 1;
+            while (j >= 0 && stats[j] > key)
+            {
+                stats[j + 1] = stats[j];
+                actors[j + 1] = actors[j];
+                j = j - 1;
+            }
+            stats[j + 1] = key;
+            actors[j + 1] = actorKey;
+        }
+        return actors;
     }
 
     public List<TacticActor> QuickSortActorsByIntList(List<TacticActor> actors, List<int> stats, int leftIndex, int rightIndex)

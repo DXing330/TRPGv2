@@ -82,6 +82,7 @@ public class StSStore : Store
         sellEquipmentObject.SetActive(false);
         selectEquipmentToSell.ResetSelected();
         rareItemInventoryUI.UpdateKeyValues();
+        rareItemViewer.ResetView();
     }
     public void UpdateEquipmentToSell()
     {
@@ -92,6 +93,7 @@ public class StSStore : Store
             sellingEquipment = false;
             return;
         }
+        rareItemViewer.ResetView();
         sellingEquipment = true;
         sellEquipmentButtonObject.SetActive(true);
         sellEquipmentObject.SetActive(true);
@@ -111,6 +113,12 @@ public class StSStore : Store
             sellablePrices.Add(price.ToString());
         }
         selectEquipmentToSell.SetStatsAndData(sellableEquipmentNames, sellablePrices);
+    }
+
+    public void ClickOnEquipmentToSell()
+    {
+        rareItemViewer.ViewEquip();
+        rareItemViewer.ShowEquipmentInfo(sellableEquipment[selectEquipmentToSell.GetSelected()]);
     }
 
     public void ClickOnRareEquipment()

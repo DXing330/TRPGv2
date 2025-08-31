@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneMover : MonoBehaviour
 {
+    public bool rogueLike = false;
+    public SavedData rogueLikeData;
     public string mainMenuSceneName = "Start";
     public void ReturnToMainMenu()
     {
@@ -179,6 +181,12 @@ public class SceneMover : MonoBehaviour
 
     public void ReturnFromBattle(int victory = 0)
     {
+        // If you die during the roguelike, then reset.
+        if (victory != 0 && rogueLike)
+        {
+            rogueLikeData.NewGame();
+            ReturnToMainMenu();
+        }
         // Fail any quest in the dungeon.
         if (victory != 0 && sceneTracker.GetPreviousScene() == dungeonSceneName)
         {

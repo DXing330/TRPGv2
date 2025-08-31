@@ -23,6 +23,10 @@ public class ItemDetailViewer : MonoBehaviour
     {
         itemName.text = "";
         itemInfo.text = "";
+        if (passiveSelect != null)
+        {
+            passiveSelect.SetStatsAndData(new List<string>(), new List<string>());
+        }
     }
 
     public void ShowEquipmentInfo(string newInfo)

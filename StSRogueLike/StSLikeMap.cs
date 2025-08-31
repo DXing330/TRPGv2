@@ -12,6 +12,7 @@ public class StSLikeMap : MapManager
         {
             GeneratePaths();
             SaveState();
+            partyData.NewGame();
         }
         else
         {
@@ -47,6 +48,7 @@ public class StSLikeMap : MapManager
     }
     public SceneMover sceneMover;
     public string battleSceneName;
+    public BattleState battleState;
     public CharacterList enemyList;
     public void GenerateEnemies(int difficulty)
     {
@@ -62,12 +64,16 @@ public class StSLikeMap : MapManager
                 }
                 else
                 {
-                    enemyList.AddCharacters(allEnemies.Split("|").ToList());
+                    string[] dataBlocks = allEnemies.Split("-");
+                    battleState.ForceTerrainType(dataBlocks[0]);
+                    enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
                 }
                 return;
         }
         allEnemies = floorOneEnemies.ReturnRandomKey();
-        enemyList.AddCharacters(allEnemies.Split("|").ToList());
+        string[] rngDataBlocks = allEnemies.Split("-");
+        battleState.ForceTerrainType(rngDataBlocks[0]);
+        enemyList.AddCharacters(rngDataBlocks[1].Split("|").ToList());
     }
     public StatDatabase floorOneEnemies;
     public StatDatabase floorOneElites;

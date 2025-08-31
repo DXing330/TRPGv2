@@ -17,11 +17,15 @@ public class BattleState : SavedState
     public void UpdateEnemyNames(){enemies = new List<string>(enemyList.characters);}
     public string terrainType;
     public List<string> terrainTypes;
+    public virtual void ForceTerrainType(string newInfo)
+    {
+        terrainType = newInfo;
+        battleMapFeatures.SetTerrainType(terrainType);
+    }
     public virtual void SetTerrainType()
     {
         if (overworldState == null)
         {
-            terrainType = terrainTypes[UnityEngine.Random.Range(0, terrainTypes.Count)];
             return;
         }
         terrainType = overworldState.GetLocationTerrain();
