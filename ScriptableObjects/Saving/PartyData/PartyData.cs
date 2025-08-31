@@ -63,7 +63,6 @@ public class PartyData : SavedData
             dummyActor.SetCurses(newCurrentStats[1]);
         }
         partyStats[index] = dummyActor.GetStats();
-        Debug.Log(partyStats[index]);
         UpdateDefeatedMemberTracker(index);
     }
     public void ClearAllStats()
