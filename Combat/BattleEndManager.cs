@@ -7,6 +7,9 @@ public class BattleEndManager : MonoBehaviour
 {
     public bool test = false;
     public bool subGame = false;
+    public StSState stsState;
+    public StatDatabase stsRewardData;
+    public StSBattleRewards stsBattleRewardManager;
     public BattleStatsTracker battleStatsTracker;
     public PartyDataManager partyData;
     public TacticActor dummyActor;
@@ -19,6 +22,8 @@ public class BattleEndManager : MonoBehaviour
     public List<string> actorNames;
     public List<string> skillUpNames;
     public StatTextList allSkillUps;
+    public StatTextList allNewAllies;
+    public StatTextList allLootDrops;
     public int maxSkillLevel = 4;
     public int winnerTeam = -1;
     public void SetWinnerTeam(int newInfo) { winnerTeam = newInfo; }
@@ -103,6 +108,40 @@ public class BattleEndManager : MonoBehaviour
             battleResult.text = "<color=green>Victory!</color>";
             CalculateSkillUps(true);
             CalculateSkillUps(false);
+            if (subGame)
+            {
+                string battleType = stsState.ReturnCurrentTile();
+                stsBattleRewardManager.GenerateRewards(stsRewardData.ReturnValue(battleType));
+                // Show the rewards as needed.
+                List<string> itemRewards = stsBattleRewardManager.GetEquipmentRewardNames();
+                List<string> itemRewardQuantities = new List<string>();
+                for (int i = 0; i < itemRewards.Count; i++)
+                {
+                    itemRewardQuantities.Add("1");
+                }
+                int goldReward = stsBattleRewardManager.GetGoldReward();
+                if (goldReward > 0)
+                {
+                    itemRewards.Add("Gold");
+                    itemRewardQuantities.Add(goldReward.ToString());
+                }
+                allLootDrops.SetStatsAndData(itemRewards, itemRewardQuantities);
+                if (itemRewards.Count <= 0)
+                {
+                    allLootDrops.Disable();
+                }
+                List<string> allyRewards = stsBattleRewardManager.GetAllyRewards();
+                List<string> aQ = new List<string>();
+                for (int i = 0; i < allyRewards.Count; i++)
+                {
+                    aQ.Add(" ");
+                }
+                allNewAllies.SetStatsAndData(allyRewards, aQ);
+                if (allyRewards.Count <= 0)
+                {
+                    allNewAllies.Disable();
+                }
+            }
         }
         else
         {

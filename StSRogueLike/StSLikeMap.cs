@@ -50,10 +50,28 @@ public class StSLikeMap : MapManager
     public string battleSceneName;
     public BattleState battleState;
     public CharacterList enemyList;
-    public void GenerateEnemies(int difficulty)
+    public void GenerateEnemies(int difficulty, bool elite = false)
     {
         enemyList.ResetLists();
         string allEnemies = "";
+        if (elite)
+        {
+            switch (savedState.ReturnCurrentFloor())
+            {
+                case 1:
+                    // Later should make sure you don't fight two elites in a row.
+                    allEnemies = floorOneElites.ReturnRandomKey();
+                    string[] eliteData = allEnemies.Split("-");
+                    battleState.ForceTerrainType(eliteData[0]);
+                    enemyList.AddCharacters(eliteData[1].Split("|").ToList());
+                    return;
+            }
+            allEnemies = floorOneElites.ReturnRandomKey();
+            string[] rngEliteData = allEnemies.Split("-");
+            battleState.ForceTerrainType(rngEliteData[0]);
+            enemyList.AddCharacters(rngEliteData[1].Split("|").ToList());
+            return;
+        }
         switch (savedState.ReturnCurrentFloor())
         {
             case 1:
@@ -171,13 +189,11 @@ public class StSLikeMap : MapManager
         switch (mapInfo[partyLocation])
         {
             case "Enemy":
-                //popUp.SetMessage("Enter Battle");
                 // Generate enemies based on various factors.
                 GenerateEnemies(savedState.ReturnCurrentDifficulty());
                 sceneMover.MoveToBattle();
                 break;
             case "Treasure":
-                //popUp.SetMessage("Equipment & Money");
                 sceneMover.LoadScene(treasureSceneName);
                 break;
             case "Rest":
@@ -185,13 +201,16 @@ public class StSLikeMap : MapManager
                 sceneMover.LoadScene(restSceneName);
                 break;
             case "Store":
-                //popUp.SetMessage("Buy Equipment & Hire Grunts");
                 sceneMover.LoadScene(storeSceneName);
                 break;
             case "Elite":
-                popUp.SetMessage("Enter Hard Battle");
+                // Elites have different rewards, need to do something about that.
+                GenerateEnemies(savedState.ReturnCurrentDifficulty(), true);
+                sceneMover.MoveToBattle();
                 break;
             case "Event":
+                // Start copying the STS events, you can select actors for events.
+                // Some events will select actors for you.
                 popUp.SetMessage("Random Event");
                 break;
         }

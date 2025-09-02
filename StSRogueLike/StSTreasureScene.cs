@@ -20,13 +20,13 @@ public class StSTreasureScene : MonoBehaviour
     public GameObject equipmentPassiveViewerObject;
     public EquipmentPassiveViewer equipmentPassiveViewer;
 
-    public string GetRandomEquipment()
+    public string GetRandomEquipment(int mininmumRarity = -1)
     {
         string rEquip = rareEquipmentData.ReturnRandomValue();
         dummyEquip.SetAllStats(rEquip);
-        if (dummyEquip.GetRarity() < equipMinRarity)
+        if (dummyEquip.GetRarity() < mininmumRarity)
         {
-            return GetRandomEquipment();
+            return GetRandomEquipment(mininmumRarity);
         }
         return rEquip;
     }

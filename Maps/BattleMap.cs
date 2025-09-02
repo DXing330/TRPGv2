@@ -299,13 +299,49 @@ public class BattleMap : MapManager
         return GetActorsOnTiles(mapUtility.AdjacentTiles(tileNumber, mapSize));
     }
 
+    public bool AlliesInTiles(TacticActor actor, List<int> tiles)
+    {
+        int team = actor.GetTeam();
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            TacticActor tileActor = GetActorOnTile(tiles[i]);
+            if (tileActor == null)
+            {
+                continue;
+            }
+            if (tileActor.GetTeam() == team)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool EnemiesInTiles(TacticActor actor, List<int> tiles)
+    {
+        int team = actor.GetTeam();
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            TacticActor tileActor = GetActorOnTile(tiles[i]);
+            if (tileActor == null)
+            {
+                continue;
+            }
+            if (tileActor.GetTeam() != team)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<TacticActor> GetAdjacentAllies(TacticActor actor)
     {
         List<TacticActor> all = new List<TacticActor>();
         all = GetAdjacentActors(actor.GetLocation());
         for (int i = all.Count - 1; i >= 0; i--)
         {
-            if (all[i].GetTeam() != actor.GetTeam()){all.RemoveAt(i);}
+            if (all[i].GetTeam() != actor.GetTeam()) { all.RemoveAt(i); }
         }
         return all;
     }

@@ -378,6 +378,12 @@ public class BattleManager : MonoBehaviour
                 yield break;
             }
             activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
+            // If the skill has no valid targets in the case of an AOE, then just do a normal action.
+            if (!actorAI.ValidSkillTargets(turnActor, map, activeManager))
+            {
+                StartCoroutine(StandardNPCAction(actionsLeft));
+                yield break;
+            }
             ActivateSkill(actorAI.ReturnAIActiveSkill());
             activeManager.ActivateSkill(this);
             if (longDelays)
@@ -538,7 +544,8 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < actionsLeft; i++)
         {
             // Find a new target if needed.
-            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
+            // Don't hit your allies even if they hit you.
+            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0 || turnActor.GetTarget().GetTeam() == turnActor.GetTeam())
             {
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);

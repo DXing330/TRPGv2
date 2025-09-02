@@ -8,7 +8,7 @@ public class ActorAI : ScriptableObject
     public GeneralUtility utility;
     public string AIType;
     public string activeSkillName;
-    public string ReturnAIActiveSkill(){return activeSkillName;}
+    public string ReturnAIActiveSkill() { return activeSkillName; }
     public ActiveSkill active;
     public StatDatabase activeData;
     public StatDatabase actorAttackSkills;
@@ -17,7 +17,7 @@ public class ActorAI : ScriptableObject
     public bool NormalTurn(TacticActor actor, int roundIndex)
     {
         string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetPersonalName());
-        if (fullSkillRotation == "" || fullSkillRotation == "-1"){return true;}
+        if (fullSkillRotation == "" || fullSkillRotation == "-1") { return true; }
         string[] skillRotation = fullSkillRotation.Split("|");
         string skillIndexString = skillRotation[(roundIndex - 1) % (skillRotation.Length)];
         // R for Random.
@@ -38,13 +38,13 @@ public class ActorAI : ScriptableObject
 
     public string ReturnAIAttackSkill(TacticActor actor)
     {
-        int activeSkillIndex = utility.SafeParseInt(actorAttackSkills.ReturnValue(actor.GetSpriteName()),-1);
+        int activeSkillIndex = utility.SafeParseInt(actorAttackSkills.ReturnValue(actor.GetSpriteName()), -1);
         // Check if the skill exists.
         if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return ""; }
         // Check if the skill is an attack skill.
         string skillName = actor.GetActiveSkill(activeSkillIndex);
         active.LoadSkill(activeData.ReturnStats(skillName));
-        if (active.GetSkillType() != "Damage"){ return ""; }
+        if (active.GetSkillType() != "Damage") { return ""; }
         return skillName;
     }
 
@@ -53,7 +53,7 @@ public class ActorAI : ScriptableObject
         int originalLocation = currentActor.GetLocation();
         moveManager.GetAllMoveCosts(currentActor, map.battlingActors);
         List<int> path = new List<int>();
-        if (currentActor.GetTarget() == null){return path;}
+        if (currentActor.GetTarget() == null) { return path; }
         // Find the direction to the target.
         int directionToTarget = moveManager.DirectionBetweenActors(currentActor, currentActor.GetTarget());
         // Move in the opposite direction.
@@ -134,7 +134,7 @@ public class ActorAI : ScriptableObject
         }
         // If there is only one enemy then thats the target.
         if (enemies.Count == 1) { return enemies[0]; }
-        if (enemies.Count <= 0){ return null; }
+        if (enemies.Count <= 0) { return null; }
         int distance = 9999;
         List<int> possibleIndices = new List<int>();
         for (int i = 0; i < enemies.Count; i++)
@@ -153,18 +153,18 @@ public class ActorAI : ScriptableObject
         }
         return enemies[possibleIndices[Random.Range(0, possibleIndices.Count)]];
     }
-    
+
     public bool EnemyInAttackableRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
     {
-        if (target == null){return false;}
-        if (target.GetHealth() <= 0){return false;}
+        if (target == null) { return false; }
+        if (target.GetHealth() <= 0) { return false; }
         return moveManager.TileInAttackableRange(currentActor, target.GetLocation());
     }
 
     public bool EnemyInAttackRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
     {
-        if (target == null){return false;}
-        if (target.GetHealth() <= 0){return false;}
+        if (target == null) { return false; }
+        if (target.GetHealth() <= 0) { return false; }
         return moveManager.TileInAttackRange(currentActor, target.GetLocation());
     }
 
@@ -175,8 +175,8 @@ public class ActorAI : ScriptableObject
             return currentActor.GetLocation();
         }
         List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
-        if (targetableTiles.Count <= 0){return -1;}
-        if (targetableTiles.Count == 1){ return targetableTiles[0]; }
+        if (targetableTiles.Count <= 0) { return -1; }
+        if (targetableTiles.Count == 1) { return targetableTiles[0]; }
         if (active.GetEffect() == "Summon")
         {
             // Look for an empty tile in range.
@@ -188,5 +188,24 @@ public class ActorAI : ScriptableObject
             return targetableTiles[Random.Range(0, targetableTiles.Count)];
         }
         return -1;
+    }
+
+    public bool ValidSkillTargets(TacticActor currentActor, BattleMap map, ActiveManager activeManager)
+    {
+        // Determine the type of skill being used.
+        string skillType = activeManager.active.GetSkillType();
+        switch (skillType)
+        {
+            // If the skill has no type then it's a problem, just do a normal action.
+            case "":
+                return false;
+            case "Damage":
+                // For attacking skills, make sure at least 1 enemy is in range.
+                return map.EnemiesInTiles(currentActor, activeManager.targetedTiles);
+            case "Support":
+                // For supporting skills, make sure at least 1 ally is in range.
+                return map.AlliesInTiles(currentActor, activeManager.targetedTiles);
+        }
+        return true;
     }
 }

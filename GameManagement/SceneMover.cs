@@ -185,7 +185,9 @@ public class SceneMover : MonoBehaviour
         if (victory != 0 && rogueLike)
         {
             rogueLikeData.NewGame();
+            sceneTracker.NewGame();
             ReturnToMainMenu();
+            return;
         }
         // Fail any quest in the dungeon.
         if (victory != 0 && sceneTracker.GetPreviousScene() == dungeonSceneName)

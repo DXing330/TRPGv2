@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6fa0196a923ee344eb24299195ed193b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - partyData: {instanceID: 0}
+  - mapState: {fileID: 11400000, guid: 3db0a80c68480c14a9f574bd95e5e238, type: 2}
+  - allEquipmentRewards: {fileID: 11400000, guid: 5483408213549244e850e872ed62508e, type: 2}
+  - dummyEquip: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

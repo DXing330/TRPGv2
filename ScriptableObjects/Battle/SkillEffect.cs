@@ -74,6 +74,9 @@ public class SkillEffect : ScriptableObject
                 target.UpdateBaseHealth(int.Parse(effectSpecifics) * level, false);
                 target.UpdateHealth(int.Parse(effectSpecifics) * level, false);
                 break;
+            case "BaseHealth%":
+                target.UpdateBaseHealth(int.Parse(effectSpecifics) * level * target.GetBaseHealth() / basicDenominator, false);
+                break;
             case "BaseEnergy":
                 target.UpdateBaseEnergy(int.Parse(effectSpecifics) * level);
                 target.UpdateEnergy(int.Parse(effectSpecifics) * level);
@@ -121,11 +124,10 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Skill":
                 // Add an active skill.
-                string[] newSkills = effectSpecifics.Split(",");
-                for (int i = 0; i < newSkills.Length; i++)
-                {
-                    target.AddActiveSkill(newSkills[i]);
-                }
+                target.AddActiveSkill(effectSpecifics);
+                break;
+            case "Temporary Skill":
+                target.AddTempActive(effectSpecifics);
                 break;
             case "Speed":
                 target.UpdateSpeed(int.Parse(effectSpecifics) * level);
