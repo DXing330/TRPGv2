@@ -16,6 +16,11 @@ public class PartyData : SavedData
     public string delimiterTwo;
     public List<string> partyNames;
     public int PartyCount() { return partyNames.Count; }
+    public TacticActor ReturnActorAtIndex(int index)
+    {
+        dummyActor.SetStatsFromString(partyStats[index]);
+        return dummyActor;
+    }
     public void ChangeName(string newName, int index)
     {
         partyNames[index] = newName;
@@ -145,6 +150,17 @@ public class PartyData : SavedData
         for (int i = partyStats.Count - 1; i >= 0; i--)
         {
             if (defeatedMemberTracker[i])
+            {
+                RemoveStatsAtIndex(i);
+            }
+        }
+    }
+    public void RemoveDeadMembers()
+    {
+        for (int i = partyStats.Count - 1; i >= 0; i--)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            if (dummyActor.GetHealth() <= 0)
             {
                 RemoveStatsAtIndex(i);
             }

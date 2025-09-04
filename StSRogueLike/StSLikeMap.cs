@@ -99,10 +99,20 @@ public class StSLikeMap : MapManager
     public string storeSceneName;
     public string treasureSceneName;
     public string eventSceneName;
+    public List<bool> debugTileTypeAvailable;
+    public bool TileTypeAvailable(string tileType)
+    {
+        int indexOf = tileTypes.IndexOf(tileType);
+        return debugTileTypeAvailable[indexOf];
+    }
     public List<string> tileTypes;
     public string RandomTileType(string except = "")
     {
         string tileType = tileTypes[Random.Range(0, tileTypes.Count)];
+        if (!TileTypeAvailable(tileType))
+        {
+            return RandomTileType(except);
+        }
         if (tileType == except && nonRepeatableTileTypes.Contains(except))
         {
             return RandomTileType(except);
@@ -211,7 +221,8 @@ public class StSLikeMap : MapManager
             case "Event":
                 // Start copying the STS events, you can select actors for events.
                 // Some events will select actors for you.
-                popUp.SetMessage("Random Event");
+                //popUp.SetMessage("Random Event");
+                sceneMover.LoadScene(eventSceneName);
                 break;
         }
     }

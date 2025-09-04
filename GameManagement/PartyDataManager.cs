@@ -232,6 +232,24 @@ public class PartyDataManager : MonoBehaviour
         return count;
     }
 
+    public TacticActor ReturnActorAtIndex(int index)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (index < permanentCount)
+        {
+            return permanentPartyData.ReturnActorAtIndex(index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            return mainPartyData.ReturnActorAtIndex(index - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.ReturnActorAtIndex(index - permanentCount - mainCount);
+        }
+    }
+
     public void RenamePartyMember(string newInfo, int selected)
     {
         int permanentCount = permanentPartyData.PartyCount();
@@ -290,6 +308,25 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public void RemovePartyMember(int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        int tempCount = tempPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            permanentPartyData.RemoveStatsAtIndex(selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            mainPartyData.RemoveStatsAtIndex(selected - permanentCount);
+        }
+        else
+        {
+            tempPartyData.RemoveStatsAtIndex(selected - permanentCount - mainCount);
+        }
+    }
+
     public void HealParty()
     {
         permanentPartyData.ResetCurrentStats();
@@ -338,6 +375,12 @@ public class PartyDataManager : MonoBehaviour
         mainPartyData.RemoveDefeatedMembers();
         tempPartyData.RemoveDefeatedMembers();
         SetFullParty();
+    }
+
+    public void RemoveDeadPartyMembers()
+    {
+        mainPartyData.RemoveDeadMembers();
+        tempPartyData.RemoveDeadMembers();
     }
 
     public string ReturnPartyMemberStatsAtIndex(int index)
