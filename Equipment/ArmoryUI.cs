@@ -37,9 +37,20 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.ResetSelected();
     }
 
+    public virtual void UpdateSelectedActorWithCurrentHealth()
+    {
+        EndSelectingEquipment();
+        detailViewer.DisablePanel();
+        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        actorStats.UpdateActorStatTexts(selectedActor, true);
+        actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+        actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+        actorEquipment.ResetSelected();
+    }
+
     public virtual void ViewPassiveDetails()
     {
-        if (allActors.GetSelected() < 0){return;}
+        if (allActors.GetSelected() < 0) { return; }
         selectedPassive = actorPassives.statTexts[actorPassives.GetSelected()].GetStatText();
         selectedPassiveLevel = actorPassives.statTexts[actorPassives.GetSelected()].GetText();
         detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);

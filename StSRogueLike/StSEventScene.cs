@@ -6,9 +6,13 @@ using TMPro;
 
 public class StSEventScene : MonoBehaviour
 {
+    public string mainMapScene = "StSMap";
     public GeneralUtility utility;
+    public SceneMover sceneMover;
     public StSEvent stsEvent;
     public PartyDataManager partyData;
+    public TacticActor dummyActor;
+    public Equipment dummyEquip;
     public TMP_Text eventName;
     public TMP_Text eventDescription;
     public List<GameObject> choiceObjects;
@@ -18,12 +22,20 @@ public class StSEventScene : MonoBehaviour
     }
     public List<TMP_Text> eventChoices;
     public List<TMP_Text> choiceEffects;
-    public ActiveDescriptionViewer descriptionViewer;
+    public EventDescriptionViewer descriptionViewer;
     public GameObject actorSelect;
+    public ActorSpriteHPList actorSelectList;
 
     void Start()
     {
         stsEvent.GenerateEvent();
+        // Check if it's another scene.
+        if (stsEvent.SceneChangeEvent() != "")
+        {
+            sceneMover.LoadScene(stsEvent.SceneChangeEvent());
+            return;
+        }
+        // Check if it's a random battle.
         DisplayEvent();
     }
 
@@ -37,11 +49,36 @@ public class StSEventScene : MonoBehaviour
             choiceObjects[i].SetActive(true);
             string[] blocks = choices[i].Split("|");
             eventChoices[i].text = blocks[0];
+            choiceEffects[i].text = descriptionViewer.ReturnEventDescription(blocks);
         }
     }
 
     public void SelectChoice(int index)
     {
+        stsEvent.SelectChoice(index);
+        // Check if the choice requires selecting another choice.
+        string choice = eventChoices[index].text;
+        if (choice == "Choose Party Member")
+        {
+            // Choose a party member.
+            actorSelect.SetActive(true);
+            return;
+        }
+        // Check if the choice results in moving to a battle or some other special effect.
+        // Else apply the regular effect.
+        stsEvent.ApplyEventEffects(partyData);
+        partyData.Save();
+        sceneMover.LoadScene(mainMapScene);
+    }
 
+    public void SelectActor()
+    {
+        int index = actorSelectList.GetSelected();
+        if (index < 0){ return; }
+        // Eventually might do some 1v1 or special event battles?
+        // Load the actor based on the partydata.
+        stsEvent.ApplyEventEffects(partyData, partyData.ReturnActorAtIndex(index), index);
+        partyData.Save();
+        sceneMover.LoadScene(mainMapScene);
     }
 }

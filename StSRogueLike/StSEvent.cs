@@ -16,6 +16,21 @@ public class StSEvent : SavedData
         return eventName;
     }
     public string eventDetails;
+    public string SceneChangeEvent()
+    {
+        if (choices.Count == 1)
+        {
+            SelectChoice(0);
+            if (eventSpecifics.Count == 1)
+            {
+                // Reset the event for next time.
+                eventName = "";
+                Save();
+                return eventSpecifics[0];
+            }
+        }
+        return "";
+    }
     public string currentChoice;
     public List<string> eventTarget;
     public List<string> eventEffect;
@@ -66,6 +81,7 @@ public class StSEvent : SavedData
             eventName = eventData.ReturnRandomKey();
             eventDetails = eventData.ReturnValue(eventName);
             choices = eventDetails.Split("&").ToList();
+            Save();
         }
     }
 
@@ -78,7 +94,7 @@ public class StSEvent : SavedData
         eventSpecifics = blocks[3].Split(",").ToList();
     }
 
-    public void ApplyEventEffects(PartyDataManager partyData, TacticActor actor, int selectedIndex = -1)
+    public void ApplyEventEffects(PartyDataManager partyData, TacticActor actor = null, int selectedIndex = -1)
     {
         for (int i = 0; i < eventTarget.Count; i++)
         {
@@ -102,6 +118,7 @@ public class StSEvent : SavedData
                     break;
             }
         }
+        partyData.SetFullParty();
         // Reset the event for next time.
         eventName = "";
         Save();
@@ -109,6 +126,7 @@ public class StSEvent : SavedData
 
     public void ApplyEffectToActor(PartyDataManager partyData, TacticActor actor, int partyIndex, string effect, string specifics)
     {
+        if (actor == null){ return; }
         switch (effect)
         {
             case "Remove":

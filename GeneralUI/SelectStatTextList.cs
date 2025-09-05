@@ -73,7 +73,7 @@ public class SelectStatTextList : StatTextList
         return "";
     }
     // This is more specialized but placed here for now.
-    public void UpdateActorStatTexts(TacticActor actor)
+    public void UpdateActorStatTexts(TacticActor actor, bool currentHealth = false)
     {
         DisableChangePage();
         page = 0;
@@ -85,7 +85,14 @@ public class SelectStatTextList : StatTextList
         stats.Add("Energy");
         stats.Add("Move Speed");
         stats.Add("Initiative");
-        data.Add(actor.GetBaseHealth().ToString());
+        if (!currentHealth)
+        {
+            data.Add(actor.GetBaseHealth().ToString());
+        }
+        else
+        {
+            data.Add(actor.GetHealth() + "/" + actor.GetBaseHealth());
+        }
         data.Add(actor.GetBaseAttack().ToString());
         data.Add(actor.GetBaseDefense().ToString());
         data.Add(actor.GetBaseEnergy().ToString());

@@ -53,6 +53,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Status":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
             case "RemoveStatus":
+                if (s == "All")
+                {
+                return "Remove all status effect(s) from the target(s).";
+                }
                 return "Remove " + ASD(s) + " from the target(s).";
             case "Summon":
                 return "Summon a " + ASD(s) + ".";
