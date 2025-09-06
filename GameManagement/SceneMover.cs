@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class SceneMover : MonoBehaviour
 {
     public bool rogueLike = false;
+    public string mainRogueLikeScene = "StSMap";
     public SavedData rogueLikeData;
     public string mainMenuSceneName = "Start";
     public void ReturnToMainMenu()
@@ -187,6 +188,11 @@ public class SceneMover : MonoBehaviour
             rogueLikeData.NewGame();
             sceneTracker.NewGame();
             ReturnToMainMenu();
+            return;
+        }
+        else if (victory == 0 && rogueLike)
+        {
+            LoadScene(mainRogueLikeScene);
             return;
         }
         // Fail any quest in the dungeon.

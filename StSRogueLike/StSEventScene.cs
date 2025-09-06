@@ -10,7 +10,14 @@ public class StSEventScene : MonoBehaviour
     public GeneralUtility utility;
     public SceneMover sceneMover;
     public StSEvent stsEvent;
+    public void DebugNewEvent()
+    {
+        stsEvent.ForceGenerate();
+        DisplayEvent();
+    }
     public PartyDataManager partyData;
+    public BattleState battleState;
+    public CharacterList enemyList;
     public TacticActor dummyActor;
     public Equipment dummyEquip;
     public TMP_Text eventName;
@@ -65,6 +72,31 @@ public class StSEventScene : MonoBehaviour
             return;
         }
         // Check if the choice results in moving to a battle or some other special effect.
+        else if (choice == "Battle")
+        {
+            // Set the terrain.
+            battleState.ForceTerrainType(stsEvent.eventEffect[0]);
+            // Load the enemies.
+            enemyList.ResetLists();
+            List<string> allEnemies = new List<string>();
+            for (int i = 0; i < stsEvent.eventSpecifics.Count; i++)
+            {
+                string[] enemyGroup = stsEvent.eventSpecifics[i].Split("*");
+                // If no multiplier then it's a single enemy.
+                if (enemyGroup.Length == 1)
+                {
+                    allEnemies.Add(enemyGroup[0]);
+                    continue;
+                }
+                for (int j = 0; j < int.Parse(enemyGroup[1]); j++)
+                {
+                    allEnemies.Add(enemyGroup[0]);
+                }
+            }
+            enemyList.SetLists(allEnemies);
+            sceneMover.MoveToBattle();
+            return;
+        }
         // Else apply the regular effect.
         stsEvent.ApplyEventEffects(partyData);
         partyData.Save();

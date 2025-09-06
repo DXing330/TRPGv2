@@ -73,6 +73,13 @@ public class StSEvent : SavedData
         }
     }
 
+    public void ForceGenerate()
+    {
+        eventName = eventData.ReturnRandomKey();
+        eventDetails = eventData.ReturnValue(eventName);
+        choices = eventDetails.Split("&").ToList();
+    }
+
     public void GenerateEvent()
     {
         Load();

@@ -21,6 +21,14 @@ public class EventDescriptionViewer : MonoBehaviour
             {
                 description += ReturnActorEffectDescriptions(eventEffect[i], eventSpecifics[i]);
             }
+            else if (eventTarget[i] == "Inventory")
+            {
+                description += ReturnInventoryEffectDescriptions(eventEffect[i], eventSpecifics[i]);
+            }
+            else if (eventTarget[i] == "Battle")
+            {
+                description += "Fight your way through.";
+            }
             if (i < eventTarget.Count - 1)
             {
                 description += "\n";
