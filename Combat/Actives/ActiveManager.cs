@@ -149,11 +149,18 @@ public class ActiveManager : MonoBehaviour
                 return;
             case "Summon":
                 // Check if selected tile is free.
-                int summonLocation = selectedTile;
-                if (battle.map.GetActorOnTile(summonLocation) == null)
+                if (battle.map.GetActorOnTile(selectedTile) == null)
                 {
                     // Create a new actor on that location on the same team.
-                    battle.SpawnAndAddActor(summonLocation, specifics, skillUser.GetTeam());
+                    battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
+                }
+                return;
+            case "Summon Enemy":
+                // Check if selected tile is free.
+                if (battle.map.GetActorOnTile(selectedTile) == null)
+                {
+                    // Create a new actor on that location on the opposite team.
+                    battle.SpawnAndAddActor(selectedTile, specifics, (skillUser.GetTeam()+1) % 2);
                 }
                 return;
             case "Teleport":

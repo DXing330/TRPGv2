@@ -60,6 +60,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Remove " + ASD(s) + " from the target(s).";
             case "Summon":
                 return "Summon a " + ASD(s) + ".";
+            case "Summon Enemy":
+                return "Create a " + ASD(s) + ".";
             case "TerrainEffect":
                 return "Create " + ASD(s) + " on targeted tile(s).";
             case "Trap":

@@ -69,8 +69,10 @@ public class BattleStatsTracker : MonoBehaviour
     }
     // DISPLAYING STUFF
     public DamageStatDisplayManager damageStatDisplay;
-    public void DisplayDamageStats()
+    public int winningTeam;
+    public void DisplayDamageStats(int winningNumber = 0)
     {
+        winningTeam = winningNumber;
         damageStatDisplay.InitializeDisplay(this);
     }
 }

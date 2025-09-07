@@ -21,6 +21,11 @@ public class DamageStatDisplayManager : MonoBehaviour
     public SpriteContainer actorSprites;
     public List<GameObject> actorDisplayObjects;
     public List<DamageStatDisplay> actorDisplays;
+    public TMP_Text winningTeam;
+    public void SetWinningTeam(int winners)
+    {
+        winningTeam.text = "Winning Team: "+winners.ToString();
+    }
     public List<string> actorNames;
     public List<string> actorSpriteNames;
     public List<int> damageDealt;
@@ -50,6 +55,7 @@ public class DamageStatDisplayManager : MonoBehaviour
     {
         displayObject.SetActive(true);
         ResetStatDisplay();
+        SetWinningTeam(damageTracker.winningTeam);
         actorNames = damageTracker.GetActorNames();
         actorSpriteNames = damageTracker.GetActorSprites();
         damageDealt = damageTracker.GetDamageDealt();

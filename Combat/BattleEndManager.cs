@@ -98,7 +98,7 @@ public class BattleEndManager : MonoBehaviour
         if (test)
         {
             // Update the details.
-            battleStatsTracker.DisplayDamageStats();
+            battleStatsTracker.DisplayDamageStats(winningTeam);
             // Reset the battle.
             return;
         }
