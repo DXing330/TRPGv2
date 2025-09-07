@@ -93,7 +93,15 @@ public class PassiveDetailViewer : MonoBehaviour
                 return ".";
             case "Adjacent Ally":
                 return " if another ally is adjacent.";
+            case "Adjacent Ally A":
+                return " if another ally is adjacent.";
+            case "Adjacent Ally D":
+                return " if another ally is adjacent.";
             case "Adjacent Ally Sprite":
+                return " if a " + specifics + " ally is adjacent.";
+            case "Adjacent Ally Sprite A":
+                return " if a " + specifics + " ally is adjacent.";
+            case "Adjacent Ally Sprite D":
                 return " if a " + specifics + " ally is adjacent.";
             case "Direction":
                 switch (specifics)

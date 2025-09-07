@@ -34,8 +34,26 @@ public class ActiveSkill : SkillEffect
         skillInfoList = new List<string>(skillData.Split(activeSkillDelimiter));
         LoadSkill(skillInfoList);
     }
+    public void ResetSkillInfo()
+    {
+        skillType = "";
+        energyCost = "";
+        actionCost = "";
+        range = "";
+        rangeShape = "";
+        shape = "";
+        span = "";
+        effect = "";
+        specifics = "";
+        power = "";
+    }
     public void LoadSkill(List<string> skillData)
     {
+        if (skillData.Count < 10)
+        {
+            ResetSkillInfo();
+            return;
+        }
         skillType = skillData[0];
         energyCost = skillData[1];
         actionCost = skillData[2];

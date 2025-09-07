@@ -6,6 +6,7 @@ using UnityEngine;
 public class ActorAI : ScriptableObject
 {
     public GeneralUtility utility;
+    public AIConditionChecker conditionChecker;
     public string AIType;
     public string activeSkillName;
     public string ReturnAIActiveSkill() { return activeSkillName; }
@@ -13,6 +14,33 @@ public class ActorAI : ScriptableObject
     public StatDatabase activeData;
     public StatDatabase actorAttackSkills;
     public StatDatabase actorSkillRotation;
+    public StatDatabase bossSkillRotation;
+
+    public List<string> ReturnBossActions(TacticActor actor, BattleMap map)
+    {
+        List<string> actionsSpecifics = new List<string>();
+        // Get the full rotation.
+        string[] rotationBlocks = bossSkillRotation.ReturnValue(actor.GetSpriteName()).Split("#");
+        // Go through and determine which part of the rotation to use.
+        for (int i = 0; i < rotationBlocks.Length; i++)
+        {
+            string[] rotationDetails = rotationBlocks[i].Split("|");
+            if (conditionChecker.CheckConditions(rotationDetails[0], rotationDetails[1], actor, map))
+            {
+                actionsSpecifics.Add(rotationDetails[2]);
+                actionsSpecifics.Add(rotationDetails[3]);
+                return actionsSpecifics;
+            }
+        }
+        actionsSpecifics.Add("Basic");
+        actionsSpecifics.Add("None");
+        return actionsSpecifics;
+    }
+
+    public bool BossTurn(TacticActor actor)
+    {
+        return actorSkillRotation.ReturnValue(actor.GetSpriteName()) == "Boss";
+    }
 
     public bool NormalTurn(TacticActor actor, int roundIndex)
     {

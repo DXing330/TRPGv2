@@ -10,7 +10,7 @@ public class ActorMaker : MonoBehaviour
     public PassiveOrganizer passiveOrganizer;
     public MapPatternLocations mapPatterns;
     public int mapSize;
-    public void SetMapSize(int newSize){mapSize = newSize;}
+    public void SetMapSize(int newSize) { mapSize = newSize; }
 
     [ContextMenu("New Actor")]
     public TacticActor CreateActor()
@@ -46,9 +46,9 @@ public class ActorMaker : MonoBehaviour
 
     public List<TacticActor> SpawnTeamInPattern(int pattern, int team, List<string> teamNames, List<string> teamStats = null, List<string> teamPersonalNames = null, List<string> teamEquipment = null)
     {
-        if (teamStats == null){teamStats = new List<string>();}
-        if (teamPersonalNames == null){teamPersonalNames = new List<string>();}
-        if (teamEquipment == null){teamEquipment = new List<string>();}
+        if (teamStats == null) { teamStats = new List<string>(); }
+        if (teamPersonalNames == null) { teamPersonalNames = new List<string>(); }
+        if (teamEquipment == null) { teamEquipment = new List<string>(); }
         List<TacticActor> actors = new List<TacticActor>();
         // Randomize the team name order to randomize their spawn locations?
         List<int> patternLocations = mapPatterns.ReturnTilesOfPattern(pattern, teamNames.Count, mapSize);
@@ -77,5 +77,15 @@ public class ActorMaker : MonoBehaviour
             actors[i].ResetStats();
         }
         return actors;
+    }
+
+    public void ChangeActorForm(TacticActor actor, string newForm)
+    {
+        // Change the sprite name.
+        // Update the base stats of the actor.
+        actor.SetSpriteName((newForm));
+        actor.ChangeForm(actorStats.ReturnStats(newForm));
+        // Set the new base health equal to the current health.
+        actor.SetBaseHealth(actor.GetHealth());
     }
 }

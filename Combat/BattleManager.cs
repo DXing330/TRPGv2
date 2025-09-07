@@ -158,7 +158,12 @@ public class BattleManager : MonoBehaviour
     {
         UI.NPCTurn();
         int actionsLeft = turnActor.GetActions();
-        if (actionsLeft <= 0){StartCoroutine(EndTurn());}
+        if (actionsLeft <= 0) { StartCoroutine(EndTurn()); }
+        // Bosses are special?
+        else if (actorAI.BossTurn(turnActor))
+        {
+            StartCoroutine(BossTurn(actionsLeft));
+        }
         else if (!actorAI.NormalTurn(turnActor, roundNumber))
         {
             StartCoroutine(NPCSkillAction(actionsLeft));
@@ -363,13 +368,42 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    IEnumerator NPCSkillAction(int actionsLeft)
+    IEnumerator BossTurn(int actionsLeft)
+    {
+        List<string> turnDetails = actorAI.ReturnBossActions(turnActor, map);
+        // Some things you can do without actions.
+        switch (turnDetails[0])
+        {
+            case "Change Form":
+                // Update base stats based on new form.
+                actorMaker.ChangeActorForm(turnActor, turnDetails[1]);
+                // This will always take all your actions.
+                turnActor.ResetActions();
+                break;
+            case "Skill":
+                StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));
+                yield break;
+            case "Basic":
+                StartCoroutine(StandardNPCAction(actionsLeft));
+                yield break;
+        }
+        StartCoroutine(EndTurn());
+    }
+
+    IEnumerator NPCSkillAction(int actionsLeft, string skill = "")
     {
         for (int i = 0; i < actionsLeft; i++)
         {
             // Get the active and the targeted tile.
             activeManager.SetSkillUser(turnActor);
-            activeManager.SetSkillFromName(actorAI.ReturnAIActiveSkill());
+            if (skill == "")
+            {
+                activeManager.SetSkillFromName(actorAI.ReturnAIActiveSkill());
+            }
+            else
+            {
+                activeManager.SetSkillFromName(skill);
+            }
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
             // If you can't find a target or cast the skill then just do a regular action.
             if (targetedTile == -1 || !activeManager.CheckSkillCost())
@@ -384,7 +418,14 @@ public class BattleManager : MonoBehaviour
                 StartCoroutine(StandardNPCAction(actionsLeft));
                 yield break;
             }
-            ActivateSkill(actorAI.ReturnAIActiveSkill());
+            if (skill == "")
+            {
+                ActivateSkill(actorAI.ReturnAIActiveSkill());
+            }
+            else
+            {
+                ActivateSkill(skill);
+            }
             activeManager.ActivateSkill(this);
             if (longDelays)
             {

@@ -14,8 +14,10 @@ public class SkillEffect : ScriptableObject
         switch (effect)
         {
             case "Temporary Passive":
-                target.AddTempPassive(effectSpecifics, level);
-                passiveOrganizer.AddSortedPassive(target, effectSpecifics);
+                if (target.AddTempPassive(effectSpecifics, level))
+                {
+                    passiveOrganizer.AddSortedPassive(target, effectSpecifics);
+                }
                 break;
             case "Status":
                 int duration = level;

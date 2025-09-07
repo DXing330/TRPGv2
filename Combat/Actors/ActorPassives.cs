@@ -85,17 +85,20 @@ public class ActorPassives : MonoBehaviour
     // Temporary Passives Are Always Level 1.
     public List<string> tempPassives;
     public List<int> tempPassiveDurations;
-    public void AddTempPassive(string passive, int duration)
+    // Bool to know if you need to add it to the passive list or just extend the duraction.
+    public bool AddTempPassive(string passive, int duration)
     {
         int indexOf = tempPassives.IndexOf(passive);
         if (indexOf == -1)
         {
             tempPassives.Add(passive);
             tempPassiveDurations.Add(duration);
+            return true;
         }
         else
         {
             tempPassiveDurations[indexOf] += duration;
+            return false;
         }
     }
     // If any temp passives expire then reorganize the passives.

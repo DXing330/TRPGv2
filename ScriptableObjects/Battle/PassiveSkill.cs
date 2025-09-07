@@ -137,9 +137,14 @@ public class PassiveSkill : SkillEffect
                 return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "Tile<>":
                 return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
-            case "Adjacent Ally":
-                // Need to check adjacent tiles for allies.
-                return false;
+            case "Adjacent Ally A":
+                return map.AllyAdjacentToActor(attacker);
+            case "Adjacent Ally D":
+                return map.AllyAdjacentToActor(target);
+            case "Adjacent Ally Sprite A":
+                return map.AllyAdjacentWithSpriteName(attacker, conditionSpecifics);
+            case "Adjacent Ally Sprite D":
+                return map.AllyAdjacentWithSpriteName(target, conditionSpecifics);
             case "None":
                 return true;
             case "Distance":

@@ -15,6 +15,7 @@ public class ActorStats : ActorPassives
         statNames = allStatNames.Split("|").ToList();
     }
     public List<string> statNames;
+    public List<string> changeFormStatNames;
     public List<string> stats;
     public void ReloadPassives()
     {
@@ -31,6 +32,28 @@ public class ActorStats : ActorPassives
             if (i < stats.Count - 1) { allStats += "|"; }
         }
         return allStats;
+    }
+    public void ChangeFormFromString(string newStats)
+    {
+        ChangeForm(newStats.Split("|").ToList());
+    }
+    public void ChangeForm(List<string> newStats, List<string> newStatNames = null)
+    {
+        if (newStatNames == null)
+        {
+            newStatNames = new List<string>(changeFormStatNames);
+        }
+        ResetPassives();
+        ResetTempStats();
+        stats = newStats;
+        for (int i = 0; i < stats.Count; i++)
+        {
+            SetStat(stats[i], newStatNames[i]);
+        }
+        currentEnergy = baseEnergy;
+        currentAttack = baseAttack;
+        currentDefense = baseDefense;
+        currentSpeed = moveSpeed;
     }
     public void SetStatsFromString(string newStats)
     {
