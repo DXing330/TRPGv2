@@ -2,6 +2,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StSLikeMap : MapManager
 {
@@ -26,6 +27,7 @@ public class StSLikeMap : MapManager
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+        bossImage.sprite = bossSprites.SpriteDictionary(floorBoss);
     }
     protected void UpdateDirectionalArrows()
     {
@@ -95,11 +97,47 @@ public class StSLikeMap : MapManager
     }
     public StatDatabase floorOneEnemies;
     public StatDatabase floorOneElites;
+    public StatDatabase floorOneBosses;
+    public string floorBoss;
+    public void GenerateFloorBoss()
+    {
+        switch (savedState.ReturnCurrentFloor())
+        {
+            case 1:
+                floorBoss = floorOneBosses.ReturnRandomKey();
+                break;
+        }
+    }
+    public void EnterBossBattle()
+    {
+        // Make sure you're in the final tile.
+        if (partyPathing.Count < mapSize)
+        {
+            return;
+        }
+        enemyList.ResetLists();
+        List<string> bossData = new List<string>();
+        // Otherwise set the boss party.
+        switch (savedState.ReturnCurrentFloor())
+        {
+            case 1:
+                bossData = floorOneBosses.ReturnValue(floorBoss).Split("-").ToList();
+                battleState.ForceTerrainType(bossData[0]);
+                enemyList.AddCharacters(bossData[1].Split("|").ToList());
+                break;
+        }
+        savedState.BattleBoss();
+        SaveState();
+        sceneMover.MoveToBattle();
+    }
+    public SpriteContainer bossSprites;
+    public Image bossImage;
     public string restSceneName;
     public string storeSceneName;
     public string treasureSceneName;
     public string eventSceneName;
     public List<bool> debugTileTypeAvailable;
+    public List<bool> debugTileTypeActive;
     public bool TileTypeAvailable(string tileType)
     {
         int indexOf = tileTypes.IndexOf(tileType);
@@ -137,8 +175,18 @@ public class StSLikeMap : MapManager
     {
         ResetAll();
         savedState.Load();
+        if (savedState.bossBattled == 1)
+        {
+            // New floor.
+            savedState.CompleteFloor();
+            GeneratePaths();
+            SaveState();
+            UpdateMap();
+            return;
+        }
         mapInfo = new List<string>(savedState.mapInfo);
         partyPathing = new List<int>(savedState.partyPathing);
+        floorBoss = savedState.floorBoss;
         if (partyPathing.Count <= 0) { partyLocation = -1; }
         else
         {
@@ -196,11 +244,18 @@ public class StSLikeMap : MapManager
         SaveState();
         // Update the highlights.
         UpdateHighlights(partyPathing);
+        // DEBUG STUFF
+        int debugIndex = tileTypes.IndexOf(mapInfo[partyLocation]);
+        if (debugIndex >= 0 && !debugTileTypeActive[debugIndex])
+        {
+            return;
+        }
         switch (mapInfo[partyLocation])
         {
             case "Enemy":
                 // Generate enemies based on various factors.
                 GenerateEnemies(savedState.ReturnCurrentDifficulty());
+                savedState.CompleteBattle();
                 sceneMover.MoveToBattle();
                 break;
             case "Treasure":
@@ -255,6 +310,8 @@ public class StSLikeMap : MapManager
         {
             GeneratePath();
         }
+        // Get the floor boss randomly.
+        GenerateFloorBoss();
         UpdateMap();
         UpdateDirectionalArrows();
     }

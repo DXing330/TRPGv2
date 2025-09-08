@@ -14,6 +14,7 @@ public class StSState : SavedState
         newGame = 1;
         currentFloor = 1;
         battlesFought = 0;
+        bossBattled = 0;
         Save();
         return;
     }
@@ -27,6 +28,7 @@ public class StSState : SavedState
     {
         currentFloor++;
         battlesFought = 0;
+        bossBattled = 0;
         Save();
     }
     public int battlesFought = 0;
@@ -34,6 +36,20 @@ public class StSState : SavedState
     {
         battlesFought++;
         Save();
+    }
+    public string floorBoss;
+    public int bossBattled = 0;
+    public void BattleBoss()
+    {
+        bossBattled = 1;
+    }
+    public void SetFloorBoss(string newInfo)
+    {
+        floorBoss = newInfo;
+    }
+    public string GetFloorBoss()
+    {
+        return floorBoss;
     }
     public int ReturnCurrentDifficulty()
     {
@@ -59,12 +75,13 @@ public class StSState : SavedState
         newGame = 0;
         mapInfo = new List<string>(map.mapInfo);
         partyPathing = new List<int>(map.partyPathing);
+        floorBoss = map.floorBoss;
         Save();
     }
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = newGame + delimiter + String.Join(delimiterTwo, mapInfo) + delimiter + String.Join(delimiterTwo, partyPathing) + delimiter + currentFloor + delimiter + battlesFought;
+        allData = newGame + delimiter + String.Join(delimiterTwo, mapInfo) + delimiter + String.Join(delimiterTwo, partyPathing) + delimiter + currentFloor + delimiter + battlesFought + delimiter + floorBoss + delimiter + bossBattled;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -84,5 +101,7 @@ public class StSState : SavedState
         }
         currentFloor = int.Parse(dataList[3]);
         battlesFought = int.Parse(dataList[4]);
+        floorBoss = dataList[5];
+        bossBattled = int.Parse(dataList[6]);
     }
 }

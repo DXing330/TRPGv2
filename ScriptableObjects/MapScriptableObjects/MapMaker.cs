@@ -70,6 +70,8 @@ public class MapMaker : ScriptableObject
                 return AddWall(originalMap, featureType, patternSpecifics);
             case "Border":
                 return AddBorder(originalMap, featureType, patternSpecifics);
+            case "CenterForest":
+                return AddCenterForest(originalMap, featureType, patternSpecifics);
         }
         return originalMap;
     }
@@ -77,6 +79,18 @@ public class MapMaker : ScriptableObject
     protected List<string> AddForest(List<string> originalMap, string featureType, string specifics)
     {
         int startTile = (Random.Range(1, mapSize - 1) * mapSize) + Random.Range(1, mapSize - 1);
+        List<int> allTiles = mapUtility.AdjacentTiles(startTile, mapSize);
+        allTiles.Add(startTile);
+        for (int i = 0; i < allTiles.Count; i++)
+        {
+            originalMap[allTiles[i]] = featureType;
+        }
+        return originalMap;
+    }
+
+    protected List<string> AddCenterForest(List<string> originalMap, string featureType, string specifics)
+    {
+        int startTile = (mapSize/2 * mapSize) + mapSize/2;
         List<int> allTiles = mapUtility.AdjacentTiles(startTile, mapSize);
         allTiles.Add(startTile);
         for (int i = 0; i < allTiles.Count; i++)

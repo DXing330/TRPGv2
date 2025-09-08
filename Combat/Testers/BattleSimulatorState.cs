@@ -9,6 +9,7 @@ using UnityEngine;
 public class BattleSimulatorState : BattleState
 {
     public string delimiterThree;
+    public List<string> allTerrainTypes;
     public CharacterList partyOneList;
     public CharacterList partyTwoList;
     public override void SetTerrainType()

@@ -140,6 +140,15 @@ public class BattleMap : MapManager
         UpdateMap();
     }
     public List<string> terrainEffectTiles;
+    public virtual void GetNewTerrainEffects(MapFeaturesList mapFeatures)
+    {
+        terrainEffectTiles = new List<string>(emptyList);
+        for (int i = 0; i < mapFeatures.features.Count; i++)
+        {
+            terrainEffectTiles = mapMaker.AddFeature(terrainEffectTiles, mapFeatures.features[i], mapFeatures.patterns[i]);
+        }
+        UpdateMap();
+    }
     public void ChangeTerrainEffect(int tileNumber, string newEffect)
     {
         terrainEffectTiles[tileNumber] = newEffect;
@@ -391,6 +400,7 @@ public class BattleMap : MapManager
         string terrainEffect = terrainEffectTiles[actor.GetLocation()];
         if (terrainEffect.Length < 1) { return; }
         List<string> data = terrainEffectData.ReturnStats(terrainEffect);
+        if (data.Count < 4) { return; }
         effect.AffectActor(actor, data[2], data[3]);
     }
 

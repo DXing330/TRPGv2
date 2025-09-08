@@ -46,6 +46,7 @@ public class BattleManager : MonoBehaviour
         map.SetWeather(battleState.GetWeather());
         map.SetTime(battleState.GetTime());
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
+        map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
         moveManager.SetMapInfo(map.mapInfo);
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
