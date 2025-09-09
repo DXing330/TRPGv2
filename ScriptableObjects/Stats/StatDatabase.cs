@@ -91,6 +91,15 @@ public class StatDatabase : ScriptableObject
         return values[indexOf];
     }
 
+    public string ReturnValueAtIndex(int index)
+    {
+        if (index >= 0 && index < values.Count)
+        {
+            return values[index];
+        }
+        return "";
+    }
+
     public string ReturnRandomValue()
     {
         int index = Random.Range(0, values.Count);

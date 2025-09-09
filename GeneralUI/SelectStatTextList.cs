@@ -8,6 +8,17 @@ public class SelectStatTextList : StatTextList
     public Equipment equipment;
     public ColorDictionary colors;
     public bool highlights = true;
+    public void PublicResetPage()
+    {
+        ResetPage();
+    }
+    public void ResetTextText()
+    {
+        for (int i = 0; i < statTexts.Count; i++)
+        {
+            statTexts[i].SetText("");
+        }
+    }
     protected override void ResetPage()
     {
         base.ResetPage();

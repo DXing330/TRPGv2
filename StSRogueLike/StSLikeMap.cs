@@ -13,7 +13,6 @@ public class StSLikeMap : MapManager
         {
             GeneratePaths();
             SaveState();
-            partyData.NewGame();
         }
         else
         {

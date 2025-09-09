@@ -193,6 +193,13 @@ public class PartyData : SavedData
         allData += String.Join(delimiterTwo, partyEquipment)+delimiter;
         File.WriteAllText(dataPath, allData);
     }
+    public virtual void ForceNewGameData(string newInfo)
+    {
+        dataPath = Application.persistentDataPath + "/" + filename;
+        allData = newInfo;
+        File.WriteAllText(dataPath, allData);
+        Load();
+    }
     public override void NewGame()
     {
         allData = newGameData;

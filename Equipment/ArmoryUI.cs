@@ -26,6 +26,13 @@ public class ArmoryUI : MonoBehaviour
     public string selectedPassiveLevel;
     public PassiveDetailViewer detailViewer;
 
+    public virtual void ResetView()
+    {
+        actorStats.PublicResetPage();
+        actorPassives.PublicResetPage();
+        actorEquipment.ResetTextText();
+    }
+
     public virtual void UpdateSelectedActor()
     {
         EndSelectingEquipment();
