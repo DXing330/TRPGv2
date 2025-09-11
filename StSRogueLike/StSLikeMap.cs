@@ -51,6 +51,11 @@ public class StSLikeMap : MapManager
     public string battleSceneName;
     public BattleState battleState;
     public CharacterList enemyList;
+    [ContextMenu("DebugGenerateElite")]
+    public void DebugGenerateElite()
+    {
+        Debug.Log(floorOneElites.ReturnRandomKey());
+    }
     public void GenerateEnemies(int difficulty, bool elite = false)
     {
         enemyList.ResetLists();

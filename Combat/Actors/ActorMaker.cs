@@ -88,4 +88,14 @@ public class ActorMaker : MonoBehaviour
         // Set the new base health equal to the current health.
         actor.SetBaseHealth(actor.GetHealth());
     }
+
+    public TacticActor CloneActor(TacticActor actor, int location)
+    {
+        TacticActor newActor = CreateActor();
+        SetActorName(newActor, actor.GetSpriteName());
+        newActor.SetPersonalName(actor.GetPersonalName());
+        newActor.SetLocation(location);
+        newActor.CopyBaseStats(actor);
+        return newActor;
+    }
 }

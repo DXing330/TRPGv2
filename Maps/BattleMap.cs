@@ -308,6 +308,34 @@ public class BattleMap : MapManager
         return GetActorsOnTiles(mapUtility.AdjacentTiles(tileNumber, mapSize));
     }
 
+    public List<int> GetAdjacentEmptyTiles(int tileNumber)
+    {
+        List<int> allAdjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
+        for (int i = 0; i < allAdjacent.Count; i++)
+        {
+            if (TileNotEmpty(allAdjacent[i]))
+            {
+                allAdjacent.RemoveAt(i);
+            }
+        }
+        return allAdjacent;
+    }
+
+    public int ReturnRandomAdjacentEmptyTile(int tileNumber)
+    {
+        List<int> emptyAdjacent = GetAdjacentEmptyTiles(tileNumber);
+        if (emptyAdjacent.Count == 0)
+        {
+            return tileNumber;
+        }
+        int tile = emptyAdjacent[Random.Range(0, emptyAdjacent.Count)];
+        if (TileNotEmpty(tile))
+        {
+            return ReturnRandomAdjacentEmptyTile(tileNumber);
+        }
+        return tile;
+    }
+
     public bool AlliesInTiles(TacticActor actor, List<int> tiles)
     {
         int team = actor.GetTeam();

@@ -381,6 +381,17 @@ public class BattleManager : MonoBehaviour
                 // This will always take all your actions.
                 turnActor.ResetActions();
                 break;
+            case "Split":
+                // Change base health to be the same as current health.
+                turnActor.SetBaseHealth(turnActor.GetHealth());
+                // Check if there are any empty adjacent tiles.
+                int splitTile = map.ReturnRandomAdjacentEmptyTile(turnActor.GetLocation());
+                // Create a copy in a random adjacent empty tile.
+                // Or this is a special case where you can stack actors?
+                // This will always take all your actions.
+                map.AddActorToBattle(actorMaker.CloneActor(turnActor, splitTile));
+                turnActor.ResetActions();
+                break;
             case "Skill":
                 StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));
                 yield break;

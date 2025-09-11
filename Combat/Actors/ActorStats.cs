@@ -33,6 +33,13 @@ public class ActorStats : ActorPassives
         }
         return allStats;
     }
+    public void CopyBaseStats(ActorStats newStats)
+    {
+        SetBaseHealth(newStats.GetBaseHealth());
+        SetCurrentHealth(GetBaseHealth());
+        SetBaseAttack(newStats.GetBaseAttack());
+        SetBaseDefense(newStats.GetBaseDefense());
+    }
     public void ChangeFormFromString(string newStats)
     {
         ChangeForm(newStats.Split("|").ToList());

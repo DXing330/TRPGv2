@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BattleUIManager : MonoBehaviour
 {
+    public bool debug = false;
     public BattleStats battleStats;
     public DisplayTurnOrder turnOrder;
     public GameObject playerChoicesPanel;
@@ -11,6 +12,10 @@ public class BattleUIManager : MonoBehaviour
 
     public void NPCTurn()
     {
+        if (debug)
+        {
+            return;
+        }
         playerChoicesPanel.SetActive(false);
     }
 

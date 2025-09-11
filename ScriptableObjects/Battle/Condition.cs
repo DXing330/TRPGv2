@@ -22,7 +22,13 @@ public class Condition : SkillEffect
         {
             statusInfo = allData.ReturnStats(statuses[i]);
             if (!Timing(timing, statusInfo[0])){continue;}
-            AffectActor(actor, statusInfo[1], statusInfo[2]);
+            // Statuses can apply multiple effects at once.
+            string[] effects = statusInfo[1].Split(",");
+            string[] specifics = statusInfo[2].Split(",");
+            for (int j = 0; j < effects.Length; j++)
+            {
+                AffectActor(actor, effects[j], specifics[j]);
+            }
             // Decrease duration by 1.
             actor.AdjustStatusDuration(i);
         }

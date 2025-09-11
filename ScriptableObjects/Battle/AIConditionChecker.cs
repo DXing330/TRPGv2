@@ -45,6 +45,15 @@ public class AIConditionChecker : ScriptableObject
                 return map.GetAdjacentEnemies(actor).Count <= int.Parse(specifics);
             case "MaxEnergy":
                 return actor.GetEnergy() >= actor.GetBaseEnergy();
+            case "Health":
+                switch (specifics)
+                {
+                    case "<Half":
+                        return actor.GetHealth() * 2 <= actor.GetBaseHealth();
+                    case ">Half":
+                        return actor.GetHealth() * 2 >= actor.GetBaseHealth();
+                }
+                return false;
         }
         return true;
     }

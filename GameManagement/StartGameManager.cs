@@ -8,6 +8,9 @@ public class StartGameManager : MonoBehaviour
     public List<SavedData> gameData;
     public PartyDataManager roguelikeParty;
     public List<SavedData> roguelikeGameData;
+    public StSState roguelikeState;
+    public SceneMover roguelikeSceneMover;
+    public PopUpMessage popUp;
 
     public void StartGame()
     {
@@ -25,6 +28,14 @@ public class StartGameManager : MonoBehaviour
         {
             roguelikeGameData[i].Load();
         }
+        // Can't start if in new game state.
+        // Have to start a new game through the new game button.
+        if (roguelikeState.StartingNewGame())
+        {
+            popUp.SetMessage("No saved data to continue from.");
+            return;
+        }
+        roguelikeSceneMover.StartGame();
     }
 
     public void NewRun()

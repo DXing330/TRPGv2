@@ -21,7 +21,7 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Status":
                 int duration = level;
-                if (level <= 1) { duration = baseStatusDuration; }
+                if (level <= baseStatusDuration && level >= 0) { duration = baseStatusDuration; }
                 // Some statuses don't naturally wear off and are permanent or immediately take effect.
                 switch (effectSpecifics)
                 {

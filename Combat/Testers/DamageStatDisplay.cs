@@ -13,6 +13,7 @@ public class DamageStatDisplay : MonoBehaviour
     public TMP_Text damageTakenText;
     public GameObject damageDealtBar;
     public GameObject damageTakenBar;
+    public float minY = 0.01f;
     public void UpdateDisplay(Sprite actorSprite, string personalName, int damageDealt, int damageTaken, float damageDealtProportion, float damageTakenProportion)
     {
         displayObject.SetActive(true);
@@ -20,7 +21,7 @@ public class DamageStatDisplay : MonoBehaviour
         actorName.text = personalName;
         damageDealtText.text = damageDealt.ToString();
         damageTakenText.text = damageTaken.ToString();
-        damageDealtBar.transform.localScale = new Vector3(0.4f, damageDealtProportion, 0f);
-        damageTakenBar.transform.localScale = new Vector3(0.4f, damageTakenProportion, 0f);
+        damageDealtBar.transform.localScale = new Vector3(0.4f, Mathf.Max(damageDealtProportion, minY), 0f);
+        damageTakenBar.transform.localScale = new Vector3(0.4f, Mathf.Max(damageTakenProportion, minY), 0f);
     }
 }

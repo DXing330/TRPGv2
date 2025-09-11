@@ -44,7 +44,7 @@ public class ActorAI : ScriptableObject
 
     public bool NormalTurn(TacticActor actor, int roundIndex)
     {
-        string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetPersonalName());
+        string fullSkillRotation = actorSkillRotation.ReturnValue(actor.GetSpriteName());
         if (fullSkillRotation == "" || fullSkillRotation == "-1") { return true; }
         string[] skillRotation = fullSkillRotation.Split("|");
         string skillIndexString = skillRotation[(roundIndex - 1) % (skillRotation.Length)];
@@ -212,7 +212,10 @@ public class ActorAI : ScriptableObject
             {
                 if (map.TileNotEmpty(targetableTiles[i])) { targetableTiles.RemoveAt(i); }
             }
-            if (targetableTiles.Count <= 0) { return -1; }
+            if (targetableTiles.Count <= 0)
+            {
+                return -1;
+            }
             return targetableTiles[Random.Range(0, targetableTiles.Count)];
         }
         return -1;
@@ -232,6 +235,11 @@ public class ActorAI : ScriptableObject
                 return map.EnemiesInTiles(currentActor, activeManager.targetedTiles);
             case "Support":
                 // For supporting skills, make sure at least 1 ally is in range.
+                // Unless it's a summon skill then just let it through.
+                if (activeManager.active.GetEffect() == "Summon")
+                {
+                    return true;
+                }
                 return map.AlliesInTiles(currentActor, activeManager.targetedTiles);
         }
         return true;
