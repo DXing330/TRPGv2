@@ -366,7 +366,7 @@ public class PartyDataManager : MonoBehaviour
                 }
             }
         }
-        for (int i = 0; i < ReturnTotalPartyCount(); i++)
+        for (int i = 0; i < Mathf.Min(ReturnTotalPartyCount(), codeNames.Count); i++)
         {
             UpdatePartyMemberAfterBattle(stats[i], allIndices[i]);
         }

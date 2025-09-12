@@ -147,8 +147,11 @@ public class BattleEndManager : MonoBehaviour
         {
             battleResult.text = "<color=red>Defeat...</color>";
             allSkillUps.Disable();
-            allNewAllies.Disable();
-            allLootDrops.Disable();
+            if (subGame)
+            {
+                allNewAllies.Disable();
+                allLootDrops.Disable();
+            }
         }
         battleEndScreen.SetActive(true);
     }

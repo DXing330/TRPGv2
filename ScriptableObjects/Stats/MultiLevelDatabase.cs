@@ -7,6 +7,7 @@ using UnityEngine;
 public class MultiLevelDatabase : StatDatabase
 {
     public string allData;
+    public override void SetAllData(string newData){allData = newData;}
     public List<string> multiLevelData;
     public string allDataDelimiter;
     public StatDatabase statDatabase;
@@ -23,8 +24,10 @@ public class MultiLevelDatabase : StatDatabase
         multiLevelData = allData.Split(allDataDelimiter).ToList();
         statDatabase.SetAllKeys(multiLevelData[statKeyIndex]);
         statDatabase.SetValues(multiLevelData[statValueIndex]);
+        statDatabase.Initialize();
         multiKeyDatabase.SetAllKeys(multiLevelData[multiKeyIndex1]);
         multiKeyDatabase.SetAllSecondKeys(multiLevelData[multiKeyIndex2]);
         multiKeyDatabase.SetValues(multiLevelData[multiKeyValueIndex]);
+        multiKeyDatabase.Initialize();
     }
 }

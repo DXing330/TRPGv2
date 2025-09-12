@@ -152,6 +152,11 @@ public class BattleManager : MonoBehaviour
                 UI.NPCTurn();
                 StartCoroutine(TauntedTurn(turnActor.GetActions()));
                 return;
+            case "Confused":
+                combatLog.UpdateNewestLog(turnActor.GetPersonalName() + " is Confused.");
+                UI.NPCTurn();
+                StartCoroutine(ConfusedTurn(turnActor.GetActions()));
+                return;
         }
         if (turnActor.GetTeam() > 0 || autoBattle) { NPCTurn(); }
     }
@@ -588,6 +593,25 @@ public class BattleManager : MonoBehaviour
                 yield return new WaitForSeconds(shortDelayTime * 5);
             }
             if (turnActor.GetActions() <= 0) { break; }
+        }
+        StartCoroutine(EndTurn());
+    }
+
+    IEnumerator ConfusedTurn(int actionsLeft)
+    {
+        // Pretend to be a random other status.
+        int randomTurnType = Random.Range(0, 3);
+        switch (randomTurnType)
+        {
+            case 0:
+                StartCoroutine(TerrifiedTurn(actionsLeft));
+                yield break;
+            case 1:
+                StartCoroutine(EnragedTurn(actionsLeft));
+                yield break;
+            case 2:
+                StartCoroutine(CharmedTurn(actionsLeft));
+                yield break;
         }
         StartCoroutine(EndTurn());
     }

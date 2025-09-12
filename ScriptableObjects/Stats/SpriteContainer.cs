@@ -3,19 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
+
 
 [CreateAssetMenu(fileName = "SpriteContainer", menuName = "ScriptableObjects/DataContainers/SpriteContainer", order = 1)]
 public class SpriteContainer : ScriptableObject
 {
     public List<Sprite> sprites;
     public string allKeysAndValues;
+    public virtual void SetAllData(string newInfo)
+    {
+        allKeysAndValues = newInfo;
+    }
     public string delimiter;
     public string delimiterTwo;
-    public void Initialize()
+    public virtual void Initialize()
     {
         string[] blocks = allKeysAndValues.Split(delimiter);
         keys = blocks[0].Split(delimiterTwo).ToList();
         values = blocks[1].Split(delimiterTwo).ToList();
+        #if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+        #endif
     }
     public List<string> keys;
     public string RandomSpriteName()

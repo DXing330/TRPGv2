@@ -2,6 +2,9 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+    using UnityEditor;
+#endif
 
 [CreateAssetMenu(fileName = "StatData", menuName = "ScriptableObjects/DataContainers/StatData", order = 1)]
 public class StatDatabase : ScriptableObject
@@ -9,7 +12,7 @@ public class StatDatabase : ScriptableObject
     public bool inputKeysAndValues = false;
     public bool inputBothv2 = false;
     public string allKeysAndValues;
-    public void SetAllData(string newData){allKeysAndValues = newData;}
+    public virtual void SetAllData(string newData){allKeysAndValues = newData;}
     public string keyValueDelimiter;
     public string keyDelimiter;
     public string valueDelimiter;
@@ -28,6 +31,9 @@ public class StatDatabase : ScriptableObject
         }
         GetKeys();
         GetValues();
+        #if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+        #endif
     }
 
     public void SetAllKeys(string newKeys)
