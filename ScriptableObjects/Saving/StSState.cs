@@ -53,7 +53,7 @@ public class StSState : SavedState
     }
     public int ReturnCurrentDifficulty()
     {
-        return (int)Mathf.Sqrt(battlesFought);
+        return battlesFought;
     }
     public bool StartingNewGame()
     {
