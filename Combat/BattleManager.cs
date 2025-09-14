@@ -77,9 +77,9 @@ public class BattleManager : MonoBehaviour
     public bool longDelays = true;
     public float longDelayTime = 0.1f;
     public float shortDelayTime = 0.01f;
-    public int roundNumber = 0;
+    public int roundNumber;
     public int GetRoundNumber(){return roundNumber;}
-    public int turnNumber = 0;
+    public int turnNumber;
     public int GetTurnIndex(){return turnNumber;}
     public TacticActor turnActor;
     public TacticActor GetTurnActor(){return turnActor;}
@@ -377,7 +377,7 @@ public class BattleManager : MonoBehaviour
             List<int> path = moveManager.GetPrecomputedPath(turnActor.GetLocation(), tileNumber);
             // Need to get the move cost and pay for it.
             turnActor.PayMoveCost(moveManager.moveCost);
-            // Need to change the characters direction.
+            // Need to change the character's direction.
             interactable = false;
             StartCoroutine(MoveAlongPath(turnActor, path));
         }

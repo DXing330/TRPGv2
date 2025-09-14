@@ -92,6 +92,7 @@ public class StSLikeMap : MapManager
         battleState.ForceTerrainType(rngDataBlocks[0]);
         enemyList.AddCharacters(rngDataBlocks[1].Split("|").ToList());
     }
+    public int maxFloors = 1;
     public StatDatabase floorOneEnemies;
     public StatDatabase floorOneElites;
     public StatDatabase floorOneBosses;
@@ -157,6 +158,8 @@ public class StSLikeMap : MapManager
     public List<string> nonRepeatableTileTypes;
     // Store and load the data as needed.
     public StSState savedState;
+    // Also track ascension/settings separately?
+    public StSSettings settings;
     public void ResetAll()
     {
         ResetPartyLocation();
@@ -174,6 +177,11 @@ public class StSLikeMap : MapManager
         savedState.Load();
         if (savedState.bossBattled == 1)
         {
+            if (savedState.ReturnCurrentFloor() >= maxFloors)
+            {
+                // Move to the victory scene.
+                return;
+            }
             // New floor.
             savedState.CompleteFloor();
             GeneratePaths();

@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StSEvent", menuName = "ScriptableObjects/RogueLike/StSEvent", order = 1)]
+[CreateAssetMenu(fileName = "StSEvent", menuName = "ScriptableObjects/StS/StSEvent", order = 1)]
 public class StSEvent : SavedData
 {
     // Stuff to track the event.
