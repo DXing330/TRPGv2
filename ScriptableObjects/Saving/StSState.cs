@@ -53,7 +53,7 @@ public class StSState : SavedState
     }
     public int ReturnCurrentDifficulty()
     {
-        return battlesFought;
+        return (battlesFought+1)/2;
     }
     public bool StartingNewGame()
     {
