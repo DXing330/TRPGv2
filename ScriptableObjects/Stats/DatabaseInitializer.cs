@@ -9,7 +9,9 @@ public class DatabaseInitializer : MonoBehaviour
 {
     public string allData;
     public string allDataDelimiter = "}";
+    public bool stats;
     public string allStatData;
+    public bool sprites;
     public string allSpriteData;
     public GroupedStatDatabase masterDatabase;
     public GroupedSpriteContainer masterSprites;
@@ -31,15 +33,21 @@ public class DatabaseInitializer : MonoBehaviour
     public void InitializeStatAndSpriteData()
     {
         string[] blocks = allData.Split(allDataDelimiter);
-        allStatData = blocks[0];
-        allSpriteData = blocks[1];
-        masterDatabase.SetAllData(allStatData);
-        masterDatabase.Initialize();
-        masterSprites.SetAllData(allSpriteData);
-        masterSprites.Initialize();
-        for (int i = 0; i < specificStats.Count; i++)
+        if (stats)
         {
-            specificStats[i].Initialize();
+            allStatData = blocks[0];
+            masterDatabase.SetAllData(allStatData);
+            masterDatabase.Initialize();
+            for (int i = 0; i < specificStats.Count; i++)
+            {
+                specificStats[i].Initialize();
+            }
+        }
+        if (sprites)
+        {
+            allSpriteData = blocks[1];
+            masterSprites.SetAllData(allSpriteData);
+            masterSprites.Initialize();
         }
     }
 }

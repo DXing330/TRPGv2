@@ -331,7 +331,7 @@ public class BattleMap : MapManager
         int tile = emptyAdjacent[Random.Range(0, emptyAdjacent.Count)];
         if (TileNotEmpty(tile))
         {
-            return ReturnRandomAdjacentEmptyTile(tileNumber);
+            return tileNumber;
         }
         return tile;
     }

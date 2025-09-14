@@ -98,6 +98,15 @@ public class BattleManager : MonoBehaviour
     protected void ChangeTurn()
     {
         combatLog.AddNewLog();
+        if (map.battlingActors.Count <= 0)
+        {
+            // End the battle immediately.
+            int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+            battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
+            battleEndManager.UpdateOverworldAfterBattle(winningTeam);
+            battleEndManager.EndBattle(winningTeam);
+            return;
+        }
         turnActor = map.battlingActors[turnNumber];
         turnActor.NewTurn();
         combatLog.UpdateNewestLog(turnActor.GetPersonalName() + "'s Turn");
@@ -666,7 +675,7 @@ public class BattleManager : MonoBehaviour
     protected void NPCAttackAction(bool randomSkill = false)
     {
         string attackActive = actorAI.ReturnAIAttackSkill(turnActor);
-        if (randomSkill)
+        if (randomSkill && turnActor.GetActiveSkills().Count > 0)
         {
             List<string> turnActorSkills = turnActor.GetActiveSkills();
             string rSkill = turnActorSkills[Random.Range(0, turnActorSkills.Count - 1)];
