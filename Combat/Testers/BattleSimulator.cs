@@ -47,6 +47,19 @@ public class BattleSimulator : MonoBehaviour
         partyOneList.RemoveFromParty(partyOneSelect.GetSelected());
         partyOneSelect.RefreshData();
     }
+    public void ClearParty(int index)
+    {
+        if (index == 0)
+        {
+            partyOneList.ResetLists();
+            partyOneSelect.RefreshData();
+        }
+        else
+        {
+            partyTwoList.ResetLists();
+            partyTwoSelect.RefreshData();
+        }
+    }
     public void RemoveFromPartyTwo()
     {
         if (partyTwoSelect.GetSelected() < 0)

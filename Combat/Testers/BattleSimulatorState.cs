@@ -9,20 +9,31 @@ using UnityEngine;
 public class BattleSimulatorState : BattleState
 {
     public string delimiterThree;
-    public List<string> allTerrainTypes;
     public CharacterList partyOneList;
     public CharacterList partyTwoList;
+    public List<string> allTerrainTypes;
+    public string selectedTerrainType;
     public override void SetTerrainType()
     {
         battleMapFeatures.SetTerrainType(GetTerrainType());
     }
     public override string GetTerrainType()
     {
-        return terrainTypes[UnityEngine.Random.Range(0, terrainTypes.Count)];
+        if (selectedTerrainTypes == "Random")
+        {
+            return terrainTypes[UnityEngine.Random.Range(0, terrainTypes.Count)];
+        }
+        return selectedTerrainType;
     }
+    public List<string> allWeathers;
+    public string selectedWeather;
     public override string GetWeather()
     {
-        return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
+        if (selectedWeather == "Random")
+        {
+            return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
+        }
+        return selectedWeather;
     }
     public override string GetTime()
     {
@@ -41,6 +52,7 @@ public class BattleSimulatorState : BattleState
         allData += String.Join(delimiterThree, partyTwoList.GetCharacterSprites()) + delimiterTwo;
         allData += String.Join(delimiterThree, partyTwoList.GetCharacterStats()) + delimiterTwo;
         allData += String.Join(delimiterThree, partyTwoList.GetCharacterEquipment());
+        allData += delimiter + selectedTerrainType;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -60,5 +72,6 @@ public class BattleSimulatorState : BattleState
         partyOneList.SetLists(dataBlocks[1].Split(delimiterThree).ToList(), dataBlocks[2].Split(delimiterThree).ToList(), dataBlocks[0].Split(delimiterThree).ToList(), dataBlocks[3].Split(delimiterThree).ToList());
         dataBlocks = dataList[1].Split(delimiterTwo).ToList();
         partyTwoList.SetLists(dataBlocks[1].Split(delimiterThree).ToList(), dataBlocks[2].Split(delimiterThree).ToList(), dataBlocks[0].Split(delimiterThree).ToList(), dataBlocks[3].Split(delimiterThree).ToList());
+        selectedTerrainType = dataBlocks[2];
     }
 }
