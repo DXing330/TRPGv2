@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StSState", menuName = "ScriptableObjects/DataContainers/SavedData/StSState", order = 1)]
+[CreateAssetMenu(fileName = "StSState", menuName = "ScriptableObjects/StS/StSState", order = 1)]
 public class StSState : SavedState
 {
     // Save the map, the floor, the party location, the store items, the random event details.
