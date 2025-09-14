@@ -76,6 +76,28 @@ public class StatDatabase : ScriptableObject
         return keys[index];
     }
 
+    // Used specifically for selecting random enemies for the roguelike.
+    public string ReturnRandomKeyBasedOnIntValue(int value)
+    {
+        List<string> possibleKeys = new List<string>();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (int.Parse(values[i]) == value)
+            {
+                possibleKeys.Add(keys[i]);
+            }
+        }
+        if (possibleKeys.Count == 0 && value > 0)
+        {
+            return ReturnRandomKeyBasedOnIntValue(value - 1);
+        }
+        else if (possibleKeys.Count > 0)
+        {
+            return possibleKeys[Random.Range(0, possibleKeys.Count)];
+        }
+        return "";
+    }
+
     public string ReturnKeyAtIndex(int index)
     {
         if (index >= 0 && index < keys.Count)

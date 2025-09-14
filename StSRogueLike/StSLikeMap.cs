@@ -81,17 +81,10 @@ public class StSLikeMap : MapManager
         switch (savedState.ReturnCurrentFloor())
         {
             case 1:
-                allEnemies = floorOneEnemies.ReturnRandomKey();
-                if (int.Parse(floorOneEnemies.ReturnValue(allEnemies)) > difficulty)
-                {
-                    GenerateEnemies(difficulty);
-                }
-                else
-                {
-                    string[] dataBlocks = allEnemies.Split("-");
-                    battleState.ForceTerrainType(dataBlocks[0]);
-                    enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
-                }
+                allEnemies = floorOneEnemies.ReturnRandomKeyBasedOnIntValue(difficulty);
+                string[] dataBlocks = allEnemies.Split("-");
+                battleState.ForceTerrainType(dataBlocks[0]);
+                enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
                 return;
         }
         allEnemies = floorOneEnemies.ReturnRandomKey();
