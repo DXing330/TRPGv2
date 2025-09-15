@@ -9,16 +9,16 @@ using TMPro;
 [CreateAssetMenu(fileName = "Utility", menuName = "ScriptableObjects/Utility/GeneralUtility", order = 1)]
 public class GeneralUtility : ScriptableObject
 {
-    public int ChangeIndex(int currentIndex, bool right, int maxIndex)
+    public int ChangeIndex(int currentIndex, bool right, int maxIndex, int minIndex = 0)
     {
         if (right)
         {
-            if (currentIndex >= maxIndex) { return 0; }
+            if (currentIndex >= maxIndex) { return minIndex; }
             else { return currentIndex + 1; }
         }
         else
         {
-            if (currentIndex > 0) { return currentIndex - 1; }
+            if (currentIndex > minIndex) { return currentIndex - 1; }
             else { return maxIndex; }
         }
     }

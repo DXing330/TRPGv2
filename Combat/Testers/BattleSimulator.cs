@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class BattleSimulator : MonoBehaviour
 {
+    // DEBUG STUFF
+    [ContextMenu("Simulator State Save")]
+    public void DebugSaveState()
+    {
+        simulatorState.Save();
+    }
     void Start()
     {
         partyOneList.ResetLists();
@@ -15,6 +21,11 @@ public class BattleSimulator : MonoBehaviour
         actorSelect.SetData(actorStats.ReturnAllKeys(), actorStats.ReturnAllKeys(), actorStats.values);
     }
     public BattleSimulatorState simulatorState;
+    // BATTLESIM SETTINGS
+    public void EnablemultiBattle()
+    {
+        simulatorState.multiBattle = (simulatorState.multiBattle + 1) % 2;
+    }
     // Determine the characters.
     public StatDatabase actorStats;
     public ActorSpriteHPList actorSelect;
