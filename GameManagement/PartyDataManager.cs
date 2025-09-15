@@ -325,6 +325,7 @@ public class PartyDataManager : MonoBehaviour
         {
             tempPartyData.RemoveStatsAtIndex(selected - permanentCount - mainCount);
         }
+        SetFullParty();
     }
 
     public void HealParty()

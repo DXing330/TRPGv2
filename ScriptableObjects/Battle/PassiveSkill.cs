@@ -89,7 +89,7 @@ public class PassiveSkill : SkillEffect
             case "Weapon":
                 return specifics == actor.GetWeaponType();
             case "Weather":
-                return specifics == battleState.GetWeather();
+                return battleState.GetWeather().Contains(specifics);
             case "Time":
                 return specifics == battleState.GetTime();
         }
@@ -109,7 +109,7 @@ public class PassiveSkill : SkillEffect
             case "Tile<>":
                 return !map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
             case "Weather":
-                return conditionSpecifics == map.GetWeather();
+                return map.GetWeather().Contains(conditionSpecifics); // Contains, since we will add more weather tiers later.
             case "Time":
                 return conditionSpecifics == map.GetTime();
             case "MoveType":
@@ -158,7 +158,7 @@ public class PassiveSkill : SkillEffect
             case "Health":
                 return CheckHealthConditions(conditionSpecifics, target);
             case "Weather":
-                return conditionSpecifics == map.GetWeather();
+                return map.GetWeather().Contains(conditionSpecifics);
             case "Time":
                 return conditionSpecifics == map.GetTime();
             case "MentalStateA":

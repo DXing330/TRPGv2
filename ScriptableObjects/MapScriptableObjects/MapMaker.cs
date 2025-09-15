@@ -72,6 +72,14 @@ public class MapMaker : ScriptableObject
                 return AddBorder(originalMap, featureType, patternSpecifics);
             case "CenterForest":
                 return AddCenterForest(originalMap, featureType, patternSpecifics);
+            case "Valley":
+                return AddValley(originalMap, featureType);
+            case "MountainValley":
+                return AddValley(originalMap, featureType, "Mountain");
+            case "ForestValley":
+                return AddValley(originalMap, featureType, "Forest");
+            case "WaterValley":
+                return AddValley(originalMap, featureType, "Water");
         }
         return originalMap;
     }
@@ -109,6 +117,35 @@ public class MapMaker : ScriptableObject
         for (int i = 0; i < mapSize; i++)
         {
             originalMap[currentPoint] = featureType;
+            newPoint = mapUtility.RandomPointRight(currentPoint, mapSize);
+            if (newPoint == currentPoint) { break; }
+            currentPoint = newPoint;
+        }
+        return originalMap;
+    }
+    
+    // Valleys are rivers surrounded by flat ground.
+    protected List<string> AddValley(List<string> originalMap, string featureType, string specifics = "Plains")
+    {
+        // Pick a starting point.
+        int currentPoint = Random.Range(1, mapSize - 1) * mapSize;
+        int newPoint = -1;
+        int upperSide = -1;
+        int lowerSide = -1;
+        for (int i = 0; i < mapSize; i++)
+        {
+            originalMap[currentPoint] = featureType;
+            // Get the point above and below and change them into plains or something.
+            upperSide = mapUtility.PointInDirection(currentPoint, 0, mapSize);
+            if (upperSide >= 0 && upperSide != currentPoint)
+            {
+                originalMap[upperSide] = specifics;
+            }
+            lowerSide = mapUtility.PointInDirection(currentPoint, 3, mapSize);
+            if (lowerSide >= 0 && lowerSide != currentPoint)
+            {
+                originalMap[lowerSide] = specifics;
+            }
             newPoint = mapUtility.RandomPointRight(currentPoint, mapSize);
             if (newPoint == currentPoint) { break; }
             currentPoint = newPoint;
