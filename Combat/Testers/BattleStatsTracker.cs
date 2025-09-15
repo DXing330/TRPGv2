@@ -5,6 +5,19 @@ using UnityEngine.UI;
 
 public class BattleStatsTracker : MonoBehaviour
 {
+    public BattleSimulatorState simulatorState;
+    public SceneMover sceneMover;
+    public string simulatorSceneName;
+    public BattleStatsTrackerSaving savedTracker;
+    public void UpdateSavedTracker()
+    {
+        savedTracker.Load();
+        savedTracker.AddToTracker(this);
+    }
+    public void LoadFromSavedTracker()
+    {
+        savedTracker.LoadToTracker(this);
+    }
     // TRACKING STUFF
     public List<string> actorNames;
     public List<string> GetActorNames()
@@ -70,9 +83,28 @@ public class BattleStatsTracker : MonoBehaviour
     // DISPLAYING STUFF
     public DamageStatDisplayManager damageStatDisplay;
     public int winningTeam;
+    public List<int> winningTeams;
     public void DisplayDamageStats(int winningNumber = 0)
     {
         winningTeam = winningNumber;
+        winningTeams.Clear();
+        winningTeams.Add(winningTeam);
+        // If there are multiple battles then update the tracker and reload the battle scene.
+        if (simulatorState.MultiBattleEnabled())
+        {
+            UpdateSavedTracker();
+            if (simulatorState.MultiBattleFinished())
+            {
+                simulatorState.ResetBattleIteration();
+                LoadFromSavedTracker();
+            }
+            else
+            {
+                // Move to the new scene.
+                sceneMover.DebugMoveToScene(simulatorSceneName);
+                return;
+            }
+        }
         damageStatDisplay.InitializeDisplay(this);
     }
 }

@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BattleSimulatorState", menuName = "ScriptableObjects/DataContainers/SavedData/BattleSimulatorState", order = 1)]
+[CreateAssetMenu(fileName = "BattleSimulatorState", menuName = "ScriptableObjects/Debug/BattleSimulatorState", order = 1)]
 public class BattleSimulatorState : BattleState
 {
     public string delimiterThree;
@@ -113,17 +113,32 @@ public class BattleSimulatorState : BattleState
     public int multiBattleCount = 2;
     public void ChangeMultiBattleCount(bool right = true)
     {
+        multiBattleCurrent = 0;
         multiBattleCount = utility.ChangeIndex(multiBattleCount, right, maxMultiBattle, minMultiBattle);
     }
     public int minMultiBattle = 2;
     public int maxMultiBattle = 30;
     public int multiBattleCurrent = 0;
+    public void ResetBattleIteration()
+    {
+        multiBattle = 0;
+        multiBattleCurrent = 0;
+        Save();
+    }
+    public int GetCurrentMultiBattleIteration()
+    {
+        return multiBattleCurrent;
+    }
     public void IncrementMultiBattle()
     {
         multiBattleCurrent++;
         Save();
     }
-
+    public void EnableMultiBattle()
+    {
+        multiBattleCurrent = 0;
+        multiBattle = (multiBattle + 1) % 2;
+    }
     public bool MultiBattleEnabled()
     {
         return multiBattle == 1;

@@ -8,6 +8,7 @@ using TMPro;
 public class DamageStatDisplayManager : MonoBehaviour
 {
     public GeneralUtility utility;
+    public BattleSimulatorState simulatorState;
     public int currentPage = 0;
     public void ChangePage(bool right = true)
     {
@@ -21,10 +22,31 @@ public class DamageStatDisplayManager : MonoBehaviour
     public SpriteContainer actorSprites;
     public List<GameObject> actorDisplayObjects;
     public List<DamageStatDisplay> actorDisplays;
-    public TMP_Text winningTeam;
-    public void SetWinningTeam(int winners)
+    public TMP_Text winRateText;
+    public GameObject winRatioBar;
+    public void SetWinningTeam(List<int> winners)
     {
-        winningTeam.text = "Winning Team: "+winners.ToString();
+        // Change the ratio based on how much team 0 won.
+        int leftSideWins = 0;
+        int totalWins = winners.Count;
+        for (int i = 0; i < winners.Count; i++)
+        {
+            Debug.Log(winners[i]);
+            if (winners[i] == 0)
+            {
+                leftSideWins++;
+            }
+        }
+        float winRatio = (float)leftSideWins / (float)totalWins;
+        if (winRatio <= 0f)
+        {
+            winRateText.text = "0%";
+        }
+        else
+        {
+            winRateText.text = (winRatio*100).ToString().Substring(0, 2)+"%";
+        }
+        winRatioBar.transform.localScale = new Vector3(winRatio, 1f, 0f);
     }
     public List<string> actorNames;
     public List<string> actorSpriteNames;
@@ -55,7 +77,7 @@ public class DamageStatDisplayManager : MonoBehaviour
     {
         displayObject.SetActive(true);
         ResetStatDisplay();
-        SetWinningTeam(damageTracker.winningTeam);
+        SetWinningTeam(damageTracker.winningTeams);
         actorNames = damageTracker.GetActorNames();
         actorSpriteNames = damageTracker.GetActorSprites();
         damageDealt = damageTracker.GetDamageDealt();

@@ -19,12 +19,17 @@ public class BattleSimulator : MonoBehaviour
         partyTwoSelect.RefreshData();
         selectedActorName = "";
         actorSelect.SetData(actorStats.ReturnAllKeys(), actorStats.ReturnAllKeys(), actorStats.values);
+        if (simulatorState.MultiBattleEnabled() && !simulatorState.MultiBattleFinished())
+        {
+            simulatorState.IncrementMultiBattle();
+            StartBattle();
+        }
     }
     public BattleSimulatorState simulatorState;
     // BATTLESIM SETTINGS
-    public void EnablemultiBattle()
+    public void EnableMultiBattle()
     {
-        simulatorState.multiBattle = (simulatorState.multiBattle + 1) % 2;
+        simulatorState.EnableMultiBattle();
     }
     // Determine the characters.
     public StatDatabase actorStats;
@@ -35,12 +40,19 @@ public class BattleSimulator : MonoBehaviour
     public CharacterList partyOneList;
     public CharacterList partyTwoList;
     public BattleManager battleManager;
+    public BattleStatsTrackerSaving battleStatsTrackerSaving;
     public GameObject battleManagerObject;
     public GameObject simulatorPanel;
     public void StartBattle()
     {
         // Don't start unless there are members on both sides.
         simulatorState.Save();
+        // If you're starting a multibattle for the first time then reset the tracker.
+        if (simulatorState.MultiBattleEnabled() && simulatorState.GetCurrentMultiBattleIteration() == 0)
+        {
+            battleStatsTrackerSaving.NewGame();
+            simulatorState.IncrementMultiBattle();
+        }
         if (partyOneList.characters.Count <= 0 || partyTwoList.characters.Count <= 0)
         {
             return;
