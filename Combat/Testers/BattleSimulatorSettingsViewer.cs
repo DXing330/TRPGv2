@@ -9,12 +9,14 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
     public BattleSimulatorState simulatorState;
     public void UpdateViewer()
     {
-        UpdatemultiBattleSettings();
-
+        UpdateMultiBattleSettings();
+        UpdateSelectedTerrain();
+        UpdateSelectedWeather();
+        UpdateSelectedTime();
     }
     public TMP_Text multiBattleEnabledText;
     public TMP_Text multiBattleCountText;
-    public void UpdatemultiBattleSettings()
+    public void UpdateMultiBattleSettings()
     {
         if (simulatorState.multiBattle == 0)
         {
@@ -25,5 +27,74 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
             multiBattleEnabledText.text = "True";
         }
         multiBattleCountText.text = simulatorState.multiBattleCount.ToString();
+    }
+    public SelectStatTextList terrainSelect;
+    public void SelectTerrain()
+    {
+        simulatorState.SelectTerrainType(terrainSelect.GetSelected());
+        UpdateViewer();
+    }
+    public void UpdateSelectedTerrain()
+    {
+        List<string> all = new List<string>(simulatorState.allTerrainTypes);
+        List<string> active = new List<string>();
+        for (int i = 0; i < all.Count; i++)
+        {
+            if (simulatorState.selectedTerrainTypes.Contains(all[i]))
+            {
+                active.Add("Allowed");
+            }
+            else
+            {
+                active.Add("Not Allowed");
+            }
+        }
+        terrainSelect.SetStatsAndData(all, active);
+    }
+    public SelectStatTextList weatherSelect;
+    public void SelectWeather()
+    {
+        simulatorState.SelectWeather(weatherSelect.GetSelected());
+        UpdateViewer();
+    }
+    public void UpdateSelectedWeather()
+    {
+        List<string> all = new List<string>(simulatorState.allWeathers);
+        List<string> active = new List<string>();
+        for (int i = 0; i < all.Count; i++)
+        {
+            if (simulatorState.selectedWeathers.Contains(all[i]))
+            {
+                active.Add("Allowed");
+            }
+            else
+            {
+                active.Add("Not Allowed");
+            }
+        }
+        weatherSelect.SetStatsAndData(all, active);
+    }
+    public SelectStatTextList timeSelect;
+    public void SelectTime()
+    {
+        simulatorState.SelectTime(timeSelect.GetSelected());
+        UpdateViewer();
+    }
+    public void UpdateSelectedTime()
+    {
+        List<string> all = new List<string>(simulatorState.allTimes);
+        List<string> active = new List<string>();
+        for (int i = 0; i < all.Count; i++)
+        {
+            if (simulatorState.selectedTimes.Contains(all[i]))
+            {
+                active.Add("Allowed");
+            }
+            else
+            {
+                active.Add("Not Allowed");
+            }
+        }
+        timeSelect.SetStatsAndData(all, active);
     }
 }

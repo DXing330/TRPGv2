@@ -10,6 +10,11 @@ public class BattleSimulator : MonoBehaviour
     {
         simulatorState.Save();
     }
+    [ContextMenu("Simulator State New Game")]
+    public void DebugNewState()
+    {
+        simulatorState.NewGame();
+    }
     void Start()
     {
         partyOneList.ResetLists();
@@ -23,6 +28,10 @@ public class BattleSimulator : MonoBehaviour
         {
             simulatorState.IncrementMultiBattle();
             StartBattle();
+        }
+        else if (simulatorState.MultiBattlePreviouslyEnabled())
+        {
+            simulatorState.EnableMultiBattle();
         }
     }
     public BattleSimulatorState simulatorState;

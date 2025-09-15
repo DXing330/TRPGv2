@@ -110,6 +110,11 @@ public class BattleSimulatorState : BattleState
         return selectedTime;
     }
     public int multiBattle = 0;
+    public int prevMultiBattle = 0;
+    public bool MultiBattlePreviouslyEnabled()
+    {
+        return prevMultiBattle == 1;
+    }
     public int multiBattleCount = 2;
     public void ChangeMultiBattleCount(bool right = true)
     {
@@ -138,6 +143,7 @@ public class BattleSimulatorState : BattleState
     {
         multiBattleCurrent = 0;
         multiBattle = (multiBattle + 1) % 2;
+        prevMultiBattle = multiBattle;
     }
     public bool MultiBattleEnabled()
     {
@@ -146,6 +152,17 @@ public class BattleSimulatorState : BattleState
     public bool MultiBattleFinished()
     {
         return (multiBattleCurrent >= multiBattleCount);
+    }
+    public override void NewGame()
+    {
+        selectedTerrainTypes.Clear();
+        selectedWeathers.Clear();
+        selectedTimes.Clear();
+        multiBattle = 1;
+        prevMultiBattle = 1;
+        multiBattleCount = 2;
+        multiBattleCurrent = 0;
+        Save();
     }
     public override void Save()
     {
@@ -164,7 +181,7 @@ public class BattleSimulatorState : BattleState
         allData += string.Join(delimiterThree, selectedTerrainTypes) + delimiter;
         allData += string.Join(delimiterThree, selectedWeathers) + delimiter;
         allData += string.Join(delimiterThree, selectedTimes) + delimiter;
-        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent;
+        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -187,8 +204,12 @@ public class BattleSimulatorState : BattleState
         selectedTerrainTypes = dataList[2].Split(delimiterThree).ToList();
         selectedWeathers = dataList[3].Split(delimiterThree).ToList();
         selectedTimes = dataList[4].Split(delimiterThree).ToList();
+        utility.RemoveEmptyListItems(selectedTerrainTypes);
+        utility.RemoveEmptyListItems(selectedWeathers);
+        utility.RemoveEmptyListItems(selectedTimes);
         multiBattle = int.Parse(dataList[5]);
         multiBattleCount = int.Parse(dataList[6]);
         multiBattleCurrent = int.Parse(dataList[7]);
+        prevMultiBattle = int.Parse(dataList[8]);
     }
 }

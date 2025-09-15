@@ -42,6 +42,10 @@ public class DamageStatDisplayManager : MonoBehaviour
         {
             winRateText.text = "0%";
         }
+        else if (winRatio >= 1f)
+        {
+            winRateText.text = "100%";
+        }
         else
         {
             winRateText.text = (winRatio*100).ToString().Substring(0, 2)+"%";
