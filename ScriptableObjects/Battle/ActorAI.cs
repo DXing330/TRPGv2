@@ -7,6 +7,7 @@ public class ActorAI : ScriptableObject
 {
     public GeneralUtility utility;
     public AIConditionChecker conditionChecker;
+    public List<string> whiteListSupportEffects;
     public string AIType;
     public string activeSkillName;
     public string ReturnAIActiveSkill() { return activeSkillName; }
@@ -218,6 +219,19 @@ public class ActorAI : ScriptableObject
             }
             return targetableTiles[Random.Range(0, targetableTiles.Count)];
         }
+        else if (active.GetEffect().Contains("Attack"))
+        {
+            // Try to pick your target's tile.
+            if (currentActor.GetTarget() != null && targetableTiles.Contains(currentActor.GetTarget().GetLocation()))
+            {
+                return currentActor.GetTarget().GetLocation();
+            }
+            // Else pick a random enemy.
+            else
+            {
+                return map.GetRandomEnemyLocation(currentActor, targetableTiles);
+            }
+        }
         return -1;
     }
 
@@ -236,7 +250,9 @@ public class ActorAI : ScriptableObject
             case "Support":
                 // For supporting skills, make sure at least 1 ally is in range.
                 // Unless it's a summon skill then just let it through.
-                if (activeManager.active.GetEffect() == "Summon")
+                // Should make an allow list of support skills that always go through.
+                string effect = activeManager.active.GetEffect();
+                if (whiteListSupportEffects.Contains(effect))
                 {
                     return true;
                 }

@@ -10,9 +10,21 @@ public class WeatherEffect : SkillEffect
     public List<string> effects;
     public List<string> specifics;
 
+    public void Reset()
+    {
+        timing = "";
+        effects.Clear();
+        specifics.Clear();
+    }
+
     public void LoadWeather(string newInfo)
     {
         string[] blocks = newInfo.Split("|");
+        if (blocks.Length < 3)
+        {
+            Reset();
+            return;
+        }
         timing = blocks[0];
         effects = blocks[1].Split(",").ToList();
         specifics = blocks[2].Split(",").ToList();

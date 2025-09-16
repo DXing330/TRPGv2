@@ -43,6 +43,10 @@ public class AIConditionChecker : ScriptableObject
                 return map.GetAdjacentEnemies(actor).Count >= int.Parse(specifics);
             case "AdjacentEnemyCount<=":
                 return map.GetAdjacentEnemies(actor).Count <= int.Parse(specifics);
+            case "AttackableEnemyCount>=":
+                return map.GetAttackableEnemies(actor).Count >= int.Parse(specifics);
+            case "AttackableEnemyCount<=":
+                return map.GetAttackableEnemies(actor).Count <= int.Parse(specifics);
             case "MaxEnergy":
                 return actor.GetEnergy() >= actor.GetBaseEnergy();
             case "Health":
@@ -54,6 +58,10 @@ public class AIConditionChecker : ScriptableObject
                         return actor.GetHealth() * 2 >= actor.GetBaseHealth();
                 }
                 return false;
+            case "Weather<>":
+                return !map.GetWeather().Contains(specifics);
+            case "Energy<=":
+                return actor.GetEnergy() <= int.Parse(specifics);
         }
         return true;
     }

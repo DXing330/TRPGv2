@@ -155,10 +155,12 @@ public class BattleSimulatorState : BattleState
     }
     public override void NewGame()
     {
+        partyOneList.ResetLists();
+        partyTwoList.ResetLists();
         selectedTerrainTypes.Clear();
         selectedWeathers.Clear();
         selectedTimes.Clear();
-        multiBattle = 1;
+        multiBattle = 0;
         prevMultiBattle = 1;
         multiBattleCount = 2;
         multiBattleCurrent = 0;
