@@ -40,6 +40,7 @@ public class BattleMap : MapManager
     public StatDatabase terrainEffectData;
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
+    public StatDatabase tileWeatherInteractions;
     public SkillEffect effect;
     [ContextMenu("ForceStart")]
     public void ForceStart()
@@ -160,6 +161,23 @@ public class BattleMap : MapManager
         terrainEffectTiles[tile1] = terrainEffectTiles[tile2];
         terrainEffectTiles[tile2] = temp;
         UpdateMap();
+    }
+    public void SpreadTerrainEffect(int tileNumber)
+    {
+        string tEffect = terrainEffectTiles[tileNumber];
+        if (tEffect == "") { return; }
+        List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
+        for (int i = 0; i < adjacent.Count; i++)
+        {
+            terrainEffectTiles[adjacent[i]] = tEffect;
+        }
+    }
+    public void RandomlySpreadTerrainEffect(int tileNumber)
+    {
+        string tEffect = terrainEffectTiles[tileNumber];
+        if (tEffect == "") { return; }
+        List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
+        terrainEffectTiles[adjacent[Random.Range(0, adjacent.Count)]] = tEffect;
     }
     protected void UpdateTerrain()
     {
@@ -437,6 +455,8 @@ public class BattleMap : MapManager
         // Apply weather/tile to terrain effects.
         string t_w = "";
         string t_t = "";
+        List<int> spreadingEffects = new List<int>();
+        List<int> expandingEffects = new List<int>();
         for (int i = 0; i < terrainEffectTiles.Count; i++)
         {
             if (terrainEffectTiles[i] == ""){ continue; }
@@ -446,8 +466,40 @@ public class BattleMap : MapManager
             {
                 ChangeTerrainEffect(i, "");
             }
+            else if (terrainWeatherInteractions.ReturnValue(t_w) == "Spread" || terrainTileInteractions.ReturnValue(t_t) == "Spread")
+            {
+                spreadingEffects.Add(i);
+            }
+            else if (terrainWeatherInteractions.ReturnValue(t_w) == "Expand" || terrainTileInteractions.ReturnValue(t_t) == "Expand")
+            {
+                expandingEffects.Add(i);
+            }
         }
-        // Apply weather effects to tile?
+        for (int i = 0; i < spreadingEffects.Count; i++)
+        {
+            RandomlySpreadTerrainEffect(spreadingEffects[i]);
+        }
+        for (int i = 0; i < expandingEffects.Count; i++)
+        {
+            SpreadTerrainEffect(expandingEffects[i]);
+        }
+        // Apply weather effects to tiles.
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            t_w = mapInfo[i] + "-" + GetWeather();
+            string effectAndSpecifics = tileWeatherInteractions.ReturnValue(t_w);
+            string[] blocks = effectAndSpecifics.Split("-");
+            if (blocks.Length < 2) { continue; }
+            switch (blocks[0])
+            {
+                case "Tile":
+                    mapInfo[i] = blocks[1];
+                    break;
+                case "Feature":
+                    terrainEffectTiles[i] = blocks[1];
+                    break;
+            }
+        }
         UpdateMap();
     }
 }

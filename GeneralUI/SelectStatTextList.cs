@@ -24,6 +24,15 @@ public class SelectStatTextList : StatTextList
         base.ResetPage();
         ResetHighlights();
     }
+    public int GetPage()
+    {
+        return page;
+    }
+    public void SetPage(int newPage)
+    {
+        page = newPage;
+        UpdateCurrentPage();
+    }
     // These are specifically for the passive viewer.
     public bool useComparisons = false;
     public List<string> comparisons;

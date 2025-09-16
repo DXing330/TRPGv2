@@ -24,16 +24,17 @@ public class EffectManager : MonoBehaviour
     {
         weather.LoadWeather(weatherData.ReturnValue(map.GetWeather()));
         weather.ApplyEffects(actor, "Start");
-        status.ApplyEffects(actor, statusData, "Start");
         passive.ApplyPassives(actor, passiveData, "Start", map);
+        // Status effects apply last so that passives have a chance to remove negative status effects.
+        status.ApplyEffects(actor, statusData, "Start");
     }
 
     public void EndTurn(TacticActor actor, BattleMap map)
     {
         weather.LoadWeather(weatherData.ReturnValue(map.GetWeather()));
         weather.ApplyEffects(actor, "End");
-        status.ApplyEffects(actor, statusData, "End");
         passive.ApplyPassives(actor, passiveData, "End", map);
+        status.ApplyEffects(actor, statusData, "End");
         List<string> removedPassives = actor.DecreaseTempPassiveDurations();
         if (removedPassives.Count > 0)
         {

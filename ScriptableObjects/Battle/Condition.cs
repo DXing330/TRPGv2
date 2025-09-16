@@ -17,7 +17,7 @@ public class Condition : SkillEffect
 
     public void ApplyEffects(TacticActor actor, StatDatabase allData, string timing)
     {
-        statuses = actor.GetStatuses();
+        statuses = new List<string>(actor.GetStatuses());
         for (int i = 0; i < statuses.Count; i++)
         {
             statusInfo = allData.ReturnStats(statuses[i]);

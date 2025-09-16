@@ -49,7 +49,9 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
                 active.Add("Not Allowed");
             }
         }
+        int page = terrainSelect.GetPage();
         terrainSelect.SetStatsAndData(all, active);
+        terrainSelect.SetPage(page);
     }
     public SelectStatTextList weatherSelect;
     public void SelectWeather()
@@ -72,7 +74,9 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
                 active.Add("Not Allowed");
             }
         }
+        int page = weatherSelect.GetPage();
         weatherSelect.SetStatsAndData(all, active);
+        weatherSelect.SetPage(page);
     }
     public SelectStatTextList timeSelect;
     public void SelectTime()
@@ -95,6 +99,8 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
                 active.Add("Not Allowed");
             }
         }
+        int page = timeSelect.GetPage();
         timeSelect.SetStatsAndData(all, active);
+        timeSelect.SetPage(page);
     }
 }

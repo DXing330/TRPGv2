@@ -25,6 +25,7 @@ public class DisplayTurnOrder : MonoBehaviour
         currentTurn = turnIndex;
         actorCount = actors.Count;
         ResetActorImages();
+        if (turnIndex < 0) { return; }
         int index = 0;
         for (int i = turnIndex; i < actors.Count; i++)
         {
