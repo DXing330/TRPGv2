@@ -188,7 +188,32 @@ public class MoveCostManager : MonoBehaviour
                 relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
                 DisplaceActor(displaced, DirectionBetweenActors(displacer, displaced), relativeForce, map);
             }
-            break;
+                break;
+            case "Flip":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    displaced = map.GetActorOnTile(targetedTiles[i]);
+                    if (displaced == null) { continue; }
+                    relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                    if (relativeForce >= 0)
+                    {
+                        // Get the tile that is in the opposite direction the same distance away.
+                        int direction = DirectionBetweenActors(displaced, displacer);
+                        int distance = DistanceBetweenActors(displacer, displaced);
+                        int tile = displacer.GetLocation();
+                        for (int j = 0; j < distance; j++)
+                        {
+                            tile = PointInDirection(tile, direction);
+                        }
+                        // Check if the tile is empty.
+                        if (map.GetActorOnTile(tile) == null)
+                        {
+                            // Move the displaced into that tile.
+                            MoveActorToTile(displaced, tile, map);
+                        }
+                    }
+                }
+                break;
         }
         map.UpdateActors();
     }
@@ -231,9 +256,7 @@ public class MoveCostManager : MonoBehaviour
         if (map.GetActorOnTile(nextLocation) == null)
         {
             // Move to the tile.
-            mover.SetLocation(nextLocation);
-            map.ApplyMovingTileEffect(mover, nextLocation);
-            ApplyMovePassiveEffects(mover, map);
+            MoveActorToTile(mover, nextLocation, map);
             map.UpdateActors();
         }
     }
@@ -246,6 +269,13 @@ public class MoveCostManager : MonoBehaviour
     public List<int> TilesInDirection(int current, int direction)
     {
         return actorPathfinder.mapUtility.GetTilesInLineDirection(current, direction, actorPathfinder.mapSize, actorPathfinder.mapSize);
+    }
+
+    protected void MoveActorToTile(TacticActor actor, int tile, BattleMap map)
+    {
+        actor.SetLocation(tile);
+        map.ApplyMovingTileEffect(actor, tile);
+        ApplyMovePassiveEffects(actor, map);
     }
 
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
@@ -261,9 +291,7 @@ public class MoveCostManager : MonoBehaviour
             // Tiles are passable if no one is occupying them.
             if (map.GetActorOnTile(nextTile) == null)
             {
-                actor.SetLocation(nextTile);
-                map.ApplyMovingTileEffect(actor, nextTile);
-                ApplyMovePassiveEffects(actor, map);
+                MoveActorToTile(actor, nextTile, map);
             }
             else { break; }
         }

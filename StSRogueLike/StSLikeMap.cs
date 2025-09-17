@@ -51,60 +51,31 @@ public class StSLikeMap : MapManager
     public string battleSceneName;
     public BattleState battleState;
     public CharacterList enemyList;
-    [ContextMenu("DebugGenerateElite")]
-    public void DebugGenerateElite()
-    {
-        Debug.Log(floorOneElites.ReturnRandomKey());
-    }
     public void GenerateEnemies(int difficulty, bool elite = false)
     {
         enemyList.ResetLists();
         string allEnemies = "";
         if (elite)
         {
-            switch (savedState.ReturnCurrentFloor())
-            {
-                case 1:
-                    // Later should make sure you don't fight two elites in a row.
-                    allEnemies = floorOneElites.ReturnRandomKey();
-                    string[] eliteData = allEnemies.Split("-");
-                    battleState.ForceTerrainType(eliteData[0]);
-                    enemyList.AddCharacters(eliteData[1].Split("|").ToList());
-                    return;
-            }
-            allEnemies = floorOneElites.ReturnRandomKey();
-            string[] rngEliteData = allEnemies.Split("-");
-            battleState.ForceTerrainType(rngEliteData[0]);
-            enemyList.AddCharacters(rngEliteData[1].Split("|").ToList());
+            allEnemies = enemyTracker.GetEliteData();
+            string[] eliteData = allEnemies.Split("-");
+            battleState.ForceTerrainType(eliteData[0]);
+            enemyList.AddCharacters(eliteData[1].Split("|").ToList());
             return;
         }
-        switch (savedState.ReturnCurrentFloor())
-        {
-            case 1:
-                allEnemies = floorOneEnemies.ReturnRandomKeyBasedOnIntValue(difficulty);
-                string[] dataBlocks = allEnemies.Split("-");
-                battleState.ForceTerrainType(dataBlocks[0]);
-                enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
-                return;
-        }
-        allEnemies = floorOneEnemies.ReturnRandomKey();
-        string[] rngDataBlocks = allEnemies.Split("-");
-        battleState.ForceTerrainType(rngDataBlocks[0]);
-        enemyList.AddCharacters(rngDataBlocks[1].Split("|").ToList());
+        allEnemies = enemyTracker.GetEnemyData(difficulty);
+        string[] dataBlocks = allEnemies.Split("-");
+        battleState.ForceTerrainType(dataBlocks[0]);
+        enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
     }
     public int maxFloors = 1;
+    // Off load enemy generation to a custom script.
     public StatDatabase floorOneEnemies;
     public StatDatabase floorOneElites;
-    public StatDatabase floorOneBosses;
     public string floorBoss;
     public void GenerateFloorBoss()
     {
-        switch (savedState.ReturnCurrentFloor())
-        {
-            case 1:
-                floorBoss = floorOneBosses.ReturnRandomKey();
-                break;
-        }
+        floorBoss = enemyTracker.floorBoss;
     }
     public void EnterBossBattle()
     {
@@ -114,16 +85,10 @@ public class StSLikeMap : MapManager
             return;
         }
         enemyList.ResetLists();
-        List<string> bossData = new List<string>();
+        List<string> bossData = enemyTracker.GetBossData();
         // Otherwise set the boss party.
-        switch (savedState.ReturnCurrentFloor())
-        {
-            case 1:
-                bossData = floorOneBosses.ReturnValue(floorBoss).Split("-").ToList();
-                battleState.ForceTerrainType(bossData[0]);
-                enemyList.AddCharacters(bossData[1].Split("|").ToList());
-                break;
-        }
+        battleState.ForceTerrainType(bossData[0]);
+        enemyList.AddCharacters(bossData[1].Split("|").ToList());
         savedState.BattleBoss();
         SaveState();
         sceneMover.MoveToBattle();
@@ -158,6 +123,7 @@ public class StSLikeMap : MapManager
     public List<string> nonRepeatableTileTypes;
     // Store and load the data as needed.
     public StSState savedState;
+    public StSEnemyTracker enemyTracker;
     // Also track ascension/settings separately?
     public StSSettings settings;
     public void ResetAll()
@@ -170,14 +136,16 @@ public class StSLikeMap : MapManager
     public void SaveState()
     {
         savedState.SetDataFromMap(this);
+        enemyTracker.Save();
     }
     public void LoadState()
     {
         ResetAll();
         savedState.Load();
+        enemyTracker.Load();
         if (savedState.bossBattled == 1)
         {
-            if (savedState.ReturnCurrentFloor() >= maxFloors)
+            if (savedState.GetCurrentFloor() >= maxFloors)
             {
                 // Move to the victory scene.
                 return;
@@ -316,6 +284,7 @@ public class StSLikeMap : MapManager
             GeneratePath();
         }
         // Get the floor boss randomly.
+        enemyTracker.NewFloor();
         GenerateFloorBoss();
         UpdateMap();
         UpdateDirectionalArrows();

@@ -20,7 +20,7 @@ public class StSState : SavedState
     }
     public int newGame = 1;
     public int currentFloor = 1;
-    public int ReturnCurrentFloor()
+    public int GetCurrentFloor()
     {
         return currentFloor;
     }

@@ -3,7 +3,24 @@ guid: 04006d4925261404ab15a37f61c65a1e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - loadingScreen: {instanceID: 0}
+  - mapUtility: {instanceID: 0}
+  - currentTileManager: {instanceID: 0}
+  - mapMaker: {instanceID: 0}
+  - sceneMover: {instanceID: 0}
+  - battleState: {instanceID: 0}
+  - enemyList: {instanceID: 0}
+  - floorOneEnemies: {instanceID: 0}
+  - floorOneElites: {instanceID: 0}
+  - floorOneBosses: {instanceID: 0}
+  - bossSprites: {fileID: 11400000, guid: 6276971202599df4ab75534abab3d3a0, type: 2}
+  - bossImage: {instanceID: 0}
+  - savedState: {fileID: 11400000, guid: 3db0a80c68480c14a9f574bd95e5e238, type: 2}
+  - enemyTracker: {fileID: 11400000, guid: 646b22b6f04309c41ad82f5c722af5fd, type: 2}
+  - settings: {instanceID: 0}
+  - popUp: {instanceID: 0}
+  - partyData: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -56,6 +56,7 @@ public class BattleSimulator : MonoBehaviour
     {
         // Don't start unless there are members on both sides.
         simulatorState.Save();
+        battleManager.SetAutoBattle(simulatorState.AutoBattleEnabled());
         // If you're starting a multibattle for the first time then reset the tracker.
         if (simulatorState.MultiBattleEnabled() && simulatorState.GetCurrentMultiBattleIteration() == 0)
         {

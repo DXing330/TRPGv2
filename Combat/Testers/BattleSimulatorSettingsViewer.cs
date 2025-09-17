@@ -9,14 +9,15 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
     public BattleSimulatorState simulatorState;
     public void UpdateViewer()
     {
-        UpdateMultiBattleSettings();
+        UpdateBattleSettings();
         UpdateSelectedTerrain();
         UpdateSelectedWeather();
         UpdateSelectedTime();
     }
     public TMP_Text multiBattleEnabledText;
     public TMP_Text multiBattleCountText;
-    public void UpdateMultiBattleSettings()
+    public TMP_Text autoBattleEnabledText;
+    public void UpdateBattleSettings()
     {
         if (simulatorState.multiBattle == 0)
         {
@@ -27,6 +28,14 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
             multiBattleEnabledText.text = "True";
         }
         multiBattleCountText.text = simulatorState.multiBattleCount.ToString();
+        if (simulatorState.autoBattle == 0)
+        {
+            autoBattleEnabledText.text = "False";
+        }
+        else
+        {
+            autoBattleEnabledText.text = "True";
+        }
     }
     public SelectStatTextList terrainSelect;
     public void SelectTerrain()

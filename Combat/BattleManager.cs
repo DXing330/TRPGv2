@@ -8,6 +8,10 @@ public class BattleManager : MonoBehaviour
     public BattleMap map;
     public ActorAI actorAI;
     public bool autoBattle = false;
+    public void SetAutoBattle(bool newInfo)
+    {
+        autoBattle = newInfo;
+    }
     public bool pause = false;
     public void PauseButton()
     {

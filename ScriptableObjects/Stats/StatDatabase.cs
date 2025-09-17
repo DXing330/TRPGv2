@@ -109,7 +109,7 @@ public class StatDatabase : ScriptableObject
 
     public List<string> ReturnAllKeys()
     {
-        return keys;
+        return new List<string>(keys);
     }
 
     public string ReturnValue(string key)

@@ -153,6 +153,15 @@ public class BattleSimulatorState : BattleState
     {
         return (multiBattleCurrent >= multiBattleCount);
     }
+    public int autoBattle = 1;
+    public void EnableAutoBattle()
+    {
+        autoBattle = (autoBattle + 1) % 2;
+    }
+    public bool AutoBattleEnabled()
+    {
+        return autoBattle == 1;
+    }
     public override void NewGame()
     {
         partyOneList.ResetLists();
@@ -164,6 +173,7 @@ public class BattleSimulatorState : BattleState
         prevMultiBattle = 1;
         multiBattleCount = 2;
         multiBattleCurrent = 0;
+        autoBattle = 1;
         Save();
     }
     public override void Save()
@@ -183,7 +193,7 @@ public class BattleSimulatorState : BattleState
         allData += string.Join(delimiterThree, selectedTerrainTypes) + delimiter;
         allData += string.Join(delimiterThree, selectedWeathers) + delimiter;
         allData += string.Join(delimiterThree, selectedTimes) + delimiter;
-        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle;
+        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle + delimiter + autoBattle;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -213,5 +223,6 @@ public class BattleSimulatorState : BattleState
         multiBattleCount = int.Parse(dataList[6]);
         multiBattleCurrent = int.Parse(dataList[7]);
         prevMultiBattle = int.Parse(dataList[8]);
+        autoBattle = int.Parse(dataList[9]);
     }
 }
