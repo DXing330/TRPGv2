@@ -155,6 +155,16 @@ public class ActiveManager : MonoBehaviour
                     battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
                 }
                 return;
+            case "RandomSummon":
+                // Check if selected tile is free.
+                if (battle.map.GetActorOnTile(selectedTile) == null)
+                {
+                    // Create a new actor on that location on the same team.
+                    // Pick a random actor from the specifics list.
+                    string[] randomSummon = specifics.Split(",");
+                    battle.SpawnAndAddActor(selectedTile, randomSummon[Random.Range(0, randomSummon.Length)], skillUser.GetTeam());
+                }
+                return;
             case "Summon Enemy":
                 // Check if selected tile is free.
                 if (battle.map.GetActorOnTile(selectedTile) == null)

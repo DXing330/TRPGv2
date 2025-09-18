@@ -206,7 +206,36 @@ public class ActorAI : ScriptableObject
         List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
         if (targetableTiles.Count <= 0) { return -1; }
         if (targetableTiles.Count == 1) { return targetableTiles[0]; }
+        // Beam skills should be fired in the direction of your target.
+        if (active.GetShape() == "Beam")
+        {
+            // Find the direction between yourself and the target.
+            int direction = -1;
+            if (currentActor.GetTarget() != null && currentActor.GetTarget().GetHealth() > 0)
+            {
+                direction = moveManager.DirectionBetweenActors(currentActor, currentActor.GetTarget());
+            }
+            // Else find the direction between you and a random enemy.
+            else
+            {
+                direction = moveManager.DirectionBetweenActors(currentActor, map.GetClosestEnemy(currentActor));
+            }
+            return map.mapUtility.PointInDirection(currentActor.GetLocation(), direction, map.mapSize);
+        }
         if (active.GetEffect() == "Summon")
+        {
+            // Look for an empty tile in range.
+            for (int i = targetableTiles.Count - 1; i >= 0; i--)
+            {
+                if (map.TileNotEmpty(targetableTiles[i])) { targetableTiles.RemoveAt(i); }
+            }
+            if (targetableTiles.Count <= 0)
+            {
+                return -1;
+            }
+            return targetableTiles[Random.Range(0, targetableTiles.Count)];
+        }
+        else if (active.GetEffect() == "RandomSummon")
         {
             // Look for an empty tile in range.
             for (int i = targetableTiles.Count - 1; i >= 0; i--)

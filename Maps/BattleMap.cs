@@ -385,6 +385,22 @@ public class BattleMap : MapManager
         return enemies[Random.Range(0, enemies.Count)].GetLocation();
     }
 
+    public TacticActor GetClosestEnemy(TacticActor actor)
+    {
+        List<TacticActor> enemies = AllEnemies(actor);
+        int index = -1;
+        int distance = mapSize * 2;
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            if (mapUtility.DistanceBetweenTiles(actor.GetLocation(), enemies[i].GetLocation(), mapSize) < distance)
+            {
+                distance = mapUtility.DistanceBetweenTiles(actor.GetLocation(), enemies[i].GetLocation(), mapSize);
+                index = i;
+            }
+        }
+        return enemies[index];
+    }
+
     public List<int> GetAdjacentEmptyTiles(int tileNumber)
     {
         List<int> allAdjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);

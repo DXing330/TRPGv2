@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ActorPathfinder", menuName = "ScriptableObjects/BattleLogic/ActorPathfinder", order = 1)]
 public class ActorPathfinder : MapPathfinder
 {
+    public List<int> path;
     public List<int> FindPaths(int startIndex, List<int> moveCosts)
     {
         ResetDistances(startIndex);
@@ -18,7 +19,7 @@ public class ActorPathfinder : MapPathfinder
 
     public List<int> GetPrecomputedPath(int startIndex, int endIndex)
     {
-        List<int> path = new List<int>();
+        path = new List<int>();
         path.Add(endIndex);
         if (startIndex == endIndex){return path;}
         int nextTile = -1;
