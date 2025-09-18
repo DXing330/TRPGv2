@@ -25,7 +25,7 @@ public class InitiativeTracker : ScriptableObject
             int key = stats[i];
             TacticActor actorKey = actors[i];
             int j = i - 1;
-            while (j >= 0 && stats[j] > key)
+            while (j >= 0 && stats[j] < key)
             {
                 stats[j + 1] = stats[j];
                 actors[j + 1] = actors[j];

@@ -88,7 +88,7 @@ public class ActiveSkill : SkillEffect
     }
     public int GetEnergyCost()
     {
-        return int.Parse(energyCost);
+        return utility.SafeParseInt(energyCost);
     }
     public void AddEnergyCost(int newInfo)
     {
@@ -98,7 +98,7 @@ public class ActiveSkill : SkillEffect
     public string actionCost;
     public int GetActionCost()
     {
-        return int.Parse(actionCost);
+        return utility.SafeParseInt(actionCost);
     }
     // Get all the tiles that are being targeted.
     public string range;
@@ -165,14 +165,13 @@ public class ActiveSkill : SkillEffect
     public string specifics;
     public string GetSpecifics(){return specifics;}
     public string power;
+    public string GetPowerString()
+    {
+        return power;
+    }
     public int GetPower()
     {
-        switch (power)
-        {
-            case "":
-            break;
-        }
-        return int.Parse(power);
+        return utility.SafeParseInt(power);
     }
     public void AffectActors(List<TacticActor> actors, string effect, string specifics, int power)
     {

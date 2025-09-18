@@ -90,6 +90,30 @@ public class BattleMap : MapManager
         }
         return turnNumber;
     }
+    public List<TacticActor> AllAllies(TacticActor actor)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            if (battlingActors[i].GetTeam() == actor.GetTeam())
+            {
+                actors.Add(battlingActors[i]);
+            }
+        }
+        return actors;
+    }
+    public List<TacticActor> AllEnemies(TacticActor actor)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            if (battlingActors[i].GetTeam() != actor.GetTeam())
+            {
+                actors.Add(battlingActors[i]);
+            }
+        }
+        return actors;
+    }
     public bool AllyAdjacentToActor(TacticActor actor)
     {
         List<TacticActor> adjacentActors = GetAdjacentActors(actor.GetLocation());

@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillEffect", menuName = "ScriptableObjects/BattleLogic/SkillEffect", order = 1)]
 public class SkillEffect : ScriptableObject
 {
+    public GeneralUtility utility;
     public PassiveOrganizer passiveOrganizer;
     public int basicDenominator = 100;
     public int baseStatusDuration = 3;

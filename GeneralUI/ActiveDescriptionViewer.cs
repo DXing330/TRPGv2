@@ -97,7 +97,11 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Weather":
                 return "Change the weather to " + ASD(s) + ".";
             case "Movement":
-                return "The target(s) gain movement equal to "+APD(p)+"X "+ASD(s);
+                return "The target(s) gain movement equal to "+APD(p)+"X "+ASD(s)+".";
+            case "AllAllies":
+                return "All allies gain " + APD(p) + " " + ASD(s) + ".";
+            case "AllEnemies":
+                return "All enemies receive " + APD(p) + " " + ASD(s) + ".";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

@@ -313,6 +313,15 @@ public class ActiveManager : MonoBehaviour
                     }
                 }
                 return;
+            case "AllAllies":
+                // Get all allies from the map.
+                targets = battle.map.AllAllies(skillUser);
+                active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+                return;
+            case "AllEnemies":
+                targets = battle.map.AllEnemies(skillUser);
+                active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);

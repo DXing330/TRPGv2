@@ -91,6 +91,10 @@ public class PassiveDetailViewer : MonoBehaviour
         {
             case "None":
                 return ".";
+            case "AllyCount<":
+                return " if there are less than "+specifics+" allies left.";
+            case "AllyCount>":
+                return " if there are more than " + specifics + " allies left.";
             case "Adjacent Ally":
                 return " if another ally is adjacent.";
             case "Adjacent Ally A":
@@ -157,6 +161,14 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if you have " + specifics + " status.";
             case "StatusD":
                 return " if the target has " + specifics + " status.";
+            case "RangeD>":
+                return " if the target's attack range is greater than " + specifics + ".";
+            case "RangeD<":
+                return " if the target's attack range is less than " + specifics + ".";
+            case "RangeA>":
+                return " if your attack range is greater than " + specifics + ".";
+            case "RangeA<":
+                return " if your attack range is less than " + specifics + ".";
         }
         return ".";
     }
@@ -219,6 +231,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " change mental state to " + specifics;
             case "Amnesia":
                 return " make "+target+" forget 1 active skill";
+            case "Active":
+                return " use " + specifics;
         }
         return " increase "+effect+" by "+specifics;
     }

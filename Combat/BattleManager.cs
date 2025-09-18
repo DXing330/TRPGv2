@@ -8,6 +8,11 @@ public class BattleManager : MonoBehaviour
     public BattleMap map;
     public ActorAI actorAI;
     public bool autoBattle = false;
+    public bool controlAI = false;
+    public void SetControlAI(bool newInfo)
+    {
+        controlAI = newInfo;
+    }
     public void SetAutoBattle(bool newInfo)
     {
         autoBattle = newInfo;
@@ -69,7 +74,8 @@ public class BattleManager : MonoBehaviour
         // Start the combat.
         NextRound();
         ChangeTurn();
-        if (turnActor.GetTeam() > 0 || autoBattle) { NPCTurn(); }
+        if (autoBattle) { NPCTurn(); }
+        else if (turnActor.GetTeam() > 0 && !controlAI) { NPCTurn(); }
     }
     public void SpawnAndAddActor(int location, string actorName, int team = 0)
     {
@@ -171,7 +177,8 @@ public class BattleManager : MonoBehaviour
                 StartCoroutine(ConfusedTurn(turnActor.GetActions()));
                 return;
         }
-        if (turnActor.GetTeam() > 0 || autoBattle) { NPCTurn(); }
+        if (autoBattle) { NPCTurn(); }
+        else if (turnActor.GetTeam() > 0 && !controlAI) { NPCTurn(); }
     }
     protected void NPCTurn()
     {

@@ -17,6 +17,7 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
     public TMP_Text multiBattleEnabledText;
     public TMP_Text multiBattleCountText;
     public TMP_Text autoBattleEnabledText;
+    public TMP_Text controlAIEnabledText;
     public void UpdateBattleSettings()
     {
         if (simulatorState.multiBattle == 0)
@@ -35,6 +36,14 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
         else
         {
             autoBattleEnabledText.text = "True";
+        }
+        if (simulatorState.controlAI == 0)
+        {
+            controlAIEnabledText.text = "False";
+        }
+        else
+        {
+            controlAIEnabledText.text = "True";
         }
     }
     public SelectStatTextList terrainSelect;

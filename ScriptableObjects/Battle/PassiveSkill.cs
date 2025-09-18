@@ -126,6 +126,14 @@ public class PassiveSkill : SkillEffect
                 return map.AllyAdjacentWithSpriteName(actor, conditionSpecifics);
             case "Adjacent Ally":
                 return map.AllyAdjacentToActor(actor);
+            case "AllyCount<":
+                return map.AllAllies(actor).Count < int.Parse(conditionSpecifics);
+            case "AllyCount>":
+                return map.AllAllies(actor).Count > int.Parse(conditionSpecifics);
+            case "EnemyCount<":
+                return map.AllEnemies(actor).Count < int.Parse(conditionSpecifics);
+            case "EnemyCount>":
+                return map.AllEnemies(actor).Count > int.Parse(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;
@@ -171,6 +179,14 @@ public class PassiveSkill : SkillEffect
                 return attacker.StatusExists(conditionSpecifics);
             case "StatusD":
                 return target.StatusExists(conditionSpecifics);
+            case "RangeD>":
+                return target.GetAttackRange() > int.Parse(conditionSpecifics);
+            case "RangeD<":
+                return target.GetAttackRange() < int.Parse(conditionSpecifics);
+            case "RangeA>":
+                return attacker.GetAttackRange() > int.Parse(conditionSpecifics);
+            case "RangeA<":
+                return attacker.GetAttackRange() < int.Parse(conditionSpecifics);
         }
         return false;
     }
