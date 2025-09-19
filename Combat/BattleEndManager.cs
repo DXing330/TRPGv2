@@ -106,10 +106,15 @@ public class BattleEndManager : MonoBehaviour
         if (winnerTeam == 0)
         {
             battleResult.text = "<color=green>Victory!</color>";
-            CalculateSkillUps(true);
-            CalculateSkillUps(false);
-            if (subGame)
+            if (!subGame)
             {
+                CalculateSkillUps(true);
+                CalculateSkillUps(false);
+            }
+            else if (subGame)
+            {
+                CalculateSkillUps(true, true);
+                CalculateSkillUps(false, true);
                 string battleType = stsState.ReturnCurrentTile();
                 stsBattleRewardManager.GenerateRewards(stsRewardData.ReturnValue(battleType));
                 // Show the rewards as needed.
@@ -162,7 +167,7 @@ public class BattleEndManager : MonoBehaviour
         sceneMover.ReturnFromBattle(winnerTeam);
     }
 
-    protected void CalculateSkillUps(bool permanent = true)
+    protected void CalculateSkillUps(bool permanent = true, bool easySkillUps = false)
     {
         List<string> spriteNames = new List<string>();
         List<string> names = new List<string>();
@@ -198,7 +203,11 @@ public class BattleEndManager : MonoBehaviour
             if (passiveLevel > 0 && passiveLevel < maxSkillLevel)
             {
                 int RNG = Random.Range(0, (passiveLevel + 1) * (passiveLevel + 1));
-                Debug.Log(names[i] + ";" + spriteNames[i] + ", Current Level: " + passiveLevel + ", Roll: " + RNG + "/" + ((passiveLevel + 1) * (passiveLevel + 1)));
+                if (easySkillUps)
+                {
+                    RNG = 0;
+                }
+                //Debug.Log(names[i] + ";" + spriteNames[i] + ", Current Level: " + passiveLevel + ", Roll: " + RNG + "/" + ((passiveLevel + 1) * (passiveLevel + 1)));
                 if (RNG == 0)
                 {
                     dummyActor.SetLevelOfPassive(spriteNames[i], passiveLevel + 1);
@@ -220,7 +229,11 @@ public class BattleEndManager : MonoBehaviour
             else if (passiveLevel < maxSkillLevel)
             {
                 int RNG = Random.Range(0, (passiveLevel + 1) * (passiveLevel + 1));
-                Debug.Log(names[i] + ";" + spriteNames[i] + ", Current Level: " + passiveLevel + ", Roll: " + RNG + "/" + ((passiveLevel + 1) * (passiveLevel + 1)));
+                if (easySkillUps)
+                {
+                    RNG = 0;
+                }
+                //Debug.Log(names[i] + ";" + spriteNames[i] + ", Current Level: " + passiveLevel + ", Roll: " + RNG + "/" + ((passiveLevel + 1) * (passiveLevel + 1)));
                 if (RNG == 0)
                 {
                     dummyActor.SetLevelOfPassive(weaponType, passiveLevel + 1);

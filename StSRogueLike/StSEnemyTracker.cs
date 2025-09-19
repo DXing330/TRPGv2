@@ -15,6 +15,51 @@ public class StSEnemyTracker : SavedData
     public List<StatDatabase> floorBosses;
     public List<string> enemyPool;
     public List<string> elitePool;
+    public string defaultAlly = "Grunt";
+    public string GetDefaultAlly()
+    {
+        return defaultAlly;
+    }
+    public List<string> allyPool;
+    public void AddToAllyPool(List<string> newAllies)
+    {
+        allyPool.AddRange(newAllies);
+        allyPool = new List<string>(allyPool.Distinct());
+        Save();
+    }
+    public string GetAllyReward()
+    {
+        if (allyPool.Count <= 0)
+        {
+            return defaultAlly;
+        }
+        string ally = allyPool[UnityEngine.Random.Range(0, allyPool.Count)];
+        if (ally == "")
+        {
+            return defaultAlly;
+        }
+        return ally;
+    }
+    public List<string> rareAllyPool;
+    public void AddToRareAllyPool(List<string> newAllies)
+    {
+        rareAllyPool.AddRange(newAllies);
+        rareAllyPool = new List<string>(rareAllyPool.Distinct());
+        Save();
+    }
+    public string GetRareAllyReward()
+    {
+        if (rareAllyPool.Count <= 0)
+        {
+            return GetAllyReward();
+        }
+        string ally = rareAllyPool[UnityEngine.Random.Range(0, rareAllyPool.Count)];
+        if (ally == "")
+        {
+            return GetAllyReward();
+        }
+        return ally;
+    }
     public string previousElite;
     public string floorBoss;
 
@@ -22,6 +67,8 @@ public class StSEnemyTracker : SavedData
     {
         enemyPool.Clear();
         elitePool.Clear();
+        allyPool.Clear();
+        rareAllyPool.Clear();
         floorBoss = "";
         previousElite = "";
         Save();
@@ -86,6 +133,8 @@ public class StSEnemyTracker : SavedData
         allData = "";
         allData += String.Join(delimiterTwo, enemyPool) + delimiter;
         allData += String.Join(delimiterTwo, elitePool) + delimiter;
+        allData += String.Join(delimiterTwo, allyPool) + delimiter;
+        allData += String.Join(delimiterTwo, rareAllyPool) + delimiter;
         allData += previousElite + delimiter;
         allData += floorBoss + delimiter;
         File.WriteAllText(dataPath, allData);
@@ -101,12 +150,17 @@ public class StSEnemyTracker : SavedData
         else
         {
             // Pretend you're entering a new floor.
+            NewFloor();
             return;
         }
         string[] blocks = allData.Split(delimiter);
         enemyPool = blocks[0].Split(delimiterTwo).ToList();
         elitePool = blocks[1].Split(delimiterTwo).ToList();
-        previousElite = blocks[2];
-        floorBoss = blocks[3];
+        allyPool = blocks[2].Split(delimiterTwo).ToList();
+        rareAllyPool = blocks[3].Split(delimiterTwo).ToList();
+        previousElite = blocks[4];
+        floorBoss = blocks[5];
+        utility.RemoveEmptyListItems(allyPool);
+        utility.RemoveEmptyListItems(rareAllyPool);
     }
 }

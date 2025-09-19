@@ -61,12 +61,14 @@ public class StSLikeMap : MapManager
             string[] eliteData = allEnemies.Split("-");
             battleState.ForceTerrainType(eliteData[0]);
             enemyList.AddCharacters(eliteData[1].Split("|").ToList());
+            savedState.enemyTracker.AddToRareAllyPool(eliteData[1].Split("|").ToList());
             return;
         }
         allEnemies = enemyTracker.GetEnemyData(difficulty);
         string[] dataBlocks = allEnemies.Split("-");
         battleState.ForceTerrainType(dataBlocks[0]);
         enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
+        savedState.enemyTracker.AddToAllyPool(dataBlocks[1].Split("|").ToList());
     }
     public int maxFloors = 1;
     // Off load enemy generation to a custom script.
@@ -99,6 +101,7 @@ public class StSLikeMap : MapManager
     public string storeSceneName;
     public string treasureSceneName;
     public string eventSceneName;
+    public string finalSceneName;
     public List<bool> debugTileTypeAvailable;
     public List<bool> debugTileTypeActive;
     public bool TileTypeAvailable(string tileType)
@@ -148,6 +151,7 @@ public class StSLikeMap : MapManager
             if (savedState.GetCurrentFloor() >= maxFloors)
             {
                 // Move to the victory scene.
+                sceneMover.LoadScene(finalSceneName);
                 return;
             }
             // New floor.
@@ -302,14 +306,18 @@ public class StSLikeMap : MapManager
         // Get path.
         List<int> pathTiles = mapMaker.CreatePath(start, end, mapSize);
         // Enable path.
-        for (int i = 0; i < pathTiles.Count; i++)
+        // End = Rest.
+        mapInfo[pathTiles[pathTiles.Count - 1]] = "Rest";
+        string tileType = RandomTileType();
+        for (int i = pathTiles.Count - 2; i >= 0; i--)
         {
-            // Initially all the path tiles are random.
-            string tileType = RandomTileType();
-            // Ensure that no two adjacent tiles are the same.
-            if (i > 0)
+            if (mapInfo[pathTiles[i + 1]] == "Enemy")
             {
-                tileType = RandomTileType(mapInfo[pathTiles[i - 1]]);
+                tileType = RandomTileType();
+            }
+            else
+            {
+                tileType = RandomTileType(mapInfo[pathTiles[i + 1]]);
             }
             mapInfo[pathTiles[i]] = tileType;
             mapTiles[pathTiles[i]].EnableLayer();
@@ -317,10 +325,6 @@ public class StSLikeMap : MapManager
         // Some path values are fixed.
         // Middle = Treasure.
         mapInfo[pathTiles[pathTiles.Count / 2]] = "Treasure";
-        // End = Rest.
-        mapInfo[pathTiles[pathTiles.Count - 1]] = "Rest";
-        // Can't have two rests in a row.
-        mapInfo[pathTiles[pathTiles.Count - 2]] = RandomTileType(mapInfo[pathTiles[pathTiles.Count - 1]]);
         // Start = Enemy.
         mapInfo[pathTiles[0]] = "Enemy";
     }

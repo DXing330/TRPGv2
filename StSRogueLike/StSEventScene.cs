@@ -49,6 +49,7 @@ public class StSEventScene : MonoBehaviour
     public void DisplayEvent()
     {
         eventName.text = stsEvent.GetEventName();
+        eventDescription.text = stsEvent.GetEventDescription();
         ResetChoices();
         List<string> choices = stsEvent.GetChoices();
         for (int i = 0; i < choices.Count; i++)

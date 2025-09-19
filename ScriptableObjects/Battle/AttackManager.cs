@@ -148,6 +148,9 @@ public class AttackManager : ScriptableObject
                 case "Attacker":
                 passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
                 break;
+                case "Map":
+                    map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
+                break;
             }
         }
     }

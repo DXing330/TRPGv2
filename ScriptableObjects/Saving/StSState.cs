@@ -8,6 +8,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StSState", menuName = "ScriptableObjects/StS/StSState", order = 1)]
 public class StSState : SavedState
 {
+    public List<SavedData> stsData;
+    // Enemy tracker is just an extension of the state, sectioned off for convenience.
+    public StSEnemyTracker enemyTracker;
     // Save the map, the floor, the party location, the store items, the random event details.
     public override void NewGame()
     {
@@ -16,7 +19,11 @@ public class StSState : SavedState
         battlesFought = 0;
         bossBattled = 0;
         Save();
-        return;
+        for (int i = 0; i < stsData.Count; i++)
+        {
+            stsData[i].NewGame();
+            stsData[i].Save();
+        }
     }
     public int newGame = 1;
     public int currentFloor = 1;
@@ -53,7 +60,7 @@ public class StSState : SavedState
     }
     public int ReturnCurrentDifficulty()
     {
-        return (battlesFought+1)/2;
+        return battlesFought;
     }
     public bool StartingNewGame()
     {
@@ -65,6 +72,10 @@ public class StSState : SavedState
         if (partyPathing.Count <= 0)
         {
             return "";
+        }
+        else if (bossBattled == 1)
+        {
+            return "Boss";
         }
         return mapInfo[partyPathing[partyPathing.Count - 1]];
     }

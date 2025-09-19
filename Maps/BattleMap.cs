@@ -149,6 +149,19 @@ public class BattleMap : MapManager
     // List of actor directions on tiles.
     public List<string> actorDirections;
     public StatDatabase tileTileInteractions;
+    // Called during some battle passives.
+    public void ChangeTile(int tileNumber, string effect, string specifics)
+    {
+        switch (effect)
+        {
+            case "Tile":
+                ChangeTerrain(tileNumber, specifics);
+                break;
+            case "TerrainEffect":
+                ChangeTerrainEffect(tileNumber, specifics);
+                break;
+        }
+    }
     public void ChangeTerrain(int tileNumber, string change)
     {
         string changeKey = mapInfo[tileNumber]+">"+change;

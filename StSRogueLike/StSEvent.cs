@@ -10,10 +10,16 @@ public class StSEvent : SavedData
 {
     // Stuff to track the event.
     public StatDatabase eventData;
+    public StatDatabase eventDescription;
+    public StatDatabase eventEquipment;
     public string eventName;
     public string GetEventName()
     {
         return eventName;
+    }
+    public string GetEventDescription()
+    {
+        return eventDescription.ReturnValue(GetEventName());
     }
     public string eventDetails;
     public string SceneChangeEvent()
@@ -122,6 +128,9 @@ public class StSEvent : SavedData
                         ApplyEffectToActor(partyData, partyData.ReturnActorAtIndex(j), j, eventEffect[i], eventSpecifics[i]);
                     }
                     partyData.RemoveDeadPartyMembers();
+                    break;
+                case "Equipment":
+                    partyData.equipmentInventory.AddEquipmentByStats(eventEquipment.ReturnValue(eventSpecifics[i]));
                     break;
             }
         }

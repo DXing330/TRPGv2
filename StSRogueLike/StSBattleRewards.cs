@@ -6,6 +6,7 @@ public class StSBattleRewards : MonoBehaviour
 {
     public PartyDataManager partyData;
     public StSState mapState;
+    public StSEnemyTracker enemyTracker;
     public StatDatabase actorStats;
     public StatDatabase allEquipmentRewards;
     public Equipment dummyEquip;
@@ -15,9 +16,6 @@ public class StSBattleRewards : MonoBehaviour
     public int baseGoldReward = 20; // For regular battles.
     public int rareGoldReward = 50; // For bosses.
     public int goldVariance = 6;
-    public string basicAlly = "Grunt";
-    public List<string> possibleAllies;
-    public List<string> rareAllies;
     public int goldReward;
     public int GetGoldReward()
     {
@@ -55,7 +53,7 @@ public class StSBattleRewards : MonoBehaviour
     {
         for (int i = 0; i < allyRewards.Count; i++)
         {
-            partyData.HireMember(allyRewards[i], actorStats.ReturnValue(allyRewards[i]), allyRewards[i] + " " + Random.Range(0, 10000));
+            partyData.HireMember(allyRewards[i], actorStats.ReturnValue(allyRewards[i]), allyRewards[i] + " " + Random.Range(0, 1000));
         }
         for (int i = 0; i < equipmentRewards.Count; i++)
         {
@@ -86,13 +84,13 @@ public class StSBattleRewards : MonoBehaviour
                 goldReward += rareGoldReward + Random.Range(-goldVariance, goldVariance * 2);
                 break;
             case "Basic Ally":
-                allyRewards.Add(basicAlly);
+                allyRewards.Add(enemyTracker.GetDefaultAlly());
                 break;
             case "Random Ally":
-                allyRewards.Add(possibleAllies[Random.Range(0, possibleAllies.Count)]);
+                allyRewards.Add(enemyTracker.GetAllyReward());
                 break;
             case "Rare Ally":
-                allyRewards.Add(rareAllies[Random.Range(0, rareAllies.Count)]);
+                allyRewards.Add(enemyTracker.GetRareAllyReward());
                 break;
             case "Equipment":
                 equipmentRewards.Add(GetRandomEquipment(baseRarity));

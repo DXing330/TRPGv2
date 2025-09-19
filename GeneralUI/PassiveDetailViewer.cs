@@ -227,6 +227,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " create " + specifics;
             case "Tile":
                 return " create " + specifics;
+            case "Map":
+                return " create " + specifics;
             case "MentalState":
                 return " change mental state to " + specifics;
             case "Amnesia":
