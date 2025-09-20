@@ -12,6 +12,15 @@ public class BattleMap : MapManager
         weather = newInfo;
         weatherFilter.UpdateFilter(weather);
     }
+    public int battleRound;
+    public void SetRound(int newInfo)
+    {
+        battleRound = newInfo;
+    }
+    public int GetRound()
+    {
+        return battleRound;
+    }
     public string GetWeather() { return weather; }
     public string time;
     public void SetTime(string newInfo){ time = newInfo; }

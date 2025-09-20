@@ -98,6 +98,7 @@ public class BattleManager : MonoBehaviour
         map.RemoveActorsFromBattle();
         turnNumber = 0;
         roundNumber++;
+        map.SetRound(roundNumber);
         // Get initiative order.
         map.battlingActors = initiativeTracker.SortActors(map.battlingActors);
         // Update terrain effects/weather interactions/etc.

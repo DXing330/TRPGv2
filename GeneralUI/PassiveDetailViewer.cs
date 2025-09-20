@@ -169,6 +169,15 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if your attack range is greater than " + specifics + ".";
             case "RangeA<":
                 return " if your attack range is less than " + specifics + ".";
+            case "Round":
+                switch (specifics)
+                {
+                    case "Even":
+                        return " every other round.";
+                    case "Odd":
+                        return " at the start of the first round and every other round.";
+                }
+                break;
         }
         return ".";
     }

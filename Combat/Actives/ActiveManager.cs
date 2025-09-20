@@ -155,6 +155,15 @@ public class ActiveManager : MonoBehaviour
                     battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
                 }
                 return;
+            case "MassSummon":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    if (battle.map.GetActorOnTile(targetedTiles[i]) == null)
+                    {
+                        battle.SpawnAndAddActor(targetedTiles[i], specifics, skillUser.GetTeam());
+                    }
+                }
+                return;
             case "RandomSummon":
                 // Check if selected tile is free.
                 if (battle.map.GetActorOnTile(selectedTile) == null)

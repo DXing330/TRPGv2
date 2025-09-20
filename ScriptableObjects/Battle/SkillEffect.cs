@@ -42,6 +42,15 @@ public class SkillEffect : ScriptableObject
                 }
                 target.AddStatus(effectSpecifics, duration);
                 break;
+            case "Statuses":
+                int durations = level;
+                if (level <= baseStatusDuration && level >= 0) { durations = baseStatusDuration; }
+                string[] statuses = effectSpecifics.Split(",");
+                for (int i = 0; i < statuses.Length; i++)
+                {
+                    AffectActor(target, "Status", statuses[i], durations);
+                }
+                break;
             case "RemoveStatus":
                 target.RemoveStatus(effectSpecifics);
                 break;

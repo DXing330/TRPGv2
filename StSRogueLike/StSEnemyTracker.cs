@@ -53,7 +53,9 @@ public class StSEnemyTracker : SavedData
         {
             return GetAllyReward();
         }
-        string ally = rareAllyPool[UnityEngine.Random.Range(0, rareAllyPool.Count)];
+        List<string> rareAllyChance = new List<string>(rareAllyPool);
+        rareAllyChance.AddRange(allyPool);
+        string ally = rareAllyChance[UnityEngine.Random.Range(0, rareAllyChance.Count)];
         if (ally == "")
         {
             return GetAllyReward();

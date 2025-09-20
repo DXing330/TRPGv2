@@ -72,8 +72,6 @@ public class StSLikeMap : MapManager
     }
     public int maxFloors = 1;
     // Off load enemy generation to a custom script.
-    public StatDatabase floorOneEnemies;
-    public StatDatabase floorOneElites;
     public string floorBoss;
     public void GenerateFloorBoss()
     {
@@ -288,6 +286,7 @@ public class StSLikeMap : MapManager
             GeneratePath();
         }
         // Get the floor boss randomly.
+        partyData.HealParty();
         enemyTracker.NewFloor();
         GenerateFloorBoss();
         UpdateMap();

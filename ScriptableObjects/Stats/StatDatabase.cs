@@ -115,7 +115,7 @@ public class StatDatabase : ScriptableObject
     public string ReturnValue(string key)
     {
         int indexOf = keys.IndexOf(key);
-        if (indexOf < 0){return "";}
+        if (indexOf < 0 || indexOf >= values.Count){return "";}
         return values[indexOf];
     }
 

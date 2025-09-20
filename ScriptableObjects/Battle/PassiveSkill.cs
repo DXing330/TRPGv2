@@ -134,6 +134,15 @@ public class PassiveSkill : SkillEffect
                 return map.AllEnemies(actor).Count < int.Parse(conditionSpecifics);
             case "EnemyCount>":
                 return map.AllEnemies(actor).Count > int.Parse(conditionSpecifics);
+            case "Round":
+                switch (conditionSpecifics)
+                {
+                    case "Even":
+                        return map.GetRound() % 2 == 0;
+                    case "Odd":
+                        return (map.GetRound() + 1) % 2 == 0;
+                }
+                return false;
         }
         // Most of them have no condition.
         return true;

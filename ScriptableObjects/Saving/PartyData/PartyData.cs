@@ -168,7 +168,7 @@ public class PartyData : SavedData
     }
     public void ResetCurrentStats(bool defeated = false)
     {
-        // Heal to full.
+        // Heal to full and remove status effects.
         if (!defeated)
         {
             ClearCurrentStats();

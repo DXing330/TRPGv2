@@ -62,6 +62,19 @@ public class AIConditionChecker : ScriptableObject
                 return !map.GetWeather().Contains(specifics);
             case "Energy<=":
                 return actor.GetEnergy() <= int.Parse(specifics);
+            case "Round":
+                switch (specifics)
+                {
+                    case "Even":
+                        return map.GetRound() % 2 == 0;
+                    case "Odd":
+                        return (map.GetRound() + 1) % 2 == 0;
+                }
+                return map.GetRound() % int.Parse(specifics) == 0;
+            case "AllyCount<":
+                return map.AllAllies(actor).Count < int.Parse(specifics);
+            case "AllyCount>":
+                return map.AllAllies(actor).Count > int.Parse(specifics);
         }
         return true;
     }
