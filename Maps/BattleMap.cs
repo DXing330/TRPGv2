@@ -23,7 +23,12 @@ public class BattleMap : MapManager
     }
     public string GetWeather() { return weather; }
     public string time;
-    public void SetTime(string newInfo){ time = newInfo; }
+    public DayNightFilter timeFilter;
+    public void SetTime(string newInfo)
+    { 
+        time = newInfo;
+        timeFilter.SetTime(time);
+    }
     public string GetTime(){ return time; }
     public CombatLog combatLog;
     public BattleStatsTracker damageTracker;

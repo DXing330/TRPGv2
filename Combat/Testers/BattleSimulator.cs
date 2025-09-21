@@ -108,6 +108,7 @@ public class BattleSimulator : MonoBehaviour
     {
         if (actorSelect.GetSelected() < 0)
         {
+            selectedActorName = "";
             return;
         }
         selectedActorName = actorStats.ReturnKeyAtIndex(actorSelect.GetSelected());

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,17 @@ public class Equipment : MonoBehaviour
 {
     public string allStats;
     public string GetStats(){ return allStats; }
+    public void RefreshStats()
+    {
+        allStats = "";
+        allStats += equipName + "|";
+        allStats += slot + "|";
+        allStats += type + "|";
+        allStats += String.Join(",", passives) + "|";
+        allStats += String.Join(",", passiveLevels) + "|";
+        allStats += maxLevel + "|";
+        allStats += rarity + "|";
+    }
     public void SetAllStats(string newStats)
     {
         allStats = newStats;
@@ -80,6 +92,21 @@ public class Equipment : MonoBehaviour
         {
             actor.AddPassiveSkill(passives[i], passiveLevels[i]);
         }
+    }
+
+    public void UpgradeEquipment(string passiveUpgrade, int level = 1)
+    {
+        int indexOf = passives.IndexOf(passiveUpgrade);
+        if (indexOf < 0)
+        {
+            passives.Add(passiveUpgrade);
+            passiveLevels.Add(level.ToString());
+        }
+        else
+        {
+            passiveLevels[indexOf] = (int.Parse(passiveLevels[indexOf]) + level).ToString();
+        }    
+        RefreshStats();
     }
 
     public void EquipWeapon(TacticActor actor)

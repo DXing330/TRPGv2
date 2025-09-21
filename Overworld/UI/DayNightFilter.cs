@@ -16,4 +16,12 @@ public class DayNightFilter : MonoBehaviour
     {
         filter.color = new Color(dayNightColors[hour].r,dayNightColors[hour].g,dayNightColors[hour].b,dayNightColors[hour].a);
     }
+    public List<string> binaryTimes;
+    public List<Color> binaryDayNightColors;
+    public void SetTime(string newInfo)
+    {
+        int indexOf = binaryTimes.IndexOf(newInfo);
+        if (indexOf < 0) { return; }
+        filter.color = new Color(binaryDayNightColors[indexOf].r, binaryDayNightColors[indexOf].g, binaryDayNightColors[indexOf].b, binaryDayNightColors[indexOf].a);
+    }
 }
