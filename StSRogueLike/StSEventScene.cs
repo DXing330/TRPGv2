@@ -22,6 +22,7 @@ public class StSEventScene : MonoBehaviour
     public Equipment dummyEquip;
     public TMP_Text eventName;
     public TMP_Text eventDescription;
+    public Image eventImage;
     public List<GameObject> choiceObjects;
     public void ResetChoices()
     {
@@ -29,6 +30,7 @@ public class StSEventScene : MonoBehaviour
     }
     public List<TMP_Text> eventChoices;
     public List<TMP_Text> choiceEffects;
+    public List<TMP_Text> choiceDescriptions;
     public EventDescriptionViewer descriptionViewer;
     public GameObject actorSelect;
     public ActorSpriteHPList actorSelectList;
