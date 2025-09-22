@@ -44,7 +44,21 @@ public class PassiveSkill : SkillEffect
             passiveName = passives[i];
             if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
-            if (!CheckStartEndCondition(passiveData[1], passiveData[2], actor, map)) { continue; }
+            string[] conditions = passiveData[1].Split(",");
+            string[] specifics = passiveData[2].Split(",");
+            bool conditionsMet = true;
+            for (int j = 0; j < conditions.Length; j++)
+            {
+                conditionsMet = CheckStartEndCondition(conditions[j], specifics[j], actor, map);
+                if (!conditionsMet)
+                {
+                    break;
+                }
+            }
+            if (!conditionsMet)
+            {
+                continue;
+            }
             switch (passiveData[3])
             {
                 case "Self":
@@ -143,6 +157,10 @@ public class PassiveSkill : SkillEffect
                         return (map.GetRound() + 1) % 2 == 0;
                 }
                 return false;
+            case "Passive":
+            return actor.GetPassiveSkills().Contains(conditionSpecifics);
+            case "Passive<>":
+            return !actor.GetPassiveSkills().Contains(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;
@@ -178,8 +196,12 @@ public class PassiveSkill : SkillEffect
                 return CheckHealthConditions(conditionSpecifics, target);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics);
+            case "Weather<>":
+                return !map.GetWeather().Contains(conditionSpecifics);
             case "Time":
                 return conditionSpecifics == map.GetTime();
+            case "Time<>":
+                return conditionSpecifics != map.GetTime();
             case "MentalStateA":
                 return conditionSpecifics == attacker.GetMentalState();
             case "MentalStateD":
@@ -196,6 +218,14 @@ public class PassiveSkill : SkillEffect
                 return attacker.GetAttackRange() > int.Parse(conditionSpecifics);
             case "RangeA<":
                 return attacker.GetAttackRange() < int.Parse(conditionSpecifics);
+            case "PassiveLevelsD>":
+                return target.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
+            case "PassiveLevelsD<":
+                return target.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
+            case "PassiveLevelsA>":
+                return attacker.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
+            case "PassiveLevelsA<":
+                return attacker.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
         }
         return false;
     }

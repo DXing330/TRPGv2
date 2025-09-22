@@ -421,9 +421,21 @@ public class BattleManager : MonoBehaviour
             case "Skill":
                 StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));
                 yield break;
+            case "One Time Skill":
+                turnActor.IncrementCounter();
+                StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));
+                yield break;
             case "Random Skill":
                 string[] skills = turnDetails[1].Split(",");
-                StartCoroutine(NPCSkillAction(actionsLeft, skills[Random.Range(0, skills.Length)]));
+                string chosenSkill = skills[Random.Range(0, skills.Length)];
+                if (chosenSkill == "None")
+                {
+                    StartCoroutine(StandardNPCAction(actionsLeft));
+                }
+                else
+                {
+                    StartCoroutine(NPCSkillAction(actionsLeft, chosenSkill));
+                }
                 yield break;
             case "Basic":
                 StartCoroutine(StandardNPCAction(actionsLeft));

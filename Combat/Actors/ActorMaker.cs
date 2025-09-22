@@ -20,6 +20,7 @@ public class ActorMaker : MonoBehaviour
         newActor.ResetWeaponType();
         newActor.ClearStatuses();
         newActor.ResetPassives();
+        newActor.ResetCounter();
         newActor.SetCurrentHealth(0);
         return newActor;
     }

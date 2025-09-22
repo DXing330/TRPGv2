@@ -57,7 +57,20 @@ public class PassiveDetailViewer : MonoBehaviour
         string description = "";
         description += PassiveTiming(dataBlocks[0]);
         description += PassiveEffect(dataBlocks[4], dataBlocks[5], dataBlocks[3]);
-        description += PassiveConditionText(dataBlocks[1], dataBlocks[2]);
+        string[] conditions = dataBlocks[1].Split(",");
+        string[] specifics = dataBlocks[2].Split(",");
+        for (int i = 0; i < conditions.Length; i++)
+        {
+            description += PassiveConditionText(conditions[i], specifics[i]);
+            if (i < conditions.Length - 1)
+            {
+                description += " and";
+            }
+            else
+            {
+                description += ".";
+            }
+        }
         return description;
     }
 
@@ -90,96 +103,112 @@ public class PassiveDetailViewer : MonoBehaviour
         switch (condition)
         {
             case "None":
-                return ".";
+                return "";
             case "AllyCount<":
-                return " if there are less than "+specifics+" allies left.";
+                return " if there are less than "+specifics+" allies left";
             case "AllyCount>":
-                return " if there are more than " + specifics + " allies left.";
+                return " if there are more than " + specifics + " allies left";
             case "Adjacent Ally":
-                return " if another ally is adjacent.";
+                return " if another ally is adjacent";
             case "Adjacent Ally A":
-                return " if another ally is adjacent.";
+                return " if another ally is adjacent";
             case "Adjacent Ally D":
-                return " if another ally is adjacent.";
+                return " if another ally is adjacent";
             case "Adjacent Ally Sprite":
-                return " if a " + specifics + " ally is adjacent.";
+                return " if a " + specifics + " ally is adjacent";
             case "Adjacent Ally Sprite A":
-                return " if a " + specifics + " ally is adjacent.";
+                return " if a " + specifics + " ally is adjacent";
             case "Adjacent Ally Sprite D":
-                return " if a " + specifics + " ally is adjacent.";
+                return " if a " + specifics + " ally is adjacent";
             case "Direction":
                 switch (specifics)
                 {
                     case "Front":
-                        return " if you are facing the front side of the enemy.";
+                        return " if you are facing the front side of the enemy";
                     case "Back":
-                        return " if you are facing the back side of the enemy.";
+                        return " if you are facing the back side of the enemy";
                     case "Same":
-                        return " if you are facing the back as the enemy.";
+                        return " if you are facing the back as the enemy";
                     case "Opposite":
-                        return " if you are facing the enemy.";
+                        return " if you are facing the enemy";
                 }
                 break;
             case "Distance":
-                return " if within " + specifics + " tile(s).";
+                return " if within " + specifics + " tile(s)";
             case "Distance>":
-                return " if at least " + specifics + " tile(s) away.";
+                return " if at least " + specifics + " tile(s) away";
             //case "Type":
-            //return " if the damage is "+damageTypes.ReturnValue(dummyPassive.conditionSpecifics)+".";
+            //return " if the damage is "+damageTypesReturnValue(dummyPassiveconditionSpecifics)+"";
             case "Health":
                 switch (specifics)
                 {
                     case "<Half":
-                        return " if health is <50%.";
+                        return " if health is <50%";
                     case "Full":
-                        return " if health is full.";
+                        return " if health is full";
                 }
                 break;
             case "Tile":
-                return " if on a " + specifics + " tile.";
+                return " if on a " + specifics + " tile";
             case "Tile<>":
-                return " if not on a " + specifics + " tile.";
+                return " if not on a " + specifics + " tile";
             case "Weapon":
-                return " if a " + specifics + " is equipped.";
+                return " if a " + specifics + " is equipped";
             case "Weather":
-                return " if the weather is " + specifics + ".";
+                return " if the weather is " + specifics + "";
+            case "Weather<>":
+                return " if the weather is not " + specifics + "";
             case "Time":
-                return " if the time of day is " + specifics + ".";
+                return " if the time of day is " + specifics + "";
+            case "Time<>":
+                return " if the time of day is not " + specifics + "";
             case "MoveType":
-                return " if " + specifics + ".";
+                return " if " + specifics + "";
             case "MoveType<>":
-                return " if not " + specifics + ".";
+                return " if not " + specifics + "";
             case "MentalState":
-                return " if " + specifics + ".";
+                return " if " + specifics + "";
             case "MentalStateA":
-                return " if " + specifics + ".";
+                return " if " + specifics + "";
             case "MentalStateD":
-                return " if " + specifics + ".";
+                return " if " + specifics + "";
             case "Status":
-                return " if you have " + specifics + " status.";
+                return " if you have " + specifics + " status";
             case "StatusA":
-                return " if you have " + specifics + " status.";
+                return " if you have " + specifics + " status";
             case "StatusD":
-                return " if the target has " + specifics + " status.";
+                return " if the target has " + specifics + " status";
             case "RangeD>":
-                return " if the target's attack range is greater than " + specifics + ".";
+                return " if the target's attack range is greater than " + specifics + "";
             case "RangeD<":
-                return " if the target's attack range is less than " + specifics + ".";
+                return " if the target's attack range is less than " + specifics + "";
             case "RangeA>":
-                return " if your attack range is greater than " + specifics + ".";
+                return " if your attack range is greater than " + specifics + "";
             case "RangeA<":
-                return " if your attack range is less than " + specifics + ".";
+                return " if your attack range is less than " + specifics + "";
             case "Round":
                 switch (specifics)
                 {
                     case "Even":
-                        return " every other round.";
+                        return " every other round";
                     case "Odd":
-                        return " at the start of the first round and every other round.";
+                        return " at the start of the first round and every other round";
                 }
                 break;
+            case "Passive":
+                return " if you do have the " + specifics + " passive";
+            case "Passive<>":
+                return " if you do not have the " + specifics + " passive";
+            case "PassiveLevelsD>":
+                return " if the target has more than " + specifics + " passive levels";
+            case "PassiveLevelsD<":
+                return " if the target has less than " + specifics + " passive levels";
+            case "PassiveLevelsA>":
+                return " if you have more than " + specifics + " passive levels";
+            case "PassiveLevelsA<":
+                return " if you have less than " + specifics + " passive levels";
         }
-        return ".";
+        return "";
     }
 
     protected string PassiveEffect(string effect, string specifics, string target)
@@ -244,6 +273,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " make "+target+" forget 1 active skill";
             case "Active":
                 return " use " + specifics;
+            case "Death":
+                return " die";
         }
         return " increase "+effect+" by "+specifics;
     }

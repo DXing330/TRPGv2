@@ -160,6 +160,17 @@ public class BattleMap : MapManager
         // If someone's name is on the tile then it's not empty.
         return (actorTiles[tileNumber].Length > 1);
     }
+    public List<int> ReturnEmptyTiles(List<int> newTiles)
+    {
+        for (int i = newTiles.Count - 1; i >= 0; i--)
+        {
+            if (TileNotEmpty(newTiles[i]))
+            {
+                newTiles.RemoveAt(i);
+            }
+        }
+        return newTiles;
+    }
     // List of actor directions on tiles.
     public List<string> actorDirections;
     public StatDatabase tileTileInteractions;

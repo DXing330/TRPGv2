@@ -206,6 +206,16 @@ public class ActorAI : ScriptableObject
         List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
         if (targetableTiles.Count <= 0) { return -1; }
         if (targetableTiles.Count == 1) { return targetableTiles[0]; }
+        // Move skills pick a random empty tile?
+        if (active.GetSkillType() == "Move")
+        {
+            targetableTiles = map.ReturnEmptyTiles(targetableTiles);
+            if (targetableTiles.Count <= 0)
+            {
+                return -1;
+            }
+            return targetableTiles[Random.Range(0, targetableTiles.Count)];
+        }
         // Beam skills should be fired in the direction of your target.
         if (active.GetShape() == "Beam")
         {
@@ -222,26 +232,10 @@ public class ActorAI : ScriptableObject
             }
             return map.mapUtility.PointInDirection(currentActor.GetLocation(), direction, map.mapSize);
         }
-        if (active.GetEffect() == "Summon")
+        if (active.GetEffect().Contains("Summon"))
         {
             // Look for an empty tile in range.
-            for (int i = targetableTiles.Count - 1; i >= 0; i--)
-            {
-                if (map.TileNotEmpty(targetableTiles[i])) { targetableTiles.RemoveAt(i); }
-            }
-            if (targetableTiles.Count <= 0)
-            {
-                return -1;
-            }
-            return targetableTiles[Random.Range(0, targetableTiles.Count)];
-        }
-        else if (active.GetEffect() == "RandomSummon")
-        {
-            // Look for an empty tile in range.
-            for (int i = targetableTiles.Count - 1; i >= 0; i--)
-            {
-                if (map.TileNotEmpty(targetableTiles[i])) { targetableTiles.RemoveAt(i); }
-            }
+            targetableTiles = map.ReturnEmptyTiles(targetableTiles);
             if (targetableTiles.Count <= 0)
             {
                 return -1;

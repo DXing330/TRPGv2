@@ -58,8 +58,14 @@ public class AIConditionChecker : ScriptableObject
                         return actor.GetHealth() * 2 >= actor.GetBaseHealth();
                 }
                 return false;
+            case "Weather":
+                return map.GetWeather().Contains(specifics);
             case "Weather<>":
                 return !map.GetWeather().Contains(specifics);
+            case "Time":
+                return specifics == map.GetTime();
+            case "Time<>":
+                return specifics != map.GetTime();
             case "Energy<=":
                 return actor.GetEnergy() <= int.Parse(specifics);
             case "Round":
@@ -71,10 +77,20 @@ public class AIConditionChecker : ScriptableObject
                         return (map.GetRound() + 1) % 2 == 0;
                 }
                 return map.GetRound() % int.Parse(specifics) == 0;
+            case "Counter":
+            return actor.GetCounter() == int.Parse(specifics);
+            case "Counter<":
+            return actor.GetCounter() < int.Parse(specifics);
+            case "Counter>":
+            return actor.GetCounter() > int.Parse(specifics);
             case "AllyCount<":
                 return map.AllAllies(actor).Count < int.Parse(specifics);
             case "AllyCount>":
                 return map.AllAllies(actor).Count > int.Parse(specifics);
+            case "EnemyCount<":
+                return map.AllEnemies(actor).Count < int.Parse(specifics);
+            case "EnemyCount>":
+                return map.AllEnemies(actor).Count > int.Parse(specifics);
         }
         return true;
     }

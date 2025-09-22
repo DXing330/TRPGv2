@@ -131,6 +131,9 @@ public class ActiveManager : MonoBehaviour
             case "Weather":
                 battle.map.SetWeather(specifics);
                 return;
+            case "Time":
+                battle.map.SetTime(specifics);
+                return;
             case "Tile":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
@@ -154,6 +157,13 @@ public class ActiveManager : MonoBehaviour
                     // Create a new actor on that location on the same team.
                     battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
                 }
+                return;
+            case "TributeSummon":
+                // Create a new actor on that location on the same team.
+                battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
+                // Kill yourself as tribute.
+                skillUser.SetCurrentHealth(0);
+                skillUser.ResetActions();
                 return;
             case "MassSummon":
                 for (int i = 0; i < targetedTiles.Count; i++)
@@ -189,6 +199,16 @@ public class ActiveManager : MonoBehaviour
                 {
                     skillUser.SetLocation(target);
                     battle.map.UpdateActors();
+                }
+                return;
+            case "Move+Tile":
+                // Check if selected tile is free.
+                if (battle.map.GetActorOnTile(targetedTiles[0]) == null)
+                {
+                    battle.map.ChangeTerrain(skillUser.GetLocation(), specifics);
+                    skillUser.SetLocation(targetedTiles[0]);
+                    battle.map.ChangeTerrain(skillUser.GetLocation(), specifics);
+                    battle.map.UpdateMap();
                 }
                 return;
             // The teleport behind you skill.

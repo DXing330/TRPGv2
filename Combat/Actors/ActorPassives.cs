@@ -82,6 +82,15 @@ public class ActorPassives : MonoBehaviour
         if (indexOf == -1) { return; }
         passiveLevels[indexOf] = newLevel.ToString();
     }
+    public int GetTotalPassiveLevels()
+    {
+        int total = 0;
+        for (int i = 0; i < passiveLevels.Count; i++)
+        {
+            total += int.Parse(passiveLevels[i]);
+        }
+        return total;
+    }
     // Temporary Passives Are Always Level 1.
     public List<string> tempPassives;
     public List<int> tempPassiveDurations;
