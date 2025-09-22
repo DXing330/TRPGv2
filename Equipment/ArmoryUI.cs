@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class ArmoryUI : MonoBehaviour
 {
+    public GeneralUtility utility;
     public Equipment dummyEquip;
     public EquipmentInventory equipmentInventory;
     public PartyDataManager partyData;
     public SelectStatTextList actorStats;
+    public SelectStatTextList actorStatuses;
     public SelectStatTextList actorPassives;
+    public SelectStatTextList actorActives;
     public SelectStatTextList actorEquipment;
     protected virtual void Start()
     {
@@ -42,6 +45,8 @@ public class ArmoryUI : MonoBehaviour
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
+        actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUnqiueStatusStacks());
+        actorActives.SetStatsAndData(selectedActor.GetActiveSkills());
     }
 
     public virtual void UpdateSelectedActorWithCurrentHealth()

@@ -419,6 +419,21 @@ public class ActorStats : ActorPassives
     }
     public List<string> statuses;
     public List<string> GetStatuses() { return statuses; }
+    public List<string> GetUniqueStatuses()
+    {
+        List<string> unique = new List<string>(statuses.Distinct());
+        return unique;
+    }
+    public List<string> GetUnqiueStatusStacks()
+    {
+        List<string> uniqueCount = new List<string>();
+        List<string> unique = GetUniqueStatuses();
+        for (int i = 0; i < unique.Count; i++)
+        {
+            uniqueCount.Add(utility.CountStringsInList(statuses, unique[i]).ToString());
+        }
+        return uniqueCount;
+    }
     public bool StatusExists(string statusName)
     {
         return statuses.Contains(statusName);

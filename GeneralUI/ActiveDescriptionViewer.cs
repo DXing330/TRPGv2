@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class ActiveDescriptionViewer : MonoBehaviour
 {
+    public ActiveSkill dummyActive;
+    public StatDatabase activeData;
+    public SelectStatTextList activeSelect;
+    public PopUpMessage popUp;
+    public void SelectActive()
+    {
+        if (activeSelect.GetSelected() < 0){return;}
+        dummyActive.LoadSkillFromString(activeData.ReturnValue(activeSelect.GetSelectedStat()));
+        popUp.SetMessage(ReturnActiveDescription(dummyActive));
+    }
+
     public string ReturnSpellDescription(MagicSpell spell)
     {
         string fullDetails = "";

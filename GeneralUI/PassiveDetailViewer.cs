@@ -47,13 +47,13 @@ public class PassiveDetailViewer : MonoBehaviour
         passiveGroupText.SetText(passiveLevel);
     }
 
-    public string ReturnPassiveDetails(string passiveInfo)
+    public string ReturnPassiveDetails(string newInfo)
     {
-        if (!passiveInfo.Contains("|"))
+        if (!newInfo.Contains("|"))
         {
             return "";
         }
-        string[] dataBlocks = passiveInfo.Split("|");
+        string[] dataBlocks = newInfo.Split("|");
         string description = "";
         description += PassiveTiming(dataBlocks[0]);
         description += PassiveEffect(dataBlocks[4], dataBlocks[5], dataBlocks[3]);
@@ -71,6 +71,19 @@ public class PassiveDetailViewer : MonoBehaviour
                 description += ".";
             }
         }
+        return description;
+    }
+
+    public string ReturnStatusDetails(string newInfo)
+    {
+        if (!newInfo.Contains("|"))
+        {
+            return "";
+        }
+        string[] dataBlocks = newInfo.Split("|");
+        string description = "";
+        description += PassiveTiming(dataBlocks[0]);
+        description += PassiveEffect(dataBlocks[1], dataBlocks[2], "target");
         return description;
     }
 

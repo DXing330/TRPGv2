@@ -32,9 +32,17 @@ public class StatTextList : GameObjectTextList
         }
     }
 
-    public void SetStatsAndData(List<string> newStats, List<string> newData)
+    public void SetStatsAndData(List<string> newStats, List<string> newData = null)
     {
         DisableChangePage();
+        if (newData == null)
+        {
+            newData = new List<string>();
+            for (int i = 0; i < newStats.Count; i++)
+            {
+                newData.Add("");
+            }
+        }
         stats = newStats;
         data = newData;
         page = 0;
