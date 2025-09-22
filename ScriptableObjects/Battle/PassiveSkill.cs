@@ -16,7 +16,21 @@ public class PassiveSkill : SkillEffect
             passiveName = startBattlePassives[i];
             if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
-            if (!CheckStartBattleCondition(passiveData[1], passiveData[2], actor, battleState)) { continue; }
+            string[] conditions = passiveData[1].Split(",");
+            string[] specifics = passiveData[2].Split(",");
+            bool conditionsMet = true;
+            for (int j = 0; j < conditions.Length; j++)
+            {
+                conditionsMet = CheckStartBattleCondition(conditions[j], specifics[j], actor, battleState);
+                if (!conditionsMet)
+                {
+                    break;
+                }
+            }
+            if (!conditionsMet)
+            {
+                continue;
+            }
             AffectActor(actor, passiveData[4], passiveData[5]);
         }
     }

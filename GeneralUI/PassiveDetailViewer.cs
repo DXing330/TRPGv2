@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PassiveDetailViewer : MonoBehaviour
 {
-    void Start()
+    protected virtual void Start()
     {
         UpdateTextSize();
     }
@@ -56,7 +56,12 @@ public class PassiveDetailViewer : MonoBehaviour
         string[] dataBlocks = newInfo.Split("|");
         string description = "";
         description += PassiveTiming(dataBlocks[0]);
-        description += PassiveEffect(dataBlocks[4], dataBlocks[5], dataBlocks[3]);
+        string[] effects = dataBlocks[4].Split(",");
+        string[] effectSpecifics = dataBlocks[5].Split(",");
+        for (int i = 0; i < effects.Length; i++)
+        {
+            description += PassiveEffect(effects[i], effectSpecifics[i], dataBlocks[3]);
+        }
         string[] conditions = dataBlocks[1].Split(",");
         string[] specifics = dataBlocks[2].Split(",");
         for (int i = 0; i < conditions.Length; i++)
@@ -74,18 +79,6 @@ public class PassiveDetailViewer : MonoBehaviour
         return description;
     }
 
-    public string ReturnStatusDetails(string newInfo)
-    {
-        if (!newInfo.Contains("|"))
-        {
-            return "";
-        }
-        string[] dataBlocks = newInfo.Split("|");
-        string description = "";
-        description += PassiveTiming(dataBlocks[0]);
-        description += PassiveEffect(dataBlocks[1], dataBlocks[2], "target");
-        return description;
-    }
 
     protected string PassiveTiming(string data)
     {
