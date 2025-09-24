@@ -36,12 +36,10 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.ResetTextText();
     }
 
-    public virtual void UpdateSelectedActor()
+    protected void UpdateActorStats()
     {
-        EndSelectingEquipment();
-        detailViewer.DisablePanel();
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
-        actorStats.UpdateActorStatTexts(selectedActor);
+        actorStats.UpdateActorStatTexts(selectedActor, true);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
@@ -49,15 +47,17 @@ public class ArmoryUI : MonoBehaviour
         actorActives.SetStatsAndData(selectedActor.GetActiveSkills());
     }
 
-    public virtual void UpdateSelectedActorWithCurrentHealth()
+    public virtual void UpdateSelectedActor()
     {
         EndSelectingEquipment();
         detailViewer.DisablePanel();
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        UpdateActorStats();
+    }
+
+    public virtual void UpdateSelectedActorWithCurrentHealth()
+    {
+        UpdateSelectedActor();
         actorStats.UpdateActorStatTexts(selectedActor, true);
-        actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
-        actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
-        actorEquipment.ResetSelected();
     }
 
     public virtual void ViewPassiveDetails()
@@ -101,7 +101,7 @@ public class ArmoryUI : MonoBehaviour
         selectEquipObject.SetActive(false);
         if (allActors.GetSelected() < 0){return;}
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
-        actorStats.UpdateActorStatTexts(selectedActor);
+        actorStats.UpdateActorStatTexts(selectedActor, true);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
     }

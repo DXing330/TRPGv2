@@ -56,7 +56,7 @@ public class StatTextList : GameObjectTextList
     protected void UpdateCurrentPageStatTexts()
     {
         ResetPage();
-        List<int> newPageIndices = new List<int>(utility.GetCurrentPageIndices(page, objects, data));
+        List<int> newPageIndices = new List<int>(utility.GetCurrentPageIndices(page, objects, stats));
         for (int i = 0; i < newPageIndices.Count; i++)
         {
             objects[i].SetActive(true);

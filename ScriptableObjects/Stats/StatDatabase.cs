@@ -107,7 +107,7 @@ public class StatDatabase : ScriptableObject
         return "";
     }
 
-    public List<string> ReturnAllKeys()
+    public List<string> GetAllKeys()
     {
         return new List<string>(keys);
     }

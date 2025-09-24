@@ -80,8 +80,8 @@ public class StSEnemyTracker : SavedData
     {
         int floor = stsState.GetCurrentFloor();
         previousElite = "";
-        enemyPool = floorEnemies[floor - 1].ReturnAllKeys();
-        elitePool = floorElites[floor - 1].ReturnAllKeys();
+        enemyPool = floorEnemies[floor - 1].GetAllKeys();
+        elitePool = floorElites[floor - 1].GetAllKeys();
         floorBoss = floorBosses[floor - 1].ReturnRandomKey();
         Save();
     }

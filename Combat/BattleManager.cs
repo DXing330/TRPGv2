@@ -256,6 +256,14 @@ public class BattleManager : MonoBehaviour
     }
     public int selectedTile;
     public TacticActor selectedActor;
+    public TacticActor GetSelectedActor()
+    {
+        if (selectedActor == null)
+        {
+            return turnActor;
+        }
+        return selectedActor;
+    }
 
     public void ResetState()
     {
@@ -425,6 +433,15 @@ public class BattleManager : MonoBehaviour
                 turnActor.IncrementCounter();
                 StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));
                 yield break;
+            case "Chain Skill":
+                string[] chainSkills = turnDetails[1].Split(",");
+                StartCoroutine(NPCChainSkillActions(chainSkills));
+                yield break;
+            case "One Time Chain Skill":
+                turnActor.IncrementCounter();
+                string[] OTchainSkills = turnDetails[1].Split(",");
+                StartCoroutine(NPCChainSkillActions(OTchainSkills));
+                yield break;
             case "Random Skill":
                 string[] skills = turnDetails[1].Split(",");
                 string chosenSkill = skills[Random.Range(0, skills.Length)];
@@ -440,6 +457,40 @@ public class BattleManager : MonoBehaviour
             case "Basic":
                 StartCoroutine(StandardNPCAction(actionsLeft));
                 yield break;
+        }
+        StartCoroutine(EndTurn());
+    }
+
+    IEnumerator NPCChainSkillActions(string[] skills)
+    {
+        activeManager.SetSkillUser(turnActor);
+        for (int i = 0; i < skills.Length; i++)
+        {
+            activeManager.SetSkillFromName(skills[i]);
+            int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
+            if (targetedTile == -1 || !activeManager.CheckSkillCost())
+            {
+                StartCoroutine(StandardNPCAction(turnActor.GetActions()));
+                yield break;
+            }
+            activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
+            // If the skill has no valid targets in the case of an AOE, then just do a normal action.
+            if (!actorAI.ValidSkillTargets(turnActor, map, activeManager))
+            {
+                StartCoroutine(StandardNPCAction(turnActor.GetActions()));
+                yield break;
+            }
+            ActivateSkill(skills[i]);
+            activeManager.ActivateSkill(this);
+            if (longDelays)
+            {
+                yield return new WaitForSeconds(longDelayTime * 5);
+            }
+            else
+            {
+                yield return new WaitForSeconds(shortDelayTime * 5);
+            }
+            if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
     }

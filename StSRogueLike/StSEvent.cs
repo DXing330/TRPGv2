@@ -8,7 +8,25 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StSEvent", menuName = "ScriptableObjects/StS/StSEvent", order = 1)]
 public class StSEvent : SavedData
 {
+    public string delimiterTwo;
+    public bool debug;
+    public List<bool> debugEvents;
     // Stuff to track the event.
+    public List<string> eventPool;
+    public string GetRandomEvent()
+    {
+        int index = UnityEngine.Random.Range(0, eventPool.Count);
+        if (debug && !debugEvents[index])
+        {
+            return GetRandomEvent();
+        }
+        string newEvent = eventPool[index];
+        if (!debug)
+        {
+            eventPool.RemoveAt(index);
+        }
+        return newEvent;
+    }
     public StatDatabase eventData;
     public StatDatabase eventDescription;
     public StatDatabase eventEquipment;
@@ -49,10 +67,18 @@ public class StSEvent : SavedData
     // Stuff to apply skill effects.
     public SkillEffect skillEffect;
 
+    public override void NewGame()
+    {
+        eventName = "";
+        eventPool = new List<string>(eventData.GetAllKeys());
+        Save();
+    }
+
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = eventName;
+        allData = eventName + delimiter;
+        allData += String.Join(delimiterTwo, eventPool);
         File.WriteAllText(dataPath, allData);
     }
 
@@ -68,9 +94,11 @@ public class StSEvent : SavedData
             }
             else
             {
-                eventName = allData;
+                string[] blocks = allData.Split(delimiter);
+                eventName = blocks[0];
                 eventDetails = eventData.ReturnValue(eventName);
                 choices = eventDetails.Split("&").ToList();
+                eventPool = blocks[1].Split(delimiterTwo).ToList();
             }
         }
         else
@@ -81,17 +109,17 @@ public class StSEvent : SavedData
 
     public void ForceGenerate()
     {
-        eventName = eventData.ReturnRandomKey();
+        eventName = GetRandomEvent();
         eventDetails = eventData.ReturnValue(eventName);
         choices = eventDetails.Split("&").ToList();
     }
 
-    public void GenerateEvent()
+    public void GenerateEvent(PartyDataManager partyData)
     {
         Load();
         if (eventName == "")
         {
-            eventName = eventData.ReturnRandomKey();
+            eventName = GetRandomEvent();
             eventDetails = eventData.ReturnValue(eventName);
             choices = eventDetails.Split("&").ToList();
             Save();
@@ -147,6 +175,11 @@ public class StSEvent : SavedData
         {
             case "Remove":
                 partyData.RemovePartyMember(partyIndex);
+                return;
+            case "Status":
+                // Make sure any statuses last forever.
+                skillEffect.AffectActor(actor, effect, specifics, -1);
+                partyData.UpdatePartyMember(actor, partyIndex);
                 return;
         }
         skillEffect.AffectActor(actor, effect, specifics);

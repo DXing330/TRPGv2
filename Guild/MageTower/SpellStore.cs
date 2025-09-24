@@ -265,7 +265,7 @@ public class SpellStore : MonoBehaviour
     public void StartLearningSpells()
     {
         if (!OpenSpellSlots()) { return; }
-        basicSpellList.SetSelectables(spellNamePrices.ReturnAllKeys());
+        basicSpellList.SetSelectables(spellNamePrices.GetAllKeys());
         basicSpellDetails.ResetDetails();
     }
     public void SelectSpellToLearn()

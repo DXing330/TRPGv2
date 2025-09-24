@@ -23,7 +23,7 @@ public class BattleSimulator : MonoBehaviour
         partyOneSelect.RefreshData();
         partyTwoSelect.RefreshData();
         selectedActorName = "";
-        actorSelect.SetData(actorStats.ReturnAllKeys(), actorStats.ReturnAllKeys(), actorStats.values);
+        actorSelect.SetData(actorStats.GetAllKeys(), actorStats.GetAllKeys(), actorStats.values);
         if (simulatorState.MultiBattleEnabled() && !simulatorState.MultiBattleFinished())
         {
             simulatorState.IncrementMultiBattle();

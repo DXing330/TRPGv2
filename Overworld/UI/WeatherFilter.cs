@@ -9,15 +9,24 @@ public class WeatherFilter : MonoBehaviour
     {
         UpdateFilter(overworldState.GetWeather());
     }
+    public string currentWeather;
     public OverworldState overworldState;
     public SpriteContainer sprites;
     public GameObject filterObject;
     public Image filter;
+    public StatDatabase weatherData;
+    public StatusDetailViewer weatherDetailViewer;
+    public PopUpMessage weatherDetails;
     public void UpdateFilter(string weather)
     {
+        currentWeather = weather;
         filterObject.SetActive(true);
         SetImage(sprites.SpriteDictionary(weather));
         if (filter.sprite == null){ filterObject.SetActive(false); }
     }
     protected void SetImage(Sprite newSprite) { filter.sprite = newSprite; }
+    public void ShowWeatherDetails()
+    {
+        weatherDetails.SetMessage(weatherDetailViewer.ReturnStatusDetails(weatherData.ReturnValue(currentWeather)));
+    }
 }

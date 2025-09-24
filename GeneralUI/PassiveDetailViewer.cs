@@ -26,6 +26,12 @@ public class PassiveDetailViewer : MonoBehaviour
     public GameObject panel;
     public void DisablePanel(){panel.SetActive(false);}
     public StatTextList passiveStatTextList;
+    public SelectStatTextList passiveSelect;
+    public void SelectPassive()
+    {
+        if (passiveSelect.GetSelected() < 0){return;}
+        UpdatePassiveNames(passiveSelect.GetSelectedStat(), passiveSelect.GetSelectedData());
+    }
 
     public void UpdatePassiveNames(string group, string newLevel)
     {

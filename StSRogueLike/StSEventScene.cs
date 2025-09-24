@@ -23,6 +23,7 @@ public class StSEventScene : MonoBehaviour
     public TMP_Text eventName;
     public TMP_Text eventDescription;
     public Image eventImage;
+    public SpriteContainer eventSprites;
     public List<GameObject> choiceObjects;
     public void ResetChoices()
     {
@@ -37,7 +38,7 @@ public class StSEventScene : MonoBehaviour
 
     void Start()
     {
-        stsEvent.GenerateEvent();
+        stsEvent.GenerateEvent(partyData);
         // Check if it's another scene.
         if (stsEvent.SceneChangeEvent() != "")
         {
@@ -51,6 +52,7 @@ public class StSEventScene : MonoBehaviour
     public void DisplayEvent()
     {
         eventName.text = stsEvent.GetEventName();
+        eventImage.sprite = eventSprites.SpriteDictionary(stsEvent.GetEventName());
         eventDescription.text = stsEvent.GetEventDescription();
         ResetChoices();
         List<string> choices = stsEvent.GetChoices();
@@ -60,6 +62,7 @@ public class StSEventScene : MonoBehaviour
             string[] blocks = choices[i].Split("|");
             eventChoices[i].text = blocks[0];
             choiceEffects[i].text = descriptionViewer.ReturnEventDescription(blocks);
+            choiceDescriptions[i].text = blocks[4];
         }
     }
 
