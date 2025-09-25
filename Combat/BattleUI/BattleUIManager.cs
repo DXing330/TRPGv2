@@ -9,6 +9,8 @@ public class BattleUIManager : MonoBehaviour
     public BattleStats battleStats;
     public DisplayTurnOrder turnOrder;
     public GameObject playerChoicesPanel;
+    public GameObject adjustStartingPositionsPanel;
+    public List<GameObject> playerChoiceActions;
     public ActiveSelectList activeSelectList;
     public BattleManager battleManager;
     public SelectStatTextList statusSelect;
@@ -30,12 +32,25 @@ public class BattleUIManager : MonoBehaviour
         {
             return;
         }
-        playerChoicesPanel.SetActive(false);
+        utility.DisableGameObjects(playerChoiceActions);
+    }
+
+    public void AdjustStartingPositions()
+    {
+        adjustStartingPositionsPanel.SetActive(true);
+        utility.DisableGameObjects(playerChoiceActions);
+    }
+
+    public void FinishSettingStartingPositions()
+    {
+        adjustStartingPositionsPanel.SetActive(false);
+        utility.EnableGameObjects(playerChoiceActions);
     }
 
     public void PlayerTurn()
     {
         playerChoicesPanel.SetActive(true);
+        utility.EnableGameObjects(playerChoiceActions);
     }
 
     public void UpdateStatSheet(TacticActor actor)

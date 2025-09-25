@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map, a lot of logic will be handled somewhere else.
+// Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map and anything that will result in a change of that visualization, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
     public string weather;
@@ -88,8 +88,26 @@ public class BattleMap : MapManager
         actor2.SetLocation(temp);
         UpdateMap();
     }
+    // Should highlight all valid starting tiles to make this clear.
+    public bool ValidStartingTile(int tileNumber)
+    {
+        int column = mapUtility.GetColumn(tileNumber, mapSize);
+        if (column < mapSize / 2)
+        {
+            return true;
+        }
+        return false;
+    }
+    public void ChangeActorsLocation(int startingTile, int newTile)
+    {
+        TacticActor actor = GetActorOnTile(startingTile);
+        if (actor == null){return;}
+        actor.SetLocation(newTile);
+        UpdateMap();
+    }
     public int RemoveActorsFromBattle(int turnNumber = -1)
     {
+        int originalTurnNumber = turnNumber;
         for (int i = battlingActors.Count - 1; i >= 0; i--)
         {
             if (battlingActors[i].GetHealth() <= 0)
@@ -99,7 +117,7 @@ public class BattleMap : MapManager
                 battleManager.ActiveDeathPassives(battlingActors[i]);
                 battlingActors.RemoveAt(i);
                 // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.
-                if (i <= turnNumber) { turnNumber--; }
+                if (i <= originalTurnNumber) { turnNumber--; }
             }
         }
         return turnNumber;
@@ -315,6 +333,19 @@ public class BattleMap : MapManager
             highlightedTiles[newTiles[i]] = colorName;
         }
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+    }
+
+    public void UpdateStartingPositionTiles()
+    {
+        List<int> tiles = new List<int>();
+        for (int i = 0; i < mapSize * mapSize; i++)
+        {
+            if (mapUtility.GetColumn(i, mapSize) < mapSize / 2)
+            {
+                tiles.Add(i);
+            }
+        }
+        UpdateHighlights(tiles, "Green", 4);
     }
 
     public void UpdateHighlights(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)

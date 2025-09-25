@@ -52,10 +52,10 @@ public class BattleEndManager : MonoBehaviour
             return;
         }
         if (winningTeam != 0)
-            {
-                PartyDefeated();
-                return;
-            }
+        {
+            PartyDefeated();
+            return;
+        }
         List<string> codeNames = new List<string>();
         List<string> spriteNames = new List<string>();
         List<string> stats = new List<string>();
@@ -70,7 +70,7 @@ public class BattleEndManager : MonoBehaviour
 
     public void UpdateOverworldAfterBattle(int winningTeam)
     {
-        if (winningTeam != 0) { return; }
+        if (winningTeam != 0 || subGame) { return; }
         string battleType = overworldState.GetBattleType();
         int location = overworldState.GetLocation();
         if (battleType == "") { return; }

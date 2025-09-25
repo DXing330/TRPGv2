@@ -35,6 +35,8 @@ public class ArmorySimulator : ArmoryUI
         actorPassives.UpdateActorPassiveTexts(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
+        actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUnqiueStatusStacks());
+        actorActives.SetStatsAndData(selectedActor.GetActiveSkills());
     }
 
     public override void EndSelectingEquipment()

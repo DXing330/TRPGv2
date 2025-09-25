@@ -7,6 +7,7 @@ public class BattleManager : MonoBehaviour
     public BattleState battleState;
     public BattleMap map;
     public ActorAI actorAI;
+    public bool setStartingPositions = false;
     public bool autoBattle = false;
     public bool controlAI = false;
     public void SetControlAI(bool newInfo)
@@ -72,6 +73,25 @@ public class BattleManager : MonoBehaviour
             effectManager.StartBattle(map.battlingActors[i]);
         }
         // Start the combat.
+        if (!setStartingPositions)
+        {
+            NextRound();
+            ChangeTurn();
+            if (autoBattle) { NPCTurn(); }
+            else if (turnActor.GetTeam() > 0 && !controlAI) { NPCTurn(); }
+        }
+        else
+        {
+            // Update the UI so that you can start the battle after you finish setting positions.
+            UI.AdjustStartingPositions();
+            map.UpdateStartingPositionTiles();
+        }
+    }
+    public void FinishSettingStartingPositions()
+    {
+        setStartingPositions = false;
+        UI.FinishSettingStartingPositions();
+        map.ResetHighlights();
         NextRound();
         ChangeTurn();
         if (autoBattle) { NPCTurn(); }
@@ -138,6 +158,7 @@ public class BattleManager : MonoBehaviour
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
+            combatLog.UpdateNewestLog("Team "+winningTeam+" wins.");
             battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
             battleEndManager.UpdateOverworldAfterBattle(winningTeam);
             battleEndManager.EndBattle(winningTeam);
@@ -217,6 +238,7 @@ public class BattleManager : MonoBehaviour
     public string GetState(){ return selectedState; }
     public void SetState(string newState)
     {
+        map.UpdateMap();
         if (newState == selectedState)
         {
             ResetState();
@@ -271,13 +293,51 @@ public class BattleManager : MonoBehaviour
         selectedTile = -1;
         selectedActor = null;
         map.ResetHighlights();
+        map.UpdateMap();
         UI.ResetActiveSelectList();
         UI.battleStats.UpdateBasicStats();
         UI.battleStats.UpdateSpendableStats();
     }
 
+    public int prevStartingPosition = -1;
+    protected void AdjustStartingPosition(int tileNumber)
+    {
+        // Can only set the actors in the first few columns.
+        if (!map.ValidStartingTile(tileNumber))
+        {
+            return;
+        }
+        // Start selecting.
+        if (prevStartingPosition < 0 && map.TileNotEmpty(tileNumber))
+        {
+            prevStartingPosition = tileNumber;
+            selectedActor = map.GetActorOnTile(tileNumber);
+            UI.battleStats.UpdateNonTurnActor(selectedActor);
+        }
+        // Move a selected actor into a new location.
+        else if (prevStartingPosition >= 0 && !map.TileNotEmpty(tileNumber))
+        {
+            // Move the actor.
+            map.ChangeActorsLocation(prevStartingPosition, tileNumber);
+            prevStartingPosition = -1;
+        }
+        // You can change your selection at any time.
+        else if (prevStartingPosition >= 0 && map.TileNotEmpty(tileNumber))
+        {
+            prevStartingPosition = tileNumber;
+            selectedActor = map.GetActorOnTile(tileNumber);
+            UI.battleStats.UpdateNonTurnActor(selectedActor);
+        }
+    }
+
     public void ClickOnTile(int tileNumber)
     {
+        if (setStartingPositions)
+        {
+            AdjustStartingPosition(tileNumber);
+            map.UpdateStartingPositionTiles();
+            return;
+        }
         if (!interactable){return;}
         selectedTile = map.currentTiles[tileNumber];
         // First make sure your tile is a valid tile.
@@ -372,7 +432,17 @@ public class BattleManager : MonoBehaviour
         attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        map.UpdateActors();
+        // Check for winning team here.
+        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        if (winningTeam >= 0)
+        {
+            combatLog.UpdateNewestLog("Team "+winningTeam+" wins.");
+            battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
+            battleEndManager.UpdateOverworldAfterBattle(winningTeam);
+            battleEndManager.EndBattle(winningTeam);
+            return;
+        }
+        map.UpdateMap();
         UI.UpdateTurnOrder(this);
     }
     

@@ -58,7 +58,7 @@ public class ColorDictionary : ScriptableObject
         int indexOf = keys.IndexOf(key);
         if (indexOf < 0)
         {
-            return "";
+            return key;
         }
         return colorNames[indexOf];
     }
