@@ -31,13 +31,13 @@ public class StSLikeRestScene : MonoBehaviour
                     dummyActor.UpdateBaseHealth(Mathf.Max(1, dummyActor.GetBaseHealth() / statGainPercentage), false);
                     break;
                 case "Attack":
-                    dummyActor.UpdateBaseAttack(Mathf.Max(1, dummyActor.GetBaseAttack() / statGainPercentage));
+                    dummyActor.UpdateBaseAttack(1);
                     break;
                 case "Defense":
-                    dummyActor.UpdateBaseDefense(Mathf.Max(1, dummyActor.GetBaseDefense() / statGainPercentage));
+                    dummyActor.UpdateBaseDefense(1);
                     break;
                 case "Energy":
-                    dummyActor.UpdateBaseEnergy(Mathf.Max(1, dummyActor.GetBaseEnergy() / statGainPercentage));
+                    dummyActor.UpdateBaseEnergy(1);
                     break;
             }
             partyData.UpdatePartyMember(dummyActor, i);

@@ -126,6 +126,15 @@ public class ActiveManager : MonoBehaviour
     protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power, int selectedTile = -1)
     {
         int targetTile = -1;
+        // There are some effects that naturally target a specific group of actors.
+        if (effect.Contains("AllSprites="))
+        {
+            string[] allSpriteDetails = effect.Split("=");
+            string specificSprite = allSpriteDetails[1];
+            targets = battle.map.AllActorsBySprite(specificSprite);
+            active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+            return;
+        }
         switch (effect)
         {
             case "Weather":
@@ -182,6 +191,16 @@ public class ActiveManager : MonoBehaviour
                     // Pick a random actor from the specifics list.
                     string[] randomSummon = specifics.Split(",");
                     battle.SpawnAndAddActor(selectedTile, randomSummon[Random.Range(0, randomSummon.Length)], skillUser.GetTeam());
+                }
+                return;
+            case "MassRandomSummon":
+                string[] randomPool = specifics.Split(",");
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    if (battle.map.GetActorOnTile(targetedTiles[i]) == null)
+                    {
+                        battle.SpawnAndAddActor(targetedTiles[i], randomPool[Random.Range(0, randomPool.Length)], skillUser.GetTeam());
+                    }
                 }
                 return;
             case "Summon Enemy":

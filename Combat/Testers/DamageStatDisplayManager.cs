@@ -31,7 +31,7 @@ public class DamageStatDisplayManager : MonoBehaviour
         int totalWins = winners.Count;
         for (int i = 0; i < winners.Count; i++)
         {
-            Debug.Log(winners[i]);
+            //Debug.Log(winners[i]);
             if (winners[i] == 0)
             {
                 leftSideWins++;

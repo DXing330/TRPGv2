@@ -8,6 +8,17 @@ public class ActorAI : ScriptableObject
     public GeneralUtility utility;
     public AIConditionChecker conditionChecker;
     public List<string> whiteListSupportEffects;
+    public bool EffectWhiteListed(string effect)
+    {
+        for (int i = 0; i < whiteListSupportEffects.Count; i++)
+        {
+            if (effect.Contains(whiteListSupportEffects[i]))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public string AIType;
     public string activeSkillName;
     public string ReturnAIActiveSkill() { return activeSkillName; }
@@ -275,7 +286,7 @@ public class ActorAI : ScriptableObject
                 // Unless it's a summon skill then just let it through.
                 // Should make an allow list of support skills that always go through.
                 string effect = activeManager.active.GetEffect();
-                if (whiteListSupportEffects.Contains(effect))
+                if (EffectWhiteListed(effect))
                 {
                     return true;
                 }

@@ -50,6 +50,11 @@ public class ActiveDescriptionViewer : MonoBehaviour
     // ActiveEffectDescription
     public string AED(string e, string s, string p)
     {
+        if (e.Contains("AllSprites="))
+        {
+            string[] eBlocks = e.Split("=");
+            return "All "+eBlocks[1]+"s gain "+p+" "+ASD(s)+".";
+        }
         switch (e)
         {
             case "Attack":
@@ -75,6 +80,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Summon " + ASD(s) + "(s).";
             case "RandomSummon":
                 return "Randomly summon one of the following: " + ASD(s) + ".";
+            case "MassRandomSummon":
+                return "Randomly summon the following: " + ASD(s) + ".";
             case "Summon Enemy":
                 return "Create a " + ASD(s) + ".";
             case "TerrainEffect":

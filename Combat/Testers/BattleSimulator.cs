@@ -56,6 +56,10 @@ public class BattleSimulator : MonoBehaviour
     {
         // Don't start unless there are members on both sides.
         simulatorState.Save();
+        if (partyOneList.characters.Count <= 0 || partyTwoList.characters.Count <= 0)
+        {
+            return;
+        }
         battleManager.SetAutoBattle(simulatorState.AutoBattleEnabled());
         battleManager.SetControlAI(simulatorState.ControlAIEnabled());
         // If you're starting a multibattle for the first time then reset the tracker.
@@ -63,10 +67,6 @@ public class BattleSimulator : MonoBehaviour
         {
             battleStatsTrackerSaving.NewGame();
             simulatorState.IncrementMultiBattle();
-        }
-        if (partyOneList.characters.Count <= 0 || partyTwoList.characters.Count <= 0)
-        {
-            return;
         }
         simulatorPanel.SetActive(false);
         simulatorState.SetTerrainType();

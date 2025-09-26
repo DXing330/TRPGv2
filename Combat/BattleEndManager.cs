@@ -39,7 +39,10 @@ public class BattleEndManager : MonoBehaviour
                 teams.Add(actors[i].GetTeam());
             }
         }
-        if (teams.Count == 1) { return teams[0]; }
+        if (teams.Count == 1)
+        {
+            return teams[0];
+        }
         return winningTeam;
     }
 
@@ -66,6 +69,7 @@ public class BattleEndManager : MonoBehaviour
             stats.Add(actors[i].ReturnPersistentStats());
         }
         partyData.UpdatePartyAfterBattle(codeNames, spriteNames, stats);
+        partyData.Save();
     }
 
     public void UpdateOverworldAfterBattle(int winningTeam)
@@ -98,6 +102,8 @@ public class BattleEndManager : MonoBehaviour
         if (test)
         {
             // Update the details.
+            Debug.Log("Battle Count:"+battleStatsTracker.simulatorState.multiBattleCount);
+            Debug.Log("Current Count:"+battleStatsTracker.simulatorState.multiBattleCurrent);
             battleStatsTracker.DisplayDamageStats(winningTeam);
             // Reset the battle.
             return;

@@ -178,6 +178,7 @@ public class BattleSimulatorState : BattleState
         selectedTerrainTypes.Clear();
         selectedWeathers.Clear();
         selectedTimes.Clear();
+        winningTeam = -1;
         multiBattle = 0;
         prevMultiBattle = 1;
         multiBattleCount = 2;
@@ -235,5 +236,6 @@ public class BattleSimulatorState : BattleState
         prevMultiBattle = int.Parse(dataList[8]);
         autoBattle = int.Parse(dataList[9]);
         controlAI = int.Parse(dataList[10]);
+        winningTeam = -1;
     }
 }

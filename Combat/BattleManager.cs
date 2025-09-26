@@ -23,6 +23,11 @@ public class BattleManager : MonoBehaviour
     {
         if (pause)
         {
+            int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+            if (winningTeam >= 0)
+            {
+                return;
+            }
             pause = false;
             NextTurn();
         }
@@ -44,6 +49,24 @@ public class BattleManager : MonoBehaviour
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
+    protected void EndBattle(int winningTeam, bool autoWin = false)
+    {
+        pause = true;
+        if (autoWin)
+        {
+            Debug.Log("Automatically Ending The Battle");
+            battleEndManager.EndBattle(winningTeam);
+            return;
+        }
+        if (!battleEndManager.test)
+        {
+            battleState.SetWinningTeam(winningTeam);
+        }
+        combatLog.UpdateNewestLog("Team "+winningTeam+" wins.");
+        battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
+        battleEndManager.UpdateOverworldAfterBattle(winningTeam);
+        battleEndManager.EndBattle(winningTeam);
+    }
     public BattleUIManager UI;
     public void ForceStart()
     {
@@ -51,6 +74,7 @@ public class BattleManager : MonoBehaviour
     }
     protected void Start()
     {
+        
         // Get a new battle map.
         map.ForceStart();
         map.SetWeather(battleState.GetWeather());
@@ -71,6 +95,12 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < map.battlingActors.Count; i++)
         {
             effectManager.StartBattle(map.battlingActors[i]);
+        }
+        // If the battle state records a win, then auto end the battle.
+        if (battleState.GetWinningTeam() >= 0 && !battleEndManager.test)
+        {
+            EndBattle(battleState.GetWinningTeam(), true);
+            return;
         }
         // Start the combat.
         if (!setStartingPositions)
@@ -129,13 +159,12 @@ public class BattleManager : MonoBehaviour
     protected void ChangeTurn()
     {
         combatLog.AddNewLog();
-        if (map.battlingActors.Count <= 0)
+        if (map.battlingActors.Count <= 0 && roundNumber > 1)
         {
+            Debug.Log("Everyone is Dead");
             // End the battle immediately.
             int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
-            battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
-            battleEndManager.UpdateOverworldAfterBattle(winningTeam);
-            battleEndManager.EndBattle(winningTeam);
+            EndBattle(winningTeam);
             return;
         }
         turnActor = map.battlingActors[turnNumber];
@@ -149,19 +178,24 @@ public class BattleManager : MonoBehaviour
     public void NextTurn()
     {
         if (pause){ return; }
+        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        if (winningTeam >= 0)
+        {
+            Debug.Log("Ending Battle By Clicking Next Turn");
+            EndBattle(winningTeam);
+            return;
+        }
         turnActor.EndTurn(); // End turn first before passives apply, so that end of turn buffs can stick around til the next round.
         effectManager.EndTurn(turnActor, map);
         // This allows for a one turn grace period for immunities to have a chance.
         map.ApplyEndTileEffect(turnActor);
         // Remove dead actors.
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
-            combatLog.UpdateNewestLog("Team "+winningTeam+" wins.");
-            battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
-            battleEndManager.UpdateOverworldAfterBattle(winningTeam);
-            battleEndManager.EndBattle(winningTeam);
+            Debug.Log("Ending Battle By Clicking Next Turn");
+            EndBattle(winningTeam);
             return;
         }
         turnNumber++;
@@ -436,10 +470,8 @@ public class BattleManager : MonoBehaviour
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
-            combatLog.UpdateNewestLog("Team "+winningTeam+" wins.");
-            battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
-            battleEndManager.UpdateOverworldAfterBattle(winningTeam);
-            battleEndManager.EndBattle(winningTeam);
+            Debug.Log("Ending Battle By Attacking");
+            EndBattle(winningTeam);
             return;
         }
         map.UpdateMap();

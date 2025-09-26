@@ -146,6 +146,18 @@ public class BattleMap : MapManager
         }
         return actors;
     }
+    public List<TacticActor> AllActorsBySprite(string spriteName)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            if (battlingActors[i].GetSpriteName().Contains(spriteName))
+            {
+                actors.Add(battlingActors[i]);
+            }
+        }
+        return actors;
+    }
     public bool AllyAdjacentToActor(TacticActor actor)
     {
         List<TacticActor> adjacentActors = GetAdjacentActors(actor.GetLocation());

@@ -8,6 +8,21 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BattleState", menuName = "ScriptableObjects/DataContainers/SavedData/BattleState", order = 1)]
 public class BattleState : SavedState
 {
+    public int winningTeam = -1;
+    public void SetWinningTeam(int newInfo)
+    {
+        winningTeam = newInfo;
+        Save();
+    }
+    public void ResetWinnigTeam()
+    {
+        winningTeam = -1;
+        Save();
+    }
+    public int GetWinningTeam()
+    {
+        return winningTeam;
+    }
     public CharacterList enemyList;
     public OverworldState overworldState;
     public BattleMapFeatures battleMapFeatures;
@@ -69,6 +84,8 @@ public class BattleState : SavedState
         allData += delimiter;
         allData += terrainType;
         allData += delimiter;
+        allData += winningTeam;
+        allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -80,6 +97,7 @@ public class BattleState : SavedState
         previousScene = dataList[0];
         enemies = dataList[1].Split(delimiterTwo).ToList();
         terrainType = dataList[2];
+        winningTeam = int.Parse(dataList[3]);
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);
