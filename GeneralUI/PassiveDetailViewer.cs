@@ -33,6 +33,21 @@ public class PassiveDetailViewer : MonoBehaviour
         UpdatePassiveNames(passiveSelect.GetSelectedStat(), passiveSelect.GetSelectedData());
     }
 
+    public List<string> ReturnAllPassiveInfo(List<string> groups, List<string> levels)
+    {
+        List<string> allInfo = new List<string>();
+        for (int i = 0; i < groups.Count; i++)
+        {
+            int level = int.Parse(levels[i]);
+            for (int j = 0; j < level; j++)
+            {
+                string passiveName = passiveNameLevels.GetMultiKeyValue(groups[i], (j+1).ToString());
+                allInfo.Add(allPassives.ReturnValue(passiveName));
+            }
+        }
+        return allInfo;
+    }
+
     public void UpdatePassiveNames(string group, string newLevel)
     {
         SetPassiveGroupName(group);

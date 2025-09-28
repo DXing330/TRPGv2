@@ -44,7 +44,25 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
         actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUnqiueStatusStacks());
-        actorActives.SetStatsAndData(selectedActor.GetActiveSkills());
+        UpdateActorActives();
+    }
+    
+    protected void UpdateActorActives()
+    {
+        List<string> allActives = selectedActor.GetActiveSkills();
+        // Go through all the passives.
+        // For any that add actives at the start of battle, add those actives.
+        List<string> allPassives = detailViewer.ReturnAllPassiveInfo(actorPassives.stats, actorPassives.data);
+        for (int i = 0; i < allPassives.Count; i++)
+        {
+            string[] blocks = allPassives[i].Split("|");
+            if (blocks.Length < 4){break;}
+            if (blocks[4] == "Skill")
+            {
+                allActives.Add(blocks[5]);
+            }
+        }
+        actorActives.SetStatsAndData(allActives);
     }
 
     public virtual void UpdateSelectedActor()
@@ -104,6 +122,7 @@ public class ArmoryUI : MonoBehaviour
         actorStats.UpdateActorStatTexts(selectedActor, true);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+        UpdateActorActives();
     }
 
     public virtual void PreviewEquippedPassives()
