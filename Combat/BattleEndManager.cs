@@ -141,14 +141,14 @@ public class BattleEndManager : MonoBehaviour
                 {
                     allLootDrops.Disable();
                 }
-                List<string> allyRewards = stsBattleRewardManager.GetAllyRewards();
+                /*List<string> allyRewards = stsBattleRewardManager.GetAllyRewards();
                 List<string> aQ = new List<string>();
                 for (int i = 0; i < allyRewards.Count; i++)
                 {
                     aQ.Add(" ");
                 }
-                allNewAllies.SetStatsAndData(allyRewards, aQ);
-                if (allyRewards.Count <= 0)
+                allNewAllies.SetStatsAndData(allyRewards, aQ);*/
+                if (stsBattleRewardManager.allyRewardRarity.Count <= 0)
                 {
                     allNewAllies.Disable();
                 }

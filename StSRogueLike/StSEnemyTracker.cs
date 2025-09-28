@@ -15,10 +15,36 @@ public class StSEnemyTracker : SavedData
     public List<StatDatabase> floorBosses;
     public List<string> enemyPool;
     public List<string> elitePool;
-    public string defaultAlly = "Grunt";
+    public List<string> defaultAllies;
+    public int choiceCount = 3;
+    public List<string> ReturnCurrentChoices(bool rare = false)
+    {
+        List<string> choices = new List<string>();
+        string newChoice = "";
+        for (int i = 0; i < choiceCount; i++)
+        {
+            if (rare)
+            {
+                newChoice = GetRareAllyReward();
+            }
+            else
+            {
+                newChoice = GetAllyReward();
+            }
+            if (!choices.Contains(newChoice))
+            {
+                choices.Add(newChoice);
+            }
+            else
+            {
+                choices.Add(GetDefaultAlly());
+            }
+        }
+        return choices;
+    }
     public string GetDefaultAlly()
     {
-        return defaultAlly;
+        return defaultAllies[UnityEngine.Random.Range(0, defaultAllies.Count)];
     }
     public List<string> allyPool;
     public void AddToAllyPool(List<string> newAllies)
@@ -31,12 +57,12 @@ public class StSEnemyTracker : SavedData
     {
         if (allyPool.Count <= 0)
         {
-            return defaultAlly;
+            return GetDefaultAlly();
         }
         string ally = allyPool[UnityEngine.Random.Range(0, allyPool.Count)];
         if (ally == "")
         {
-            return defaultAlly;
+            return GetDefaultAlly();
         }
         return ally;
     }

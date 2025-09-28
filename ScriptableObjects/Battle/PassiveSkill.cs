@@ -278,7 +278,7 @@ public class PassiveSkill : SkillEffect
 
     public string CheckRelativeDirections(int dir1, int dir2)
     {
-        int directionDiff = Mathf.Abs(dir1 - dir2);
+        int directionDiff = GetRelativeDirections(dir1, dir2);
         switch (directionDiff)
         {
             case 0:
@@ -302,6 +302,16 @@ public class PassiveSkill : SkillEffect
         if (conditionSpecifics == "Back" && specifics == "Same") { return true; }
         else if (conditionSpecifics == "Front" && specifics == "Opposite") { return true; }
         return (conditionSpecifics == specifics);
+    }
+
+    public int GetRelativeDirections(int dir1, int dir2)
+    {
+        return Mathf.Abs(dir1-dir2);
+    }
+
+    public bool CheckDirectionIntSpecifics(int conditionSpecifics, int directions)
+    {
+        return conditionSpecifics == directions;
     }
 
     public bool CheckConditionSpecifics(string conditionSpecifics, string specifics)

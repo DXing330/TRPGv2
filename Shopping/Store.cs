@@ -15,15 +15,14 @@ public class Store : MonoBehaviour
     public PartyDataManager partyData;
     public InventoryUI inventoryUI;
     public ItemDetailViewer itemDetailViewer;
-    public StatDatabase storeData;
+    public StatDatabase equipData;
+    public StatDatabase itemsData;
     protected virtual void LoadStore()
     {
-        string[] blocks = storeData.ReturnValue(storeName).Split("|");
-        if (blocks.Length < 4){return;}
-        equipmentSold = blocks[0].Split(",").ToList();
-        equipmentPrices = blocks[1].Split(",").ToList();
-        itemsSolds = blocks[2].Split(",").ToList();
-        itemsPrices = blocks[3].Split(",").ToList();
+        equipmentSold = equipData.GetAllKeys();
+        equipmentPrices = equipData.GetAllValues();
+        itemsSolds = itemsData.GetAllKeys();
+        itemsPrices = itemsData.GetAllValues();
         TrimStock();
         UpdateDisplay();
     }

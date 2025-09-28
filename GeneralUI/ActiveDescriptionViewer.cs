@@ -60,6 +60,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Attack":
                 return "Attack the target(s) " + ASD(s) + " time(s) with " + APD(p) + "% damage.";
             // The specifics will determine the direction anyway.
+            case "Attack+Displace":
+                return "Attack and "+ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Displace":
                 return ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Teleport":

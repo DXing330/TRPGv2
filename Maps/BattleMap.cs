@@ -92,7 +92,36 @@ public class BattleMap : MapManager
     public bool ValidStartingTile(int tileNumber)
     {
         int column = mapUtility.GetColumn(tileNumber, mapSize);
-        if (column < mapSize / 2)
+        if (column < (AllTeamMembers(0).Count / mapSize) + 2)
+        {
+            return true;
+        }
+        return false;
+    }
+    //
+    public List<string> excludedStartingTiles;
+    public void RandomEnemyStartingPositions()
+    {
+        List<TacticActor> enemyTeam = AllTeamMembers(1);
+        for (int i = 0; i < enemyTeam.Count; i++)
+        {
+            enemyTeam[i].SetLocation(RandomEnemyStartingTile());
+        }
+        UpdateMap();
+    }
+    protected int RandomEnemyStartingTile()
+    {
+        int tile = Random.Range(0, mapSize * mapSize);
+        if (ValidEnemyStartingTile(tile))
+        {
+            return tile;
+        }
+        return RandomEnemyStartingTile();
+    }
+    protected bool ValidEnemyStartingTile(int tileNumber)
+    {
+        int column = mapUtility.GetColumn(tileNumber, mapSize);
+        if (column > mapSize - (AllTeamMembers(1).Count / mapSize) - 2 && !excludedStartingTiles.Contains(mapInfo[tileNumber]) && !TileNotEmpty(tileNumber))
         {
             return true;
         }
@@ -121,6 +150,18 @@ public class BattleMap : MapManager
             }
         }
         return turnNumber;
+    }
+    public List<TacticActor> AllTeamMembers(int team)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            if (battlingActors[i].GetTeam() == team)
+            {
+                actors.Add(battlingActors[i]);
+            }
+        }
+        return actors;
     }
     public List<TacticActor> AllAllies(TacticActor actor)
     {
@@ -352,7 +393,7 @@ public class BattleMap : MapManager
         List<int> tiles = new List<int>();
         for (int i = 0; i < mapSize * mapSize; i++)
         {
-            if (mapUtility.GetColumn(i, mapSize) < mapSize / 2)
+            if (mapUtility.GetColumn(i, mapSize) < (AllTeamMembers(0).Count / mapSize) + 2)
             {
                 tiles.Add(i);
             }

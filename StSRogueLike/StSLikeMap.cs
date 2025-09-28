@@ -105,12 +105,29 @@ public class StSLikeMap : MapManager
     public bool TileTypeAvailable(string tileType)
     {
         int indexOf = tileTypes.IndexOf(tileType);
+        if (indexOf < 0)
+        {
+            return false;
+        }
         return debugTileTypeAvailable[indexOf];
     }
     public List<string> tileTypes;
     public string RandomTileType(string except = "")
     {
-        string tileType = tileTypes[Random.Range(0, tileTypes.Count)];
+        int rng = Random.Range(0, GetTotalWeight());
+        string tileType = "";
+        for (int i = 0; i < tileTypes.Count; i++)
+        {
+            if (rng < tileWeights[i])
+            {
+                tileType = tileTypes[i];
+                break;
+            }
+            else
+            {
+                rng -= tileWeights[i];
+            }
+        }
         if (!TileTypeAvailable(tileType))
         {
             return RandomTileType(except);
@@ -120,6 +137,16 @@ public class StSLikeMap : MapManager
             return RandomTileType(except);
         }
         return tileType;
+    }
+    public List<int> tileWeights;
+    public int GetTotalWeight()
+    {
+        int weight = 0;
+        for (int i = 0; i < tileWeights.Count; i++)
+        {
+            weight += tileWeights[i];
+        }
+        return weight;
     }
     public List<string> nonRepeatableTileTypes;
     // Store and load the data as needed.

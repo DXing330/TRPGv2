@@ -199,17 +199,27 @@ public class MoveCostManager : MonoBehaviour
                     {
                         // Get the tile that is in the opposite direction the same distance away.
                         int direction = DirectionBetweenActors(displaced, displacer);
-                        int distance = DistanceBetweenActors(displacer, displaced);
+                        int distance = DistanceBetweenActors(displacer, displaced) + relativeForce;
                         int tile = displacer.GetLocation();
+                        int furthestTile = displaced.GetLocation();
                         for (int j = 0; j < distance; j++)
                         {
-                            tile = PointInDirection(tile, direction);
+                            int nextTile = PointInDirection(tile, direction);
+                            if (map.GetActorOnTile(tile) == null)
+                            {
+                                furthestTile = nextTile;
+                            }
+                            tile = nextTile;
                         }
                         // Check if the tile is empty.
                         if (map.GetActorOnTile(tile) == null)
                         {
                             // Move the displaced into that tile.
                             MoveActorToTile(displaced, tile, map);
+                        }
+                        else
+                        {
+                            MoveActorToTile(displaced, furthestTile, map);
                         }
                     }
                 }

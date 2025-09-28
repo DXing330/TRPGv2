@@ -77,8 +77,11 @@ public class BattleManager : MonoBehaviour
         
         // Get a new battle map.
         map.ForceStart();
+        combatLog.AddNewLog();
         map.SetWeather(battleState.GetWeather());
+        combatLog.UpdateNewestLog("The weather is "+map.GetWeather());
         map.SetTime(battleState.GetTime());
+        combatLog.UpdateNewestLog("The time is "+map.GetTime());
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
         moveManager.SetMapInfo(map.mapInfo);
@@ -113,6 +116,7 @@ public class BattleManager : MonoBehaviour
         else
         {
             // Update the UI so that you can start the battle after you finish setting positions.
+            map.RandomEnemyStartingPositions();
             UI.AdjustStartingPositions();
             map.UpdateStartingPositionTiles();
         }
@@ -174,6 +178,12 @@ public class BattleManager : MonoBehaviour
         effectManager.StartTurn(turnActor, map);
         UI.battleStats.SetActor(turnActor);
         UI.UpdateTurnOrder(this);
+        if (turnActor.GetHealth() <= 0)
+        {
+            ActiveDeathPassives(turnActor);
+            NextTurn();
+            return;
+        }
     }
     public void NextTurn()
     {

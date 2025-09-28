@@ -1,15 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class StSBattleRewards : MonoBehaviour
 {
     public PartyDataManager partyData;
+    public NewAllySelect allySelect;
     public StSState mapState;
     public StSEnemyTracker enemyTracker;
     public StatDatabase actorStats;
     public StatDatabase allEquipmentRewards;
     public Equipment dummyEquip;
+    public List<string> allyRewardRarity;
+    public List<TMP_Text> allyRewardTexts;
+    public void UpdateAllyRewardTexts()
+    {
+        for (int i = 0; i < allyRewards.Count; i++)
+        {
+            allyRewardTexts[i].text = allyRewards[i];
+        }
+    }
+    public List<GameObject> allySelectButtons;
+    public void BeginSelectingAlly(int index)
+    {
+        if (allyRewardRarity[index] == "")
+        {
+            allySelect.GetChoices();
+        }
+        else
+        {
+            allySelect.GetChoices(true);
+        }
+        allySelectButtons[index].SetActive(false);
+    }
+    public List<GameObject> equipmentSelectButtons;
     public int baseRarity = 2;
     public int rareRarity = 3;
     public int bossRarity = 4;
@@ -49,7 +74,7 @@ public class StSBattleRewards : MonoBehaviour
         equipmentRewards = new List<string>();
     }
 
-    protected void ApplyRewards()
+    public void ApplyRewards()
     {
         for (int i = 0; i < allyRewards.Count; i++)
         {
@@ -70,7 +95,7 @@ public class StSBattleRewards : MonoBehaviour
         {
             GenerateReward(blocks[i]);
         }
-        ApplyRewards();
+        //ApplyRewards();
     }
 
     public void GenerateReward(string specifics)
@@ -84,13 +109,16 @@ public class StSBattleRewards : MonoBehaviour
                 goldReward += rareGoldReward + Random.Range(-goldVariance, goldVariance * 2);
                 break;
             case "Basic Ally":
-                allyRewards.Add(enemyTracker.GetDefaultAlly());
+                allyRewardRarity.Add("");
+                allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
                 break;
             case "Random Ally":
-                allyRewards.Add(enemyTracker.GetAllyReward());
+                allyRewardRarity.Add("");
+                allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
                 break;
             case "Rare Ally":
-                allyRewards.Add(enemyTracker.GetRareAllyReward());
+                allyRewardRarity.Add("Rare");
+                allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
                 break;
             case "Equipment":
                 equipmentRewards.Add(GetRandomEquipment(baseRarity));
@@ -99,6 +127,17 @@ public class StSBattleRewards : MonoBehaviour
                 equipmentRewards.Add(GetRandomEquipment(rareRarity));
                 break;
         }
+    }
+
+    public void AddAllyReward(string newAlly)
+    {
+        allyRewards.Add(newAlly);
+        UpdateAllyRewardTexts();
+    }
+
+    public void AddEquipmentReward(string newEquip)
+    {
+        equipmentRewards.Add(newEquip);
     }
 
     public string GetRandomEquipment(int mininmumRarity = -1)

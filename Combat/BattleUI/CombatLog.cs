@@ -127,7 +127,8 @@ public class CombatLog : MonoBehaviour
         {
             allLogs[allLogs.Count - 1] = allLogs[allLogs.Count - 1]+"|"+newText;
         }
-        if (round == battleManager.GetRoundNumber() && turn == battleManager.GetTurnIndex()){UpdateLog(false);}
+        UpdateLog(false);
+        //if (round == battleManager.GetRoundNumber() && turn == battleManager.GetTurnIndex()){UpdateLog(false);}
     }
     public int GetLatestLogCount()
     {

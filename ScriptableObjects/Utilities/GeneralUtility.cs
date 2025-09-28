@@ -59,6 +59,10 @@ public class GeneralUtility : ScriptableObject
     public List<string> GetCurrentPageStrings(int currentPage, List<GameObject> pageLength, List<string> dataList)
     {
         List<string> strings = new List<string>();
+        if (dataList.Count <= 0)
+        {
+            return strings;
+        }
         int start = currentPage * pageLength.Count;
         for (int i = start; i < Mathf.Min(start + pageLength.Count, dataList.Count); i++)
         {

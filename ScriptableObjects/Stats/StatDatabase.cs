@@ -112,6 +112,11 @@ public class StatDatabase : ScriptableObject
         return new List<string>(keys);
     }
 
+    public List<string> GetAllValues()
+    {
+        return new List<string>(values);
+    }
+
     public string ReturnValue(string key)
     {
         int indexOf = keys.IndexOf(key);
