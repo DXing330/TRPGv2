@@ -951,4 +951,9 @@ public class BattleManager : MonoBehaviour
             activeManager.ActivateSkill(this);
         }
     }
+
+    public void DEBUGAUTOWIN()
+    {
+        EndBattle(0, true);
+    }
 }

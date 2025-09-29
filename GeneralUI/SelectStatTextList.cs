@@ -104,7 +104,9 @@ public class SelectStatTextList : StatTextList
         stats.Add("Defense");
         stats.Add("Energy");
         stats.Add("Move Speed");
+        stats.Add("Attack Range");
         stats.Add("Initiative");
+        stats.Add("Weight");
         if (!currentHealth)
         {
             data.Add(actor.GetBaseHealth().ToString());
@@ -117,8 +119,10 @@ public class SelectStatTextList : StatTextList
         data.Add(actor.GetBaseDefense().ToString());
         data.Add(actor.GetBaseEnergy().ToString());
         data.Add(actor.GetMoveSpeed().ToString());
+        data.Add(actor.GetAttackRange().ToString());
         data.Add(actor.GetInitiative().ToString());
-        for (int i = 0; i < 6; i++)
+        data.Add(actor.GetWeight().ToString());
+        for (int i = 0; i < statTexts.Count; i++)
         {
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);

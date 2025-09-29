@@ -74,7 +74,9 @@ public class MedicinePanel : MonoBehaviour
         partyData.UpdatePartyMember(dummyActor, actorSelect.GetSelected());
         partyData.SetFullParty();
         int selectedIndex = actorSelect.GetSelected();
+        int page = actorSelect.page;
         actorSelect.RefreshData();
+        actorSelect.SetPage(page);
         actorSelect.SetSelectedIndex(selectedIndex);
         // Update the actor stats view.
         ViewActorStats();

@@ -17,6 +17,12 @@ public class ActorSpriteHPList : MonoBehaviour
         ResetSelected();
         UpdateList();
     }
+    public void SetPage(int newInfo)
+    {
+        page = newInfo;
+        ResetSelected();
+        UpdateList();
+    }
     public void ResetSelected()
     {
         selectedIndex = -1;

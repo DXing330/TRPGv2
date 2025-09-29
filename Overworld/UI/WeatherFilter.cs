@@ -7,8 +7,12 @@ public class WeatherFilter : MonoBehaviour
 {
     void Start()
     {
-        UpdateFilter(overworldState.GetWeather());
+        if (!subGame)
+        {
+            UpdateFilter(overworldState.GetWeather());
+        }
     }
+    public bool subGame = false;
     public string currentWeather;
     public OverworldState overworldState;
     public SpriteContainer sprites;
