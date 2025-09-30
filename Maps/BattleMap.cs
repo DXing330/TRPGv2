@@ -551,6 +551,12 @@ public class BattleMap : MapManager
         return tile;
     }
 
+    public int ReturnTileInRelativeDirection(TacticActor actor, int relativeDirection)
+    {
+        int direction = (actor.GetDirection() + relativeDirection) % 6;
+        return mapUtility.PointInDirection(actor.GetLocation(), direction, mapSize);
+    }
+
     public bool AlliesInTiles(TacticActor actor, List<int> tiles)
     {
         int team = actor.GetTeam();
@@ -569,6 +575,25 @@ public class BattleMap : MapManager
         return false;
     }
 
+    public List<TacticActor> ReturnAlliesInTiles(TacticActor actor, List<int> tiles)
+    {
+        int team = actor.GetTeam();
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            TacticActor tileActor = GetActorOnTile(tiles[i]);
+            if (tileActor == null)
+            {
+                continue;
+            }
+            if (tileActor.GetTeam() == team)
+            {
+                actors.Add(tileActor);
+            }
+        }
+        return actors;
+    }
+
     public bool EnemiesInTiles(TacticActor actor, List<int> tiles)
     {
         int team = actor.GetTeam();
@@ -585,6 +610,25 @@ public class BattleMap : MapManager
             }
         }
         return false;
+    }
+
+    public List<TacticActor> ReturnEnemiesInTiles(TacticActor actor, List<int> tiles)
+    {
+        int team = actor.GetTeam();
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            TacticActor tileActor = GetActorOnTile(tiles[i]);
+            if (tileActor == null)
+            {
+                continue;
+            }
+            if (tileActor.GetTeam() != team)
+            {
+                actors.Add(tileActor);
+            }
+        }
+        return actors;
     }
 
     public List<TacticActor> GetAdjacentAllies(TacticActor actor)

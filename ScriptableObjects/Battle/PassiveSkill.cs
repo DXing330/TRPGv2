@@ -5,15 +5,27 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Passive", menuName = "ScriptableObjects/BattleLogic/Passive", order = 1)]
 public class PassiveSkill : SkillEffect
 {
+    public string GetEffectSpecifics(TacticActor actor, string specifics)
+    {
+        switch (specifics)
+        {
+            case "Defense":
+                return actor.GetDefense().ToString();
+            case "Attack":
+                return actor.GetAttack().ToString();
+        }
+        return specifics;
+    }
+
     public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData, BattleState battleState)
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
         if (startBattlePassives.Count <= 0) { return; }
         string passiveName = "";
         List<string> passiveData = new List<string>();
-        for (int i = 0; i < startBattlePassives.Count; i++)
+        for (int h = 0; h < startBattlePassives.Count; h++)
         {
-            passiveName = startBattlePassives[i];
+            passiveName = startBattlePassives[h];
             if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
             string[] conditions = passiveData[1].Split(",");
@@ -31,7 +43,12 @@ public class PassiveSkill : SkillEffect
             {
                 continue;
             }
-            AffectActor(actor, passiveData[4], passiveData[5]);
+            string[] effects = passiveData[4].Split(",");
+            string[] effectSpecifics = passiveData[5].Split(",");
+            for (int i = 0; i < effects.Length; i++)
+            {
+                AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+            }
         }
     }
 
@@ -52,10 +69,11 @@ public class PassiveSkill : SkillEffect
         string passiveName = "";
         List<string> passiveData = new List<string>();
         List<TacticActor> targets = new List<TacticActor>();
-        for (int i = passives.Count - 1; i >= 0; i--)
+        List<int> tiles = new List<int>();
+        for (int h = passives.Count - 1; h >= 0; h--)
         {
             targets.Clear();
-            passiveName = passives[i];
+            passiveName = passives[h];
             if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
             string[] conditions = passiveData[1].Split(",");
@@ -73,26 +91,49 @@ public class PassiveSkill : SkillEffect
             {
                 continue;
             }
-            switch (passiveData[3])
+            string[] effects = passiveData[4].Split(",");
+            string[] effectSpecifics = passiveData[5].Split(",");
+            for (int i = 0; i < effects.Length; i++)
             {
-                case "Self":
-                    AffectActor(actor, passiveData[4], passiveData[5]);
-                    break;
-                case "Adjacent Allies":
-                    AffectActor(actor, passiveData[4], passiveData[5]);
-                    targets = map.GetAdjacentAllies(actor);
-                    for (int j = 0; j < targets.Count; j++)
-                    {
-                        AffectActor(targets[j], passiveData[4], passiveData[5]);
-                    }
-                    break;
-                case "Adjacent Enemies":
-                    targets = map.GetAdjacentEnemies(actor);
-                    for (int j = 0; j < targets.Count; j++)
-                    {
-                        AffectActor(targets[j], passiveData[4], passiveData[5]);
-                    }
-                    break;
+                switch (passiveData[3])
+                {
+                    case "Self":
+                        AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        break;
+                    case "Adjacent Allies":
+                        AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        targets = map.GetAdjacentAllies(actor);
+                        for (int j = 0; j < targets.Count; j++)
+                        {
+                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        }
+                        break;
+                    case "Adjacent Enemies":
+                        targets = map.GetAdjacentEnemies(actor);
+                        for (int j = 0; j < targets.Count; j++)
+                        {
+                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        }
+                        break;
+                    case "Back Allies":
+                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 2));
+                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
+                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 4));
+                        targets = map.ReturnAlliesInTiles(actor, tiles);
+                        for (int j = 0; j < targets.Count; j++)
+                        {
+                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        }
+                        break;
+                    case "Back Ally":
+                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
+                        targets = map.ReturnAlliesInTiles(actor,tiles);
+                        for (int j = 0; j < targets.Count; j++)
+                        {
+                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        }
+                        break;
+                }
             }
         }
     }
@@ -188,6 +229,10 @@ public class PassiveSkill : SkillEffect
                 return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "Tile<>":
                 return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
+            case "Adjacent Ally A<>":
+                return !map.AllyAdjacentToActor(attacker);
+            case "Adjacent Ally D<>":
+                return !map.AllyAdjacentToActor(target);
             case "Adjacent Ally A":
                 return map.AllyAdjacentToActor(attacker);
             case "Adjacent Ally D":
@@ -196,6 +241,22 @@ public class PassiveSkill : SkillEffect
                 return map.AllyAdjacentWithSpriteName(attacker, conditionSpecifics);
             case "Adjacent Ally Sprite D":
                 return map.AllyAdjacentWithSpriteName(target, conditionSpecifics);
+            case "AdjacentAllyCount>A":
+                return map.GetAdjacentAllies(attacker).Count > int.Parse(conditionSpecifics);
+            case "AdjacentAllyCount<A":
+                return map.GetAdjacentAllies(attacker).Count < int.Parse(conditionSpecifics);
+            case "AdjacentAllyCount>D":
+                return map.GetAdjacentAllies(target).Count > int.Parse(conditionSpecifics);
+            case "AdjacentAllyCount<D":
+                return map.GetAdjacentAllies(target).Count < int.Parse(conditionSpecifics);
+            case "AdjacentEnemyCount>A":
+                return map.GetAdjacentEnemies(attacker).Count > int.Parse(conditionSpecifics);
+            case "AdjacentEnemyCount<A":
+                return map.GetAdjacentEnemies(attacker).Count < int.Parse(conditionSpecifics);
+            case "AdjacentEnemyCount>D":
+                return map.GetAdjacentEnemies(target).Count > int.Parse(conditionSpecifics);
+            case "AdjacentEnemyCount<D":
+                return map.GetAdjacentEnemies(target).Count < int.Parse(conditionSpecifics);
             case "None":
                 return true;
             case "Distance":

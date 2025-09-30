@@ -102,6 +102,9 @@ public class SkillEffect : ScriptableObject
             case "BaseDefense":
                 target.UpdateBaseDefense(int.Parse(effectSpecifics) * level);
                 break;
+            case "BaseDefense%":
+                target.UpdateBaseDefense(level * (int.Parse(effectSpecifics) * target.GetBaseDefense()) / basicDenominator);
+                break;
             case "AttackRange":
                 target.SetAttackRangeMax(int.Parse(effectSpecifics));
                 break;

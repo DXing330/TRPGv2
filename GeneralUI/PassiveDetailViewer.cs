@@ -106,21 +106,21 @@ public class PassiveDetailViewer : MonoBehaviour
         switch (data)
         {
             case "BattleStart":
-            return "At the start of each battle";
+            return "At the start of each battle,";
             case "Start":
-            return "At the start of each turn";
+            return "At the start of each turn,";
             case "Moving":
-            return "When moving";
+            return "When moving,";
             case "Attacking":
-            return "When attacking";
+            return "When attacking,";
             case "Defending":
-            return "When being attacked";
+            return "When being attacked,";
             case "TakeDamage":
-            return "When receiving damage";
+            return "When receiving damage,";
             case "End":
-            return "At the end of each turn";
+            return "At the end of each turn,";
             case "Death":
-            return "Upon death";
+            return "Upon death,";
         }
         return "";
     }
@@ -135,18 +135,48 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if there are less than "+specifics+" allies left";
             case "AllyCount>":
                 return " if there are more than " + specifics + " allies left";
+            case "AdjacentAllyCount>":
+                return " if there are more than " + specifics + " allies adjacent";
+            case "AdjacentAllyCount<":
+                return " if there are less than " + specifics + " allies adjacent";
+            case "AdjacentAllyCount>A":
+                return " if there are more than " + specifics + " allies adjacent";
+            case "AdjacentAllyCount<A":
+                return " if there are less than " + specifics + " allies adjacent";
+            case "AdjacentAllyCount>D":
+                return " if there are more than " + specifics + " allies adjacent";
+            case "AdjacentAllyCount<D":
+                return " if there are less than " + specifics + " allies adjacent";
             case "Adjacent Ally":
                 return " if another ally is adjacent";
             case "Adjacent Ally A":
                 return " if another ally is adjacent";
             case "Adjacent Ally D":
                 return " if another ally is adjacent";
+            case "Adjacent Ally<>":
+                return " if another ally is not adjacent";
+            case "Adjacent Ally A<>":
+                return " if another ally is not adjacent";
+            case "Adjacent Ally D<>":
+                return " if another ally is not adjacent";
             case "Adjacent Ally Sprite":
                 return " if a " + specifics + " ally is adjacent";
             case "Adjacent Ally Sprite A":
                 return " if a " + specifics + " ally is adjacent";
             case "Adjacent Ally Sprite D":
                 return " if a " + specifics + " ally is adjacent";
+            case "AdjacentEnemyCount>":
+                return " if there are more than " + specifics + " enemies adjacent";
+            case "AdjacentEnemyCount<":
+                return " if there are less than " + specifics + " enemies adjacent";
+            case "AdjacentEnemyCount>A":
+                return " if there are more than " + specifics + " enemies adjacent";
+            case "AdjacentEnemyCount<A":
+                return " if there are less than " + specifics + " enemies adjacent";
+            case "AdjacentEnemyCount>D":
+                return " if there are more than " + specifics + " enemies adjacent";
+            case "AdjacentEnemyCount<D":
+                return " if there are less than " + specifics + " enemies adjacent";
             case "Direction":
                 switch (specifics)
                 {
@@ -238,8 +268,21 @@ public class PassiveDetailViewer : MonoBehaviour
         return "";
     }
 
+    protected string AdjustSpecificsText(string specifics)
+    {
+        switch (specifics)
+        {
+            case "Defense":
+                return "your defense value";
+            case "Attack":
+                return "your attack value";
+        }
+        return specifics;
+    }
+
     protected string PassiveEffect(string effect, string specifics, string target)
     {
+        specifics = AdjustSpecificsText(specifics);
         switch (effect)
         {
             case "Increase":
@@ -251,43 +294,43 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Decrease%":
                 return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "BaseHealth":
-                return " increase maximum health by " + specifics;
+                return " increase maximum health of " + target + " by " + specifics;
             case "Movement":
-                return " gain " + specifics + " movement";
+                return " " + target + " gain " + specifics + " movement";
             case "Skill":
                 return " gain the " + specifics + " skill";
             case "Status":
                 return " inflict " + specifics+" on "+target;
             case "RemoveStatus":
-                return " remove all " + specifics + " status effects";
+                return " remove all " + specifics + " status effects from " + target;
             case "Health":
-                return " regain up to " + specifics + " health";
+                return " " + target + " regain up to " + specifics + " health";
             case "Health%":
-                return " regain up to " + specifics + "% health";
+                return " " + target + " regain up to " + specifics + "% health";
             case "Attack%":
-                return " increase attack by " + specifics + "%";
+                return " increase attack of " + target + " by " + specifics + "%";
             case "BaseAttack%":
-                return " increase base attack by " + specifics + "%";
+                return " increase base attack of " + target + " by " + specifics + "%";
             case "Defense%":
-                return " increase defense by " + specifics + "%";
+                return " increase defense of " + target + " by " + specifics + "%";
             case "MoveType":
-                return " change movement type to " + specifics;
+                return " change movement type of " + target + " to " + specifics;
             case "AttackRange":
-                return " increase Attack Range by up to " + specifics;
+                return " increase Attack Range of " + target + " by up to " + specifics;
             case "BaseSpeed":
-                return " increase Base Speed by up to " + specifics;
+                return " increase Base Speed of " + target + " by up to " + specifics;
             case "TempAttack%":
-                return " change attack by " + specifics + "%, until the end of next turn";
+                return " change attack of " + target + " by " + specifics + "%, until the end of next turn";
             case "TempAttack":
-                return " change attack by " + specifics + ", until the end of next turn";
+                return " change attack of " + target + " by " + specifics + ", until the end of next turn";
             case "TempDefense%":
-                return " change defense by " + specifics + "%, until the end of next turn";
+                return " change defense of " + target + " by " + specifics + "%, until the end of next turn";
             case "TempDefense":
-                return " change defense by " + specifics + ", until the end of next turn";
+                return " change defense of " + target + " by " + specifics + ", until the end of next turn";
             case "TempHealth%":
-                return " gain a shield that absorbs damage equal to " + specifics + "% of max health, until the end of next turn";
+                return " " + target + " gain a shield that absorbs damage equal to " + specifics + "% of max health, until the end of next turn";
             case "TempHealth":
-                return " gain a shield that absorbs damage equal to " + specifics + ", until the end of next turn";
+                return " " + target + " gain a shield that absorbs damage equal to " + specifics + ", until the end of next turn";
             case "TerrainEffect":
                 return " create " + specifics;
             case "Tile":
@@ -297,13 +340,13 @@ public class PassiveDetailViewer : MonoBehaviour
             case "MentalState":
                 return " change mental state to " + specifics;
             case "Amnesia":
-                return " make "+target+" forget 1 active skill";
+                return " make " + target + " forget 1 active skill";
             case "Active":
                 return " use " + specifics;
             case "Death":
                 return " die";
         }
-        return " increase "+effect+" by "+specifics;
+        return " increase " + effect + " of " + target + " by " + specifics;
     }
 
     protected string IncreaseDecreaseTargetSpecifics(string effect, string specifics, string target)

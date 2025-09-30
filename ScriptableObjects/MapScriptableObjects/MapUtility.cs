@@ -122,6 +122,62 @@ public class MapUtility : ScriptableObject
         return location;
     }
 
+    public List<int> GetTilesInColumn(int location, int span, int size)
+    {
+        List<int> tiles = new List<int>();
+        List<int> cols = new List<int>();
+        int startingCol = GetColumn(location, size);
+        cols.Add(startingCol);
+        for (int i = 0; i < span; i++)
+        {
+            cols.Add(startingCol + i + 1);
+            cols.Add(startingCol - i - 1);
+        }
+        for (int i = cols.Count - 1; i >= 0; i--)
+        {
+            if (cols[i] < 0 || cols[i] >= size)
+            {
+                cols.RemoveAt(i);
+            }
+        }
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < cols.Count; j++)
+            {
+                tiles.Add(ReturnTileNumberFromRowCol(i, cols[j], size));
+            }
+        }
+        return tiles;
+    }
+
+    public List<int> GetTilesInRow(int location, int span, int size)
+    {
+        List<int> tiles = new List<int>();
+        List<int> rows = new List<int>();
+        int startingRow = GetRow(location, size);
+        rows.Add(startingRow);
+        for (int i = 0; i < span; i++)
+        {
+            rows.Add(startingRow + i + 1);
+            rows.Add(startingRow - i - 1);
+        }
+        for (int i = rows.Count - 1; i >= 0; i--)
+        {
+            if (rows[i] < 0 || rows[i] >= size)
+            {
+                rows.RemoveAt(i);
+            }
+        }
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < rows.Count; j++)
+            {
+                tiles.Add(ReturnTileNumberFromRowCol(rows[j], i, size));
+            }
+        }
+        return tiles;
+    }
+
     public List<int> GetTilesInLineDirection(int location, int direction, int range, int size)
     {
         List<int> tiles = new List<int>();
@@ -387,6 +443,20 @@ public class MapUtility : ScriptableObject
                 return GetTilesInConeShape(selected, span, coneLocation, size);
             case "Beam":
                 return GetTilesInBeamShape(start, direction, span, size);
+            case "Row":
+                tiles.AddRange(GetTilesInRow(selected, span, size));
+                tiles.Remove(selected);
+                return tiles;
+            case "Column":
+                tiles.AddRange(GetTilesInColumn(selected, span, size));
+                tiles.Remove(selected);
+                return tiles;
+            case "RowCol":
+                tiles.AddRange(GetTilesInRow(selected, span, size));
+                tiles.AddRange(GetTilesInColumn(selected, span, size));
+                tiles = new List<int>(tiles.Distinct());
+                tiles.Remove(selected);
+                return tiles;
         }
         tiles.Add(selected);
         return tiles;

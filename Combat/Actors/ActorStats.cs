@@ -259,7 +259,8 @@ public class ActorStats : ActorPassives
     public int GetInitiative() { return initiative; }
     public void ChangeInitiative(int change) { initiative += change; }
     public int tempHealth; // Used specifically for end of turn attack buffs.
-    public void ResetTempHealth() { tempHealth = 0; }
+    // You can keep a little bit of temphealth to buff temphealth as a stat.
+    public void ResetTempHealth() { tempHealth = tempHealth / 2; }
     public void UpdateTempHealth(int changeAmount) { tempHealth += changeAmount; }
     public int currentHealth;
     public void SetCurrentHealth(int newHealth) { currentHealth = newHealth; }
