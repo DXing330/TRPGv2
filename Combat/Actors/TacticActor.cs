@@ -91,6 +91,10 @@ public class TacticActor : ActorStats
     // Used mainly for enemy AI
     public int counter = 0;
     public void ResetCounter(){counter = 0;}
+    public void UpdateCounter(int changeAmount)
+    {
+        counter += changeAmount;
+    }
     public void IncrementCounter(){counter++;}
     public void SetCounter(int newInfo){counter = newInfo;}
     public int GetCounter(){return counter;}

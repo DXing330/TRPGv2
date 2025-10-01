@@ -216,6 +216,8 @@ public class PassiveSkill : SkillEffect
             return actor.GetPassiveSkills().Contains(conditionSpecifics);
             case "Passive<>":
             return !actor.GetPassiveSkills().Contains(conditionSpecifics);
+            case "Counter":
+            return actor.GetCounter() >= int.Parse(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;

@@ -264,6 +264,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if you have more than " + specifics + " passive levels";
             case "PassiveLevelsA<":
                 return " if you have less than " + specifics + " passive levels";
+            case "Counter":
+                return " if your counter is greater than " + specifics;
         }
         return "";
     }

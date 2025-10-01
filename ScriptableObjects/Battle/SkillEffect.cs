@@ -178,6 +178,9 @@ public class SkillEffect : ScriptableObject
             case "Amnesia":
                 target.RemoveRandomActiveSkill();
                 break;
+            case "Counter":
+                target.UpdateCounter(int.Parse(effectSpecifics));
+                break;
         }
     }
 
