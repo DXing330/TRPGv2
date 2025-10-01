@@ -121,7 +121,7 @@ public class SelectStatTextList : StatTextList
         data.Add(actor.GetMoveSpeed().ToString());
         data.Add(actor.GetAttackRange().ToString());
         data.Add(actor.GetInitiative().ToString());
-        data.Add(actor.GetWeight().ToString());
+        data.Add(actor.GetBaseWeight().ToString());
         for (int i = 0; i < statTexts.Count; i++)
         {
             objects[i].SetActive(true);

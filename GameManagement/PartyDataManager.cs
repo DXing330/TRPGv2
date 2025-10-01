@@ -355,8 +355,11 @@ public class PartyDataManager : MonoBehaviour
         // TODO: fix this in case some members have the same code name.
         // Issue if some members have both the same sprite and code name.
         // Need a mapping from stats to partyIndices.
+        // For every code name.
         for (int i = 0; i < codeNames.Count; i++)
         {
+            // Check if the code name and sprite name match with someone already in the party.
+            // This will naturally exclude summons, assuming the summons don't have both the same code name and sprite name as a current actor.
             for (int j = allPossibleIndices.Count - 1; j >= 0; j--)
             {
                 if (MatchCodeAndSpriteName(codeNames[i], spriteNames[i], allPossibleIndices[j]))

@@ -25,6 +25,10 @@ public class EventDescriptionViewer : MonoBehaviour
             {
                 description += ReturnInventoryEffectDescriptions(eventEffect[i], eventSpecifics[i]);
             }
+            else if (eventTarget[i] == "Party")
+            {
+                description += "Gain " + eventSpecifics[i] + " " + eventEffect[i] + ".";
+            }
             else if (eventTarget[i] == "Equipment")
             {
                 description += "Gain " + eventSpecifics[i] + ".";

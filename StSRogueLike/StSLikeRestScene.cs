@@ -5,14 +5,6 @@ using TMPro;
 
 public class StSLikeRestScene : MonoBehaviour
 {
-    /* In this scene:
-    -select each party member
-    -choose an option for them to take while resting
-        -see the potential effects of each action on their stats
-    -confirm your choices
-    -open the armory panel
-    -rearrange equipment if needed
-    */
     public SceneMover sceneMover;
     public string StSMapSceneName;
     public int statGainPercentage = 10;
@@ -87,13 +79,13 @@ public class StSLikeRestScene : MonoBehaviour
                 restEffects[1].text = "+" + (Mathf.Max(1, dummyActor.GetBaseHealth()/ statGainPercentage)).ToString();
                 break;
             case "Attack":
-                restEffects[2].text = "+" + (Mathf.Max(1, dummyActor.GetBaseAttack() / statGainPercentage)).ToString();
+                restEffects[2].text = "+1";
                 break;
             case "Defense":
-                restEffects[3].text = "+" + (Mathf.Max(1, dummyActor.GetBaseDefense() / statGainPercentage)).ToString();
+                restEffects[2].text = "+1";
                 break;
             case "Energy":
-                restEffects[4].text = "+" + (Mathf.Max(1, dummyActor.GetBaseEnergy() / statGainPercentage)).ToString();
+                restEffects[2].text = "+1";
                 break;
             
         }

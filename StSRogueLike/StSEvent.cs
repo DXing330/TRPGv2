@@ -30,6 +30,7 @@ public class StSEvent : SavedData
     public StatDatabase eventData;
     public StatDatabase eventDescription;
     public StatDatabase eventEquipment;
+    public StatDatabase actorStats;
     public string eventName;
     public string GetEventName()
     {
@@ -141,6 +142,9 @@ public class StSEvent : SavedData
         {
             switch (eventTarget[i])
             {
+                case "Party":
+                    partyData.HireMember(eventEffect[i], actorStats.ReturnValue(eventEffect[i]), eventEffect[i] + " " + UnityEngine.Random.Range(0, 1000));
+                    break;
                 case "Inventory":
                     partyData.inventory.AddItemQuantity(eventEffect[i], int.Parse(eventSpecifics[i]));
                     break;

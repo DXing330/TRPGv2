@@ -250,6 +250,7 @@ public class ActorStats : ActorPassives
     public void SetMoveType(string newMoveType) { moveType = newMoveType; }
     public string GetMoveType() { return moveType; }
     public int weight;
+    public int GetBaseWeight() { return weight; }
     public void SetWeight(int newWeight) { weight = newWeight; }
     public int currentWeight;
     public void UpdateWeight(int changeAmount) { currentWeight += changeAmount; }

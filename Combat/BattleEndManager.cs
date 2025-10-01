@@ -75,6 +75,7 @@ public class BattleEndManager : MonoBehaviour
     public void UpdateOverworldAfterBattle(int winningTeam)
     {
         if (winningTeam != 0 || subGame) { return; }
+        if (overworldState == null){return;}
         string battleType = overworldState.GetBattleType();
         int location = overworldState.GetLocation();
         if (battleType == "") { return; }
@@ -141,13 +142,6 @@ public class BattleEndManager : MonoBehaviour
                 {
                     allLootDrops.Disable();
                 }
-                /*List<string> allyRewards = stsBattleRewardManager.GetAllyRewards();
-                List<string> aQ = new List<string>();
-                for (int i = 0; i < allyRewards.Count; i++)
-                {
-                    aQ.Add(" ");
-                }
-                allNewAllies.SetStatsAndData(allyRewards, aQ);*/
                 if (stsBattleRewardManager.allyRewardRarity.Count <= 0)
                 {
                     allNewAllies.Disable();
@@ -158,11 +152,8 @@ public class BattleEndManager : MonoBehaviour
         {
             battleResult.text = "<color=red>Defeat...</color>";
             allSkillUps.Disable();
-            if (subGame)
-            {
-                allNewAllies.Disable();
-                allLootDrops.Disable();
-            }
+            allNewAllies.Disable();
+            allLootDrops.Disable();
         }
         battleEndScreen.SetActive(true);
     }
