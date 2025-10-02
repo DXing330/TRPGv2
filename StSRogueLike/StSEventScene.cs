@@ -80,6 +80,9 @@ public class StSEventScene : MonoBehaviour
         // Check if the choice results in moving to a battle or some other special effect.
         else if (choice == "Battle")
         {
+            // Get any rewards that you were promised at the start of battle.
+            stsEvent.ApplyEventEffects(partyData);
+            partyData.Save();
             // Set the terrain.
             battleState.ForceTerrainType(stsEvent.eventEffect[0]);
             // Load the enemies.

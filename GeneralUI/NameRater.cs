@@ -51,4 +51,15 @@ public class NameRater : MonoBehaviour
     {
         return newNameString;
     }
+
+    public string ReturnNameWithFirstCharUpperCase()
+    {
+        string name = newNameString.ToLowerInvariant();
+        if (!string.IsNullOrEmpty(name))
+        {
+            string fName = char.ToUpper(name[0]) + name.Substring(1);
+            return fName;
+        }
+        return name;
+    }
 }

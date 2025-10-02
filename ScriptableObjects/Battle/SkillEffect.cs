@@ -14,6 +14,9 @@ public class SkillEffect : ScriptableObject
         int changeAmount = 0;
         switch (effect)
         {
+            case "Passive":
+                target.AddPassiveSkill(effectSpecifics, "1");
+                break;
             case "Temporary Passive":
                 if (target.AddTempPassive(effectSpecifics, level))
                 {

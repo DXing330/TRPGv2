@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,7 +24,7 @@ public class BattleSimulator : MonoBehaviour
         partyOneSelect.RefreshData();
         partyTwoSelect.RefreshData();
         selectedActorName = "";
-        actorSelect.SetData(actorStats.GetAllKeys(), actorStats.GetAllKeys(), actorStats.values);
+        actorSelect.SetData(actorStats.GetAllKeys(), actorStats.GetAllKeys(), actorStats.GetAllValues());
         if (simulatorState.MultiBattleEnabled() && !simulatorState.MultiBattleFinished())
         {
             simulatorState.IncrementMultiBattle();
@@ -111,7 +112,7 @@ public class BattleSimulator : MonoBehaviour
             selectedActorName = "";
             return;
         }
-        selectedActorName = actorStats.ReturnKeyAtIndex(actorSelect.GetSelected());
+        selectedActorName = actorSelect.GetSelectedName();
     }
     public void AddToPartyOne()
     {
@@ -132,5 +133,19 @@ public class BattleSimulator : MonoBehaviour
         string stats = actorStats.ReturnValue(selectedActorName);
         partyTwoList.AddMemberToParty(selectedActorName + " " + Random.Range(1, 999), stats, selectedActorName);
         partyTwoSelect.RefreshData();
+    }
+    public NameRater filter; 
+    public void ResetFilter()
+    {
+        filter.ResetNewName();
+        actorSelect.SetData(actorStats.GetAllKeys(), actorStats.GetAllKeys(), actorStats.GetAllValues());
+    }
+    public void FilterActorSelect()
+    {
+        actorSelect.ResetSelected();
+        List<string> filters = new List<string>();
+        filters.Add(filter.ReturnNameWithFirstCharUpperCase());
+        filters.Add(filter.ConfirmName().ToLower());
+        actorSelect.SetData(actorStats.GetFilteredKeys(filters), actorStats.GetFilteredKeys(filters), actorStats.GetFilteredValues(filters));
     }
 }

@@ -112,9 +112,43 @@ public class StatDatabase : ScriptableObject
         return new List<string>(keys);
     }
 
+    public List<string> GetFilteredKeys(List<string> filters)
+    {
+        List<string> filtered = new List<string>();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            for (int j = 0; j < filters.Count; j++)
+            {
+                if (keys[i].Contains(filters[j]))
+                {
+                    filtered.Add(keys[i]);
+                    break;
+                }
+            }
+        }
+        return filtered;
+    }
+
     public List<string> GetAllValues()
     {
         return new List<string>(values);
+    }
+
+    public List<string> GetFilteredValues(List<string> filters)
+    {
+        List<string> filtered = new List<string>();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            for (int j = 0; j < filters.Count; j++)
+            {
+                if (keys[i].Contains(filters[j]))
+                {
+                    filtered.Add(values[i]);
+                    break;
+                }
+            }
+        }
+        return filtered;
     }
 
     public string ReturnValue(string key)

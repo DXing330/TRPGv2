@@ -54,7 +54,7 @@ public class BattleManager : MonoBehaviour
         pause = true;
         if (autoWin)
         {
-            Debug.Log("Automatically Ending The Battle");
+            combatLog.UpdateNewestLog("Automatically Ending The Battle");
             battleEndManager.EndBattle(winningTeam);
             return;
         }
@@ -167,7 +167,7 @@ public class BattleManager : MonoBehaviour
         combatLog.AddNewLog();
         if (map.battlingActors.Count <= 0 && roundNumber > 1)
         {
-            Debug.Log("Everyone is Dead");
+            combatLog.UpdateNewestLog("Everyone is Dead");
             // End the battle immediately.
             int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
             EndBattle(winningTeam);
@@ -189,14 +189,14 @@ public class BattleManager : MonoBehaviour
     }
     public void NextTurn()
     {
-        if (pause){ return; }
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
-            Debug.Log("Ending Battle By Clicking Next Turn");
+            combatLog.UpdateNewestLog("Ending Battle By Clicking Next Turn");
             EndBattle(winningTeam);
             return;
         }
+        if (pause){ return; }
         turnActor.EndTurn(); // End turn first before passives apply, so that end of turn buffs can stick around til the next round.
         effectManager.EndTurn(turnActor, map);
         // This allows for a one turn grace period for immunities to have a chance.
@@ -206,7 +206,7 @@ public class BattleManager : MonoBehaviour
         winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
-            Debug.Log("Ending Battle By Clicking Next Turn");
+            combatLog.UpdateNewestLog("Ending Battle By Clicking Next Turn");
             EndBattle(winningTeam);
             return;
         }
@@ -482,7 +482,7 @@ public class BattleManager : MonoBehaviour
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
-            Debug.Log("Ending Battle By Attacking");
+            combatLog.UpdateNewestLog("Ending Battle By Attacking");
             EndBattle(winningTeam);
             return;
         }
