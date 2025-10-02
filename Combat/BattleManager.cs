@@ -49,8 +49,10 @@ public class BattleManager : MonoBehaviour
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
+    public GameObject autoWinButton;
     protected void EndBattle(int winningTeam, bool autoWin = false)
     {
+        autoWinButton.SetActive(true);
         pause = true;
         if (autoWin)
         {

@@ -130,11 +130,11 @@ public class ActorSpriteHPList : MonoBehaviour
 
     public string GetSelectedData()
     {
-        return actorData[selectedIndex];
+        return allActorData[selectedIndex];
     }
 
     public string GetSelectedName()
     {
-        return actorNames[selectedIndex];
+        return allActorNames[selectedIndex];
     }
 }

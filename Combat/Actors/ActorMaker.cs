@@ -7,6 +7,10 @@ public class ActorMaker : MonoBehaviour
     public Equipment equipmentPrefab;
     public TacticActor actorPrefab;
     public StatDatabase actorStats;
+    public StatDatabase spriteElementMapping;
+    public StatDatabase elementPassives;
+    public StatDatabase spriteSpeciesMapping;
+    public StatDatabase speciesPassives;
     public PassiveOrganizer passiveOrganizer;
     public MapPatternLocations mapPatterns;
     public int mapSize;
@@ -31,6 +35,24 @@ public class ActorMaker : MonoBehaviour
         actor.SetSpecies(actorName);
         actor.SetSpriteName((actorName));
         actor.SetStats(actorStats.ReturnStats(actorName));
+        // Set the element based on sprite name.
+        actor.SetElement(spriteElementMapping.ReturnValue(actorName));
+    }
+
+    protected void AddElementPassives(TacticActor actor)
+    {
+        string elemental = elementPassives.ReturnValue(actor.GetElement());
+        if (elemental == "")
+        {
+            return;
+        }
+        string[] blocks = elemental.Split("|");
+        string[] passives = blocks[0].Split(",");
+        string[] levels = blocks[1].Split(",");
+        for (int i = 0; i < passives.Length; i++)
+        {
+            actor.AddPassiveSkill(passives[i], levels[i]);
+        }
     }
 
     public TacticActor SpawnActor(int location, string actorName, int team = 0)
@@ -74,6 +96,8 @@ public class ActorMaker : MonoBehaviour
                     equipmentPrefab.EquipToActor(actors[i]);
                 }
             }
+            // Add the elemental passives at the end.
+            AddElementPassives(actors[i]);
             passiveOrganizer.OrganizeActorPassives(actors[i]);
             actors[i].ResetStats();
         }

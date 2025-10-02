@@ -151,7 +151,7 @@ public class StatDatabase : ScriptableObject
         return filtered;
     }
 
-    public string ReturnValue(string key)
+    public virtual string ReturnValue(string key)
     {
         int indexOf = keys.IndexOf(key);
         if (indexOf < 0 || indexOf >= values.Count){return "";}
