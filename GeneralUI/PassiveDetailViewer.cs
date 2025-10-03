@@ -280,6 +280,10 @@ public class PassiveDetailViewer : MonoBehaviour
                     return " if you are on the same team";
                 }
                 return " if you are not on the same team";
+            case "Direction<>D":
+                return " if not attacking" + RelativeDirectionDescriptions(specifics);
+            case "DirectionD":
+                return " if attacking" + RelativeDirectionDescriptions(specifics);
         }
         return "";
     }
@@ -391,5 +395,25 @@ public class PassiveDetailViewer : MonoBehaviour
             return " "+effect+" damage multipler by "+specifics+"%";
         }
         return " "+effect+" "+target+" by "+specifics;
+    }
+
+    protected string RelativeDirectionDescriptions(string specifics)
+    {
+        switch (specifics)
+        {
+            case "0":
+                return " from the front";
+            case "1":
+                return " from the front right";
+            case "2":
+                return " from the back right";
+            case "3":
+                return " from the back";
+            case "4":
+                return " from the back left";
+            case "5":
+                return " from the front left";
+        }
+        return "";
     }
 }

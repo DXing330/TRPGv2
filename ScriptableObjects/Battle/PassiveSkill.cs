@@ -330,6 +330,10 @@ public class PassiveSkill : SkillEffect
                     return attacker.GetTeam() == target.GetTeam();
                 }
                 return attacker.GetTeam() != target.GetTeam();
+            case "Direction<>D":
+                return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
+            case "DirectionD":
+                return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) == int.Parse(conditionSpecifics);
         }
         return true;
     }
@@ -397,6 +401,18 @@ public class PassiveSkill : SkillEffect
     public int GetRelativeDirections(int dir1, int dir2)
     {
         return Mathf.Abs(dir1-dir2);
+    }
+
+    public int GetAttackDirectionFromDefenderPOV(int atkDir, int defDir)
+    {
+        int mod = 3 - defDir;
+        if (mod < 0)
+        {
+            mod += 6;
+        }
+        int final = (atkDir + mod) % 6;
+        Debug.Log(final);
+        return final;
     }
 
     public bool CheckDirectionIntSpecifics(int conditionSpecifics, int directions)

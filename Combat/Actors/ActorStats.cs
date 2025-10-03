@@ -219,7 +219,14 @@ public class ActorStats : ActorPassives
         else { baseHealth += changeAmount; }
     }
     public int baseEnergy;
-    public void UpdateBaseEnergy(int changeAmount) { baseEnergy += changeAmount; }
+    public void UpdateBaseEnergy(int changeAmount)
+    {
+        baseEnergy += changeAmount;
+        if (baseEnergy < 0)
+        {
+            baseEnergy = 0;
+        }
+    }
     public void SetBaseEnergy(int newEnergy) { baseEnergy = newEnergy; }
     public int GetBaseEnergy() { return baseEnergy; }
     public int baseAttack;
@@ -290,6 +297,10 @@ public class ActorStats : ActorPassives
         if (decrease) { LoseEnergy(changeAmount); }
         else { currentEnergy += changeAmount; }
         if (currentEnergy > GetBaseEnergy()) { currentEnergy = GetBaseEnergy(); }
+        if (currentEnergy < 0)
+        {
+            currentEnergy = 0;
+        }
     }
     public void LoseEnergy(int amount)
     {

@@ -371,8 +371,11 @@ public class BattleMap : MapManager
         highlightedTiles = new List<string>(emptyList);
         int maxActions = 2;
         if (current) { maxActions = selectedActor.GetActions(); }
-        for (int i = maxActions; i >= 0; i--)
+        for (int i = Mathf.Min(maxActions, colorDictionary.keys.Count - 2); i >= 0; i--)
         {
+            // This breaks if the actor can move off the map without using all their actions?
+            Debug.Log(i);
+            Debug.Log(colorDictionary.keys[i + 1]);
             UpdateHighlightsWithoutReseting(moveManager.GetReachableTilesBasedOnActions(selectedActor, battlingActors, i), colorDictionary.keys[i + 1]);
         }
         //UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, battlingActors, current));
