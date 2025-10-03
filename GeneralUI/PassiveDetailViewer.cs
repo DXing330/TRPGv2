@@ -220,9 +220,17 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Time<>":
                 return " if the time of day is not " + specifics + "";
             case "MoveType":
-                return " if " + specifics + "";
+                return " if movement type is " + specifics;
             case "MoveType<>":
-                return " if not " + specifics + "";
+                return " if movement type is not " + specifics;
+            case "MoveType<>A":
+                return " if your movement type is not " + specifics;;
+            case "MoveType<>D":
+                return " if the target's movement type is not " + specifics;
+            case "MoveTypeA":
+                return " if your movement type is " + specifics;
+            case "MoveTypeD":
+                return " if the target's movement type is " + specifics;
             case "MentalState":
                 return " if " + specifics + "";
             case "MentalStateA":
@@ -266,6 +274,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if you have less than " + specifics + " passive levels";
             case "Counter":
                 return " if your counter is greater than " + specifics;
+            case "Team":
+                if (specifics == "Same")
+                {
+                    return " if you are on the same team";
+                }
+                return " if you are not on the same team";
         }
         return "";
     }

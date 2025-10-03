@@ -5,9 +5,21 @@ using UnityEngine;
 public class TacticActor : ActorStats
 {
     public string weaponType;
-    public void ResetWeaponType(){weaponType = "";}
+    public void ResetWeaponType()
+    {
+        weaponType = "";
+        weaponName = "";
+    }
     public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
     public string GetWeaponType(){return weaponType;}
+    public string weaponName;
+    public void ResetWeaponName()
+    {
+        weaponType = "";
+        weaponName = "";
+    }
+    public void SetWeaponName(string newInfo){weaponName = newInfo;}
+    public string GetWeaponName(){return weaponName;}
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
     public int team;

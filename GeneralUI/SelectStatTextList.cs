@@ -122,7 +122,26 @@ public class SelectStatTextList : StatTextList
         data.Add(actor.GetAttackRange().ToString());
         data.Add(actor.GetInitiative().ToString());
         data.Add(actor.GetBaseWeight().ToString());
-        for (int i = 0; i < statTexts.Count; i++)
+        for (int i = 0; i < Mathf.Min(stats.Count, statTexts.Count); i++)
+        {
+            objects[i].SetActive(true);
+            statTexts[i].SetStatText(stats[i]);
+            statTexts[i].SetText(data[i]);
+        }
+    }
+    public void UpdateActorSpriteStats(TacticActor actor)
+    {
+        DisableChangePage();
+        page = 0;
+        stats.Clear();
+        data.Clear();
+        stats.Add("Movement Type");
+        stats.Add("Element");
+        stats.Add("Species");
+        data.Add(actor.GetMoveType());
+        data.Add(actor.GetElement());
+        data.Add(actor.GetSpecies());
+        for (int i = 0; i < Mathf.Min(stats.Count, statTexts.Count); i++)
         {
             objects[i].SetActive(true);
             statTexts[i].SetStatText(stats[i]);

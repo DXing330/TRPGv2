@@ -82,10 +82,10 @@ public class StSLikeRestScene : MonoBehaviour
                 restEffects[2].text = "+1";
                 break;
             case "Defense":
-                restEffects[2].text = "+1";
+                restEffects[3].text = "+1";
                 break;
             case "Energy":
-                restEffects[2].text = "+1";
+                restEffects[4].text = "+1";
                 break;
             
         }
@@ -103,15 +103,15 @@ public class StSLikeRestScene : MonoBehaviour
         stats.Add("Attack");
         stats.Add("Defense");
         stats.Add("Energy");
-        stats.Add("Move Speed");
-        stats.Add("Initiative");
+        //stats.Add("Move Speed");
+        //stats.Add("Initiative");
         data.Add(dummyActor.GetHealth().ToString());
         data.Add(dummyActor.GetBaseHealth().ToString());
         data.Add(dummyActor.GetBaseAttack().ToString());
         data.Add(dummyActor.GetBaseDefense().ToString());
         data.Add(dummyActor.GetBaseEnergy().ToString());
-        data.Add(dummyActor.GetMoveSpeed().ToString());
-        data.Add(dummyActor.GetInitiative().ToString());
+        //data.Add(dummyActor.GetMoveSpeed().ToString());
+        //data.Add(dummyActor.GetInitiative().ToString());
         statList.SetStatsAndData(stats, data);
         UpdateRestingEffects();
     }

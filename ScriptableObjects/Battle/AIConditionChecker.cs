@@ -33,6 +33,10 @@ public class AIConditionChecker : ScriptableObject
                 return actor.GetSpriteName() == specifics;
             case "<>TempPassive":
                 return !actor.tempPassives.Contains(specifics);
+            case "AdjacentAllyCount<":
+                return map.GetAdjacentAllies(actor).Count < int.Parse(specifics);
+            case "AdjacentAllyCount>":
+                return map.GetAdjacentAllies(actor).Count > int.Parse(specifics);
             case "AdjacentEnemyCount>":
                 return map.GetAdjacentEnemies(actor).Count > int.Parse(specifics);
             case "AdjacentEnemyCount<":

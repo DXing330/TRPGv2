@@ -25,6 +25,11 @@ public class ArmoryUI : MonoBehaviour
     public SelectStatTextList selectEquipment;
     public ActorSpriteHPList allActors;
     public TacticActor selectedActor;
+    public SelectStatTextList actorSpriteStats;
+    public StatDatabase spriteElementMapping;
+    public StatDatabase elementPassives;
+    public StatDatabase spriteSpeciesMapping;
+    public StatDatabase speciesPassives;
     public string selectedPassive;
     public string selectedPassiveLevel;
     public PassiveDetailViewer detailViewer;
@@ -39,7 +44,12 @@ public class ArmoryUI : MonoBehaviour
     protected void UpdateActorStats()
     {
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        string spriteName = allActors.allActorSpriteNames[allActors.GetSelected()];
+        selectedActor.SetSpriteName(spriteName);
+        selectedActor.SetElement(spriteElementMapping.ReturnValue(selectedActor.GetSpriteName()));
+        selectedActor.SetSpecies(spriteSpeciesMapping.ReturnValue(selectedActor.GetSpriteName()));
         actorStats.UpdateActorStatTexts(selectedActor, true);
+        actorSpriteStats.UpdateActorSpriteStats(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();

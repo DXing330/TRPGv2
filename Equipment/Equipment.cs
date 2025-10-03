@@ -87,6 +87,7 @@ public class Equipment : MonoBehaviour
         if (slot == "Weapon")
         {
             actor.SetWeaponType(type);
+            actor.SetWeaponName(equipName);
         }
         for (int i = 0; i < passives.Count; i++)
         {

@@ -97,16 +97,24 @@ public class SkillEffect : ScriptableObject
                 target.UpdateEnergy(int.Parse(effectSpecifics) * level);
                 break;
             case "BaseAttack":
-                target.UpdateBaseAttack(int.Parse(effectSpecifics) * level);
+                int bAtkChange = int.Parse(effectSpecifics) * level;
+                target.UpdateBaseAttack(bAtkChange);
+                target.UpdateAttack(bAtkChange);
                 break;
             case "BaseAttack%":
-                target.UpdateBaseAttack(level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
+                int bAtkPChange = level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator;
+                target.UpdateBaseAttack(bAtkPChange);
+                target.UpdateAttack(bAtkPChange);
                 break;
             case "BaseDefense":
-                target.UpdateBaseDefense(int.Parse(effectSpecifics) * level);
+                int bDefChange = int.Parse(effectSpecifics) * level;
+                target.UpdateBaseDefense(bDefChange);
+                target.UpdateDefense(bDefChange);
                 break;
             case "BaseDefense%":
-                target.UpdateBaseDefense(level * (int.Parse(effectSpecifics) * target.GetBaseDefense()) / basicDenominator);
+                int bDefPChange = level * (int.Parse(effectSpecifics) * target.GetBaseDefense()) / basicDenominator;
+                target.UpdateBaseDefense(bDefPChange);
+                target.UpdateDefense(bDefPChange);
                 break;
             case "AttackRange":
                 target.SetAttackRangeMax(int.Parse(effectSpecifics));

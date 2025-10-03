@@ -223,6 +223,19 @@ public class PassiveSkill : SkillEffect
         return true;
     }
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.
+    public bool CheckBattleConditions(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    {
+        string[] conditions = condition.Split(",");
+        string[] specifics = conditionSpecifics.Split(",");
+        for (int i = 0; i < conditions.Length; i++)
+        {
+            if (!CheckBattleCondition(conditions[i], specifics[i], target, attacker, map, moveManager))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
         switch (condition)
@@ -303,8 +316,22 @@ public class PassiveSkill : SkillEffect
                 return attacker.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
             case "PassiveLevelsA<":
                 return attacker.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
+            case "MoveType<>A":
+                return attacker.GetMoveType() != conditionSpecifics;
+            case "MoveType<>D":
+                return target.GetMoveType() != conditionSpecifics;
+            case "MoveTypeA":
+                return attacker.GetMoveType() == conditionSpecifics;
+            case "MoveTypeD":
+                return target.GetMoveType() == conditionSpecifics;
+            case "Team":
+                if (conditionSpecifics == "Same")
+                {
+                    return attacker.GetTeam() == target.GetTeam();
+                }
+                return attacker.GetTeam() != target.GetTeam();
         }
-        return false;
+        return true;
     }
 
     public bool CheckHealthConditions(string conditionSpecifics, TacticActor target)

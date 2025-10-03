@@ -528,8 +528,9 @@ public class BattleManager : MonoBehaviour
             case "Change Form":
                 // Update base stats based on new form.
                 actorMaker.ChangeActorForm(turnActor, turnDetails[1]);
+                BossTurn(actionsLeft);
                 // This will always take all your actions.
-                turnActor.ResetActions();
+                //turnActor.ResetActions();
                 break;
             case "Split":
                 // Change base health to be the same as current health.

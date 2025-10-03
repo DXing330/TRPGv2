@@ -16,6 +16,10 @@ public class ActorPassives : MonoBehaviour
     // Can also use to this learn new permanent passive skills.
     public void AddPassiveSkill(string skillName, string skillLevel)
     {
+        if (skillName == "")
+        {
+            return;
+        }
         int indexOf = passiveSkills.IndexOf(skillName);
         if (indexOf < 0)
         {

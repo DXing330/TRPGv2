@@ -32,11 +32,11 @@ public class ActorMaker : MonoBehaviour
     protected void SetActorName(TacticActor actor, string actorName)
     {
         // Currently species is useless at this rate.
-        actor.SetSpecies(actorName);
         actor.SetSpriteName((actorName));
         actor.SetStats(actorStats.ReturnStats(actorName));
         // Set the element based on sprite name.
         actor.SetElement(spriteElementMapping.ReturnValue(actorName));
+        actor.SetSpecies(spriteSpeciesMapping.ReturnValue(actorName));
     }
 
     protected void AddElementPassives(TacticActor actor)
@@ -47,6 +47,22 @@ public class ActorMaker : MonoBehaviour
             return;
         }
         string[] blocks = elemental.Split("|");
+        string[] passives = blocks[0].Split(",");
+        string[] levels = blocks[1].Split(",");
+        for (int i = 0; i < passives.Length; i++)
+        {
+            actor.AddPassiveSkill(passives[i], levels[i]);
+        }
+    }
+
+    protected void AddSpeciesPassives(TacticActor actor)
+    {
+        string speciesPassive = speciesPassives.ReturnValue(actor.GetSpecies());
+        if (speciesPassive == "")
+        {
+            return;
+        }
+        string[] blocks = speciesPassive.Split("|");
         string[] passives = blocks[0].Split(",");
         string[] levels = blocks[1].Split(",");
         for (int i = 0; i < passives.Length; i++)
@@ -98,6 +114,7 @@ public class ActorMaker : MonoBehaviour
             }
             // Add the elemental passives at the end.
             AddElementPassives(actors[i]);
+            AddSpeciesPassives(actors[i]);
             passiveOrganizer.OrganizeActorPassives(actors[i]);
             actors[i].ResetStats();
         }
@@ -109,9 +126,14 @@ public class ActorMaker : MonoBehaviour
         // Change the sprite name.
         // Update the base stats of the actor.
         actor.SetSpriteName((newForm));
+        actor.SetElement(spriteElementMapping.ReturnValue(newForm));
+        actor.SetSpecies(spriteSpeciesMapping.ReturnValue(newForm));
         actor.ChangeForm(actorStats.ReturnStats(newForm));
+        AddElementPassives(actor);
+        AddSpeciesPassives(actor);
         // Set the new base health equal to the current health.
         actor.SetBaseHealth(actor.GetHealth());
+        passiveOrganizer.OrganizeActorPassives(actor);
     }
 
     public TacticActor CloneActor(TacticActor actor, int location)

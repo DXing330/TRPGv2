@@ -120,7 +120,7 @@ public class AttackManager : ScriptableObject
     protected void ApplyPassiveEffect(string passiveName, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
         List<string> passiveStats = passiveData.ReturnStats(passiveName);
-        if (passive.CheckBattleCondition(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
+        if (passive.CheckBattleConditions(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
         {
             switch (passiveStats[3])
             {
