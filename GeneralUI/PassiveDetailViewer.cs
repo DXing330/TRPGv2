@@ -209,6 +209,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if on a " + specifics + " tile";
             case "Tile<>":
                 return " if not on a " + specifics + " tile";
+            case "TileA":
+                return " if on a " + specifics + " tile";
+            case "Tile<>A":
+                return " if not on a " + specifics + " tile";
             case "Weapon":
                 return " if a " + specifics + " is equipped";
             case "Weather":

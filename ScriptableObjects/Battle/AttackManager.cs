@@ -134,6 +134,10 @@ public class AttackManager : ScriptableObject
                 passiveEffectString += "\n";
                 passiveEffectString += passiveName+";"+passiveStats[3]+":"+damageMultiplier+"->";
                 damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
+                if (damageMultiplier < 0)
+                {
+                    damageMultiplier = 0;
+                }
                 passiveEffectString += damageMultiplier;
                 break;
                 case "BaseDamage":

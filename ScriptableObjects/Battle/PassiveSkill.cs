@@ -195,6 +195,8 @@ public class PassiveSkill : SkillEffect
                 return map.AllyAdjacentWithSpriteName(actor, conditionSpecifics);
             case "Adjacent Ally":
                 return map.AllyAdjacentToActor(actor);
+            case "Adjacent Ally<>":
+                return !map.AllyAdjacentToActor(actor);
             case "AllyCount<":
                 return map.AllAllies(actor).Count < int.Parse(conditionSpecifics);
             case "AllyCount>":
@@ -244,6 +246,10 @@ public class PassiveSkill : SkillEffect
                 return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "Tile<>":
                 return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
+            case "TileA":
+                return map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
+            case "Tile<>A":
+                return !map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
             case "Adjacent Ally A<>":
                 return !map.AllyAdjacentToActor(attacker);
             case "Adjacent Ally D<>":
@@ -411,7 +417,6 @@ public class PassiveSkill : SkillEffect
             mod += 6;
         }
         int final = (atkDir + mod) % 6;
-        Debug.Log(final);
         return final;
     }
 

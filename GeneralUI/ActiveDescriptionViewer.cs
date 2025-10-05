@@ -61,8 +61,16 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Attack the target(s) " + ASD(s) + " time(s) with " + APD(p) + "% damage.";
             // The specifics will determine the direction anyway.
             case "Attack+Displace":
+                if (s == "Sideways")
+                {
+                    return "Attack and move the target(s) sideways with " + APD(p) + " additional force.";
+                }
                 return "Attack and "+ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Displace":
+                if (s == "Sideways")
+                {
+                    return "Move the target(s) sideways with " + APD(p) + " additional force.";
+                }
                 return ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Teleport":
                 return "Move to the targeted tile.";

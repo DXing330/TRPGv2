@@ -165,6 +165,17 @@ public class MoveCostManager : MonoBehaviour
         return actorPathfinder.mapUtility.DirectionBetweenLocations(loc1, loc2, actorPathfinder.mapSize);
     }
 
+    public int ReturnRandomDirection(List<int> except)
+    {
+        if (except.Count > 5){return -1;}
+        int direction = Random.Range(0, 6);
+        if (except.Contains(direction))
+        {
+            return ReturnRandomDirection(except);
+        }
+        return direction;
+    }
+
     public void DisplaceSkill(TacticActor displacer, List<int> targetedTiles, string displaceType, int force, BattleMap map)
     {
         int relativeForce = force;
@@ -205,7 +216,11 @@ public class MoveCostManager : MonoBehaviour
                         for (int j = 0; j < distance; j++)
                         {
                             int nextTile = PointInDirection(tile, direction);
-                            if (map.GetActorOnTile(tile) == null)
+                            if (nextTile < 0)
+                            {
+                                break;
+                            }
+                            if (map.GetActorOnTile(nextTile) == null)
                             {
                                 furthestTile = nextTile;
                             }
@@ -222,6 +237,19 @@ public class MoveCostManager : MonoBehaviour
                             MoveActorToTile(displaced, furthestTile, map);
                         }
                     }
+                }
+                break;
+            case "Sideways":
+                // Randomly move them in a direction that is not forward or back.
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    displaced = map.GetActorOnTile(targetedTiles[i]);
+                    if (displaced == null){continue;}
+                    relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                    List<int> exceptDirections = new List<int>();
+                    exceptDirections.Add(DirectionBetweenActors(displaced, displacer));
+                    exceptDirections.Add(DirectionBetweenActors(displacer, displaced));
+                    DisplaceActor(displaced, ReturnRandomDirection(exceptDirections), relativeForce, map);
                 }
                 break;
         }
