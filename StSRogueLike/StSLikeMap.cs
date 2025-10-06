@@ -61,6 +61,7 @@ public class StSLikeMap : MapManager
             string[] eliteData = allEnemies.Split("-");
             battleState.ForceTerrainType(eliteData[0]);
             enemyList.AddCharacters(eliteData[1].Split("|").ToList());
+            // Add ascension stuff.
             savedState.enemyTracker.AddToRareAllyPool(eliteData[1].Split("|").ToList());
             return;
         }
@@ -68,6 +69,7 @@ public class StSLikeMap : MapManager
         string[] dataBlocks = allEnemies.Split("-");
         battleState.ForceTerrainType(dataBlocks[0]);
         enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
+        // Add ascension stuff.
         savedState.enemyTracker.AddToAllyPool(dataBlocks[1].Split("|").ToList());
     }
     public int maxFloors = 1;
@@ -89,6 +91,7 @@ public class StSLikeMap : MapManager
         // Otherwise set the boss party.
         battleState.ForceTerrainType(bossData[0]);
         enemyList.AddCharacters(bossData[1].Split("|").ToList());
+        // Add ascension stuff.
         savedState.BattleBoss();
         SaveState();
         sceneMover.MoveToBattle();

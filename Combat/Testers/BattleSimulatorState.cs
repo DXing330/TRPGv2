@@ -109,6 +109,30 @@ public class BattleSimulatorState : BattleState
         }
         return selectedTime;
     }
+    public StatDatabase battleModifierData;
+    public List<string> allBattleModifiers;
+    public List<string> selectedP1BattleMods;
+    public void SelectP1BattleMod(string newInfo)
+    {
+        int indexOf = selectedP1BattleMods.IndexOf(newInfo);
+        if (indexOf >= 0)
+        {
+            selectedP1BattleMods.RemoveAt(indexOf);
+            return;
+        }
+        selectedP1BattleMods.Add(newInfo);
+    }
+    public List<string> selectedP2BattleMods;
+    public void SelectP2BattleMod(string newInfo)
+    {
+        int indexOf = selectedP2BattleMods.IndexOf(newInfo);
+        if (indexOf >= 0)
+        {
+            selectedP2BattleMods.RemoveAt(indexOf);
+            return;
+        }
+        selectedP2BattleMods.Add(newInfo);
+    }
     public int multiBattle = 0;
     public int prevMultiBattle = 0;
     public bool MultiBattlePreviouslyEnabled()
@@ -204,7 +228,9 @@ public class BattleSimulatorState : BattleState
         allData += string.Join(delimiterThree, selectedTerrainTypes) + delimiter;
         allData += string.Join(delimiterThree, selectedWeathers) + delimiter;
         allData += string.Join(delimiterThree, selectedTimes) + delimiter;
-        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle + delimiter + autoBattle + delimiter + controlAI;
+        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle + delimiter + autoBattle + delimiter + controlAI + delimiter;
+        allData += string.Join(delimiterThree, selectedP1BattleMods) + delimiter;
+        allData += string.Join(delimiterThree, selectedP2BattleMods) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -236,6 +262,10 @@ public class BattleSimulatorState : BattleState
         prevMultiBattle = int.Parse(dataList[8]);
         autoBattle = int.Parse(dataList[9]);
         controlAI = int.Parse(dataList[10]);
+        selectedP1BattleMods = dataList[11].Split(delimiterThree).ToList();
+        selectedP2BattleMods = dataList[12].Split(delimiterThree).ToList();
+        utility.RemoveEmptyListItems(selectedP1BattleMods);
+        utility.RemoveEmptyListItems(selectedP2BattleMods);
         winningTeam = -1;
     }
 }

@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneMover : MonoBehaviour
 {
+    // Don't try to move scenes if you're already moving.
+    public bool moving = false;
     public bool rogueLike = false;
     public string mainRogueLikeScene = "StSMap";
     public SavedData rogueLikeData;
@@ -15,6 +17,11 @@ public class SceneMover : MonoBehaviour
     }
     public void DebugMoveToScene(string sceneName)
     {
+        if (moving)
+        {
+            return;
+        }
+        moving = true;
         StartCoroutine(LoadAsyncScene(sceneName));
     }
     public LoadingScreen loadingScreen;
@@ -67,6 +74,11 @@ public class SceneMover : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
+        if (moving)
+        {
+            return;
+        }
+        moving = true;
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
         sceneTracker.SetCurrentScene(sceneName);
         sceneTracker.Save();

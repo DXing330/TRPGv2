@@ -53,7 +53,7 @@ public class ArmoryUI : MonoBehaviour
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
-        actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUnqiueStatusStacks());
+        actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUniqueStatusStacks());
         UpdateActorActives();
     }
     

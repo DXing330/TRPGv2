@@ -103,6 +103,7 @@ public class StSEventScene : MonoBehaviour
                 }
             }
             enemyList.SetLists(allEnemies);
+            // Can we get the ascension stuff here?
             sceneMover.MoveToBattle();
             return;
         }

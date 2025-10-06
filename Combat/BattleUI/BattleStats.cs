@@ -14,6 +14,12 @@ public class BattleStats : MonoBehaviour
     public List<StatImageText> basicStats;
     public List<StatImageText> spendableStats;
 
+    public void UpdateStats()
+    {
+        UpdateBasicStats();
+        UpdateSpendableStats();
+    }
+
     public void UpdateBasicStats()
     {
         List<string> stats = actor.ReturnStats();

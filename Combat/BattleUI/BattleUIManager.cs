@@ -17,7 +17,7 @@ public class BattleUIManager : MonoBehaviour
     public void ViewActorStatuses()
     {
         TacticActor viewedActor = battleManager.GetSelectedActor();
-        statusSelect.SetStatsAndData(viewedActor.GetUniqueStatuses(), viewedActor.GetUnqiueStatusStacks());
+        statusSelect.SetStatsAndData(viewedActor.GetUniqueStatuses(), viewedActor.GetUniqueStatusDurationsAndStacks());
     }
     public SelectStatTextList passiveSelect;
     public void ViewActorPassives()

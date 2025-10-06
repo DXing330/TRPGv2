@@ -7,6 +7,23 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "CharacterList", menuName = "ScriptableObjects/DataContainers/CharacterList", order = 1)]
 public class CharacterList : ScriptableObject
 {
+    public List<string> battleModifiers;
+    public void ResetBattleModifiers()
+    {
+        battleModifiers.Clear();
+    }
+    public List<string> GetBattleModifiers()
+    {
+        return battleModifiers;
+    }
+    public void AddBattleModifier(string newInfo)
+    {
+        battleModifiers.Add(newInfo);
+    }
+    public void SetBattleModifiers(List<string> newInfo)
+    {
+        battleModifiers = new List<string>(newInfo);
+    }
     public List<string> characterNames;
     public void SetCharacterNames(List<string> newInfo)
     {
@@ -93,6 +110,7 @@ public class CharacterList : ScriptableObject
 
     public void ResetLists()
     {
+        battleModifiers.Clear();
         characterNames.Clear();
         characters.Clear();
         stats.Clear();

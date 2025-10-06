@@ -8,13 +8,33 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BattleState", menuName = "ScriptableObjects/DataContainers/SavedData/BattleState", order = 1)]
 public class BattleState : SavedState
 {
+    public bool subGame = false;
+    public void SetBattleModifiers()
+    {
+        allyBattleModifiers = partyList.GetBattleModifiers();
+        enemyBattleModifiers = enemyList.GetBattleModifiers();
+    }
+    public List<string> allyBattleModifiers;
+    public List<string> GetAllyBattleModifiers()
+    {
+        if (!subGame)
+        {
+            return new List<string>();
+        }
+        return allyBattleModifiers;
+    }
+    public List<string> enemyBattleModifiers;
+    public List<string> GetEnemyBattleModifiers()
+    {
+        return enemyBattleModifiers;
+    }
     public int winningTeam = -1;
     public void SetWinningTeam(int newInfo)
     {
         winningTeam = newInfo;
         Save();
     }
-    public void ResetWinnigTeam()
+    public void ResetWinningTeam()
     {
         winningTeam = -1;
         Save();
@@ -23,6 +43,7 @@ public class BattleState : SavedState
     {
         return winningTeam;
     }
+    public CharacterList partyList;
     public CharacterList enemyList;
     public OverworldState overworldState;
     public BattleMapFeatures battleMapFeatures;
@@ -76,15 +97,17 @@ public class BattleState : SavedState
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = previousScene+delimiter;
-        for (int i = 0; i < enemies.Count; i++)
-        {
-            allData += enemies[i];
-            if (i < enemies.Count - 1){allData += delimiterTwo;}
-        }
+        allData += String.Join(delimiterTwo, enemies);
         allData += delimiter;
         allData += terrainType;
         allData += delimiter;
         allData += winningTeam;
+        allData += delimiter;
+        // Whenever moving to a battle scene, the battle modifiers should already be determined.
+        SetBattleModifiers();
+        allData += String.Join(delimiterTwo, allyBattleModifiers);
+        allData += delimiter;
+        allData += String.Join(delimiterTwo, enemyBattleModifiers);
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
@@ -98,9 +121,13 @@ public class BattleState : SavedState
         enemies = dataList[1].Split(delimiterTwo).ToList();
         terrainType = dataList[2];
         winningTeam = int.Parse(dataList[3]);
+        allyBattleModifiers = dataList[4].Split(delimiterTwo).ToList();
+        enemyBattleModifiers = dataList[5].Split(delimiterTwo).ToList();
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);
+        enemyList.SetBattleModifiers(enemyBattleModifiers);
+        partyList.SetBattleModifiers(allyBattleModifiers);
         battleMapFeatures.SetTerrainType(terrainType);
     }
 }

@@ -6,6 +6,7 @@ public class ActorMaker : MonoBehaviour
 {
     public Equipment equipmentPrefab;
     public TacticActor actorPrefab;
+    public BattleModifier battleModifier;
     public StatDatabase actorStats;
     public StatDatabase spriteElementMapping;
     public StatDatabase elementPassives;
@@ -143,6 +144,19 @@ public class ActorMaker : MonoBehaviour
         newActor.SetPersonalName(actor.GetPersonalName());
         newActor.SetLocation(location);
         newActor.CopyBaseStats(actor);
+        passiveOrganizer.OrganizeActorPassives(actor);
         return newActor;
+    }
+
+    public void ApplyBattleModifiers(List<TacticActor> actors, List<string> battleMods)
+    {
+        for (int i = 0; i < battleMods.Count; i++)
+        {
+            battleModifier.LoadModifierByName(battleMods[i]);
+            for (int j = 0; j < actors.Count; j++)
+            {
+                battleModifier.ApplyModifiers(actors[i]);
+            }
+        }
     }
 }

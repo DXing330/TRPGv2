@@ -35,7 +35,7 @@ public class ArmorySimulator : ArmoryUI
         actorPassives.UpdateActorPassiveTexts(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
-        actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUnqiueStatusStacks());
+        actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUniqueStatusStacks());
         actorActives.SetStatsAndData(selectedActor.GetActiveSkills());
     }
 

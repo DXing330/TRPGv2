@@ -437,13 +437,40 @@ public class ActorStats : ActorPassives
         List<string> unique = new List<string>(statuses.Distinct());
         return unique;
     }
-    public List<string> GetUnqiueStatusStacks()
+    public List<string> GetUniqueStatusStacks()
     {
         List<string> uniqueCount = new List<string>();
         List<string> unique = GetUniqueStatuses();
         for (int i = 0; i < unique.Count; i++)
         {
             uniqueCount.Add(utility.CountStringsInList(statuses, unique[i]).ToString());
+        }
+        return uniqueCount;
+    }
+    public List<string> GetUniqueStatusDurationsAndStacks()
+    {
+        List<string> uniqueCount = new List<string>();
+        List<string> unique = GetUniqueStatuses();
+        int count = -1;
+        for (int i = 0; i < unique.Count; i++)
+        {
+            count = utility.CountStringsInList(statuses, unique[i]);
+            if (count > 1)
+            {
+                uniqueCount.Add("-"+count);
+            }
+            else
+            {
+                int duration = ReturnStatusDuration(unique[i]);
+                if (duration < 0)
+                {
+                    uniqueCount.Add("-1");
+                }
+                else
+                {
+                    uniqueCount.Add(duration.ToString());
+                }
+            }
         }
         return uniqueCount;
     }
@@ -532,6 +559,15 @@ public class ActorStats : ActorPassives
                 statusDurations.RemoveAt(i);
             }
         }
+    }
+    public int ReturnStatusDuration(string statusName)
+    {
+        int indexOf = statuses.IndexOf(statusName);
+        if (indexOf < 0)
+        {
+            return 0;
+        }
+        return statusDurations[indexOf];
     }
     public void AdjustStatusDuration(int index, int amount = -1)
     {

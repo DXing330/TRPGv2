@@ -57,6 +57,7 @@ public class BattleManager : MonoBehaviour
         if (autoWin)
         {
             combatLog.UpdateNewestLog("Automatically Ending The Battle");
+            Debug.Log("Automatically Ending The Battle");
             battleEndManager.EndBattle(winningTeam);
             return;
         }
@@ -92,11 +93,17 @@ public class BattleManager : MonoBehaviour
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
+        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
+        actorMaker.ApplyBattleModifiers(actors, playerParty.GetBattleModifiers());
         for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
         actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
+        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
+        actorMaker.ApplyBattleModifiers(actors, enemyParty.GetBattleModifiers());
         for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
+        // Apply relics/ascension/etc. battle modifier effects here.
+        // Use condition, effect, specifics for battle modifiers.
+        // Condition will include team.
+        // Get the modifiers from the battle state.
         battleStatsTracker.InitializeTracker(map.battlingActors);
         // Apply start of battle passives.
         for (int i = 0; i < map.battlingActors.Count; i++)
@@ -191,6 +198,7 @@ public class BattleManager : MonoBehaviour
     }
     public void NextTurn()
     {
+        if (pause){ return; }
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
@@ -198,7 +206,6 @@ public class BattleManager : MonoBehaviour
             EndBattle(winningTeam);
             return;
         }
-        if (pause){ return; }
         turnActor.EndTurn(); // End turn first before passives apply, so that end of turn buffs can stick around til the next round.
         effectManager.EndTurn(turnActor, map);
         // This allows for a one turn grace period for immunities to have a chance.
@@ -343,8 +350,7 @@ public class BattleManager : MonoBehaviour
         map.ResetHighlights();
         map.UpdateMap();
         UI.ResetActiveSelectList();
-        UI.battleStats.UpdateBasicStats();
-        UI.battleStats.UpdateSpendableStats();
+        UI.battleStats.UpdateStats();
     }
 
     public int prevStartingPosition = -1;
@@ -429,8 +435,7 @@ public class BattleManager : MonoBehaviour
             map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
         }
-        UI.battleStats.UpdateBasicStats();
-        UI.battleStats.UpdateSpendableStats();
+        UI.battleStats.UpdateStats();
     }
 
     public void ViewActorFromTurnOrder(int index)
