@@ -31,6 +31,10 @@ public class StatusDetailViewer : PassiveDetailViewer
         for (int i = 0; i < effects.Length; i++)
         {
             description += PassiveEffect(effects[i], specifics[i], "target");
+            if (i < effects.Length - 1)
+            {
+                description += " and";
+            }
         }
         return description;
     }

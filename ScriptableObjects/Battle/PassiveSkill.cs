@@ -76,18 +76,7 @@ public class PassiveSkill : SkillEffect
             passiveName = passives[h];
             if (passiveName.Length <= 1) { continue; }
             passiveData = allData.ReturnStats(passiveName);
-            string[] conditions = passiveData[1].Split(",");
-            string[] specifics = passiveData[2].Split(",");
-            bool conditionsMet = true;
-            for (int j = 0; j < conditions.Length; j++)
-            {
-                conditionsMet = CheckStartEndCondition(conditions[j], specifics[j], actor, map);
-                if (!conditionsMet)
-                {
-                    break;
-                }
-            }
-            if (!conditionsMet)
+            if (!CheckStartEndConditions(actor, passiveData[1], passiveData[2], map))
             {
                 continue;
             }
@@ -165,6 +154,20 @@ public class PassiveSkill : SkillEffect
         return true;
     }
 
+    public bool CheckStartEndConditions(TacticActor actor, string condition, string conditionSpecifics, BattleMap map)
+    {
+        string[] conditions = condition.Split(",");
+        string[] specifics = conditionSpecifics.Split(",");
+        for (int i = 0; i < conditions.Length; i++)
+        {
+            if (!CheckStartEndCondition(conditions[i], specifics[i], actor, map))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public bool CheckStartEndCondition(string condition, string conditionSpecifics, TacticActor actor, BattleMap map)
     {
         switch (condition)

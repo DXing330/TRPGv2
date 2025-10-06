@@ -71,6 +71,7 @@ public class BattleSimulator : MonoBehaviour
         }
         simulatorPanel.SetActive(false);
         simulatorState.SetTerrainType();
+        simulatorState.ApplyBattleModifiers();
         battleManagerObject.SetActive(true);
     }
     public void RemoveFromPartyOne()

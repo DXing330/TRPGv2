@@ -78,6 +78,7 @@ public class BattleState : SavedState
         }
         return overworldState.GetTime();
     }
+    public StatDatabase allWeather;
     public List<string> weatherTypes;
     public virtual string GetWeather()
     {

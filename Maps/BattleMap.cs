@@ -51,11 +51,21 @@ public class BattleMap : MapManager
         }
         return "";
     }
+    public string ReturnTileMovingPassive(TacticActor actor)
+    {
+        string terrainType = mapInfo[actor.GetLocation()];
+        if (terrainPassives.TerrainPassivesExist(terrainType))
+        {
+            return terrainPassives.ReturnTerrainPassive(terrainType).GetMovingPassive();
+        }
+        return "";
+    }
     public StatDatabase terrainEffectData;
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
     public StatDatabase tileWeatherInteractions;
-    public SkillEffect effect;
+    public StatDatabase passiveData;
+    public PassiveSkill passiveEffect;
     [ContextMenu("ForceStart")]
     public void ForceStart()
     {
@@ -655,8 +665,20 @@ public class BattleMap : MapManager
 
     public void ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
+        ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainEffect(actor, tileNumber);
         ApplyTrapEffect(actor, tileNumber);
+    }
+
+    public void ApplyTileMovingEffect(TacticActor actor, int tileNumber)
+    {
+        string tileEffect = ReturnTileMovingPassive(actor);
+        if (tileEffect.Length < 1) { return; }
+        List<string> data = passiveData.ReturnStats(tileEffect);
+        if (passiveEffect.CheckStartEndConditions(actor, data[1], data[2], this))
+        {
+            passiveEffect.AffectActor(actor, data[4], data[5]);
+        }
     }
 
     public void ApplyTerrainEffect(TacticActor actor, int tileNumber)
@@ -666,7 +688,7 @@ public class BattleMap : MapManager
         if (terrainEffect.Length < 1) { return; }
         // Apply the terrain effect.
         List<string> data = terrainEffectData.ReturnStats(terrainEffect);
-        effect.AffectActor(actor, data[0], data[1]);
+        passiveEffect.AffectActor(actor, data[0], data[1]);
     }
 
     public bool ApplyTrapEffect(TacticActor actor, int tileNumber)
@@ -674,7 +696,7 @@ public class BattleMap : MapManager
         string trapEffect = trappedTiles[tileNumber];
         if (trapEffect.Length < 1) { return false; }
         List<string> data = terrainEffectData.ReturnStats(trapEffect);
-        effect.AffectActor(actor, data[0], data[1]);
+        passiveEffect.AffectActor(actor, data[0], data[1]);
         TriggerTrap(tileNumber);
         combatLog.UpdateNewestLog(actor.GetPersonalName() + " triggers a " + trapEffect + " trap.");
         // If a trap forces actors to stop then return true.
@@ -682,13 +704,13 @@ public class BattleMap : MapManager
         return false;
     }
 
-    public void ApplyEndTileEffect(TacticActor actor)
+    public void ApplyEndTerrainEffect(TacticActor actor)
     {
         string terrainEffect = terrainEffectTiles[actor.GetLocation()];
         if (terrainEffect.Length < 1) { return; }
         List<string> data = terrainEffectData.ReturnStats(terrainEffect);
         if (data.Count < 4) { return; }
-        effect.AffectActor(actor, data[2], data[3]);
+        passiveEffect.AffectActor(actor, data[2], data[3]);
     }
 
     public void NextRound()

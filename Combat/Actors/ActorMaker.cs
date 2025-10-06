@@ -155,7 +155,7 @@ public class ActorMaker : MonoBehaviour
             battleModifier.LoadModifierByName(battleMods[i]);
             for (int j = 0; j < actors.Count; j++)
             {
-                battleModifier.ApplyModifiers(actors[i]);
+                battleModifier.ApplyModifiers(actors[j]);
             }
         }
     }

@@ -133,6 +133,11 @@ public class BattleSimulatorState : BattleState
         }
         selectedP2BattleMods.Add(newInfo);
     }
+    public void ApplyBattleModifiers()
+    {
+        partyOneList.SetBattleModifiers(selectedP1BattleMods);
+        partyTwoList.SetBattleModifiers(selectedP2BattleMods);
+    }
     public int multiBattle = 0;
     public int prevMultiBattle = 0;
     public bool MultiBattlePreviouslyEnabled()
