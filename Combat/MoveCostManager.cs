@@ -15,6 +15,11 @@ public class MoveCostManager : MonoBehaviour
         mapInfo = newInfo;
         actorPathfinder.SetMapSize((int) Mathf.Sqrt(mapInfo.Count));
     }
+    public List<int> mapElevations;
+    public void SetMapElevations(List<int> newInfo)
+    {
+        mapElevations = new List<int>(newInfo);
+    }
     // You can move through teammates but not enemies?
     public List<string> teamInfo;
     public void SetTeamInfo(List<string> newInfo)
@@ -42,6 +47,7 @@ public class MoveCostManager : MonoBehaviour
             {
                 currentMoveCosts.Add(int.Parse(value));
             }
+            currentMoveCosts[i] += mapElevations[i];
         }
         List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();

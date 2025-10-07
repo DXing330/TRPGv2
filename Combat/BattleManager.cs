@@ -89,7 +89,9 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog("The time is "+map.GetTime());
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
+        map.InitializeElevations();
         moveManager.SetMapInfo(map.mapInfo);
+        moveManager.SetMapElevations(map.mapElevations);
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();

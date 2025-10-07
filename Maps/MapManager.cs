@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,52 @@ public class MapManager : MonoBehaviour
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
+    public StatDatabase tileElevationMappings;
+    public List<int> mapElevations;
+    public List<int> possibleElevation;
+    public List<int> elevationWeights;
+    public int RandomElevation(string tileType)
+    {
+        List<string> possibleElevations = tileElevationMappings.ReturnValue(tileType).Split("|").ToList();
+        int rng = Random.Range(0, GetTotalElevationWeights());
+        int elevation = 0;
+        for (int i = 0; i < possibleElevation.Count; i++)
+        {
+            if (rng < elevationWeights[i])
+            {
+                elevation = possibleElevation[i];
+                break;
+            }
+            else
+            {
+                rng -= elevationWeights[i];
+            }
+        }
+        if (possibleElevations.Contains(elevation.ToString()))
+        {
+            return elevation;
+        }
+        return RandomElevation(tileType);
+    }
+    public int GetTotalElevationWeights()
+    {
+        int weight = 0;
+        for (int i = 0; i < elevationWeights.Count; i++)
+        {
+            weight += elevationWeights[i];
+        }
+        return weight;
+    }
+    public void InitializeElevations()
+    {
+        mapElevations = new List<int>();
+        // Maybe make a pattern for elevations later.
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapElevations.Add(RandomElevation(mapInfo[i]));
+            mapTiles[i].SetElevation(mapElevations[i]);
+        }
+    }
     protected virtual void ResetAllLayers()
     {
         for (int i = 0; i < mapTiles.Count; i++)
