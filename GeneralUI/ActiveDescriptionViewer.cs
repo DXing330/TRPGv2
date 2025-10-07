@@ -84,6 +84,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Remove all status effect(s) from the target(s).";
                 }
                 return "Remove " + ASD(s) + " from the target(s).";
+            case "RemoveStatuses":
+                return "Remove " + ASD(s) + " from the target(s).";
             case "Summon":
                 return "Summon a " + ASD(s) + ".";
             case "MassSummon":

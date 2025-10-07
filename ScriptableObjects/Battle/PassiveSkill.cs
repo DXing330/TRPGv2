@@ -128,14 +128,18 @@ public class PassiveSkill : SkillEffect
     }
 
     // Moving passives usually depend on the tile moved over.
-    public bool CheckMovingCondition(string condition, string specifics, string currentTile)
+    public bool CheckMovingCondition(string condition, string specifics, int currentTile, BattleMap map)
     {
         switch (condition)
         {
             case "Tile":
-                return currentTile.Contains(specifics); // Contains, since DeepWater counts as Water
+                return map.mapInfo[currentTile].Contains(specifics); // Contains, since DeepWater counts as Water
             case "Tile<>":
-                return !currentTile.Contains(specifics);
+                return !map.mapInfo[currentTile].Contains(specifics);
+            case "Elevation":
+                return map.ReturnElevation(currentTile) == int.Parse(specifics);
+            case "Elevation<>":
+                return map.ReturnElevation(currentTile) != int.Parse(specifics);
         }
         return true;
     }
@@ -216,13 +220,15 @@ public class PassiveSkill : SkillEffect
                     case "Odd":
                         return (map.GetRound() + 1) % 2 == 0;
                 }
-                return false;
+                return map.GetRound() % int.Parse(conditionSpecifics) == 0;
             case "Passive":
             return actor.GetPassiveSkills().Contains(conditionSpecifics);
             case "Passive<>":
             return !actor.GetPassiveSkills().Contains(conditionSpecifics);
             case "Counter":
             return actor.GetCounter() >= int.Parse(conditionSpecifics);
+            case "Elevation":
+            return map.ReturnElevation(actor.GetLocation()) == int.Parse(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;
@@ -293,6 +299,10 @@ public class PassiveSkill : SkillEffect
                 return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
             case "Health":
                 return CheckHealthConditions(conditionSpecifics, target);
+            case "HealthD":
+                return CheckHealthConditions(conditionSpecifics, target);
+            case "HealthA":
+                return CheckHealthConditions(conditionSpecifics, attacker);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics);
             case "Weather<>":
@@ -343,6 +353,28 @@ public class PassiveSkill : SkillEffect
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
             case "DirectionD":
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) == int.Parse(conditionSpecifics);
+            case "Elevation<>D":
+                return map.ReturnElevation(target.GetLocation()) != int.Parse(conditionSpecifics);
+            case "Elevation<>A":
+                return map.ReturnElevation(attacker.GetLocation()) != int.Parse(conditionSpecifics);
+            case "ElevationD":
+                return map.ReturnElevation(target.GetLocation()) == int.Parse(conditionSpecifics);
+            case "ElevationA":
+                return map.ReturnElevation(attacker.GetLocation()) == int.Parse(conditionSpecifics);
+            case "Elevation=":
+                return map.ReturnElevation(attacker.GetLocation()) == map.ReturnElevation(target.GetLocation());
+            case "Elevation>":
+                return map.ReturnElevation(attacker.GetLocation()) > map.ReturnElevation(target.GetLocation());
+            case "Elevation<":
+                return map.ReturnElevation(attacker.GetLocation()) < map.ReturnElevation(target.GetLocation());
+            case "ElementD":
+                return target.GetElement() == conditionSpecifics;
+            case "Element<>D":
+                return target.GetElement() != conditionSpecifics;
+            case "ElementA":
+                return attacker.GetElement() == conditionSpecifics;
+            case "Element<>A":
+                return attacker.GetElement() != conditionSpecifics;
         }
         return true;
     }

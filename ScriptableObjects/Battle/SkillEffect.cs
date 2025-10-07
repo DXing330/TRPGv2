@@ -57,6 +57,13 @@ public class SkillEffect : ScriptableObject
             case "RemoveStatus":
                 target.RemoveStatus(effectSpecifics);
                 break;
+            case "RemoveStatuses":
+                string[] removedStatuses = effectSpecifics.Split(",");
+                for (int i = 0; i < removedStatuses.Length; i++)
+                {
+                    target.RemoveStatus(removedStatuses[i]);
+                }
+                break;
             // Temp health is always a shield.
             case "TempHealth":
                 target.UpdateTempHealth(int.Parse(effectSpecifics));

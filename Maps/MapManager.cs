@@ -13,6 +13,14 @@ public class MapManager : MonoBehaviour
     public List<MapTile> mapTiles;
     public StatDatabase tileElevationMappings;
     public List<int> mapElevations;
+    public int ReturnElevation(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= mapElevations.Count)
+        {
+            return 0;
+        }
+        return mapElevations[tileNumber];
+    }
     public List<int> possibleElevation;
     public List<int> elevationWeights;
     public int RandomElevation(string tileType)

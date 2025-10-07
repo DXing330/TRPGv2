@@ -24,7 +24,8 @@ public class BattleEndManager : MonoBehaviour
     public StatTextList allSkillUps;
     public StatTextList allNewAllies;
     public StatTextList allLootDrops;
-    public int maxSkillLevel = 4;
+    public int maxClassLevel = 6;
+    public int maxWeaponLevel = 4;
     public int winnerTeam = -1;
     public void SetWinnerTeam(int newInfo) { winnerTeam = newInfo; }
 
@@ -197,7 +198,7 @@ public class BattleEndManager : MonoBehaviour
                 dummyEquip.EquipWeapon(dummyActor);
             }
             int passiveLevel = dummyActor.GetLevelFromPassive(spriteNames[i]);
-            if (passiveLevel > 0 && passiveLevel < maxSkillLevel)
+            if (passiveLevel > 0 && passiveLevel < maxClassLevel)
             {
                 int RNG = Random.Range(0, (passiveLevel + 1) * (passiveLevel + 1));
                 if (easySkillUps)
@@ -223,7 +224,7 @@ public class BattleEndManager : MonoBehaviour
                 baseStats[i] = dummyActor.GetStats();
                 AddSkillUp(names[i], weaponType);
             }
-            else if (passiveLevel < maxSkillLevel)
+            else if (passiveLevel < maxWeaponLevel)
             {
                 int RNG = Random.Range(0, (passiveLevel + 1) * (passiveLevel + 1));
                 if (easySkillUps)

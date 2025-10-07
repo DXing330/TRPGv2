@@ -185,6 +185,7 @@ public class MoveCostManager : MonoBehaviour
     public void DisplaceSkill(TacticActor displacer, List<int> targetedTiles, string displaceType, int force, BattleMap map)
     {
         int relativeForce = force;
+        int elevationDifference = 0;
         TacticActor displaced = null;
         switch (displaceType)
         {
@@ -193,7 +194,8 @@ public class MoveCostManager : MonoBehaviour
             {
                 displaced = map.GetActorOnTile(targetedTiles[i]);
                 if (displaced == null){continue;}
-                relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                elevationDifference = map.ReturnElevation(displacer.GetLocation()) - map.ReturnElevation(displaced.GetLocation());
+                relativeForce = force + elevationDifference + displacer.GetWeight() - displaced.GetWeight();
                 DisplaceActor(displaced, DirectionBetweenActors(displaced, displacer), relativeForce, map);
             }
             break;
@@ -202,7 +204,8 @@ public class MoveCostManager : MonoBehaviour
             {
                 displaced = map.GetActorOnTile(targetedTiles[i]);
                 if (displaced == null){continue;}
-                relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                elevationDifference = map.ReturnElevation(displacer.GetLocation()) - map.ReturnElevation(displaced.GetLocation());
+                relativeForce = force - elevationDifference + displacer.GetWeight() - displaced.GetWeight();
                 DisplaceActor(displaced, DirectionBetweenActors(displacer, displaced), relativeForce, map);
             }
                 break;
@@ -211,7 +214,8 @@ public class MoveCostManager : MonoBehaviour
                 {
                     displaced = map.GetActorOnTile(targetedTiles[i]);
                     if (displaced == null) { continue; }
-                    relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                    elevationDifference = map.ReturnElevation(displacer.GetLocation()) - map.ReturnElevation(displaced.GetLocation());
+                    relativeForce = force - Mathf.Abs(elevationDifference) + displacer.GetWeight() - displaced.GetWeight();
                     if (relativeForce >= 0)
                     {
                         // Get the tile that is in the opposite direction the same distance away.
@@ -251,7 +255,8 @@ public class MoveCostManager : MonoBehaviour
                 {
                     displaced = map.GetActorOnTile(targetedTiles[i]);
                     if (displaced == null){continue;}
-                    relativeForce = force + displacer.GetWeight() - displaced.GetWeight();
+                    elevationDifference = map.ReturnElevation(displacer.GetLocation()) - map.ReturnElevation(displaced.GetLocation());
+                    relativeForce = force + elevationDifference + displacer.GetWeight() - displaced.GetWeight();
                     List<int> exceptDirections = new List<int>();
                     exceptDirections.Add(DirectionBetweenActors(displaced, displacer));
                     exceptDirections.Add(DirectionBetweenActors(displacer, displaced));
@@ -354,13 +359,13 @@ public class MoveCostManager : MonoBehaviour
             switch (passiveInfo[3])
             {
                 case "Self":
-                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], map.mapInfo[location]))
+                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
                     {
                         passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
                     }
                     break;
                 case "Map":
-                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], map.mapInfo[location]))
+                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
                     {
                         passiveSkill.AffectMap(map, location, passiveInfo[4], passiveInfo[5]);
                     }

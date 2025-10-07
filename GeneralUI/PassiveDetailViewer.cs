@@ -190,6 +190,78 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if you are facing the enemy";
                 }
                 break;
+            case "Elevation":
+                switch (specifics)
+                {
+                    case "0":
+                        return " if you are on low ground";
+                    case "1":
+                        return " if you are on ground level";
+                    case "2":
+                        return " if you are on high ground";
+                }
+                break;
+            case "Elevation<>":
+                switch (specifics)
+                {
+                    case "0":
+                        return " if not on low ground";
+                    case "1":
+                        return " if not on ground level";
+                    case "2":
+                        return " if not on high ground";
+                }
+                break;
+            case "Elevation<>A":
+                switch (specifics)
+                {
+                    case "0":
+                        return " if not on low ground";
+                    case "1":
+                        return " if not on ground level";
+                    case "2":
+                        return " if not on high ground";
+                }
+                break;
+            case "Elevation<>D":
+                switch (specifics)
+                {
+                    case "0":
+                        return " if not on low ground";
+                    case "1":
+                        return " if not on ground level";
+                    case "2":
+                        return " if not on high ground";
+                }
+                break;
+            case "ElevationA":
+                switch (specifics)
+                {
+                    case "0":
+                        return " if on low ground";
+                    case "1":
+                        return " if on ground level";
+                    case "2":
+                        return " if on high ground";
+                }
+                break;
+            case "ElevationD":
+                switch (specifics)
+                {
+                    case "0":
+                        return " if on low ground";
+                    case "1":
+                        return " if on ground level";
+                    case "2":
+                        return " if on high ground";
+                }
+                break;
+            case "Elevation<":
+                return " if the attacker is on lower elevation";
+            case "Elevation>":
+                return " if the attacker is on higher elevation";
+            case "Elevation=":
+                return " if the attacker is on equal elevation";
             case "Distance":
                 return " if within " + specifics + " tile(s)";
             case "Distance>":
@@ -288,6 +360,14 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if not attacking" + RelativeDirectionDescriptions(specifics);
             case "DirectionD":
                 return " if attacking" + RelativeDirectionDescriptions(specifics);
+            case "ElementD":
+                return " if element is "+specifics;
+            case "Element<>D":
+                return " if element is not "+specifics;
+            case "ElementA":
+                return " if element is "+specifics;
+            case "Element<>A":
+                return " if element is not "+specifics;
         }
         return "";
     }
