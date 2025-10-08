@@ -6,6 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MapUtility", menuName = "ScriptableObjects/Utility/MapUtility", order = 1)]
 public class MapUtility : ScriptableObject
 {
+    public bool flatTop = true;
+
     public int DistanceBetweenTiles(int tileOne, int tileTwo, int size)
     {
         return (Mathf.Abs(GetHexQ(tileOne, size) - GetHexQ(tileTwo, size)) + Mathf.Abs(GetHexR(tileOne, size) - GetHexR(tileTwo, size)) + Mathf.Abs(GetHexS(tileOne, size) - GetHexS(tileTwo, size))) / 2;
@@ -70,22 +72,50 @@ public class MapUtility : ScriptableObject
 
     public int GetColFromQRS(int Q, int R, int S, int size)
     {
-        return Q;
+        if (flatTop)
+        {
+            return Q;
+        }
+        else
+        {
+            return Q + (R - R % 2) / 2;
+        }
     }
 
     public int GetRowFromQRS(int Q, int R, int S, int size)
     {
-        return R + (Q - Q % 2) / 2;
+        if (flatTop)
+        {
+            return R + (Q - Q % 2) / 2;
+        }
+        else
+        {
+            return R;
+        }
     }
 
     public int GetHexQ(int location, int size)
     {
-        return GetColumn(location, size);
+        if (flatTop)
+        {
+            return GetColumn(location, size);
+        }
+        else
+        {
+            return GetColumn(location, size) - ((GetRow(location, size) - GetRow(location, size) % 2) / 2);
+        }
     }
 
     public int GetHexR(int location, int size)
     {
-        return GetRow(location, size) - (GetColumn(location, size) - GetColumn(location, size) % 2) / 2;
+        if (flatTop)
+        {
+            return GetRow(location, size) - (GetColumn(location, size) - GetColumn(location, size) % 2) / 2;
+        }
+        else
+        {
+            return GetRow(location, size);
+        }
     }
 
     public int GetHexS(int location, int size)
@@ -98,26 +128,53 @@ public class MapUtility : ScriptableObject
         int hexQ = GetHexQ(location, size);
         int hexR = GetHexR(location, size);
         int hexS = GetHexS(location, size);
-        switch (direction)
+        if (flatTop)
         {
-            // Up.
-            case 0:
-                return ReturnTileNumberFromQRS(hexQ, hexR - 1, hexS + 1, size);
-            // UpRight.
-            case 1:
-                return ReturnTileNumberFromQRS(hexQ + 1, hexR - 1, hexS, size);
-            // DownRight.
-            case 2:
-                return ReturnTileNumberFromQRS(hexQ + 1, hexR, hexS - 1, size);
-            // Down.
-            case 3:
-                return ReturnTileNumberFromQRS(hexQ, hexR + 1, hexS - 1, size);
-            // DownLeft.
-            case 4:
-                return ReturnTileNumberFromQRS(hexQ - 1, hexR + 1, hexS, size);
-            // UpLeft.
-            case 5:
-                return ReturnTileNumberFromQRS(hexQ - 1, hexR, hexS + 1, size);
+            switch (direction)
+            {
+                // Up.
+                case 0:
+                    return ReturnTileNumberFromQRS(hexQ, hexR - 1, hexS + 1, size);
+                // UpRight.
+                case 1:
+                    return ReturnTileNumberFromQRS(hexQ + 1, hexR - 1, hexS, size);
+                // DownRight.
+                case 2:
+                    return ReturnTileNumberFromQRS(hexQ + 1, hexR, hexS - 1, size);
+                // Down.
+                case 3:
+                    return ReturnTileNumberFromQRS(hexQ, hexR + 1, hexS - 1, size);
+                // DownLeft.
+                case 4:
+                    return ReturnTileNumberFromQRS(hexQ - 1, hexR + 1, hexS, size);
+                // UpLeft.
+                case 5:
+                    return ReturnTileNumberFromQRS(hexQ - 1, hexR, hexS + 1, size);
+            }
+        }
+        else
+        {
+            switch (direction)
+            {
+                // UpRight.
+                case 0:
+                    return ReturnTileNumberFromQRS(hexQ + 1, hexR - 1, hexS, size);
+                // Right.
+                case 1:
+                    return ReturnTileNumberFromQRS(hexQ + 1, hexR, hexS - 1, size);
+                // DownRight.
+                case 2:
+                    return ReturnTileNumberFromQRS(hexQ, hexR + 1, hexS - 1, size);
+                // DownLeft.
+                case 3:
+                    return ReturnTileNumberFromQRS(hexQ - 1, hexR + 1, hexS, size);
+                // Left.
+                case 4:
+                    return ReturnTileNumberFromQRS(hexQ - 1, hexR, hexS + 1, size);
+                // UpLeft.
+                case 5:
+                    return ReturnTileNumberFromQRS(hexQ, hexR - 1, hexS + 1, size);
+            }
         }
         return location;
     }
@@ -322,20 +379,41 @@ public class MapUtility : ScriptableObject
 
     public string IntDirectionToString(int direction)
     {
-        switch (direction)
+        if (flatTop)
         {
-            case 0:
-                return "North";
-            case 1:
-                return "North-East";
-            case 2:
-                return "South-East";
-            case 3:
-                return "South";
-            case 4:
-                return "South-West";
-            case 5:
-                return "North-West";
+            switch (direction)
+            {
+                case 0:
+                    return "North";
+                case 1:
+                    return "North-East";
+                case 2:
+                    return "South-East";
+                case 3:
+                    return "South";
+                case 4:
+                    return "South-West";
+                case 5:
+                    return "North-West";
+            }
+        }
+        else
+        {
+            switch (direction)
+            {
+                case 0:
+                    return "North-East";
+                case 1:
+                    return "East";
+                case 2:
+                    return "South-East";
+                case 3:
+                    return "South-West";
+                case 4:
+                    return "West";
+                case 5:
+                    return "North-West";
+            }
         }
         return "";
     }

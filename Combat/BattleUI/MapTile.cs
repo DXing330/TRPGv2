@@ -9,34 +9,19 @@ public class MapTile : MonoBehaviour
     public int tileNumber;
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
     public MapManager cMap;
-    public RectTransform tileTransform;
-    public int additionalOffset;
-    public void AdjustTopOffset()
-    {
-        tileTransform.offsetMax = new Vector2(tileTransform.offsetMax.x, tileTransform.offsetMax.y + additionalOffset);
-    }
-    public int offsetPerElevation;
-    public int objectsPerElevation;
+    public GameObject mainTile;
     public int elevation = 0;
+    public List<float> scalePerElevation;
     public void SetElevation(int newInfo)
     {
         elevation = newInfo;
-        utility.DisableGameObjects(elevationObjects);
-        tileTransform.offsetMax = new Vector2(tileTransform.offsetMax.x, offsetPerElevation * elevation);
-        //tileTransform.offsetMin = new Vector2(tileTransform.offsetMin.x, offsetPerElevation * elevation);
-        int objectCount = objectsPerElevation * elevation;
-        if (elevation <= 0){return;}
-        for (int i = 0; i < Mathf.Min(objectCount, elevationObjects.Count); i++)
-        {
-            elevationObjects[i].SetActive(true);
-        }
+        mainTile.transform.localScale = new Vector3(1, scalePerElevation[elevation], 0);
     }
     public int GetElevation()
     {
         return elevation;
     }
     public GeneralUtility utility;
-    public List<GameObject> elevationObjects;
     public List<GameObject> layerObjects;
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;

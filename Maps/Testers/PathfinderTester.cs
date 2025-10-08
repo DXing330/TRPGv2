@@ -6,6 +6,25 @@ public class PathfinderTester : MonoBehaviour
 {
     public bool debugThis;
     public MapPathfinder pathfinder;
+    public MapUtility mapUtility;
+    public List<MapTile> mapTiles;
+    public List<int> highlightedTiles;
+    public string highlightColor;
+    public MapDisplayer highlightDisplayer;
+    [ContextMenu("ResetHighlights")]
+    public void ResetHighlights()
+    {
+        highlightedTiles.Clear();
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            highlightedTiles.Add(-1);
+            highlightDisplayer.HighlightTilesInSetColor(mapTiles, highlightedTiles, "");
+        }
+    }
+    public void HighlightTiles()
+    {
+        highlightDisplayer.HighlightTilesInSetColor(mapTiles, highlightedTiles, highlightColor);
+    }
     public int testConeStart;
     public int testTile;
     public int testDirection;
@@ -15,13 +34,15 @@ public class PathfinderTester : MonoBehaviour
     [ContextMenu("Test Find Tiles")]
     public void TestFindTiles()
     {
+        ResetHighlights();
         pathfinder.SetMapSize(testSize);
-        List<int> tiles = pathfinder.FindTilesInRange(testTile, testRange);
+        highlightedTiles = pathfinder.FindTilesInRange(testTile, testRange);
+        HighlightTiles();
         if (!debugThis){return;}
-        tiles.Sort();
-        for (int i = 0; i < tiles.Count; i++)
+        highlightedTiles.Sort();
+        for (int i = 0; i < highlightedTiles.Count; i++)
         {
-            Debug.Log(tiles[i]);
+            Debug.Log(highlightedTiles[i]);
         }
     }
 
@@ -31,13 +52,26 @@ public class PathfinderTester : MonoBehaviour
         if (!debugThis){return;}
         for (int i = 0; i < 6; i++)
         {
-            Debug.Log(pathfinder.mapUtility.DirectionCheck(testTile, i, testSize));
+            Debug.Log(pathfinder.mapUtility.PointInDirection(testTile, i, testSize));
         }
     }
 
     [ContextMenu("Test Beam Range")]
     public void TestBeamRange()
     {
+        ResetHighlights();
+        highlightedTiles = mapUtility.GetTilesInBeamShape(testTile, testDirection, testRange, testSize);
+        HighlightTiles();
+        if (!debugThis){return;}
+        pathfinder.SetMapSize(testSize);
+    }
+
+    [ContextMenu("Test Cone Range")]
+    public void TestConeRange()
+    {
+        ResetHighlights();
+        highlightedTiles = mapUtility.GetTilesInConeShape(mapUtility.PointInDirection(testTile, testDirection, testSize), testRange, testTile, testSize);
+        HighlightTiles();
         if (!debugThis){return;}
         pathfinder.SetMapSize(testSize);
     }

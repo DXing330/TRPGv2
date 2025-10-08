@@ -71,34 +71,27 @@ public class MapDisplayer : ScriptableObject
 
     public void HighlightCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles)
     {
-        int nextTile = -1;
         for (int i = 0; i < (mapTiles.Count); i++)
         {
-            nextTile = currentTiles[i];
-            if (nextTile < 0)
+            if (currentTiles[i] < 0)
             {
                 mapTiles[i].HighlightLayer(layer);
                 continue;
             }
-            mapTiles[i].HighlightLayer(layer, mapInfo[nextTile]);
+            mapTiles[i].HighlightLayer(layer, mapInfo[currentTiles[i]]);
         }
     }
 
-    public void HighlightTilesInSetColor(List<MapTile> mapTiles, List<int> mapInfo, List<int> currentTiles, string color)
+    public void HighlightTilesInSetColor(List<MapTile> mapTiles, List<int> currentTiles, string color)
     {
-        int nextTile = -1;
-        for (int i = 0; i < (mapTiles.Count); i++)
+        for (int i = 0; i < (currentTiles.Count); i++)
         {
-            nextTile = currentTiles[i];
-            if (nextTile < 0)
+            if (currentTiles[i] < 0)
             {
                 mapTiles[i].HighlightLayer(layer);
                 continue;
             }
-            if (mapInfo.IndexOf(nextTile) >= 0)
-            {
-                mapTiles[i].HighlightLayer(layer, color);
-            }
+            mapTiles[currentTiles[i]].HighlightLayer(layer, color);
         }
     }
 }
