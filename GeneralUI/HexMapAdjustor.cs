@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class HexMapAdjustor : MonoBehaviour
 {
+    public bool pointyTop = false;
+    public MapUtility mapUtility;
     public Sprite defaultSprite;
     public int gridSize = 9;
     public bool adjustElevation = false;
@@ -13,11 +15,65 @@ public class HexMapAdjustor : MonoBehaviour
     public int maxElevation;
     public List<RectTransform> hexTiles;
     public List<MapTile> mapTiles;
-    
+
+    [ContextMenu("InitializeElevations")]
+    public virtual void InitializeElevations()
+    {
+        int tileIndex = 0;
+        for (int i = 0; i < gridSize; i++)
+        {
+            for (int j = 0; j < gridSize; j++)
+            {
+                mapTiles[tileIndex].SetElevation(tileIndex % (maxElevation + 1));
+                if (mapUtility.GetColumn(tileIndex, gridSize) % 2 == 0)
+                {
+                    mapTiles[tileIndex].AdjustTopOffset();
+                }
+                tileIndex++;
+            }
+        }
+    }
+
+    protected virtual void InitializePointyTopTiles()
+    {
+        int tileIndex = 0;
+        float xPivot = 0f;
+        float xCenter = 1f - (1f/(2*gridSize));
+        float yPivot = 1f;
+        for (int i = 0; i < gridSize; i++)
+        {
+            // Start from the left every iteration.
+            if (i % 2 == 0)
+            {
+                xPivot = 0f;
+            }
+            else
+            {
+                xPivot = 1f/(2*gridSize);
+            }
+            for (int j = 0; j < gridSize; j++)
+            {
+                // Set the pivot.
+                hexTiles[tileIndex].pivot = new Vector2(xPivot, yPivot);
+                mapTiles[tileIndex].SetTileNumber(tileIndex);
+                mapTiles[tileIndex].UpdateLayerSprite(defaultSprite);
+                // Move right every step.
+                tileIndex++;
+                xPivot += 1f/(gridSize);
+            }
+            // Move down every iteration.
+            yPivot -= 1f/(gridSize - 1);
+        }
+    }
 
     [ContextMenu("Initialize")]
     protected virtual void InitializeTiles()
     {
+        if (pointyTop)
+        {
+            InitializePointyTopTiles();
+            return;
+        }
         int tileIndex = 0;
         float scale = 1f/(gridSize+1);
         float xPivot = 0f;
@@ -25,7 +81,6 @@ public class HexMapAdjustor : MonoBehaviour
         float yPivot = 1f;
         for (int i = 0; i < gridSize; i++)
         {
-            xPivot = 0f;
             for (int j = 0; j < gridSize; j++)
             {
                 if (j%2 == 0)

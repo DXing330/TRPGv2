@@ -10,6 +10,11 @@ public class MapTile : MonoBehaviour
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
     public MapManager cMap;
     public RectTransform tileTransform;
+    public int additionalOffset;
+    public void AdjustTopOffset()
+    {
+        tileTransform.offsetMax = new Vector2(tileTransform.offsetMax.x, tileTransform.offsetMax.y + additionalOffset);
+    }
     public int offsetPerElevation;
     public int objectsPerElevation;
     public int elevation = 0;
@@ -25,6 +30,10 @@ public class MapTile : MonoBehaviour
         {
             elevationObjects[i].SetActive(true);
         }
+    }
+    public int GetElevation()
+    {
+        return elevation;
     }
     public GeneralUtility utility;
     public List<GameObject> elevationObjects;
