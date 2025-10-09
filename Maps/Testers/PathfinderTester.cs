@@ -31,6 +31,24 @@ public class PathfinderTester : MonoBehaviour
     public int testSize;
     public int testRange;
 
+    [ContextMenu("Test All Tiles")]
+    public void MultipleTests()
+    {
+        StartCoroutine(TestAllTiles());
+    }
+
+    IEnumerator TestAllTiles()
+    {
+        pathfinder.SetMapSize(testSize);
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            ResetHighlights();
+            highlightedTiles = pathfinder.FindTilesInRange(i, testRange);
+            HighlightTiles();
+            yield return new WaitForSeconds(0.3f);
+        }
+    }
+
     [ContextMenu("Test Find Tiles")]
     public void TestFindTiles()
     {

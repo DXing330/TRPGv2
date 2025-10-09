@@ -8,6 +8,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StSState", menuName = "ScriptableObjects/StS/StSState", order = 1)]
 public class StSState : SavedState
 {
+    public StSSettings settings;
     public List<SavedData> stsData;
     // Enemy tracker is just an extension of the state, sectioned off for convenience.
     public StSEnemyTracker enemyTracker;
@@ -27,6 +28,20 @@ public class StSState : SavedState
     }
     public int newGame = 1;
     public int currentFloor = 1;
+    public StatDatabase bossFightsPerFloorData;
+    public int GetBossFightsPerFloor()
+    {
+        int difficulty = settings.GetDifficulty();
+        for (int i = difficulty; i > 0; i--)
+        {
+            if (bossFightsPerFloorData.KeyExists(GetCurrentFloor() + "-" + i))
+            {
+                return int.Parse(bossFightsPerFloorData.ReturnValue(GetCurrentFloor() + "-" + i));
+            }
+        }
+        // Based on floor and difficulty;
+        return 1;
+    }
     public int GetCurrentFloor()
     {
         return currentFloor;
@@ -48,7 +63,7 @@ public class StSState : SavedState
     public int bossBattled = 0;
     public void BattleBoss()
     {
-        bossBattled = 1;
+        bossBattled++;
     }
     public void SetFloorBoss(string newInfo)
     {
@@ -73,9 +88,13 @@ public class StSState : SavedState
         {
             return "";
         }
-        else if (bossBattled == 1)
+        else if (bossBattled == GetBossFightsPerFloor())
         {
             return "Boss";
+        }
+        else if (bossBattled > 0)
+        {
+            return "";
         }
         return mapInfo[partyPathing[partyPathing.Count - 1]];
     }

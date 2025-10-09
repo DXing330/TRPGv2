@@ -21,11 +21,19 @@ public class StSStore : Store
             // Check rarity.
             int rarity = dummyEquipment.GetRarity();
             // Generate price.
-            int price = rarity * (basePricePerRarity + Random.Range(-priceVariance, priceVariance + 1));
-            availablePrices.Add(price.ToString());
+            if (stsState.settings.GetDifficulty() >= highDifficultyStores)
+            {
+                availablePrices.Add((rarity * (highDifficultyPrice + Random.Range(-priceVariance, priceVariance + 1))).ToString());
+            }
+            else
+            {
+                availablePrices.Add((rarity * (basePricePerRarity + Random.Range(-priceVariance, priceVariance + 1))).ToString());
+            }
         }
         UpdateRareEquipDisplay();
     }
+    public StSState stsState;
+    public int highDifficultyStores = 16;
     // You get to hire a random mystery actor once per store.
     public InventoryUI rareItemInventoryUI;
     public ItemDetailViewer rareItemViewer;
@@ -43,7 +51,6 @@ public class StSStore : Store
         rareEquipmentDisplay.SetStatsAndData(availableEquipmentNames, availablePrices);
         rareItemInventoryUI.UpdateKeyValues();
         rareEquipmentDisplay.ResetSelected();
-        
     }
     public bool buyingRareEquipment = false;
     public List<string> availableEquipment;
@@ -52,6 +59,7 @@ public class StSStore : Store
     // You get to buy up to three rare equipment.
     public int limitedEquipmentCount = 3;
     public int basePricePerRarity = 20;
+    public int highDifficultyPrice = 30;
     public int priceVariance = 6;
     public StatDatabase equipmentStats;
     public Equipment dummyEquipment;

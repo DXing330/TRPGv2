@@ -10,12 +10,23 @@ public class MapTile : MonoBehaviour
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
     public MapManager cMap;
     public GameObject mainTile;
+    public List<GameObject> subTiles;
     public int elevation = 0;
+    public float originalWidth;
+    public float originalHeight;
+    public float subWidth;
+    public float subHeight;
     public List<float> scalePerElevation;
     public void SetElevation(int newInfo)
     {
         elevation = newInfo;
-        mainTile.transform.localScale = new Vector3(1, scalePerElevation[elevation], 0);
+        // Scale up the tile based on elevation.
+        mainTile.transform.localScale = new Vector3(originalWidth, originalHeight * scalePerElevation[elevation], 0);
+        // Make sure that the other images are the same size.
+        for (int i = 0; i < subTiles.Count; i++)
+        {
+            subTiles[i].transform.localScale = new Vector3(subWidth, subHeight / scalePerElevation[elevation], 0);
+        }
     }
     public int GetElevation()
     {

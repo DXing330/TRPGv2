@@ -23,6 +23,8 @@ public class BattleUIManager : MonoBehaviour
     public void ViewActorPassives()
     {
         TacticActor viewedActor = battleManager.GetSelectedActor();
+        if (viewedActor == null)
+        {return;}
         passiveSelect.SetStatsAndData(viewedActor.GetPassiveSkills(), viewedActor.GetPassiveLevels());
     }
 

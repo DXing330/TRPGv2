@@ -112,9 +112,26 @@ public class StSEnemyTracker : SavedData
         Save();
     }
 
-    public List<string> GetBossData()
+    public string RandomNewBoss()
     {
         int floor = stsState.GetCurrentFloor();
+        string newBoss = floorBosses[floor - 1].ReturnRandomKey();
+        if (newBoss != floorBoss)
+        {
+            return newBoss;
+        }
+        return RandomNewBoss();
+    }
+
+    public List<string> GetBossData(bool additional = false)
+    {
+        int floor = stsState.GetCurrentFloor();
+        if (additional)
+        {
+            // Generate another boss except the one that was just fought.
+            string newBoss = RandomNewBoss();
+            return floorBosses[floor - 1].ReturnValue(newBoss).Split("-").ToList();
+        }
         return floorBosses[floor - 1].ReturnValue(floorBoss).Split("-").ToList();
     }
 

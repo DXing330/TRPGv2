@@ -145,9 +145,26 @@ public class MapManager : MonoBehaviour
         currentTiles = currentTileManager.GetCurrentTilesFromCenter(centerTile, mapSize, gridSize);
     }
 
+    public bool threeD = true;
+
+    public List<string> ReturnMapInfoPlusElevation()
+    {
+        List<string> infoAndElevation = new List<string>(mapInfo);
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            infoAndElevation[i] += "E"+mapTiles[i].GetElevation();
+        }
+        return infoAndElevation;
+    }
+
     public virtual void UpdateMap()
     {
         UpdateCurrentTiles();
+        if (threeD)
+        {
+            mapDisplayers[0].DisplayCurrentTiles(mapTiles, ReturnMapInfoPlusElevation(), currentTiles);
+            return;
+        }
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
     }
 

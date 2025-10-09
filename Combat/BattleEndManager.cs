@@ -7,8 +7,6 @@ public class BattleEndManager : MonoBehaviour
 {
     public bool test = false;
     public bool subGame = false;
-    public StSState stsState;
-    public StatDatabase stsRewardData;
     public StSBattleRewards stsBattleRewardManager;
     public BattleStatsTracker battleStatsTracker;
     public PartyDataManager partyData;
@@ -123,8 +121,7 @@ public class BattleEndManager : MonoBehaviour
             {
                 CalculateSkillUps(true, true);
                 CalculateSkillUps(false, true);
-                string battleType = stsState.ReturnCurrentTile();
-                stsBattleRewardManager.GenerateRewards(stsRewardData.ReturnValue(battleType));
+                stsBattleRewardManager.GenerateRewards();
                 // Show the rewards as needed.
                 List<string> itemRewards = stsBattleRewardManager.GetEquipmentRewardNames();
                 List<string> itemRewardQuantities = new List<string>();

@@ -8,6 +8,7 @@ public class StSBattleRewards : MonoBehaviour
     public PartyDataManager partyData;
     public NewAllySelect allySelect;
     public StSState mapState;
+    public StatDatabase stsRewardData;
     public StSEnemyTracker enemyTracker;
     public StatDatabase actorStats;
     public StatDatabase allEquipmentRewards;
@@ -87,9 +88,23 @@ public class StSBattleRewards : MonoBehaviour
         partyData.inventory.GainGold(goldReward);
     }
 
-    public void GenerateRewards(string allRewards)
+    public string GenerateRewardsByDifficulty(string battleType, int difficulty)
+    {
+        for (int i = difficulty; i >= 0; i--)
+        {
+            if (stsRewardData.KeyExists(battleType + "-" + i))
+            {
+                return stsRewardData.ReturnValue(battleType + "-" + i);
+            }
+        }
+        return stsRewardData.ReturnValue(battleType);
+    }
+
+    public void GenerateRewards()
     {
         ResetRewards();
+        string battleType = mapState.ReturnCurrentTile();
+        string allRewards = GenerateRewardsByDifficulty(mapState.ReturnCurrentTile(), mapState.settings.GetDifficulty());
         string[] blocks = allRewards.Split("|");
         for (int i = 0; i < blocks.Length; i++)
         {

@@ -107,6 +107,15 @@ public class PartyData : SavedData
             partyStats[i] = dummyActor.GetStats();
         }
     }
+    public void HalfRestore()
+    {
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.HalfRestore();
+            partyStats[i] = dummyActor.GetStats();
+        }
+    }
     public void ReviveDefeatedMembers(bool all = false)
     {
         for (int i = 0; i < partyStats.Count; i++)

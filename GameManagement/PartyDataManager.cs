@@ -328,11 +328,20 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
-    public void HealParty()
+    public void HealParty(bool full = true)
     {
-        permanentPartyData.ResetCurrentStats();
-        mainPartyData.ResetCurrentStats();
-        tempPartyData.ResetCurrentStats();
+        if (full)
+        {
+            permanentPartyData.ResetCurrentStats();
+            mainPartyData.ResetCurrentStats();
+            tempPartyData.ResetCurrentStats();
+        }
+        else
+        {
+            permanentPartyData.HalfRestore();
+            mainPartyData.HalfRestore();
+            tempPartyData.HalfRestore();
+        }
         SetFullParty();
     }
 

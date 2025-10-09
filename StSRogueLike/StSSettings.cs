@@ -8,11 +8,45 @@ using UnityEngine;
 public class StSSettings : SavedData
 {
     public int difficultySetting;
+    public int maxDifficulty;
     public void SetDifficultly(int newInfo)
     {
         difficultySetting = newInfo;
         Save();
     }
+    public void IncreaseDifficulty()
+    {
+        difficultySetting++;
+        if (difficultySetting > maxDifficulty)
+        {
+            difficultySetting = 0;
+        }
+        Save();
+    }
+    public void DecreaseDifficulty()
+    {
+        difficultySetting--;
+        if (difficultySetting < 0)
+        {
+            difficultySetting = maxDifficulty;
+        }
+        Save();
+    }
+    public int GetDifficulty()
+    {
+        Load();
+        return difficultySetting;
+    }
+    public StatDatabase enemyModifiersPerDifficulty;
+    public string ReturnEnemyModifiers()
+    {
+        // Handle some random buffs here.
+        return enemyModifiersPerDifficulty.ReturnValueAtIndex(difficultySetting);
+    }
+    public StatDatabase eliteModifiersPerDifficulty;
+    public StatDatabase bossModifiersPerDifficulty;
+
+    
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
@@ -28,15 +62,11 @@ public class StSSettings : SavedData
         }
         else
         {
-            NewGame();
+            difficultySetting = 0;
+            Save();
             return;
         }
         string[] blocks = allData.Split(delimiter);
         difficultySetting = int.Parse(blocks[0]);
-    }
-    public override void NewGame()
-    {
-        difficultySetting = 0;
-        Save();
     }
 }

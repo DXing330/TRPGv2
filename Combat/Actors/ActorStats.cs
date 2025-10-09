@@ -201,6 +201,10 @@ public class ActorStats : ActorPassives
         stats.Add(GetDefense().ToString());
         return stats;
     }
+    public void HalfRestore()
+    {
+        SetCurrentHealth((GetBaseHealth() + GetHealth()) / 2);
+    }
     public void FullRestore()
     {
         SetCurrentHealth(GetBaseHealth());

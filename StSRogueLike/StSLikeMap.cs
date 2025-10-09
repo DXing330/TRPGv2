@@ -79,7 +79,7 @@ public class StSLikeMap : MapManager
     {
         floorBoss = enemyTracker.floorBoss;
     }
-    public void EnterBossBattle()
+    public void EnterBossBattle(bool additional = false)
     {
         // Make sure you're in the final tile.
         if (partyPathing.Count < mapSize)
@@ -87,7 +87,7 @@ public class StSLikeMap : MapManager
             return;
         }
         enemyList.ResetLists();
-        List<string> bossData = enemyTracker.GetBossData();
+        List<string> bossData = enemyTracker.GetBossData(additional);
         // Otherwise set the boss party.
         battleState.ForceTerrainType(bossData[0]);
         enemyList.AddCharacters(bossData[1].Split("|").ToList());
@@ -142,9 +142,19 @@ public class StSLikeMap : MapManager
         return tileType;
     }
     public List<int> tileWeights;
+    public int highDifficulty = 12;
+    public List<int> highDifficultyWeights;
     public int GetTotalWeight()
     {
         int weight = 0;
+        if (settings.GetDifficulty() >= highDifficulty)
+        {
+            for (int i = 0; i < highDifficultyWeights.Count; i++)
+            {
+                weight += highDifficultyWeights[i];
+            }
+            return weight;
+        }
         for (int i = 0; i < tileWeights.Count; i++)
         {
             weight += tileWeights[i];
@@ -174,8 +184,14 @@ public class StSLikeMap : MapManager
         ResetAll();
         savedState.Load();
         enemyTracker.Load();
-        if (savedState.bossBattled == 1)
+        if (savedState.bossBattled > 0)
         {
+            if (savedState.bossBattled < savedState.GetBossFightsPerFloor())
+            {
+                // Generate another boss.
+                EnterBossBattle(true);
+                return;
+            }
             if (savedState.GetCurrentFloor() >= maxFloors)
             {
                 // Move to the victory scene.
@@ -304,6 +320,7 @@ public class StSLikeMap : MapManager
         highlightedTiles[partyLocation] = partyLocationColor;
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
+    public int highDifficultyHeal = 20;
     public PartyDataManager partyData;
     public int testPathCount;
 
@@ -316,7 +333,14 @@ public class StSLikeMap : MapManager
             GeneratePath();
         }
         // Get the floor boss randomly.
-        partyData.HealParty();
+        if (settings.GetDifficulty() >= highDifficultyHeal)
+        {
+            partyData.HealParty(false);
+        }
+        else
+        {
+            partyData.HealParty();
+        }
         enemyTracker.NewFloor();
         GenerateFloorBoss();
         UpdateMap();
