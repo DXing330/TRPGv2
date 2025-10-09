@@ -146,8 +146,19 @@ public class BattleManager : MonoBehaviour
     }
     public void SpawnAndAddActor(int location, string actorName, int team = 0)
     {
-        map.AddActorToBattle(actorMaker.SpawnActor(location, actorName, team));
-        // Apply start battle passives since they are just starting the battle.
+        TacticActor newActor = actorMaker.SpawnActor(location, actorName, team);
+        List<TacticActor> actors = new List<TacticActor>();
+        actors.Add(newActor);
+        map.AddActorToBattle(newActor);
+        // Apply start battle passives/modifiers since they are just starting the battle.
+        if (team > 0)
+        {
+            actorMaker.ApplyBattleModifiers(actors, enemyParty.GetBattleModifiers());
+        }
+        else
+        {
+            actorMaker.ApplyBattleModifiers(actors, playerParty.GetBattleModifiers());
+        }
         effectManager.StartBattle(map.ReturnLatestActor());
     }
     public bool interactable = true;

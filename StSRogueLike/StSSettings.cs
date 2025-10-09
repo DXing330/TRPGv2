@@ -44,8 +44,17 @@ public class StSSettings : SavedData
         return enemyModifiersPerDifficulty.ReturnValueAtIndex(difficultySetting);
     }
     public StatDatabase eliteModifiersPerDifficulty;
+    public string ReturnEliteModifiers()
+    {
+        // Handle some random buffs here.
+        return eliteModifiersPerDifficulty.ReturnValueAtIndex(difficultySetting);
+    }
     public StatDatabase bossModifiersPerDifficulty;
-
+    public string ReturnBossModifiers()
+    {
+        // Handle some random buffs here.
+        return eliteModifiersPerDifficulty.ReturnValueAtIndex(difficultySetting);
+    }
     
     public override void Save()
     {
