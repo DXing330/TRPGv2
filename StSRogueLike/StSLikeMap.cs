@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class StSLikeMap : MapManager
 {
+    public GameObject blackScreen;
     protected override void Start()
     {
         savedState.Load();
@@ -13,13 +14,13 @@ public class StSLikeMap : MapManager
         {
             GeneratePaths();
             SaveState();
+            UpdateMap();
+            UpdateDirectionalArrows();
         }
         else
         {
             LoadState();
         }
-        UpdateMap();
-        UpdateDirectionalArrows();
     }
     public override void UpdateMap()
     {
@@ -27,6 +28,7 @@ public class StSLikeMap : MapManager
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
         bossImage.sprite = bossSprites.SpriteDictionary(floorBoss);
+        blackScreen.SetActive(false);
     }
     protected void UpdateDirectionalArrows()
     {
@@ -82,13 +84,12 @@ public class StSLikeMap : MapManager
     public void EnterBossBattle(bool additional = false)
     {
         // Make sure you're in the final tile.
-        if (partyPathing.Count < mapSize)
+        if (partyPathing.Count < mapSize && !additional)
         {
             return;
         }
         enemyList.ResetLists();
         List<string> bossData = enemyTracker.GetBossData(additional);
-        // Otherwise set the boss party.
         battleState.ForceTerrainType(bossData[0]);
         enemyList.AddCharacters(bossData[1].Split("|").ToList());
         // Add ascension stuff.
@@ -195,6 +196,7 @@ public class StSLikeMap : MapManager
             if (savedState.GetCurrentFloor() >= maxFloors)
             {
                 // Move to the victory scene.
+                blackScreen.SetActive(true);
                 sceneMover.LoadScene(finalSceneName);
                 return;
             }

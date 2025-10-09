@@ -17,14 +17,14 @@ public class BattleUIManager : MonoBehaviour
     public void ViewActorStatuses()
     {
         TacticActor viewedActor = battleManager.GetSelectedActor();
+        if (viewedActor == null){return;}
         statusSelect.SetStatsAndData(viewedActor.GetUniqueStatuses(), viewedActor.GetUniqueStatusDurationsAndStacks());
     }
     public SelectStatTextList passiveSelect;
     public void ViewActorPassives()
     {
         TacticActor viewedActor = battleManager.GetSelectedActor();
-        if (viewedActor == null)
-        {return;}
+        if (viewedActor == null){return;}
         passiveSelect.SetStatsAndData(viewedActor.GetPassiveSkills(), viewedActor.GetPassiveLevels());
     }
 

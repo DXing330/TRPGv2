@@ -84,15 +84,15 @@ public class StSState : SavedState
     public List<string> mapInfo;
     public string ReturnCurrentTile()
     {
-        if (partyPathing.Count <= 0)
-        {
-            return "";
-        }
-        else if (bossBattled == GetBossFightsPerFloor())
+        if (bossBattled >= GetBossFightsPerFloor())
         {
             return "Boss";
         }
         else if (bossBattled > 0)
+        {
+            return "";
+        }
+        else if (partyPathing.Count <= 0)
         {
             return "";
         }

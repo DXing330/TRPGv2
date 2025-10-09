@@ -130,6 +130,8 @@ public class StSEnemyTracker : SavedData
         {
             // Generate another boss except the one that was just fought.
             string newBoss = RandomNewBoss();
+            Debug.Log(newBoss);
+            Debug.Log(floorBosses[floor - 1].ReturnValue(newBoss));
             return floorBosses[floor - 1].ReturnValue(newBoss).Split("-").ToList();
         }
         return floorBosses[floor - 1].ReturnValue(floorBoss).Split("-").ToList();
