@@ -40,7 +40,7 @@ public class StartGameManager : MonoBehaviour
 
     public void NewRun()
     {
-        roguelikeParty.NewGame();
+        //roguelikeParty.NewGame();
         for (int i = 0; i < roguelikeGameData.Count; i++)
         {
             roguelikeGameData[i].NewGame();
