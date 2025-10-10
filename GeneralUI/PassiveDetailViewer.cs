@@ -271,12 +271,18 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Health":
                 switch (specifics)
                 {
+                    case ">Half":
+                        return " if health is >50%";
                     case "<Half":
                         return " if health is <50%";
                     case "Full":
                         return " if health is full";
                 }
                 break;
+            case "HealthD":
+                return " if the target's health is "+specifics;
+            case "HealthA":
+                return " if health is "+specifics;
             case "Tile":
                 return " if on a " + specifics + " tile";
             case "Tile<>":
@@ -399,6 +405,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "BaseHealth":
                 return " increase maximum health of " + target + " by " + specifics;
+            case "BaseHealth%":
+                return " increase maximum health of " + target + " by " + specifics + "%";
+            case "MaxHealth%":
+                return " change maximum health of " + target + " by " + specifics + "%";
+            case "BaseEnergy%":
+                return " change base energy of " + target + " by " + specifics + "%";
             case "Movement":
                 return " " + target + " gain " + specifics + " movement";
             case "Skill":

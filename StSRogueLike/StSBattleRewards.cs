@@ -12,6 +12,7 @@ public class StSBattleRewards : MonoBehaviour
     public StSEnemyTracker enemyTracker;
     public StatDatabase actorStats;
     public StatDatabase allEquipmentRewards;
+    public StatDatabase bossEquipment;
     public Equipment dummyEquip;
     public List<string> allyRewardRarity;
     public List<TMP_Text> allyRewardTexts;
@@ -140,6 +141,9 @@ public class StSBattleRewards : MonoBehaviour
                 break;
             case "Rare Equipment":
                 equipmentRewards.Add(GetRandomEquipment(rareRarity));
+                break;
+            case "Boss Equipment":
+                equipmentRewards.Add(bossEquipment.ReturnRandomValue());
                 break;
         }
     }

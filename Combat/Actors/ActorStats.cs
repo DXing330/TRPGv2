@@ -196,7 +196,14 @@ public class ActorStats : ActorPassives
     public List<string> ReturnStats()
     {
         List<string> stats = new List<string>();
-        stats.Add(GetHealth().ToString());
+        if (GetTempHealth() > 0)
+        {
+            stats.Add(GetHealth()+"+("+GetTempHealth()+")");
+        }
+        else
+        {
+            stats.Add(GetHealth().ToString());
+        }
         stats.Add(GetAttack().ToString());
         stats.Add(GetDefense().ToString());
         return stats;
@@ -270,10 +277,11 @@ public class ActorStats : ActorPassives
     public void SetInitiative(int newInitiative) { initiative = newInitiative; }
     public int GetInitiative() { return initiative; }
     public void ChangeInitiative(int change) { initiative += change; }
-    public int tempHealth; // Used specifically for end of turn attack buffs.
+    public int tempHealth;
     // You can keep a little bit of temphealth to buff temphealth as a stat.
     public void ResetTempHealth() { tempHealth = tempHealth / 2; }
     public void UpdateTempHealth(int changeAmount) { tempHealth += changeAmount; }
+    public int GetTempHealth() { return tempHealth; }
     public int currentHealth;
     public void SetCurrentHealth(int newHealth) { currentHealth = newHealth; }
     public int GetHealth() { return currentHealth; }
@@ -335,7 +343,14 @@ public class ActorStats : ActorPassives
     public void UpdateDefense(int changeAmount) { currentDefense += changeAmount; }
     public int currentSpeed;
     public int GetSpeed() { return currentSpeed; }
-    public void UpdateSpeed(int changeAmount) { currentSpeed += changeAmount; }
+    public void UpdateSpeed(int changeAmount)
+    {
+        currentSpeed += changeAmount;
+        if (currentSpeed < 0)
+        {
+            currentSpeed = 0;
+        }
+    }
     public List<string> activeSkills;
     public void RemoveActiveSkill(int index)
     {
@@ -483,14 +498,21 @@ public class ActorStats : ActorPassives
         return statuses.Contains(statusName);
     }
     public string curseStatName;
+    public void AddCurse(string newInfo)
+    {
+        if (newInfo.Length <= 0){return;}
+        AddStatus(newInfo, -1);
+    }
     public void SetCurses(string newInfo)
     {
+        // Set implies reseting and starting from the beginning.
+        ClearStatuses();
         int index = statNames.IndexOf(curseStatName);
         stats[index] = newInfo;
         string[] blocks = newInfo.Split(",");
         for (int i = 0; i < blocks.Length; i++)
         {
-            AddStatus(blocks[i], -1);
+            AddCurse(blocks[i]);
         }
     }
     public List<string> GetCurses()

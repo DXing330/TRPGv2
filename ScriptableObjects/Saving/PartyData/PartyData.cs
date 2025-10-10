@@ -62,11 +62,7 @@ public class PartyData : SavedData
         dummyActor.SetStatsFromString(partyStats[index]);
         string[] newCurrentStats = newStats.Split("|");
         dummyActor.SetCurrentHealth(utility.SafeParseInt(newCurrentStats[0]));
-        // There are not always curses.
-        if (newCurrentStats.Length > 1)
-        {
-            dummyActor.SetCurses(newCurrentStats[1]);
-        }
+        dummyActor.SetCurses(newCurrentStats[1]);
         partyStats[index] = dummyActor.GetStats();
         UpdateDefeatedMemberTracker(index);
     }

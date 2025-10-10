@@ -183,7 +183,6 @@ public class TacticActor : ActorStats
     {
         string healthString = GetHealth().ToString();
         string curses = GetCurseString();
-        if (curses.Length <= 0){return healthString;}
         return healthString + delimiter + curses;
     }
 }

@@ -147,10 +147,15 @@ public class BattleManager : MonoBehaviour
     public void SpawnAndAddActor(int location, string actorName, int team = 0)
     {
         TacticActor newActor = actorMaker.SpawnActor(location, actorName, team);
-        List<TacticActor> actors = new List<TacticActor>();
-        actors.Add(newActor);
         map.AddActorToBattle(newActor);
-        // Apply start battle passives/modifiers since they are just starting the battle.
+        ApplyBattleModifiersToActor(newActor);
+        effectManager.StartBattle(map.ReturnLatestActor());
+    }
+    protected void ApplyBattleModifiersToActor(TacticActor actor)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        actors.Add(actor);
+        int team = actor.GetTeam();
         if (team > 0)
         {
             actorMaker.ApplyBattleModifiers(actors, enemyParty.GetBattleModifiers());
@@ -159,7 +164,6 @@ public class BattleManager : MonoBehaviour
         {
             actorMaker.ApplyBattleModifiers(actors, playerParty.GetBattleModifiers());
         }
-        effectManager.StartBattle(map.ReturnLatestActor());
     }
     public bool interactable = true;
     public bool longDelays = true;
@@ -558,7 +562,9 @@ public class BattleManager : MonoBehaviour
                 // Create a copy in a random adjacent empty tile.
                 // Or this is a special case where you can stack actors?
                 // This will always take all your actions.
-                map.AddActorToBattle(actorMaker.CloneActor(turnActor, splitTile));
+                TacticActor clonedActor = actorMaker.CloneActor(turnActor, splitTile);
+                map.AddActorToBattle(clonedActor);
+                ApplyBattleModifiersToActor(clonedActor);
                 turnActor.ResetActions();
                 break;
             case "Skill":

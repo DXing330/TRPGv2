@@ -18,6 +18,7 @@ public class StSLikeRestScene : MonoBehaviour
             {
                 case "Rest":
                     dummyActor.UpdateHealth(dummyActor.GetBaseHealth() / 2, false);
+                    dummyActor.ClearStatuses();
                     break;
                 case "Health":
                     dummyActor.UpdateBaseHealth(Mathf.Max(1, dummyActor.GetBaseHealth() / statGainPercentage), false);

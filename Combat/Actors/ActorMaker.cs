@@ -144,6 +144,7 @@ public class ActorMaker : MonoBehaviour
         newActor.SetPersonalName(actor.GetPersonalName());
         newActor.SetLocation(location);
         newActor.CopyBaseStats(actor);
+        newActor.SetTeam(actor.GetTeam());
         passiveOrganizer.OrganizeActorPassives(actor);
         return newActor;
     }

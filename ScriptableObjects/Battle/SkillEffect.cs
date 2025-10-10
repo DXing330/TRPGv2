@@ -100,9 +100,19 @@ public class SkillEffect : ScriptableObject
                 target.UpdateBaseHealth(int.Parse(effectSpecifics) * level * target.GetBaseHealth() / basicDenominator, false);
                 target.UpdateHealth(int.Parse(effectSpecifics) * level * target.GetBaseHealth() / basicDenominator, false);
                 break;
+            case "MaxHealth%":
+                target.UpdateBaseHealth(int.Parse(effectSpecifics) * level * target.GetBaseHealth() / basicDenominator, false);
+                if (target.GetHealth() > target.GetBaseHealth())
+                {
+                    target.SetCurrentHealth(target.GetBaseHealth());
+                }
+                break;
             case "BaseEnergy":
                 target.UpdateBaseEnergy(int.Parse(effectSpecifics) * level);
                 target.UpdateEnergy(int.Parse(effectSpecifics) * level);
+                break;
+            case "BaseEnergy%":
+                target.UpdateBaseEnergy(int.Parse(effectSpecifics) * level * target.GetBaseEnergy() / basicDenominator);
                 break;
             case "BaseAttack":
                 int bAtkChange = int.Parse(effectSpecifics) * level;
