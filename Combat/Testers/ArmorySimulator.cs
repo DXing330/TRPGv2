@@ -23,15 +23,19 @@ public class ArmorySimulator : ArmoryUI
     {
         statsObjects.SetActive(false);
     }
-    // Same as the armory.
-
+    // Same as the armory, except no party data to draw data from, just the stat databases.
     public override void UpdateSelectedActor()
     {
         EndSelectingEquipment();
         statsObjects.SetActive(true);
         detailViewer.DisablePanel();
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        string spriteName = allActors.allActorSpriteNames[allActors.GetSelected()];
+        selectedActor.SetSpriteName(spriteName);
+        selectedActor.SetElement(spriteElementMapping.ReturnValue(selectedActor.GetSpriteName()));
+        selectedActor.SetSpecies(spriteSpeciesMapping.ReturnValue(selectedActor.GetSpriteName()));
         actorStats.UpdateActorStatTexts(selectedActor);
+        actorSpriteStats.UpdateActorSpriteStats(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.ResetSelected();
