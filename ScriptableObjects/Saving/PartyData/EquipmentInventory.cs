@@ -7,6 +7,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EquipmentInventory", menuName = "ScriptableObjects/DataContainers/SavedData/EquipmentInventory", order = 1)]
 public class EquipmentInventory : SavedData
 {
+    public override void NewGame()
+    {
+        base.NewGame();
+        Load();
+    }
     public StatDatabase equipData;
     public List<string> GetAllEquipment()
     {

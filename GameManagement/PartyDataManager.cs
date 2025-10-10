@@ -40,6 +40,12 @@ public class PartyDataManager : MonoBehaviour
         for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].NewGame(); }
     }
 
+    // Since when starting a new run, the partydata is already set but you want to reset equipment and other stuff.
+    public void OtherDataNewName()
+    {
+        for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].NewGame(); }
+    }
+
     public virtual void NewDay(int dayCount)
     {
         for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].NewDay(dayCount); }

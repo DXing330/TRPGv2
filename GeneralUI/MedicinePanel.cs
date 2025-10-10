@@ -16,7 +16,7 @@ public class MedicinePanel : MonoBehaviour
     public ActorSpriteHPList actorSelect;
     public TacticActor dummyActor;
     public TMP_Text actorHealthText;
-    public TMP_Text actorStatusesText;
+    public SelectStatTextList statusList;
     public SelectList medicineSelect;
     public void ResetSelectedMedicine()
     {
@@ -87,6 +87,6 @@ public class MedicinePanel : MonoBehaviour
         if (actorSelect.GetSelected() < 0) { return; }
         dummyActor.SetStatsFromString(actorSelect.allActorData[actorSelect.GetSelected()]);
         actorHealthText.text = dummyActor.GetHealth() + " / " + dummyActor.GetBaseHealth();
-        actorStatusesText.text = dummyActor.GetCurseString();
+        statusList.SetStatsAndData(dummyActor.GetUniqueStatuses(), dummyActor.GetUniqueStatusStacks());
     }
 }
