@@ -77,7 +77,7 @@ public class ActorPassives : MonoBehaviour
     public int GetLevelFromPassive(string passiveName)
     {
         int indexOf = passiveSkills.IndexOf(passiveName);
-        if (indexOf == -1) { return -1; }
+        if (indexOf == -1) { return 0; }
         return int.Parse(passiveLevels[indexOf]);
     }
     public void SetLevelOfPassive(string passiveName, int newLevel)
@@ -94,6 +94,26 @@ public class ActorPassives : MonoBehaviour
             total += int.Parse(passiveLevels[i]);
         }
         return total;
+    }
+    public int GetTotalPassiveLevelsOfPassiveGroup(List<string> passiveGroup)
+    {
+        int total = 0;
+        for (int i = 0; i < passiveGroup.Count; i++)
+        {
+            total += GetLevelFromPassive(passiveGroup[i]);
+        }
+        return total;
+    }
+    public void RemoveMaxLevelPassives(List<string> passiveNames, List<string> passiveMaxLevels)
+    {
+        for (int i = passiveNames.Count - 1; i >= 0; i--)
+        {
+            if (GetLevelFromPassive(passiveNames[i]) >= int.Parse(passiveMaxLevels[i]))
+            {
+                passiveNames.RemoveAt(i);
+                passiveMaxLevels.RemoveAt(i);
+            }
+        }
     }
     // Temporary Passives Are Always Level 1.
     public List<string> tempPassives;

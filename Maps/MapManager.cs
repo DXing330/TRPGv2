@@ -98,6 +98,10 @@ public class MapManager : MonoBehaviour
         }
     }
     public int mapSize;
+    public int MapMaxPartyCapacity()
+    {
+        return (mapSize * mapSize) / 3;
+    }
     public int gridSize;
     public int centerTile;
 

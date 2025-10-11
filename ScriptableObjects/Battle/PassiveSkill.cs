@@ -385,6 +385,8 @@ public class PassiveSkill : SkillEffect
         int currentHealth = target.GetHealth();
         switch (conditionSpecifics)
         {
+            case "<25%":
+                return (currentHealth * 4) < maxHealth;
             case "<Half":
                 return (currentHealth * 2) < maxHealth;
             case ">Half":

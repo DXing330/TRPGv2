@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class PartyDataManager : MonoBehaviour
 {
+    void Start()
+    {
+        SetFullParty();
+    }
     // This is the one that the battle will actually read.
     public StatDatabase actorStats;
     public CharacterList fullParty;
@@ -25,6 +29,7 @@ public class PartyDataManager : MonoBehaviour
     {
         for (int i = 0; i < allParties.Count; i++) { allParties[i].Save(); }
         for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].Save(); }
+        SetFullParty();
     }
 
     public void Load()

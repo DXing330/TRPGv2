@@ -269,16 +269,7 @@ public class PassiveDetailViewer : MonoBehaviour
             //case "Type":
             //return " if the damage is "+damageTypesReturnValue(dummyPassiveconditionSpecifics)+"";
             case "Health":
-                switch (specifics)
-                {
-                    case ">Half":
-                        return " if health is >50%";
-                    case "<Half":
-                        return " if health is <50%";
-                    case "Full":
-                        return " if health is full";
-                }
-                break;
+                return " if health is "+specifics;
             case "HealthD":
                 return " if the target's health is "+specifics;
             case "HealthA":

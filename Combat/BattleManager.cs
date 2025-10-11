@@ -79,9 +79,9 @@ public class BattleManager : MonoBehaviour
     }
     protected void Start()
     {
-        
         // Get a new battle map.
         map.ForceStart();
+        int partySizeCap = map.MapMaxPartyCapacity();
         combatLog.AddNewLog();
         map.SetWeather(battleState.GetWeather());
         combatLog.UpdateNewestLog("The weather is "+map.GetWeather());
@@ -97,11 +97,11 @@ public class BattleManager : MonoBehaviour
         List<TacticActor> actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
         actorMaker.ApplyBattleModifiers(actors, playerParty.GetBattleModifiers());
-        for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
+        for (int i = 0; i < Mathf.Min(partySizeCap, actors.Count); i++) { map.AddActorToBattle(actors[i]); }
         actors = new List<TacticActor>();
         actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
         actorMaker.ApplyBattleModifiers(actors, enemyParty.GetBattleModifiers());
-        for (int i = 0; i < actors.Count; i++) { map.AddActorToBattle(actors[i]); }
+        for (int i = 0; i < Mathf.Min(partySizeCap, actors.Count); i++) { map.AddActorToBattle(actors[i]); }
         // Apply relics/ascension/etc. battle modifier effects here.
         // Use condition, effect, specifics for battle modifiers.
         // Condition will include team.
