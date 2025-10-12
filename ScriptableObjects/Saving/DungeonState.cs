@@ -42,6 +42,7 @@ public class DungeonState : SavedState
         allData += dungeon.GetTreasuresAcquired() + delimiter;
         // Viewed tiles
         allData += String.Join(delimiterTwo, dungeon.GetViewedTiles()) + delimiter;
+        allData += dungeon.GetBossFought() + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -66,5 +67,6 @@ public class DungeonState : SavedState
         dungeon.SetGoalTile(int.Parse(dataList[15]));
         dungeon.SetTreasuresAcquired(int.Parse(dataList[16]));
         dungeon.SetViewedTiles(dataList[17].Split(delimiterTwo).ToList());
+        dungeon.SetBossFought(int.Parse(dataList[18]));
     }
 }

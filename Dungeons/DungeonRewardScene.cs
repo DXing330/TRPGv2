@@ -16,41 +16,28 @@ public class DungeonRewardScene : MonoBehaviour
     public PartyDataManager partyData;
     public TacticActor dummyActor;
     public Equipment dummyEquip;
+    public StatDatabase equipmentData;
+    public StatDatabase rewardData;
     public StatTextList allItemRewards;
-    public StatTextList allSkillUps;
-    public List<string> actorNames;
-    public List<string> skillUpNames;
-    public void AddSkillUp(string actor, string skill)
-    {
-        int indexOf = actorNames.IndexOf(actor);
-        if (indexOf < 0)
-        {
-            actorNames.Add(actor);
-            skillUpNames.Add(skill+"+1");
-        }
-        else
-        {
-            skillUpNames[indexOf] += ", "+skill+"+1";
-        }
-    }
+    public StatTextList allEquipmentRewards;
     public GameObject questRewardPanel;
     public TMP_Text questGoldReward;
-    public TMP_Text hirelingFees;
     public TMP_Text finalReward;
     public QuestSuccessChecker questSuccessChecker;
     public int questGold;
     public List<string> itemRewards;
     public List<int> rewardQuantities;
+    public List<string> equipmentRewards;
 
     void Start()
     {
         CalculateRewards();
-        DisplayItemRewards();
+        DisplayRewards();
         //DisplayCombatRewards();
         ClaimRewards();
     }
 
-    protected void DisplayItemRewards()
+    protected void DisplayRewards()
     {
         List<string> quantityStrings = new List<string>();
         for (int i = 0; i < rewardQuantities.Count; i++)
@@ -58,6 +45,13 @@ public class DungeonRewardScene : MonoBehaviour
             quantityStrings.Add(rewardQuantities[i].ToString());
         }
         allItemRewards.SetStatsAndData(itemRewards, quantityStrings);
+        List<string> equipmentNames = new List<string>();
+        for (int i = 0; i < equipmentRewards.Count; i++)
+        {
+            dummyEquip.SetAllStats(equipmentRewards[i]);
+            equipmentNames.Add(dummyEquip.GetName());
+        }
+        allEquipmentRewards.SetStatsAndData(equipmentNames);
     }
 
     protected void CalculateRewards()
@@ -71,6 +65,35 @@ public class DungeonRewardScene : MonoBehaviour
             AddItemReward(dungeon.treasures[rewardType], rewardAmount);
         }
         CalculateQuestRewards();
+        CalculateEquipmentRewards();
+    }
+
+    protected void CalculateEquipmentRewards()
+    {
+        string equipRewards = rewardData.ReturnValue(dungeon.GetDungeonName());
+        string[] blocks = equipRewards.Split("|");
+        if (blocks[0] == "0")
+        {
+            return;
+        }
+        int minRarity = int.Parse(blocks[1]);
+        int maxRarity = int.Parse(blocks[2]);
+        equipmentRewards = new List<string>();
+        for (int i = 0; i < int.Parse(blocks[0]); i++)
+        {
+            equipmentRewards.Add(ReturnRandomEquipmentOfRarity(minRarity, maxRarity));
+        }
+    }
+
+    protected string ReturnRandomEquipmentOfRarity(int minRarity = 0, int maxRarity = 4)
+    {
+        string equip = equipmentData.ReturnRandomValue();
+        dummyEquip.SetAllStats(equip);
+        if (dummyEquip.GetRarity() <= maxRarity && dummyEquip.GetRarity() >= minRarity)
+        {
+            return equip;
+        }
+        return ReturnRandomEquipmentOfRarity(minRarity, maxRarity);
     }
 
     protected void CalculateQuestRewards()
@@ -80,81 +103,13 @@ public class DungeonRewardScene : MonoBehaviour
         if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
         {
             questGold = dungeon.GetQuestReward();
-            //partyData.inventory.AddItemQuantity("Gold", questGold);
             questRewardPanel.SetActive(true);
             questGoldReward.text = questGold.ToString();
-            CalculateSkillUps(questGold/10);
-            CalculateSkillUps(questGold/10, false);
-            // If you are successful then you must pay your hirelings their fair share.
             finalReward.text = questGold.ToString();
             partyData.inventory.AddItemQuantity("Gold", questGold);
         }
         partyData.guildCard.GainGuildExp((questGold*questGold/100));
         partyData.guildCard.RefreshAll();
-    }
-
-    protected void CalculateSkillUps(int questDifficulty, bool main = true)
-    {
-        actorNames.Clear();
-        skillUpNames.Clear();
-        List<string> spriteNames = partyData.mainPartyData.GetSpriteNames();
-        List<string> names = partyData.mainPartyData.GetNames();
-        List<string> baseStats = partyData.mainPartyData.GetBaseStats();
-        List<string> equipment = partyData.mainPartyData.GetEquipment();
-        if (!main)
-        {
-            spriteNames = partyData.permanentPartyData.GetSpriteNames();
-            names = partyData.permanentPartyData.GetNames();
-            baseStats = partyData.permanentPartyData.GetBaseStats();
-            equipment = partyData.permanentPartyData.GetEquipment();
-        }
-        for (int i = 0; i < spriteNames.Count; i++)
-        {
-            dummyActor.SetStatsFromString(baseStats[i]);
-            dummyActor.ResetWeaponType();
-            string[] equipData = equipment[i].Split("@");
-            for (int j = 0; j < equipData.Length; j++)
-            {
-                dummyEquip.SetAllStats(equipData[j]);
-                dummyEquip.EquipWeapon(dummyActor);
-            }
-            int passiveLevel = dummyActor.GetLevelFromPassive(spriteNames[i]);
-            if (passiveLevel > 0 && passiveLevel < 4)
-            {
-                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1)*(passiveLevel+1));
-                Debug.Log(names[i]+";"+spriteNames[i]+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1))*(passiveLevel+1));
-                if (RNG <= questDifficulty)
-                {
-                    dummyActor.SetLevelOfPassive(spriteNames[i], passiveLevel+1);
-                    dummyActor.ReloadPassives();
-                    baseStats[i] = dummyActor.GetStats();
-                    AddSkillUp(names[i], spriteNames[i]);
-                }
-            }
-            string weaponType = dummyActor.GetWeaponType()+" User";
-            if (weaponType == " User"){continue;} // If no weapon is equipped then continue.
-            passiveLevel = dummyActor.GetLevelFromPassive(weaponType);
-            if (passiveLevel <= 0)
-            {
-                dummyActor.AddPassiveSkill(weaponType, "1");
-                dummyActor.ReloadPassives();
-                baseStats[i] = dummyActor.GetStats();
-                AddSkillUp(names[i], weaponType);
-            }
-            else if (passiveLevel < 4)
-            {
-                int RNG = Random.Range(0, (passiveLevel+1)*(passiveLevel+1)*(passiveLevel+1));
-                Debug.Log(names[i]+";"+weaponType+", Current Level: "+passiveLevel+", Roll: "+RNG+"/"+((passiveLevel+1)*(passiveLevel+1)*(passiveLevel+1)));
-                if (RNG <= questDifficulty)
-                {
-                    dummyActor.SetLevelOfPassive(weaponType, passiveLevel+1);
-                    dummyActor.ReloadPassives();
-                    baseStats[i] = dummyActor.GetStats();
-                    AddSkillUp(names[i], weaponType);
-                }
-            }
-        }
-        allSkillUps.SetStatsAndData(actorNames, skillUpNames);
     }
 
     protected void AddItemReward(string item, int amount)
@@ -176,6 +131,10 @@ public class DungeonRewardScene : MonoBehaviour
         for (int i = 0; i < itemRewards.Count; i++)
         {
             inventory.AddItemQuantity(itemRewards[i], rewardQuantities[i]);
+        }
+        for (int i = 0; i < equipmentRewards.Count; i++)
+        {
+            partyData.equipmentInventory.AddEquipmentByStats(equipmentRewards[i]);
         }
     }
 

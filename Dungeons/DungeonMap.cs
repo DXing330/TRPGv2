@@ -20,6 +20,11 @@ public class DungeonMap : MapManager
         dungeon.UpdateEmptyTiles(emptyList);
         centerTile = dungeon.GetPartyLocation();
         UpdateMap();
+        // If you've fought the boss and returned then you get to go to the reward scene.
+        if (dungeon.GetBossFought() == 1)
+        {
+            sceneMover.ReturnFromDungeon();
+        }
     }
 
     protected void MoveToTile(int newTile)
@@ -38,7 +43,13 @@ public class DungeonMap : MapManager
         {
             if (dungeon.FinalFloor())
             {
-                sceneMover.ReturnFromDungeon();
+                // Set a flag to know that you are fighting the final boss of the dungeon so when you load back you don't fight the boss again.
+                // If you lose to the boss it's simply a defeat in the dungeon and you get kicked out as expected.
+                // Maybe have a final boss fight here.
+                dungeon.PrepareBossBattle();
+                interactable = false;
+                sceneMover.MoveToBattle();
+                //sceneMover.ReturnFromDungeon();
                 return;
             }
             dungeon.MoveFloors();

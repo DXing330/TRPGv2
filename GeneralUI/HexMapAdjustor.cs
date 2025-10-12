@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class HexMapAdjustor : MonoBehaviour
 {
+    public bool showText = false;
     public bool pointyTop = false;
     public MapUtility mapUtility;
     public Sprite defaultSprite;
@@ -70,7 +71,10 @@ public class HexMapAdjustor : MonoBehaviour
                 {
                     mapTiles[tileIndex].SetElevation(Random.Range(minElevation, maxElevation + 1));
                 }
-                mapTiles[tileIndex].UpdateText("("+mapUtility.GetHexQ(tileIndex, gridSize)+","+mapUtility.GetHexR(tileIndex, gridSize)+","+mapUtility.GetHexS(tileIndex, gridSize)+")");
+                if (showText)
+                {
+                    mapTiles[tileIndex].UpdateText("("+mapUtility.GetHexQ(tileIndex, gridSize)+","+mapUtility.GetHexR(tileIndex, gridSize)+","+mapUtility.GetHexS(tileIndex, gridSize)+")");
+                }
                 //mapTiles[tileIndex].UpdateText("("+mapUtility.GetRow(tileIndex, gridSize)+","+mapUtility.GetColumn(tileIndex, gridSize)+")");
                 // Move right every step.
                 tileIndex++;

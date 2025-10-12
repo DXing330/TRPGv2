@@ -9,24 +9,38 @@ public class MapTile : MonoBehaviour
     public int tileNumber;
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
     public MapManager cMap;
-    public GameObject mainTile;
-    public List<GameObject> subTiles;
+    public GameObject mainObject;
+    public List<GameObject> subObjects;
+    public List<RectTransform> subObjectTransforms;
+    public List<GameObject> highlightObjects;
+    public List<RectTransform> highlightObjectTransforms;
     public int elevation = 0;
     public float originalWidth;
     public float originalHeight;
     public float subWidth;
     public float subHeight;
+    public float highlightWidth;
+    public float highlightHeight;
     public List<float> scalePerElevation;
+    public List<float> subYPivots;
+    public List<float> highlightYPivots;
     public void SetElevation(int newInfo)
     {
         elevation = newInfo;
         // Scale up the tile based on elevation.
-        mainTile.transform.localScale = new Vector3(originalWidth, originalHeight * scalePerElevation[elevation], 0);
+        mainObject.transform.localScale = new Vector3(originalWidth, originalHeight * scalePerElevation[elevation], 0);
         // Make sure that the other images are the same size.
-        for (int i = 0; i < subTiles.Count; i++)
+        for (int i = 0; i < subObjects.Count; i++)
         {
-            subTiles[i].transform.localScale = new Vector3(subWidth, subHeight / scalePerElevation[elevation], 0);
+            subObjects[i].transform.localScale = new Vector3(subWidth, subHeight / scalePerElevation[elevation], 0);
+            subObjectTransforms[i].pivot = new Vector2(0.5f, subYPivots[elevation]);
         }
+        for (int i = 0; i < highlightObjects.Count; i++)
+        {
+            highlightObjects[i].transform.localScale = new Vector3(highlightWidth, highlightHeight / scalePerElevation[elevation], 0);
+            highlightObjectTransforms[i].pivot = new Vector2(0.5f, highlightYPivots[elevation]);
+        }
+        // Adjust the pivots so things look good.
     }
     public int GetElevation()
     {
@@ -124,6 +138,13 @@ public class MapTile : MonoBehaviour
 
     public void ClickTile()
     {
-        cMap.ClickOnTile(tileNumber);
+        try
+        {
+            cMap.ClickOnTile(tileNumber);
+        }
+        catch
+        {
+            Debug.Log(tileNumber);
+        }
     }
 }

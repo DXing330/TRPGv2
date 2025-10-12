@@ -102,6 +102,15 @@ public class Dungeon : ScriptableObject
         questReward = 0;
     }
     public string dungeonName;
+    public int bossFought = 0;
+    public void SetBossFought(int newInfo)
+    {
+        bossFought = newInfo;
+    }
+    public int GetBossFought()
+    {
+        return bossFought;
+    }
     public void InitializeDungeon(string newName)
     {
         SetDungeonName(newName);
@@ -109,6 +118,9 @@ public class Dungeon : ScriptableObject
     public void SetDungeonName(string newName, bool initial = true)
     {
         dungeonName = newName;
+        // This lets you know if the boss has been fought.
+        // If you beat the final boss then you have cleared the dungeon.
+        bossFought = 0;
         string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
         if (initial)
         {
@@ -125,11 +137,15 @@ public class Dungeon : ScriptableObject
         maxEnemies = int.Parse(dungeonInfo[4]);
         treasures = dungeonInfo[5].Split(",").ToList();
         maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
+        enemyModifiers = dungeonInfo[7].Split(",").ToList();
+        bossEnemies = dungeonInfo[8].Split(",").ToList();
     }
     public string GetDungeonName(){ return dungeonName; }
     public List<string> treasures;
     public List<string> maxPossibleTreasureQuantities;
     public List<string> possibleEnemies;
+    public List<string> enemyModifiers;
+    public List<string> bossEnemies;
     public bool fastSpawn = false;
     public int minEnemies;
     public int maxEnemies;
@@ -353,10 +369,29 @@ public class Dungeon : ScriptableObject
         // Determine which enemy party to use.
         int indexOf = allEnemyLocations.IndexOf(tileLocation);
         if (indexOf == -1){return;}
+        // Apply any battle modifiers based on the dungeon.
         // Use that enemy to determine the enemy party.
         enemyList.SetLists(allEnemyParties[indexOf].Split("|").ToList());
         // Remove the enemy on that location.
         RemoveEnemyAtIndex(indexOf);
+    }
+    public void PrepareBossBattle()
+    {
+        bossFought = 1;
+        List<string> bossGroupEnemies = new List<string>();
+        // Get a random boss from the list of bosses.
+        // Set the enemy list.
+        string bossGroup = bossEnemies[Random.Range(0, bossEnemies.Count)];
+        string[] blocks = bossGroup.Split("&");
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            string[] quantityCount = blocks[i].Split("*");
+            for (int j = 0; j < int.Parse(quantityCount[1]); j++)
+            {
+                bossGroupEnemies.Add(quantityCount[0]);
+            }
+        }
+        enemyList.SetLists(bossGroupEnemies);
     }
     public void EnemyBeginsBattle()
     {
