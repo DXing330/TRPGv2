@@ -112,8 +112,68 @@ public class DungeonGenerator : ScriptableObject
         }
     }
 
+    protected void ConnectPointyTopPoints(int start, int end)
+    {
+        int startRow = mapUtility.GetRow(start, size);
+        int startCol = mapUtility.GetColumn(start, size);
+        int endRow = mapUtility.GetRow(end, size);
+        int endCol = mapUtility.GetColumn(end, size);
+        List<int> possibleNextPoints = new List<int>();
+        for (int i = 0; i < size*size/2; i++)
+        {
+            possibleNextPoints.Clear();
+            startRow = mapUtility.GetRow(start, size);
+            startCol = mapUtility.GetColumn(start, size);
+            if (startCol < endCol) // Move right.
+            {
+                possibleNextPoints.Add(PointInDirection(start, 1));
+                if (startRow < endRow) // Move down.
+                {
+                    possibleNextPoints.Add(PointInDirection(start, 2));
+                }
+                else if (startRow > endRow) // Move up.
+                {
+                    possibleNextPoints.Add(PointInDirection(start, 0));
+                }
+            }
+            else if (startCol > endCol) // Move left.
+            {
+                possibleNextPoints.Add(PointInDirection(start, 4));
+                if (startRow < endRow) // Move down.
+                {
+                    possibleNextPoints.Add(PointInDirection(start, 3));
+                }
+                else if (startRow > endRow) // Move up.
+                {
+                    possibleNextPoints.Add(PointInDirection(start, 5));
+                }
+            }
+            else // Move up or down.
+            {
+                if (startRow < endRow) // Move down.
+                {
+                    possibleNextPoints.Add(PointInDirection(start, 3));
+                }
+                else if (startRow > endRow) // Move up.
+                {
+                    possibleNextPoints.Add(PointInDirection(start, 5));
+                }
+            }
+            if (possibleNextPoints.Count <= 0){break;}
+            start = possibleNextPoints[Random.Range(0, possibleNextPoints.Count)];
+            // Make it passable.
+            allTiles[start] = 0;
+            if (start == end){break;}
+        }
+    }
+
     protected void ConnectPoints(int startPoint, int endPoint)
     {
+        if (!mapUtility.flatTop)
+        {
+            ConnectPointyTopPoints(startPoint, endPoint);
+            return;
+        }
         int startRow = (startPoint/size);
         int startCol = GetColumn(startPoint);
         int endRow = (endPoint/size);
@@ -152,7 +212,7 @@ public class DungeonGenerator : ScriptableObject
             if (startCol < endCol) // Move Right
             {
                 // Odd (1,3,5,...) columns can always move up.
-                if (startRow > 0 || (startCol%2 == 1 && startCol < size - 1))
+                if (startRow > 0 || (startCol % 2 == 1 && startCol < size - 1))
                 {
                     possibleNextPoints.Add(PointInDirection(startPoint, 1));
                 }

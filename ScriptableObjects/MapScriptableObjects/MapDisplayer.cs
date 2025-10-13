@@ -69,6 +69,14 @@ public class MapDisplayer : ScriptableObject
         }
     }
 
+    public void ResetHighlights(List<MapTile> mapTiles)
+    {
+        for (int i = 0; i < (mapTiles.Count); i++)
+        {
+            mapTiles[i].HighlightLayer(layer);
+        }
+    }
+
     public void HighlightCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles)
     {
         for (int i = 0; i < (mapTiles.Count); i++)
@@ -79,6 +87,19 @@ public class MapDisplayer : ScriptableObject
                 continue;
             }
             mapTiles[i].HighlightLayer(layer, mapInfo[currentTiles[i]]);
+        }
+    }
+
+    public void HighlightTileSet(List<MapTile> mapTiles, List<int> tileSet, List<int> currentTiles, string highlightColor = "Blue")
+    {
+        for (int i = 0; i < tileSet.Count; i++)
+        {
+            int indexOf = currentTiles.IndexOf(tileSet[i]);
+            if (indexOf < 0)
+            {
+                continue;
+            }
+            mapTiles[indexOf].HighlightLayer(layer, highlightColor);
         }
     }
 

@@ -480,9 +480,13 @@ public class MapUtility : ScriptableObject
 
     public int DetermineCenterTile(int size)
     {
-        if (size % 2 == 1)
+        if (flatTop)
         {
-            return (size * size) / 2;
+            if (size % 2 == 1)
+            {
+                return (size * size) / 2;
+            }
+            return ReturnTileNumberFromRowCol(size / 2, size / 2, size);
         }
         return ReturnTileNumberFromRowCol(size / 2, size / 2, size);
     }

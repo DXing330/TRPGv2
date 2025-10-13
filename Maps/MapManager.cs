@@ -104,6 +104,18 @@ public class MapManager : MonoBehaviour
     }
     public int gridSize;
     public int centerTile;
+    public void UpdateCenterTile(int newInfo)
+    {
+        centerTile = newInfo;
+        if (mapUtility.flatTop && mapUtility.GetColumn(centerTile, mapSize) % 2 != 1)
+        {
+            centerTile += 1;
+        }
+        else if (!mapUtility.flatTop && mapUtility.GetRow(centerTile, mapSize) % 2 != 1)
+        {
+            centerTile += mapSize;
+        }
+    }
 
     protected virtual void Start()
     {

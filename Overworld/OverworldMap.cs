@@ -87,7 +87,7 @@ public class OverworldMap : MapManager
         UpdateData();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
-            centerTile = newTile;
+            UpdateCenterTile(newTile);
         }
         characterLayer[partyLocation] = "";
         characterLayer[newTile] = partySprite;
@@ -236,7 +236,7 @@ public class OverworldMap : MapManager
         UpdateData();
         partyLocation = overworldState.GetLocation();
         characterLayer[partyLocation] = partySprite;
-        centerTile = partyLocation;
+        UpdateCenterTile(partyLocation);
     }
 
     protected void UpdateData()

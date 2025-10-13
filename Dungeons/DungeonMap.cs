@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DungeonMap : MapManager
 {
+    public GameObject blackScreen;
     public int maxDistanceFromCenter = 3;
     public PartyDataManager partyDataManager;
     public ActorSpriteHPList actorSpriteHPList;
@@ -13,25 +14,40 @@ public class DungeonMap : MapManager
     public bool interactable = true;
     // layers: 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
 
+    public void UpdateCenterTile(int newInfo)
+    {
+        centerTile = newInfo;
+        if (mapUtility.flatTop && mapUtility.GetColumn(centerTile, mapSize) % 2 != 1)
+        {
+            centerTile += 1;
+        }
+        else if (!mapUtility.flatTop && mapUtility.GetRow(centerTile, mapSize) % 2 != 1)
+        {
+            centerTile += mapSize;
+        }
+    }
+
     protected override void Start()
     {
-        mapSize = dungeon.GetDungeonSize();
-        InitializeEmptyList();
-        dungeon.UpdateEmptyTiles(emptyList);
-        centerTile = dungeon.GetPartyLocation();
-        UpdateMap();
-        // If you've fought the boss and returned then you get to go to the reward scene.
         if (dungeon.GetBossFought() == 1)
         {
             sceneMover.ReturnFromDungeon();
+            return;
         }
+        mapSize = dungeon.GetDungeonSize();
+        InitializeEmptyList();
+        dungeon.UpdateEmptyTiles(emptyList);
+        UpdateCenterTile(dungeon.GetPartyLocation());
+        // If you've fought the boss and returned then you get to go to the reward scene.
+        UpdateMap();
+
     }
 
     protected void MoveToTile(int newTile)
     {
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
-            centerTile = newTile;
+            UpdateCenterTile(newTile);
         }
         if (dungeon.GetQuestGoal() == "Rescue" && dungeon.GoalTile(newTile))
         {
@@ -59,7 +75,7 @@ public class DungeonMap : MapManager
             }
             dungeon.MoveFloors();
             // This doesn't update the center when moving between dungeons for some reason.
-            centerTile = dungeon.GetPartyLocation();
+            UpdateCenterTile(dungeon.GetPartyLocation());
             StartCoroutine(MoveFloors());
         }
         else if (dungeon.EnemyLocation(newTile))
@@ -102,6 +118,12 @@ public class DungeonMap : MapManager
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, dungeon.partyLocations, currentTiles);
     }
 
+    public void UpdateHighlights()
+    {
+        mapDisplayers[3].ResetHighlights(mapTiles);
+        mapDisplayers[3].HighlightTileSet(mapTiles, mapUtility.AdjacentTiles(dungeon.GetPartyLocation(), mapSize), currentTiles);
+    }
+
     public override void UpdateMap()
     {
         UpdateCurrentTiles();
@@ -110,6 +132,8 @@ public class DungeonMap : MapManager
         miniMap.UpdateMiniMapString(currentTiles);
         if (miniMap.active){miniMap.UpdateMiniMap();}
         UpdateActors();
+        UpdateHighlights();
+        blackScreen.SetActive(false);
     }
 
     IEnumerator MoveFloors()
