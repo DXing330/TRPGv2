@@ -46,10 +46,15 @@ public class DungeonMap : MapManager
                 // Set a flag to know that you are fighting the final boss of the dungeon so when you load back you don't fight the boss again.
                 // If you lose to the boss it's simply a defeat in the dungeon and you get kicked out as expected.
                 // Maybe have a final boss fight here.
-                dungeon.PrepareBossBattle();
-                interactable = false;
-                sceneMover.MoveToBattle();
-                //sceneMover.ReturnFromDungeon();
+                if (dungeon.PrepareBossBattle())
+                {
+                    interactable = false;
+                    sceneMover.MoveToBattle();
+                }
+                else
+                {
+                    sceneMover.ReturnFromDungeon();
+                }
                 return;
             }
             dungeon.MoveFloors();

@@ -139,6 +139,8 @@ public class Dungeon : ScriptableObject
         maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
         enemyModifiers = dungeonInfo[7].Split(",").ToList();
         bossEnemies = dungeonInfo[8].Split(",").ToList();
+        utility.RemoveEmptyListItems(enemyModifiers);
+        utility.RemoveEmptyListItems(bossEnemies);
     }
     public string GetDungeonName(){ return dungeonName; }
     public List<string> treasures;
@@ -375,13 +377,21 @@ public class Dungeon : ScriptableObject
         // Remove the enemy on that location.
         RemoveEnemyAtIndex(indexOf);
     }
-    public void PrepareBossBattle()
+    public bool PrepareBossBattle()
     {
         bossFought = 1;
         List<string> bossGroupEnemies = new List<string>();
         // Get a random boss from the list of bosses.
         // Set the enemy list.
+        if (bossEnemies.Count <= 0)
+        {
+            return false;
+        }
         string bossGroup = bossEnemies[Random.Range(0, bossEnemies.Count)];
+        if (bossGroup.Length <= 0)
+        {
+            return false;
+        }
         string[] blocks = bossGroup.Split("&");
         for (int i = 0; i < blocks.Length; i++)
         {
@@ -392,6 +402,7 @@ public class Dungeon : ScriptableObject
             }
         }
         enemyList.SetLists(bossGroupEnemies);
+        return true;
     }
     public void EnemyBeginsBattle()
     {

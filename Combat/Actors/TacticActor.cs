@@ -62,11 +62,25 @@ public class TacticActor : ActorStats
             }
         }
     }
+    public int counterAttacks;
+    public void GainCounterAttacks(int amount = 1)
+    {
+        counterAttacks += amount;
+    }
+    public bool CounterAttackAvailable()
+    {
+        return counterAttacks > 0;
+    }
+    public void UseCounterAttack()
+    {
+        counterAttacks--;
+    }
     public void NewTurn()
     {
         // Default is two actions.
         actions = Mathf.Max(actions, baseActions);
         movement = 0;
+        counterAttacks = 0;
         ResetStats();
     }
     public int GetMoveRangeBasedOnActions(int actionCount)

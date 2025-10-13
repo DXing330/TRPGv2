@@ -68,6 +68,13 @@ public class AttackManager : ScriptableObject
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
+        // Check if the defender is alive, has counter attacks available and is in range.
+        if (defender.GetHealth() > 0 && defender.CounterAttackAvailable() && moveManager.DistanceBetweenActors(defender, attacker) <= defender.GetAttackRange())
+        {
+            defender.UseCounterAttack();
+            map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " counter attacks " + attacker.GetPersonalName());
+            ActorAttacksActor(defender, attacker, map, moveManager);
+        }
     }
 
     protected int RollAttackDamage(int baseAttack)
