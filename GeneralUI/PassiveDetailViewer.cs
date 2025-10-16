@@ -414,6 +414,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " " + target + " gain " + specifics + " movement";
             case "Skill":
                 return " gain the " + specifics + " skill";
+            case "Temporary Skill":
+                return " gain the " + specifics + " skill once";
             case "Status":
                 return " inflict " + specifics+" on "+target;
             case "RemoveStatus":
@@ -460,6 +462,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " use " + specifics;
             case "Death":
                 return " die";
+            case "CounterAttack":
+                return " gain " + specifics + " counter attacks";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

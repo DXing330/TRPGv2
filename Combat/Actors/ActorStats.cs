@@ -374,6 +374,14 @@ public class ActorStats : ActorPassives
         if (skillName.Length <= 1) { return; }
         tempActives.Add(skillName);
     }
+    public void RemoveTempActive(string skillName)
+    {
+        int indexOf = tempActives.IndexOf(skillName);
+        if (indexOf >= 0)
+        {
+            tempActives.RemoveAt(indexOf);
+        }
+    }
     public int ActiveSkillCount()
     {
         int count = 0;
@@ -382,6 +390,7 @@ public class ActorStats : ActorPassives
             if (activeSkills[i].Length <= 0) { continue; }
             count++;
         }
+        count += tempActives.Count;
         return count;
     }
     public void SetActiveSkills(List<string> newSkills)

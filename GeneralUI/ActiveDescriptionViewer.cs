@@ -122,6 +122,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to change the targeted tile(s) to " + ASD(s) + ".";
             case "True Damage":
                 return "Deal damage equal to " + APD(p) + "% of " + ASD(s) + ".";
+            case "Flat Damage":
+                return "Deal " + ASD(s) + " damage.";
             case "Attack+Tile":
                 return "Attack the target(s)  with " + APD(p) + "% damage, and try to change the targeted tile(s) to " + ASD(s) + ".";
             case "MentalState":

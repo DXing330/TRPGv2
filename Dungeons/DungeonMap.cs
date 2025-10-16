@@ -14,19 +14,6 @@ public class DungeonMap : MapManager
     public bool interactable = true;
     // layers: 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
 
-    public void UpdateCenterTile(int newInfo)
-    {
-        centerTile = newInfo;
-        if (mapUtility.flatTop && mapUtility.GetColumn(centerTile, mapSize) % 2 != 1)
-        {
-            centerTile += 1;
-        }
-        else if (!mapUtility.flatTop && mapUtility.GetRow(centerTile, mapSize) % 2 != 1)
-        {
-            centerTile += mapSize;
-        }
-    }
-
     protected override void Start()
     {
         if (dungeon.GetBossFought() == 1)

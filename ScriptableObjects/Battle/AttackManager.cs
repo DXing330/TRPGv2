@@ -16,6 +16,22 @@ public class AttackManager : ScriptableObject
     protected int baseDamage;
     protected int damageMultiplier;
 
+    // Basically used for guns/cannons other non scaling damage
+    public void FlatDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage)
+    {
+        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        advantage = 0;
+        damageMultiplier = baseMultiplier;
+        baseDamage = damage;
+        CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
+        if (damageMultiplier < 0) { damageMultiplier = 0; }
+        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
+        baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
+        defender.TakeDamage(baseDamage);
+        defender.SetTarget(attacker);
+        map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+    }
+
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
     {
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }

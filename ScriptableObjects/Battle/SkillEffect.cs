@@ -210,6 +210,9 @@ public class SkillEffect : ScriptableObject
             case "Counter":
                 target.UpdateCounter(int.Parse(effectSpecifics));
                 break;
+            case "CounterAttack":
+                target.GainCounterAttacks(int.Parse(effectSpecifics));
+                break;
         }
     }
 
