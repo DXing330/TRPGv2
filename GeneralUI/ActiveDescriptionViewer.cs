@@ -98,6 +98,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Create a " + ASD(s) + ".";
             case "TerrainEffect":
                 return "Create " + ASD(s) + " on targeted tile(s).";
+            case "DelayedTileEffect":
+                return "Set up a " + ASD(s) + " on targeted tile(s) that will activate in " + APD(p) + " turns.";
             case "Trap":
                 return "Set up a " + ASD(s) + " trap on the targeted tile(s).";
             case "Taunt":

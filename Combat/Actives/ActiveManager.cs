@@ -322,6 +322,12 @@ public class ActiveManager : MonoBehaviour
                     battle.map.ChangeTerrainEffect(targetedTiles[i], specifics);
                 }
                 return;
+            case "DelayedTileEffect":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.AddDelayedEffect(specifics, targetedTiles[i], power);
+                }
+                return;
             case "Attack+TerrainEffect":
                 for (int i = 0; i < targets.Count; i++)
                 {

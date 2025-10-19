@@ -34,13 +34,22 @@ public class TacticActor : ActorStats
     public void ResetActions(){actions = 0;}
     // AAA
     public void AdjustActionAmount(int change){actions += change;}
+    public void SpendAction()
+    {
+        if (bonusActions > 0)
+        {
+            bonusActions--;
+            return;
+        }
+        actions--;
+    }
     public int bonusActions;
     public void ResetBonusActions(){bonusActions = 0;}
     public void GainBonusActions(int amount){bonusActions += amount;}
     public int GetActions(){return actions + bonusActions;}
     public void PayAttackCost()
     {
-        actions--;
+        SpendAction();
     }
     public bool ActionsLeft(){return actions > 0;}
     public void PayActionCost(int cost){actions -= cost;}
@@ -48,7 +57,7 @@ public class TacticActor : ActorStats
     public int GetMovement(){return movement;}
     protected void MoveAction()
     {
-        actions--;
+        SpendAction();
         movement += GetSpeed();
     }
     public void GainMovement(int amount){movement += amount;}

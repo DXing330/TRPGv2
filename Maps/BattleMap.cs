@@ -336,6 +336,77 @@ public class BattleMap : MapManager
     {
         trappedTiles[tileNumber] = "";
     }
+    // Just like traps, you can't see these.
+    // Better remember well or write it down if it's an AOE.
+    // Enemies will get around this by either being immune, or just accepting death.
+    public StatDatabase delayedEffectData;
+    public List<string> delayedEffects;
+    public List<int> delayedEffectTiles;
+    public List<int> delayedEffectTimers;
+    public void AddDelayedEffect(string effect, int tile, int timer)
+    {
+        delayedEffects.Add(effect);
+        delayedEffectTiles.Add(tile);
+        delayedEffectTimers.Add(timer);
+    }
+    public void RemoveDelayedEffect(int index)
+    {
+        delayedEffects.RemoveAt(index);
+        delayedEffectTiles.RemoveAt(index);
+        delayedEffectTimers.RemoveAt(index);
+    }
+    public void IncrementDelayedEffects()
+    {
+        for (int i = delayedEffects.Count - 1; i >= 0; i--)
+        {
+            delayedEffectTimers[i] = delayedEffectTimers[i] - 1;
+            if (delayedEffectTimers[i] <= 0)
+            {
+                // Apply the effect.
+                ActivateDelayedEffect(delayedEffects[i], delayedEffectTiles[i]);
+                RemoveDelayedEffect(i);
+            }
+        }
+    }
+    public void ActivateDelayedEffect(string effectKey, int tile)
+    {
+        string effectDetails = delayedEffectData.ReturnValue(effectKey);
+        if (effectDetails == "")
+        {
+            ApplyDelayedEffect(effectKey, tile);
+        }
+        else
+        {
+            ApplyDelayedEffect(effectDetails, tile);
+        }
+    }
+    protected void ApplyDelayedEffect(string effect, int tile)
+    {
+        Debug.Log(effect);
+        string[] blocks = effect.Split("|");
+        string[] targets = blocks[0].Split(",");
+        string[] effects = blocks[1].Split(",");
+        string[] specifics = blocks[2].Split(",");
+        for (int i = 0; i < targets.Length; i++)
+        {
+            switch (targets[i])
+            {
+                case "Actor":
+                    // Get the actor on the tile.
+                    TacticActor target = GetActorOnTile(tile);
+                    if (target == null)
+                    {
+                        Debug.Log("No Actor Found");
+                        break;
+                    }
+                    passiveEffect.AffectActor(target, effects[i], specifics[i], 1);
+                    break;
+                case "Tile":
+                    ChangeTerrain(tile, effects[i]);
+                    break;
+            }
+        }
+    }
     public List<string> highlightedTiles;
     public ColorDictionary colorDictionary;
 
@@ -763,6 +834,7 @@ public class BattleMap : MapManager
                     break;
             }
         }
+        IncrementDelayedEffects();
         UpdateMap();
     }
 }

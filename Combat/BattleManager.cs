@@ -177,14 +177,21 @@ public class BattleManager : MonoBehaviour
     public TacticActor GetTurnActor(){return turnActor;}
     protected void NextRound()
     {
+        // Update terrain effects/weather interactions/delayed/etc.
+        map.NextRound();
         map.RemoveActorsFromBattle();
+        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        if (winningTeam >= 0)
+        {
+            combatLog.UpdateNewestLog("Ending Battle By Map Effects");
+            EndBattle(winningTeam);
+            return;
+        }
         turnNumber = 0;
         roundNumber++;
         map.SetRound(roundNumber);
         // Get initiative order.
         map.battlingActors = initiativeTracker.SortActors(map.battlingActors);
-        // Update terrain effects/weather interactions/etc.
-        map.NextRound();
     }
     // Updates stats UI inbetween turns.
     // Also applies new turn effects to the next actor.

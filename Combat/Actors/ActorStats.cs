@@ -318,6 +318,15 @@ public class ActorStats : ActorPassives
         else { currentHealth += changeAmount; }
         if (currentHealth > GetBaseHealth()) { currentHealth = GetBaseHealth(); }
     }
+    public void TakeEffectDamage(int damage)
+    {
+        damage -= GetDefense();
+        if (damage < 0)
+        {
+            return;
+        }
+        TakeDamage(damage);
+    }
     public void TakeDamage(int damage) { UpdateHealth(damage); }
     public int currentEnergy;
     public void UpdateEnergy(int changeAmount, bool decrease = false)
