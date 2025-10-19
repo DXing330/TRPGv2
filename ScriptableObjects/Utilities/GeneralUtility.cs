@@ -199,6 +199,29 @@ public class GeneralUtility : ScriptableObject
         return toSort;
     }
 
+    public List<Sprite> SortSpritesByNames(List<Sprite> sprites)
+    {
+        List<string> spriteNames = new List<string>();
+        List<Sprite> newOrder = new List<Sprite>();
+        for (int i = 0; i < sprites.Count; i++)
+        {
+            spriteNames.Add(sprites[i].name);
+        }
+        spriteNames.Sort();
+        for (int i = 0; i < spriteNames.Count; i++)
+        {
+            for (int j = 0; j < sprites.Count; j++)
+            {
+                if (spriteNames[i] == sprites[j].name)
+                {
+                    newOrder.Add(sprites[j]);
+                    break;
+                }
+            }
+        }
+        return newOrder;
+    }
+
     public string ConvertIntListToString(List<int> int_list, string delimiter = "|")
     {
         List<string> string_list = new List<string>();

@@ -56,6 +56,8 @@ public class AttackManager : ScriptableObject
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        // Attacking decreases your initative.
+        attacker.UpdateTempInitiative(-1);
         advantage = 0;
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";

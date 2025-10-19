@@ -194,6 +194,9 @@ public class SkillEffect : ScriptableObject
             case "Initiative":
                 target.ChangeInitiative(int.Parse(effectSpecifics));
                 break;
+            case "TempInitiative":
+                target.UpdateTempInitiative(int.Parse(effectSpecifics));
+                break;
             case "Weight":
                 target.UpdateWeight(int.Parse(effectSpecifics));
                 break;

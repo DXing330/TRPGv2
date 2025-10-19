@@ -186,6 +186,9 @@ public class ActorStats : ActorPassives
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
         currentWeight = weight;
+        // Initiative is used to determine your turn in the round.
+        // At the start of your turn during the round reset it.
+        ResetTempInitiative();
     }
     protected void ResetTempStats()
     {
@@ -276,6 +279,19 @@ public class ActorStats : ActorPassives
     public int initiative;
     public void SetInitiative(int newInitiative) { initiative = newInitiative; }
     public int GetInitiative() { return initiative; }
+    public int tempInitiative;
+    public void ResetTempInitiative()
+    {
+        tempInitiative = 0;
+    }
+    public void UpdateTempInitiative(int amount)
+    {
+        tempInitiative += amount;
+    }
+    public int GetCurrentInitiative()
+    {
+        return initiative + tempInitiative;
+    }
     public void ChangeInitiative(int change) { initiative += change; }
     public int tempHealth;
     // You can keep a little bit of temphealth to buff temphealth as a stat.

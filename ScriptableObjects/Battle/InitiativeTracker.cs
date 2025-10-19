@@ -12,7 +12,7 @@ public class InitiativeTracker : ScriptableObject
         List<int> initiative = new List<int>();
         for (int i = 0; i < actors.Count; i++)
         {
-            initiative.Add(actors[i].GetInitiative());
+            initiative.Add(actors[i].GetCurrentInitiative());
         }
         return InsertionSortActorsByIntList(actors, initiative);
     }

@@ -179,6 +179,11 @@ public class TacticActor : ActorStats
     public void EndTurn()
     {
         movement = 0;
+        // Allow some slight turn manipulation by saving your actions.
+        if (actions > 0)
+        {
+            UpdateTempInitiative(actions * actions);
+        }
         ResetTempStats();
         ResetMentalState();
         CheckStatusDuration();
