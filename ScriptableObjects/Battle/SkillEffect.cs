@@ -188,6 +188,9 @@ public class SkillEffect : ScriptableObject
             case "Actions":
                 target.AdjustActionAmount(level * int.Parse(effectSpecifics));
                 break;
+            case "BonusActions":
+                target.GainBonusActions(level * int.Parse(effectSpecifics));
+                break;
             case "MoveType":
                 target.SetMoveType(effectSpecifics);
                 break;

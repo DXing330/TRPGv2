@@ -208,6 +208,8 @@ public class PassiveSkill : SkillEffect
                 return map.AllAllies(actor).Count < int.Parse(conditionSpecifics);
             case "AllyCount>":
                 return map.AllAllies(actor).Count > int.Parse(conditionSpecifics);
+            case "AdjacentAllyCount>":
+                return map.GetAdjacentAllies(actor).Count > int.Parse(conditionSpecifics);
             case "EnemyCount<":
                 return map.AllEnemies(actor).Count < int.Parse(conditionSpecifics);
             case "EnemyCount>":
