@@ -9,7 +9,7 @@ public class SkillEffect : ScriptableObject
     public PassiveOrganizer passiveOrganizer;
     public int basicDenominator = 100;
     public int baseStatusDuration = 3;
-    public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1)
+    public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1, CombatLog combatLog = null)
     {
         int changeAmount = 0;
         switch (effect)
@@ -73,7 +73,13 @@ public class SkillEffect : ScriptableObject
                 target.UpdateHealth(int.Parse(effectSpecifics) * level, false);
                 break;
             case "Damage":
+                int effectDamage = int.Parse(effectSpecifics) * level;
+                int effectDamageTaken = Mathf.Max(0, effectDamage - target.GetDefense());
                 target.TakeEffectDamage(int.Parse(effectSpecifics) * level);
+                if (combatLog != null)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + effectDamageTaken + " damage.");
+                }
                 break;
             case "Energy":
                 target.UpdateEnergy(int.Parse(effectSpecifics) * level);

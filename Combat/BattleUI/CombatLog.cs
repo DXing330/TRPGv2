@@ -157,12 +157,6 @@ public class CombatLog : MonoBehaviour
             }
         }
     }
-    protected void UpdateNewestLog()
-    {
-        roundTrackerText.text = "Round "+round;
-        turnTrackerText.text = "Turn "+(turn+1);
-        eventLog.text = allLogs[allLogs.Count - 1];
-    }
     public void ClickOnLog()
     {
         string details = ReturnDetailedLog(round,turn,eventLogs.GetSelected());

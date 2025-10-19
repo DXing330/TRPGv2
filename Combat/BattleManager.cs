@@ -177,6 +177,7 @@ public class BattleManager : MonoBehaviour
     public TacticActor GetTurnActor(){return turnActor;}
     protected void NextRound()
     {
+        combatLog.AddNewLog();
         // Update terrain effects/weather interactions/delayed/etc.
         map.NextRound();
         map.RemoveActorsFromBattle();

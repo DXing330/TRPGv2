@@ -61,6 +61,7 @@ public class AttackManager : ScriptableObject
         advantage = 0;
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
+        finalDamageCalculation = "";
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
         // Forests/other cover will reduce ranged damage greatly.
@@ -69,15 +70,17 @@ public class AttackManager : ScriptableObject
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
-        if (damageMultiplier < 0) { damageMultiplier = 0; }
-        finalDamageCalculation = "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
-        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
+        // First subtract defense.
+        finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
+        baseDamage = baseDamage - defender.GetDefense();
+        if (baseDamage < 0){ baseDamage = 0; }
         finalDamageCalculation += baseDamage;
-        finalDamageCalculation += "\n" + "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
-        // Adjust damage based on passives, terrain effects, direction, etc.
+        // Then multiply by damage multiplier.
+        if (damageMultiplier < 0) { damageMultiplier = 0; }
+        finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
+        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Check if the passive affects damage.
         baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
-        baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
         finalDamageCalculation += baseDamage;
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);

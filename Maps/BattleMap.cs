@@ -377,12 +377,11 @@ public class BattleMap : MapManager
         }
         else
         {
-            ApplyDelayedEffect(effectDetails, tile);
+            ApplyDelayedEffect(effectDetails, tile, true, effectKey);
         }
     }
-    protected void ApplyDelayedEffect(string effect, int tile)
+    protected void ApplyDelayedEffect(string effect, int tile, bool setEffect = false, string effectName = "")
     {
-        Debug.Log(effect);
         string[] blocks = effect.Split("|");
         string[] targets = blocks[0].Split(",");
         string[] effects = blocks[1].Split(",");
@@ -399,7 +398,11 @@ public class BattleMap : MapManager
                         Debug.Log("No Actor Found");
                         break;
                     }
-                    passiveEffect.AffectActor(target, effects[i], specifics[i], 1);
+                    if (setEffect)
+                    {
+                        combatLog.UpdateNewestLog(effectName + " affects " + target.GetPersonalName());
+                    }
+                    passiveEffect.AffectActor(target, effects[i], specifics[i], 1, combatLog);
                     break;
                 case "Tile":
                     ChangeTerrain(tile, effects[i]);
