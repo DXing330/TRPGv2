@@ -76,8 +76,12 @@ public class BattleMap : MapManager
     protected override void Start()
     {
         InitializeEmptyList();
-        terrainEffectTiles = new List<string>(emptyList);
-        trappedTiles = new List<string>(emptyList);
+        // Don't start again if you already force started.
+        if (terrainEffectTiles.Count < emptyList.Count)
+        {
+            terrainEffectTiles = new List<string>(emptyList);
+            trappedTiles = new List<string>(emptyList);
+        }
         //base.Start();
     }
     public BattleManager battleManager;
@@ -406,6 +410,22 @@ public class BattleMap : MapManager
                     break;
                 case "Tile":
                     ChangeTerrain(tile, effects[i]);
+                    break;
+                case "Ritual Summon":
+                    TacticActor sacrifice = GetActorOnTile(tile);
+                    if (sacrifice == null)
+                    {
+                        combatLog.UpdateNewestLog("Ritual summoning failed!");
+                        break;
+                    }
+                    // Kill the target.
+                    combatLog.UpdateNewestLog(sacrifice.GetPersonalName() + " is consumed by the ritual.");
+                    sacrifice.SetCurrentHealth(-1);
+                    battleManager.ActiveDeathPassives(sacrifice);
+                    battlingActors.Remove(sacrifice);
+                    // Summon an enemy.
+                    battleManager.SpawnAndAddActor(tile, effects[i], sacrifice.GetTeam());
+                    combatLog.UpdateNewestLog("By offering " + sacrifice.GetPersonalName() + " a " + effects[i] + " is summoned.");
                     break;
             }
         }
