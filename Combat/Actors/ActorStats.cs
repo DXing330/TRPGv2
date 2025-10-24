@@ -51,7 +51,7 @@ public class ActorStats : ActorPassives
             newStatNames = new List<string>(changeFormStatNames);
         }
         ResetPassives();
-        ResetTempStats();
+        EndTurnResetStats();
         stats = newStats;
         for (int i = 0; i < stats.Count; i++)
         {
@@ -74,7 +74,7 @@ public class ActorStats : ActorPassives
         }
         ClearStatuses();
         ResetPassives();
-        ResetTempStats();
+        EndTurnResetStats();
         stats = newStats;
         for (int i = 0; i < stats.Count; i++)
         {
@@ -180,21 +180,27 @@ public class ActorStats : ActorPassives
                 break;
         }
     }
+    // Start of turn.
     public void ResetStats()
     {
         currentAttack = baseAttack;
         currentDefense = baseDefense;
         currentSpeed = moveSpeed;
         currentWeight = weight;
+        currentDodge = baseDodge;
         // Initiative is used to determine your turn in the round.
         // At the start of your turn during the round reset it.
         ResetTempInitiative();
     }
-    protected void ResetTempStats()
+    // End of turn.
+    protected void EndTurnResetStats()
     {
         ResetTempAttack();
         ResetTempDefense();
         ResetTempHealth();
+        currentCritDamage = baseCritDamage;
+        currentCrit = baseCrit;
+        currentHitChance = baseHitChance;
     }
     public List<string> ReturnStats()
     {
@@ -376,6 +382,39 @@ public class ActorStats : ActorPassives
             currentSpeed = 0;
         }
     }
+    public void InitializeStats()
+    {
+        baseHitChance = initialHitChance;
+        baseDodge = initialDodge;
+        baseCrit = initialCrit;
+        baseCritDamage = initialCritDamage;
+        ResetStats();
+        EndTurnResetStats();
+    }
+    protected int initialHitChance = 99;
+    public int baseHitChance;
+    public void UpdateBaseHitChance(int amount){baseHitChance += amount;}
+    public int currentHitChance;
+    public int GetHitChance(){return currentHitChance;}
+    public void UpdateHitChance(int amount){currentHitChance += amount;}
+    protected int initialDodge = 1;
+    public int baseDodge;
+    public void UpdateBaseDodge(int amount){baseDodge += amount;}
+    public int currentDodge;
+    public int GetDodgeChance(){return currentDodge;}
+    public void UpdateDodgeChance(int amount){currentDodge += amount;}
+    protected int initialCrit = 1;
+    public int baseCrit;
+    public void UpdateBaseCritChance(int amount){baseCrit += amount;}
+    public int currentCrit;
+    public int GetCritChance(){return currentCrit;}
+    public void UpdateCritChance(int amount){currentCrit += amount;}
+    protected int initialCritDamage = 200;
+    public int baseCritDamage;
+    public void UpdateBaseCritDamage(int amount){baseCritDamage += amount;}
+    public int currentCritDamage;
+    public int GetCritDamage(){return currentCritDamage;}
+    public void UpdateCritDamage(int amount){currentCritDamage += amount;}
     public List<string> activeSkills;
     public void RemoveActiveSkill(int index)
     {

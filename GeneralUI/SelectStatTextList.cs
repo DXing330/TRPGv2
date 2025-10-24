@@ -203,6 +203,15 @@ public class SelectStatTextList : StatTextList
                 case "Charm":
                 statTexts[2].SetText(equipment.GetName());
                 break;
+                case "Helmet":
+                statTexts[3].SetText(equipment.GetName());
+                break;
+                case "Boots":
+                statTexts[4].SetText(equipment.GetName());
+                break;
+                case "Gloves":
+                statTexts[5].SetText(equipment.GetName());
+                break;
             }
         }
     }

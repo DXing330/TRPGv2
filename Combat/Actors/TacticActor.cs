@@ -196,7 +196,7 @@ public class TacticActor : ActorStats
         {
             UpdateTempInitiative(actions * actions);
         }
-        ResetTempStats();
+        EndTurnResetStats();
         ResetBonusActions();
         ResetMentalState();
         CheckStatusDuration();

@@ -228,6 +228,30 @@ public class SkillEffect : ScriptableObject
             case "CounterAttack":
                 target.GainCounterAttacks(int.Parse(effectSpecifics));
                 break;
+            case "BaseHitChance":
+                target.UpdateBaseHitChance(int.Parse(effectSpecifics));
+                break;
+            case "HitChance":
+                target.UpdateHitChance(int.Parse(effectSpecifics));
+                break;
+            case "BaseDodge":
+                target.UpdateBaseDodge(int.Parse(effectSpecifics));
+                break;
+            case "Dodge":
+                target.UpdateDodgeChance(int.Parse(effectSpecifics));
+                break;
+            case "BaseCritChance":
+                target.UpdateBaseCritChance(int.Parse(effectSpecifics));
+                break;
+            case "CritChance":
+                target.UpdateCritChance(int.Parse(effectSpecifics));
+                break;
+            case "BaseCritDamage":
+                target.UpdateBaseCritDamage(int.Parse(effectSpecifics));
+                break;
+            case "CritDamage":
+                target.UpdateCritDamage(int.Parse(effectSpecifics));
+                break;
         }
     }
 

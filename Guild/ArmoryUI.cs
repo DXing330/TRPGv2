@@ -117,6 +117,21 @@ public class ArmoryUI : MonoBehaviour
             selectEquipment.SetTitle("Charms");
             selectEquipment.SetData(equipmentInventory.GetCharms());
             break;
+            case 3:
+            if (equipmentInventory.HelmetCount() <= 0){return;}
+            selectEquipment.SetTitle("Helmets");
+            selectEquipment.SetData(equipmentInventory.GetHelmets());
+            break;
+            case 4:
+            if (equipmentInventory.BootsCount() <= 0){return;}
+            selectEquipment.SetTitle("Boots");
+            selectEquipment.SetData(equipmentInventory.GetBoots());
+            break;
+            case 5:
+            if (equipmentInventory.GlovesCount() <= 0){return;}
+            selectEquipment.SetTitle("Gloves");
+            selectEquipment.SetData(equipmentInventory.GetGloves());
+            break;
         }
         selectEquipObject.SetActive(true);
         selectEquipment.UpdateEquipNames();
@@ -171,6 +186,15 @@ public class ArmoryUI : MonoBehaviour
             break;
             case 2:
             slot = "Charm";
+            break;
+            case 3:
+            slot = "Helmet";
+            break;
+            case 4:
+            slot = "Boots";
+            break;
+            case 5:
+            slot = "Gloves";
             break;
         }
         string oldEquip = partyData.UnequipFromPartyMember(allActors.GetSelected(), slot, dummyEquip);

@@ -38,6 +38,8 @@ public class EquipmentInventory : SavedData
         dataList.RemoveAt(index);
         SortEquipment();
     }
+    public List<string> equipSlotStrings;
+    public List<int> equipSlotIndex;
     public string TakeEquipment(int index, int slot, bool remove = true)
     {
         switch (slot)
@@ -48,6 +50,12 @@ public class EquipmentInventory : SavedData
             return TakeArmor(index, remove);
             case 2:
             return TakeCharm(index, remove);
+            case 3:
+            return TakeHelmet(index, remove);
+            case 4:
+            return TakeBoots(index, remove);
+            case 5:
+            return TakeGloves(index, remove);
         }
         return "";
     }
@@ -84,6 +92,39 @@ public class EquipmentInventory : SavedData
         }
         return data;
     }
+    public string TakeHelmet(int otherIndex, bool remove = true)
+    {
+        string data = allHelmets[otherIndex];
+        int indexOf = dataList.IndexOf(allHelmets[otherIndex]);
+        if (remove)
+        {
+            allHelmets.RemoveAt(otherIndex);
+            RemoveEquipment(indexOf);
+        }
+        return data;
+    }
+    public string TakeBoots(int otherIndex, bool remove = true)
+    {
+        string data = allBoots[otherIndex];
+        int indexOf = dataList.IndexOf(allBoots[otherIndex]);
+        if (remove)
+        {
+            allBoots.RemoveAt(otherIndex);
+            RemoveEquipment(indexOf);
+        }
+        return data;
+    }
+    public string TakeGloves(int otherIndex, bool remove = true)
+    {
+        string data = allGloves[otherIndex];
+        int indexOf = dataList.IndexOf(allGloves[otherIndex]);
+        if (remove)
+        {
+            allGloves.RemoveAt(otherIndex);
+            RemoveEquipment(indexOf);
+        }
+        return data;
+    }
     public List<string> allWeapons;
     public int WeaponCount(){return allWeapons.Count;}
     public List<string> GetWeapons(){return allWeapons;}
@@ -93,6 +134,15 @@ public class EquipmentInventory : SavedData
     public List<string> allCharms;
     public int CharmCount(){return allCharms.Count;}
     public List<string> GetCharms(){return allCharms;}
+    public List<string> allHelmets;
+    public int HelmetCount(){return allHelmets.Count;}
+    public List<string> GetHelmets(){return allHelmets;}
+    public List<string> allBoots;
+    public int BootsCount(){return allBoots.Count;}
+    public List<string> GetBoots(){return allBoots;}
+    public List<string> allGloves;
+    public int GlovesCount(){return allGloves.Count;}
+    public List<string> GetGloves(){return allGloves;}
 
     public override void Load()
     {
@@ -122,6 +172,15 @@ public class EquipmentInventory : SavedData
                 break;
                 case "Charm":
                 allCharms.Add(dataList[i]);
+                break;
+                case "Helmet":
+                allHelmets.Add(dataList[i]);
+                break;
+                case "Boots":
+                allBoots.Add(dataList[i]);
+                break;
+                case "Gloves":
+                allGloves.Add(dataList[i]);
                 break;
             }
         }

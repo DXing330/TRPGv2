@@ -56,6 +56,14 @@ public class AttackManager : ScriptableObject
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        // Determine if you miss or not.
+        int hitRoll = Random.Range(0, 100);
+        if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
+        {
+            // Miss.
+            map.combatLog.UpdateNewestLog("The attack misses!");
+            return;
+        }
         // Attacking decreases your initative.
         attacker.UpdateTempInitiative(-1);
         advantage = 0;
@@ -70,6 +78,14 @@ public class AttackManager : ScriptableObject
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
+        // Check for a critical hit.
+        int critRoll = Random.Range(0, 100);
+        if (critRoll < attacker.GetCritChance())
+        {
+            finalDamageCalculation += "CRITICAL HIT: " + baseDamage + " * " + attacker.GetCritDamage() + "% = ";
+            baseDamage = baseDamage * attacker.GetCritDamage() / baseMultiplier;
+            finalDamageCalculation += baseDamage + "\n";
+        }
         // First subtract defense.
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
         baseDamage = baseDamage - defender.GetDefense();

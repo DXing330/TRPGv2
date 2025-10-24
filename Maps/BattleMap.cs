@@ -411,6 +411,12 @@ public class BattleMap : MapManager
                 case "Tile":
                     ChangeTerrain(tile, effects[i]);
                     break;
+                case "Time":
+                    SetTime(effects[i]);
+                    break;
+                case "Weather":
+                    SetWeather(effects[i]);
+                    break;
                 case "Ritual Summon":
                     TacticActor sacrifice = GetActorOnTile(tile);
                     if (sacrifice == null)
