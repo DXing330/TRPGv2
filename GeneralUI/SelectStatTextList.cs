@@ -184,7 +184,7 @@ public class SelectStatTextList : StatTextList
         page = 0;
         data.Clear();
         // 3 types of equipment, weapon, armor, charm
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 6; i++)
         {
             statTexts[i].SetText("None");
         }

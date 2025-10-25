@@ -9,7 +9,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GroupedSprites", menuName = "ScriptableObjects/DataContainers/GroupedSprites", order = 1)]
 public class GroupedSpriteContainer : SpriteContainer
 {
-    public GeneralUtility utility;
     public List<SpriteContainer> groupedSprites;
     public string allData;
     public string allDataDelimiter;

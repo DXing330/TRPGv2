@@ -11,6 +11,8 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "SpriteContainer", menuName = "ScriptableObjects/DataContainers/SpriteContainer", order = 1)]
 public class SpriteContainer : ScriptableObject
 {
+    public bool elevationDifferences = false;
+    public GeneralUtility utility;
     public List<Sprite> sprites;
     public string allKeysAndValues;
     public virtual void SetAllData(string newInfo)
@@ -49,9 +51,26 @@ public class SpriteContainer : ScriptableObject
         {
             spriteName = values[indexOf];
         }
+        if (elevationDifferences)
+        {
+            if (!spriteName.Contains("E"))
+            {
+                spriteName += "E0";
+            }
+        }
         for (int i = 0; i < sprites.Count; i++)
         {
             if (sprites[i].name == spriteName){return sprites[i];}
+        }
+        if (elevationDifferences)
+        {
+            // Try to use a lower elevation.
+            string[] blocks = spriteName.Split("E");
+            int elevation = int.Parse(blocks[1]);
+            if (elevation > 0)
+            {
+                return SpriteDictionary(blocks[0]+"E"+(elevation-1));
+            }
         }
         return null;
     }

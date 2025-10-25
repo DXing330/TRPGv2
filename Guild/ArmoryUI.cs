@@ -91,8 +91,8 @@ public class ArmoryUI : MonoBehaviour
     public virtual void ViewPassiveDetails()
     {
         if (allActors.GetSelected() < 0) { return; }
-        selectedPassive = actorPassives.statTexts[actorPassives.GetSelected()].GetStatText();
-        selectedPassiveLevel = actorPassives.statTexts[actorPassives.GetSelected()].GetText();
+        selectedPassive = actorPassives.statTexts[actorPassives.GetSelected() % actorPassives.statTexts.Count].GetStatText();
+        selectedPassiveLevel = actorPassives.statTexts[actorPassives.GetSelected() % actorPassives.statTexts.Count].GetText();
         detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
     }
 

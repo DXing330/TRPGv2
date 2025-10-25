@@ -47,7 +47,7 @@ public class MoveCostManager : MonoBehaviour
             {
                 currentMoveCosts.Add(int.Parse(value));
             }
-            currentMoveCosts[i] += mapElevations[i];
+            currentMoveCosts[i] += mapElevations[i] / 2;
         }
         List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();

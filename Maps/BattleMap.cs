@@ -285,6 +285,9 @@ public class BattleMap : MapManager
         {
             mapInfo[tileNumber] = interaction;
         }
+        // Update the elevation.
+        mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
+        battleManager.moveManager.SetMapElevations(mapElevations);
         UpdateMap();
     }
     public List<string> terrainEffectTiles;
