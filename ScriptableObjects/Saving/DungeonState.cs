@@ -43,6 +43,8 @@ public class DungeonState : SavedState
         // Viewed tiles
         allData += String.Join(delimiterTwo, dungeon.GetViewedTiles()) + delimiter;
         allData += dungeon.GetBossFought() + delimiter;
+        allData += dungeon.GetMaxStomach() + delimiter;
+        allData += dungeon.GetStomach() + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -51,22 +53,81 @@ public class DungeonState : SavedState
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
-        previousScene = dataList[0];
-        dungeon.SetDungeonName(dataList[1], false);
-        dungeon.SetDungeonSize(int.Parse(dataList[2]));
-        dungeon.LoadFloorTiles(dataList[3].Split(delimiterTwo).ToList());
-        dungeon.SetPartyLocation(int.Parse(dataList[4]));
-        dungeon.SetStairsDown(int.Parse(dataList[5]));
-        dungeon.SetTreasureLocations(dataList[6].Split(delimiterTwo).ToList());
-        dungeon.SetEnemies(dataList[7].Split(delimiterTwo).ToList(), dataList[8].Split(delimiterTwo).ToList(), dataList[9].Split(delimiterTwo).ToList());
-        dungeon.SetCurrentFloor(int.Parse(dataList[10]));
-        dungeon.SetQuestGoal(dataList[11]);
-        dungeon.SetGoalsCompleted(int.Parse(dataList[12]));
-        dungeon.SetQuestReward(int.Parse(dataList[13]));
-        dungeon.SetGoalFloor(int.Parse(dataList[14]));
-        dungeon.SetGoalTile(int.Parse(dataList[15]));
-        dungeon.SetTreasuresAcquired(int.Parse(dataList[16]));
-        dungeon.SetViewedTiles(dataList[17].Split(delimiterTwo).ToList());
-        dungeon.SetBossFought(int.Parse(dataList[18]));
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadSpecificStat(dataList[i], i);
+        }
+    }
+
+    protected void LoadSpecificStat(string stat, int index)
+    {
+        switch (index)
+        {
+            case 0:
+                previousScene = stat;
+                break;
+            case 1:
+                dungeon.SetDungeonName(stat, false);
+                break;
+            case 2:
+                dungeon.SetDungeonSize(int.Parse(stat));
+                break;
+            case 3:
+                dungeon.LoadFloorTiles(stat.Split(delimiterTwo).ToList());
+                break;
+            case 4:
+                dungeon.SetPartyLocation(int.Parse(stat));
+                break;
+            case 5:
+                dungeon.SetStairsDown(int.Parse(stat));
+                break;
+            case 6:
+                dungeon.SetTreasureLocations(stat.Split(delimiterTwo).ToList());
+                break;
+            case 7:
+                dungeon.SetEnemySprites(stat.Split(delimiterTwo).ToList());
+                break;
+            case 8:
+                dungeon.SetEnemyParties(stat.Split(delimiterTwo).ToList());
+                break;
+            case 9:
+                dungeon.SetEnemyLocations(stat.Split(delimiterTwo).ToList());
+                break;
+            case 10:
+                dungeon.SetCurrentFloor(int.Parse(stat));
+                break;
+            case 11:
+                dungeon.SetQuestGoal(stat);
+                break;
+            case 12:
+                dungeon.SetGoalsCompleted(int.Parse(stat));
+                break;
+            case 13:
+                dungeon.SetQuestReward(int.Parse(stat));
+                break;
+            case 14:
+                dungeon.SetGoalFloor(int.Parse(stat));
+                break;
+            case 15:
+                dungeon.SetGoalTile(int.Parse(stat));
+                break;
+            case 16:
+                dungeon.SetTreasuresAcquired(int.Parse(stat));
+                break;
+            case 17:
+                dungeon.SetViewedTiles(stat.Split(delimiterTwo).ToList());
+                break;
+            case 18:
+                dungeon.SetBossFought(int.Parse(stat));
+                break;
+            case 19:
+                dungeon.SetMaxStomach(int.Parse(stat));
+                break;
+            case 20:
+                dungeon.SetStomach(int.Parse(stat));
+                break;
+            default:
+                break;
+        }
     }
 }

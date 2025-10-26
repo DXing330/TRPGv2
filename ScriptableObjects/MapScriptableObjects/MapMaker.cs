@@ -64,6 +64,8 @@ public class MapMaker : ScriptableObject
         {
             case "River":
                 return AddRiver(originalMap, featureType, patternSpecifics);
+            case "Single":
+                return AddPoint(originalMap, featureType, patternSpecifics);
             case "Forest":
                 return AddForest(originalMap, featureType, patternSpecifics);
             case "Wall":
@@ -81,6 +83,13 @@ public class MapMaker : ScriptableObject
             case "WaterValley":
                 return AddValley(originalMap, featureType, "Water");
         }
+        return originalMap;
+    }
+
+    protected List<string> AddPoint(List<string> originalMap, string featureType, string specifics)
+    {
+        int startTile = (Random.Range(1, mapSize - 1) * mapSize) + Random.Range(1, mapSize - 1);
+        originalMap[startTile] = featureType;
         return originalMap;
     }
 

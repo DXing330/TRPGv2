@@ -162,7 +162,10 @@ public class DungeonGenerator : ScriptableObject
             if (possibleNextPoints.Count <= 0){break;}
             start = possibleNextPoints[Random.Range(0, possibleNextPoints.Count)];
             // Make it passable.
-            allTiles[start] = 0;
+            if (start >= 0 && start < allTiles.Count)
+            {
+                allTiles[start] = 0;
+            }
             if (start == end){break;}
         }
     }

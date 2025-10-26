@@ -6,16 +6,61 @@ public class DungeonMap : MapManager
 {
     public GameObject blackScreen;
     public int maxDistanceFromCenter = 3;
-    public PartyDataManager partyDataManager;
+    public PartyDataManager partyData;
     public ActorSpriteHPList actorSpriteHPList;
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
+    public GameObject stomachMeter;
+    public void UpdateStomachMeter()
+    {
+        stomachMeter.transform.localScale = new Vector3((float)dungeon.GetStomach()/(float)dungeon.GetMaxStomach(),1,0);
+    }
+    public PopUpMessage dowsingMessage;
+    protected int DetermineClosestEnemyLocation(List<int> enemyLocations)
+    {
+        if (enemyLocations.Count <= 0){return -1;}
+        int distance = dungeon.GetDungeonSize();
+        int index = 0;
+        for (int i = 0; i < enemyLocations.Count; i++)
+        {
+            if (mapUtility.DistanceBetweenTiles(dungeon.GetPartyLocation(), enemyLocations[i], dungeon.GetDungeonSize()) < distance)
+            {
+                index = i;
+                distance = mapUtility.DistanceBetweenTiles(dungeon.GetPartyLocation(), enemyLocations[i], dungeon.GetDungeonSize());
+            }
+        }
+        return enemyLocations[index];
+    }
+    public void UseDowsing(string target)
+    {
+        string message = "The rods point ";
+        switch (target)
+        {
+            case "Stairs":
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetStairsDown(), dungeon.GetDungeonSize())) + ".";
+                break;
+            case "Treasure":
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetRandomTreasureLocation(), dungeon.GetDungeonSize())) + ".";
+                break;
+            case "Item":
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetStairsDown(), dungeon.GetDungeonSize())) + ".";
+                break;
+            case "Enemy":
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestEnemyLocation(dungeon.GetEnemyLocations()), dungeon.GetDungeonSize())) + ".";
+                break;
+            default:
+                break;
+        }
+        dowsingMessage.SetMessage(message);
+        MoveToTile(dungeon.GetPartyLocation());
+    }
     public SceneMover sceneMover;
     public bool interactable = true;
     // layers: 0 = terrain, 1 = stairs/treasure/etc., 2 = actorsprites
 
     protected override void Start()
     {
+        blackScreen.SetActive(true);
         if (dungeon.GetBossFought() == 1)
         {
             sceneMover.ReturnFromDungeon();
@@ -24,6 +69,7 @@ public class DungeonMap : MapManager
         mapSize = dungeon.GetDungeonSize();
         InitializeEmptyList();
         dungeon.UpdateEmptyTiles(emptyList);
+        UpdateStomachMeter();
         UpdateCenterTile(dungeon.GetPartyLocation());
         // If you've fought the boss and returned then you get to go to the reward scene.
         UpdateMap();
@@ -32,13 +78,19 @@ public class DungeonMap : MapManager
 
     protected void MoveToTile(int newTile)
     {
+        // Whenever moving, decrease the hunger meter.
+        if (dungeon.Hungry())
+        {
+            // If the hunger meter is empty then the party suffers.
+        }
+        UpdateStomachMeter();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
             UpdateCenterTile(newTile);
         }
         if (dungeon.GetQuestGoal() == "Rescue" && dungeon.GoalTile(newTile))
         {
-            partyDataManager.AddTempPartyMember(dungeon.GetEscortName());
+            partyData.AddTempPartyMember(dungeon.GetEscortName());
             dungeon.SetGoalsCompleted(1);
             actorSpriteHPList.RefreshData();
         }
@@ -61,6 +113,9 @@ public class DungeonMap : MapManager
                 return;
             }
             dungeon.MoveFloors();
+            // Save whenever moving floors.
+            dungeon.dungeonState.Save();
+            partyData.Save();
             // This doesn't update the center when moving between dungeons for some reason.
             UpdateCenterTile(dungeon.GetPartyLocation());
             StartCoroutine(MoveFloors());

@@ -283,10 +283,8 @@ public class BattleMap : MapManager
         }
         mapInfo[tileNumber] = change;
         // Update the elevation.
-        Debug.Log("Old Elevation:"+mapElevations[tileNumber]);
-        Debug.Log("New Tile:"+mapInfo[tileNumber]);
         mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
-        Debug.Log("New Elevation:"+mapElevations[tileNumber]);
+        mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
         battleManager.moveManager.SetMapElevations(mapElevations);
         UpdateMap();
     }

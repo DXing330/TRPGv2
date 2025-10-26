@@ -345,6 +345,10 @@ public class MapUtility : ScriptableObject
 
     public int DirectionBetweenLocations(int start, int end, int size)
     {
+        if (start < 0 || end < 0)
+        {
+            return -1;
+        }
         for (int i = 0; i < 6; i++)
         {
             if (PointInDirection(start, i, size) == end)
@@ -358,21 +362,46 @@ public class MapUtility : ScriptableObject
         int r2 = GetHexR(end, size);
         int s1 = GetHexS(start, size);
         int s2 = GetHexS(end, size);
-        if (q1 == q2)
+        if (flatTop)
         {
-            if (r1 > r2 && s1 < s2) { return 0; }
-            else if (r1 < r2 && s1 > s2) { return 3; }
+            int row1 = GetRow(start, size);
+            int row2 = GetRow(end, size);
+            if (q1 == q2)
+            {
+                if (row1 > row2) { return 3; }
+                else { return 0; }
+            }
+            // Needs more edge case testing.
+            else if (q1 < q2)
+            {
+                if (r1 <= r2 && s1 > s2) { return 2; }
+                else { return 1; }
+            }
+            else if (q1 > q2)
+            {
+                if (r1 < r2 && s1 >= s2) { return 4; }
+                else { return 5; }
+            }
         }
-        // Needs more edge case testing.
-        else if (q1 < q2)
+        else
         {
-            if (r1 <= r2 && s1 > s2) { return 2; }
-            else { return 1; }
-        }
-        else if (q1 > q2)
-        {
-            if (r1 < r2 && s1 >= s2) { return 4; }
-            else { return 5; }
+            int col1 = GetColumn(start, size);
+            int col2 = GetColumn(end, size);
+            if (r1 == r2) // P1 is same row as P2
+            {
+                if (q1 < q2){return 1;}
+                else{return 4;}
+            }
+            else if (r1 < r2) // P1 is above P2
+            {
+                if (col1 < col2){return 2;}
+                else{return 3;}
+            }
+            else if (r1 > r2) // P1 is below P2
+            {
+                if (col1 < col2){return 0;}
+                else{return 5;}
+            }
         }
         return -1;
     }

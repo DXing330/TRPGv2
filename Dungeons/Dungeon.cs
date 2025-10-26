@@ -8,6 +8,7 @@ using UnityEngine;
 public class Dungeon : ScriptableObject
 {
     public GeneralUtility utility;
+    public DungeonState dungeonState;
     public ActorPathfinder pathfinder;
     public DungeonGenerator dungeonGenerator;
     public CharacterList enemyList;
@@ -139,6 +140,8 @@ public class Dungeon : ScriptableObject
         maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
         enemyModifiers = dungeonInfo[7].Split(",").ToList();
         bossEnemies = dungeonInfo[8].Split(",").ToList();
+        currentStomach = baseMaxStomach;
+        currentMaxStomach = baseMaxStomach;
         utility.RemoveEmptyListItems(enemyModifiers);
         utility.RemoveEmptyListItems(bossEnemies);
     }
@@ -148,6 +151,33 @@ public class Dungeon : ScriptableObject
     public List<string> possibleEnemies;
     public List<string> enemyModifiers;
     public List<string> bossEnemies;
+    protected int baseMaxStomach = 100;
+    public int currentMaxStomach;
+    public void SetMaxStomach(int newInfo){currentMaxStomach = newInfo;}
+    public int GetMaxStomach(){return currentMaxStomach;}
+    public int currentStomach;
+    public void SetStomach(int newInfo){currentStomach = newInfo;}
+    public int GetStomach(){return currentStomach;}
+    public void IncreaseStomach(int amount)
+    {
+        currentStomach += amount;
+        if (currentStomach > currentMaxStomach)
+        {
+            currentStomach = currentMaxStomach;
+        }
+    }
+    public bool Hungry()
+    {
+        if (currentStomach > 0)
+        {
+            currentStomach--;
+            return false;
+        }
+        return true;
+    }
+    // Eating food might give you buffs?
+    public List<string> partyModifiers;
+    public List<int> partyModifierDurations;
     public bool fastSpawn = false;
     public int minEnemies;
     public int maxEnemies;
@@ -281,8 +311,34 @@ public class Dungeon : ScriptableObject
         allEnemyLocations.RemoveAt(indexOf);
     }
     public List<string> allEnemySprites;
+    public void SetEnemySprites(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        if (newInfo.Count <= 0) { return; }
+        allEnemySprites = new List<string>(newInfo);
+    }
     public List<string> allEnemyParties;
+    public void SetEnemyParties(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        if (newInfo.Count <= 0) { return; }
+        allEnemyParties = new List<string>(newInfo);
+    }
     public List<int> allEnemyLocations;
+    public List<int> GetEnemyLocations()
+    {
+        return allEnemyLocations;
+    }
+    public void SetEnemyLocations(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        if (newInfo.Count <= 0) { return; }
+        allEnemyLocations.Clear();
+        for (int i = 0; i < newInfo.Count; i++)
+        {
+            allEnemyLocations.Add(int.Parse(newInfo[i]));
+        }
+    }
     public void SetEnemies(List<string> newSprites, List<string> newParties, List<string> newLocations)
     {
         utility.RemoveEmptyListItems(newSprites);
@@ -300,6 +356,14 @@ public class Dungeon : ScriptableObject
         return allEnemyLocations.Contains(nextTile);
     }
     public List<int> treasureLocations;
+    public int GetRandomTreasureLocation()
+    {
+        if (treasureLocations.Count <= 0)
+        {
+            return -1;
+        }
+        return treasureLocations[Random.Range(0, treasureLocations.Count)];
+    }
     public void SetTreasureLocations(List<string> newInfo)
     {
         List<string> tLoc = newInfo;
