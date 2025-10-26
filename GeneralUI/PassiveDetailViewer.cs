@@ -316,14 +316,16 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if you have " + specifics + " status";
             case "StatusD":
                 return " if the target has " + specifics + " status";
+            case "Range>":
+                return " if attack range is greater than " + specifics;
             case "RangeD>":
-                return " if the target's attack range is greater than " + specifics + "";
+                return " if the target's attack range is greater than " + specifics;
             case "RangeD<":
-                return " if the target's attack range is less than " + specifics + "";
+                return " if the target's attack range is less than " + specifics;
             case "RangeA>":
-                return " if your attack range is greater than " + specifics + "";
+                return " if your attack range is greater than " + specifics;
             case "RangeA<":
-                return " if your attack range is less than " + specifics + "";
+                return " if your attack range is less than " + specifics;
             case "Round":
                 switch (specifics)
                 {
@@ -434,6 +436,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " change movement type of " + target + " to " + specifics;
             case "AttackRange":
                 return " increase Attack Range of " + target + " by up to " + specifics;
+            case "TempRange":
+                return " increase Attack Range of " + target + " by " + specifics;
             case "BaseSpeed":
                 return " increase Base Speed of " + target + " by up to " + specifics;
             case "TempAttack%":

@@ -146,6 +146,9 @@ public class SkillEffect : ScriptableObject
             case "AttackRange":
                 target.SetAttackRangeMax(int.Parse(effectSpecifics));
                 break;
+            case "TempRange":
+                target.UpdateBonusAttackRange(int.Parse(effectSpecifics));
+                break;
             case "TempHealth%":
                 changeAmount = int.Parse(effectSpecifics) * target.GetBaseHealth() / basicDenominator;
                 if (Mathf.Abs(changeAmount) < Mathf.Abs(int.Parse(effectSpecifics)))

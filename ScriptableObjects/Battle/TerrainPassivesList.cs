@@ -36,10 +36,38 @@ public class TerrainPassivesList : StatDatabase
         return indexOf >= 0;
     }
 
-    public TerrainPassives ReturnTerrainPassive(string key)
+    protected string ReturnSpecificPassive(string key, int index)
     {
-        int indexOf = keys.IndexOf(key);
-        if (indexOf == -1){return null;}
-        return passives[indexOf];
+        string[] values = ReturnValue(key).Split("|");
+        if (index < 0 || index >= values.Length)
+        {
+            return "";
+        }
+        return values[index];
+    }
+
+    public string ReturnAttackingPassive(string key)
+    {
+        return ReturnSpecificPassive(key, 0);
+    }
+
+    public string ReturnDefendingPassive(string key)
+    {
+        return ReturnSpecificPassive(key, 1);
+    }
+
+    public string ReturnMovingPassive(string key)
+    {
+        return ReturnSpecificPassive(key, 2);
+    }
+
+    public string ReturnStartPassive(string key)
+    {
+        return ReturnSpecificPassive(key, 3);
+    }
+
+    public string ReturnEndPassive(string key)
+    {
+        return ReturnSpecificPassive(key, 4);
     }
 }

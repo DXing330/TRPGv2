@@ -319,7 +319,7 @@ public class ActiveManager : MonoBehaviour
             case "TerrainEffect":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrainEffect(targetedTiles[i], specifics);
+                    battle.map.ChangeTEffect(targetedTiles[i], specifics);
                 }
                 return;
             case "DelayedTileEffect":
@@ -335,7 +335,7 @@ public class ActiveManager : MonoBehaviour
                 }
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.ChangeTerrainEffect(targetedTiles[i], specifics);
+                    battle.map.ChangeTEffect(targetedTiles[i], specifics);
                 }
                 return;
             case "Trap":

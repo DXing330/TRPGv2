@@ -223,7 +223,7 @@ public class AttackManager : ScriptableObject
         string attackingTile = map.mapInfo[attacker.GetLocation()];
         if (terrainPassives.TerrainPassivesExist(targetTile))
         {
-            string defendingPassive = terrainPassives.ReturnTerrainPassive(targetTile).GetDefendingPassive();
+            string defendingPassive = terrainPassives.ReturnDefendingPassive(targetTile);
             if (defendingPassive.Length > 1)
             {
                 ApplyPassiveEffect(defendingPassive, target, attacker, map, moveManager);
@@ -231,7 +231,7 @@ public class AttackManager : ScriptableObject
         }
         if (terrainPassives.TerrainPassivesExist(attackingTile))
         {
-            string attackingPassive = terrainPassives.ReturnTerrainPassive(attackingTile).GetAttackingPassive();
+            string attackingPassive = terrainPassives.ReturnAttackingPassive(attackingTile);
             if (attackingPassive.Length > 1)
             {
                 ApplyPassiveEffect(attackingPassive, target, attacker, map, moveManager);

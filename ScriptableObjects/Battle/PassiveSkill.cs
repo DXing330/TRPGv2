@@ -192,6 +192,8 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == actor.GetMoveType();
             case "MoveType<>":
                 return conditionSpecifics != actor.GetMoveType();
+            case "Range>":
+                return actor.GetAttackRange() > int.Parse(conditionSpecifics);
             case "MentalState":
                 return conditionSpecifics == actor.GetMentalState();
             case "Status":
@@ -508,7 +510,7 @@ public class PassiveSkill : SkillEffect
                 map.ChangeTerrain(location, effectSpecifics);
                 break;
             case "TerrainEffect":
-                map.ChangeTerrainEffect(location, effectSpecifics);
+                map.ChangeTEffect(location, effectSpecifics);
                 break;
         }
     }

@@ -198,6 +198,7 @@ public class ActorStats : ActorPassives
         ResetTempAttack();
         ResetTempDefense();
         ResetTempHealth();
+        ResetBonusAttackRange();
         currentCritDamage = baseCritDamage;
         currentCrit = baseCrit;
         currentHitChance = baseHitChance;
@@ -259,8 +260,17 @@ public class ActorStats : ActorPassives
     {
         attackRange = Mathf.Max(attackRange, newRange);
     }
-    public int GetAttackRange() { return attackRange; }
+    public int GetAttackRange() { return attackRange + bonusAttackRange; }
     public void UpdateAttackRange(int changeAmount) { attackRange += changeAmount; }
+    public int bonusAttackRange;
+    public void ResetBonusAttackRange()
+    {
+        bonusAttackRange = 0;
+    }
+    public void UpdateBonusAttackRange(int changeAmount)
+    {
+        bonusAttackRange += changeAmount;
+    }
     public int baseDefense;
     public void SetBaseDefense(int newDefense) { baseDefense = newDefense; }
     public int GetBaseDefense() { return baseDefense; }

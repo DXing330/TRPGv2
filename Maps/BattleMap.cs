@@ -38,7 +38,7 @@ public class BattleMap : MapManager
         string terrainType = mapInfo[actor.GetLocation()];
         if (terrainPassives.TerrainPassivesExist(terrainType))
         {
-            return terrainPassives.ReturnTerrainPassive(terrainType).GetStartPassive();
+            return terrainPassives.ReturnStartPassive(terrainType);
         }
         return "";
     }
@@ -47,7 +47,7 @@ public class BattleMap : MapManager
         string terrainType = mapInfo[actor.GetLocation()];
         if (terrainPassives.TerrainPassivesExist(terrainType))
         {
-            return terrainPassives.ReturnTerrainPassive(terrainType).GetEndPassive();
+            return terrainPassives.ReturnEndPassive(terrainType);
         }
         return "";
     }
@@ -56,7 +56,7 @@ public class BattleMap : MapManager
         string terrainType = mapInfo[actor.GetLocation()];
         if (terrainPassives.TerrainPassivesExist(terrainType))
         {
-            return terrainPassives.ReturnTerrainPassive(terrainType).GetMovingPassive();
+            return terrainPassives.ReturnMovingPassive(terrainType);
         }
         return "";
     }
@@ -268,25 +268,25 @@ public class BattleMap : MapManager
                 ChangeTerrain(tileNumber, specifics);
                 break;
             case "TerrainEffect":
-                ChangeTerrainEffect(tileNumber, specifics);
+                ChangeTEffect(tileNumber, specifics);
                 break;
         }
     }
     public void ChangeTerrain(int tileNumber, string change)
     {
-        string changeKey = mapInfo[tileNumber]+">"+change;
-        string interaction = tileTileInteractions.ReturnValue(changeKey);
-        if (interaction == "")
+        if (mapInfo[tileNumber] == change){return;}
+        string originalRank = tileTileInteractions.ReturnValue(mapInfo[tileNumber]);
+        string newRank = tileTileInteractions.ReturnValue(change);
+        if (utility.SafeParseInt(newRank, -1) > utility.SafeParseInt(originalRank, -1))
         {
-            // Straight forward change ignoring everything else.
-            mapInfo[tileNumber] = change;
+            return;
         }
-        else
-        {
-            mapInfo[tileNumber] = interaction;
-        }
+        mapInfo[tileNumber] = change;
         // Update the elevation.
+        Debug.Log("Old Elevation:"+mapElevations[tileNumber]);
+        Debug.Log("New Tile:"+mapInfo[tileNumber]);
         mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
+        Debug.Log("New Elevation:"+mapElevations[tileNumber]);
         battleManager.moveManager.SetMapElevations(mapElevations);
         UpdateMap();
     }
@@ -300,7 +300,7 @@ public class BattleMap : MapManager
         }
         UpdateMap();
     }
-    public void ChangeTerrainEffect(int tileNumber, string newEffect)
+    public void ChangeTEffect(int tileNumber, string newEffect)
     {
         terrainEffectTiles[tileNumber] = newEffect;
         UpdateMap();
@@ -830,15 +830,18 @@ public class BattleMap : MapManager
             t_t = terrainEffectTiles[i] + "-" + mapInfo[i];
             if (terrainWeatherInteractions.ReturnValue(t_w) == "Remove" || terrainTileInteractions.ReturnValue(t_t) == "Remove")
             {
-                ChangeTerrainEffect(i, "");
-            }
-            else if (terrainWeatherInteractions.ReturnValue(t_w) == "Spread" || terrainTileInteractions.ReturnValue(t_t) == "Spread")
-            {
-                spreadingEffects.Add(i);
+                ChangeTEffect(i, "");
+                continue;
             }
             else if (terrainWeatherInteractions.ReturnValue(t_w) == "Expand" || terrainTileInteractions.ReturnValue(t_t) == "Expand")
             {
                 expandingEffects.Add(i);
+                continue;
+            }
+            else if (terrainWeatherInteractions.ReturnValue(t_w) == "Spread" || terrainTileInteractions.ReturnValue(t_t) == "Spread")
+            {
+                spreadingEffects.Add(i);
+                continue;
             }
         }
         for (int i = 0; i < spreadingEffects.Count; i++)
@@ -859,10 +862,10 @@ public class BattleMap : MapManager
             switch (blocks[0])
             {
                 case "Tile":
-                    mapInfo[i] = blocks[1];
+                    ChangeTerrain(i, blocks[1]);
                     break;
                 case "Feature":
-                    terrainEffectTiles[i] = blocks[1];
+                    ChangeTEffect(i, blocks[1]);
                     break;
             }
         }
