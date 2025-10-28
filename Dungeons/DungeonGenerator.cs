@@ -38,21 +38,38 @@ public class DungeonGenerator : ScriptableObject
         // Get treasure locations.
             // Inside 1+ randomly selected room(s).
         ConnectPoints(start, end);
+        List<int> takenLocations = new List<int>();
         List<int> treasureLocations = new List<int>();
         for (int i = 0; i < treasureCount; i++)
         {
-            treasureLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, treasureLocations));
+            takenLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, takenLocations));
+            treasureLocations.Add(takenLocations[i]);
         }
         for (int i = 0; i < treasureLocations.Count; i++)
         {
             ConnectPoints(start, treasureLocations[i]);
         }
         // Put traps inside rooms.
-            // Explosives, poison, fire, spikes, etc.
+        List<int> trapLocations = new List<int>();
+        // Put items in room.
+        List<int> itemLocations = new List<int>();
+        // How do we determine how many traps and items to put?
+        for (int i = treasureCount; i < treasureCount + 3; i ++)
+        {
+            takenLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, takenLocations));
+            trapLocations.Add(takenLocations[i]);
+        }
+        for (int i = treasureCount + 3; i < treasureCount + 6; i ++)
+        {
+            takenLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, takenLocations));
+            itemLocations.Add(takenLocations[i]);
+        }
         dungeonData.Add(utility.ConvertIntListToString(allTiles));
         dungeonData.Add(start.ToString());
         dungeonData.Add(end.ToString());
         dungeonData.Add(utility.ConvertIntListToString(treasureLocations));
+        dungeonData.Add(utility.ConvertIntListToString(trapLocations));
+        dungeonData.Add(utility.ConvertIntListToString(itemLocations));
         return dungeonData;
     }
 

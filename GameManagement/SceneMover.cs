@@ -140,12 +140,17 @@ public class SceneMover : MonoBehaviour
         sceneTracker.Save();
         battleState.UpdatePreviousScene();
         battleState.SetTerrainType();
+        battleState.ResetWeather();
         battleState.UpdateEnemyNames();
         battleState.Save();
         if (SceneManager.GetActiveScene().name == dungeonSceneName)
         {
             // Only save the dungeon state if entering a battle from the dungeon.
             dungeonState.Save();
+            // Set the terrain and weather based on the dungeon.
+            battleState.SetWeather(dungeonState.dungeon.GetWeather());
+            battleState.ForceTerrainType(dungeonState.dungeon.type);
+            battleState.Save();
         }
         if (loadingRequired)
         {

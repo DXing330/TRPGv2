@@ -142,6 +142,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "All allies gain " + APD(p) + " " + ASD(s) + ".";
             case "AllEnemies":
                 return "All enemies receive " + APD(p) + " " + ASD(s) + ".";
+            case "Command":
+                return "Give a(n) " + ASD(s) + "command.";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

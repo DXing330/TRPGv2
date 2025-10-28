@@ -327,6 +327,18 @@ public class MoveCostManager : MonoBehaviour
         ApplyMovePassiveEffects(actor, map);
     }
 
+    public void CommandMovement(TacticActor actor, BattleMap map, bool forward = true)
+    {
+        int dir = actor.GetDirection();
+        if (!forward)
+        {
+            dir = (dir + 3) % 6;
+        }
+        int newTile = map.mapUtility.PointInDirection(actor.GetLocation(), dir, map.mapSize);
+        MoveActorToTile(actor, newTile, map);
+        map.UpdateActors();
+    }
+
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
         int nextTile = actor.GetLocation();

@@ -79,9 +79,19 @@ public class BattleState : SavedState
         return overworldState.GetTime();
     }
     public StatDatabase allWeather;
+    public string weather;
     public List<string> weatherTypes;
+    public void ResetWeather(){SetWeather();}
+    public void SetWeather(string newInfo = "")
+    {
+        weather = newInfo;
+    }
     public virtual string GetWeather()
     {
+        if (weather.Length > 0)
+        {
+            return weather;
+        }
         if (overworldState == null)
         {
             return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
@@ -110,6 +120,8 @@ public class BattleState : SavedState
         allData += delimiter;
         allData += String.Join(delimiterTwo, enemyBattleModifiers);
         allData += delimiter;
+        allData += weather;
+        allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -118,17 +130,73 @@ public class BattleState : SavedState
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
-        previousScene = dataList[0];
-        enemies = dataList[1].Split(delimiterTwo).ToList();
-        terrainType = dataList[2];
-        winningTeam = int.Parse(dataList[3]);
-        allyBattleModifiers = dataList[4].Split(delimiterTwo).ToList();
-        enemyBattleModifiers = dataList[5].Split(delimiterTwo).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);
         enemyList.SetBattleModifiers(enemyBattleModifiers);
         partyList.SetBattleModifiers(allyBattleModifiers);
         battleMapFeatures.SetTerrainType(terrainType);
+    }
+
+    protected void LoadStat(string stat, int index)
+    {
+        switch (index)
+        {
+            case 0:
+                previousScene = stat;
+                break;
+            case 1:
+                enemies = stat.Split(delimiterTwo).ToList();
+                break;
+            case 2:
+                terrainType = stat;
+                break;
+            case 3:
+                winningTeam = int.Parse(stat);
+                break;
+            case 4:
+                allyBattleModifiers = stat.Split(delimiterTwo).ToList();
+                break;
+            case 5:
+                enemyBattleModifiers = stat.Split(delimiterTwo).ToList();
+                break;
+            case 6:
+                SetWeather(stat);
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            case 12:
+                break;
+            case 13:
+                break;
+            case 14:
+                break;
+            case 15:
+                break;
+            case 16:
+                break;
+            case 17:
+                break;
+            case 18:
+                break;
+            case 19:
+                break;
+            case 20:
+                break;
+            default:
+                break;
+        }
     }
 }

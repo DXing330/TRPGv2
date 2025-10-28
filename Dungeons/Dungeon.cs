@@ -31,6 +31,9 @@ public class Dungeon : ScriptableObject
         SetPartyLocation(int.Parse(newDungeon[1]));
         SetStairsDown(int.Parse(newDungeon[2]));
         SetTreasureLocations(newDungeon[3].Split("|").ToList());
+        SetTrapLocations(newDungeon[4].Split("|").ToList());
+        SetItemLocations(newDungeon[5].Split("|").ToList());
+        SetWeather();
         goalTile = -1;
         if (currentFloor == goalFloor)
         {
@@ -63,6 +66,40 @@ public class Dungeon : ScriptableObject
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
     public StatDatabase dungeonBosses;
+    public StatDatabase dungeonItems;
+    public StatDatabase itemRarities;
+    public StatDatabase dungeonWeathers;
+    public StatDatabase dungeonTerrains;
+    // Get a new weather whenever you move floors.
+    protected string GenerateWeather()
+    {
+        string[] possibleWeathers = dungeonWeathers.ReturnValue(dungeonName).Split("|");
+        string chosenWeather = possibleWeathers[Random.Range(0, possibleWeathers.Length)];
+        Debug.Log(chosenWeather);
+        return chosenWeather;
+    }
+    protected int maxItemRarity = 3;
+    protected int GenerateItemRarity()
+    {
+        return utility.RollRarity(maxItemRarity);
+    }
+    public string GenerateItem()
+    {
+        int rarity = GenerateItemRarity();
+        return itemRarities.ReturnRandomKeyBasedOnIntValue(rarity);
+    }
+    public StatDatabase dungeonTraps;
+    public StatDatabase trapRarities;
+    protected int maxTrapRarity = 3;
+    protected int GenerateTrapRarity()
+    {
+        return utility.RollRarity(maxTrapRarity);
+    }
+    public string GenerateTrap()
+    {
+        int rarity = GenerateTrapRarity();
+        return trapRarities.ReturnRandomKeyBasedOnIntValue(rarity);
+    }
     // Need to determine what floor the goal is on.
     public string questInfo;
     public string GetQuestInfo(){return questInfo;}
@@ -177,7 +214,44 @@ public class Dungeon : ScriptableObject
     }
     // Eating food might give you buffs?
     public List<string> partyModifiers;
+    public void SetPartyBattleModifiers(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        partyModifiers = newInfo;
+    }
     public List<int> partyModifierDurations;
+    public void SetPartyBattleModifierDurations(List<string> newInfo)
+    {
+        partyModifierDurations = utility.ConvertStringListToIntList(newInfo);
+    }
+    public void UpdatePartyModifierDurations()
+    {
+        for (int i = partyModifiers.Count - 1; i >= 0; i--)
+        {
+            partyModifierDurations[i]--;
+            if (partyModifierDurations[i] <= 0)
+            {
+                partyModifiers.RemoveAt(i);
+                partyModifierDurations.RemoveAt(i);
+            }
+        }
+    }
+    public void AddPartyModifier(string newMod, int duration)
+    {
+        partyModifiers.Add(newMod);
+        partyModifierDurations.Add(duration);
+    }
+    public string currentWeather;
+    public void SetWeather(string newInfo = "")
+    {
+        if (newInfo == "")
+        {
+            currentWeather = GenerateWeather();
+            return;
+        }
+        currentWeather = newInfo;
+    }
+    public string GetWeather(){return currentWeather;}
     public bool fastSpawn = false;
     public int minEnemies;
     public int maxEnemies;
@@ -271,6 +345,7 @@ public class Dungeon : ScriptableObject
     }
     [System.NonSerialized]
     public List<string> partyLocations;
+    // This also draws stairs and treasures on the same layer, why not split the layers?
     public void UpdatePartyLocations()
     {
         // Make a new list.
@@ -278,6 +353,10 @@ public class Dungeon : ScriptableObject
         for (int i = 0; i < treasureLocations.Count; i++)
         {
             partyLocations[treasureLocations[i]] = treasureSprite;
+        }
+        for (int i = 0; i < itemLocations.Count; i++)
+        {
+            partyLocations[itemLocations[i]] = itemSprite;
         }
         for (int i = 0; i < allEnemyLocations.Count; i++)
         {
@@ -366,14 +445,7 @@ public class Dungeon : ScriptableObject
     }
     public void SetTreasureLocations(List<string> newInfo)
     {
-        List<string> tLoc = newInfo;
-        utility.RemoveEmptyListItems(tLoc);
-        treasureLocations.Clear();
-        if (tLoc.Count <= 0) { return; }
-        for (int i = 0; i < tLoc.Count; i++)
-        {
-            treasureLocations.Add(int.Parse(tLoc[i]));
-        }
+        treasureLocations = utility.ConvertStringListToIntList(newInfo);
     }
     public bool TreasureLocation(int nextTile)
     {
@@ -390,7 +462,48 @@ public class Dungeon : ScriptableObject
             }
         }
     }
+    public List<int> itemLocations;
+    public int GetRandomItemLocation()
+    {
+        if (itemLocations.Count <= 0)
+        {
+            return -1;
+        }
+        return itemLocations[Random.Range(0, itemLocations.Count)];
+    }
+    public void SetItemLocations(List<string> newInfo)
+    {
+        itemLocations = utility.ConvertStringListToIntList(newInfo);
+    }
+    public bool ItemLocation(int tile)
+    {
+        return itemLocations.Contains(tile);
+    }
+    public string ClaimItem()
+    {
+        itemLocations.Remove(partyLocation);
+        return GenerateItem();
+    }
+    public List<int> trapLocations;
+    public void SetTrapLocations(List<string> newInfo)
+    {
+        trapLocations = utility.ConvertStringListToIntList(newInfo);
+    }
+    public List<int> GetTrapLocations()
+    {
+        return trapLocations;
+    }
+    public bool TrapLocation(int tile)
+    {
+        return trapLocations.Contains(tile);
+    }
+    public string TriggerTrap()
+    {
+        trapLocations.Remove(partyLocation);
+        return GenerateTrap();
+    }
     public string treasureSprite;
+    public string itemSprite;
     public int stairsDown;
     public void SetStairsDown(int newInfo){ stairsDown = newInfo; }
     public int GetStairsDown(){ return stairsDown; }
@@ -591,6 +704,7 @@ public class Dungeon : ScriptableObject
         MakeDungeon();
         ResetAllEnemies();
         spawnCounter = 0;
+        SetWeather();
         UpdatePartyLocations();
     }
     public void CompleteDungeon()

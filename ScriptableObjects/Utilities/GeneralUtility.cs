@@ -292,4 +292,15 @@ public class GeneralUtility : ScriptableObject
     {
         return (lastValue) * (lastValue + 1) / 2;
     }
+
+    public int RollRarity(int maxRarity, int diceSize = 2)
+    {
+        int rarity = 0;
+        for (int i = 0; i < maxRarity; i++)
+        {
+            int roll = UnityEngine.Random.Range(0, diceSize);
+            if (roll == 0){rarity++;}
+        }
+        return rarity;
+    }
 }

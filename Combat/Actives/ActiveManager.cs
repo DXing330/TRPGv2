@@ -392,6 +392,36 @@ public class ActiveManager : MonoBehaviour
                 targets = battle.map.AllEnemies(skillUser);
                 active.AffectActors(targets, specifics, active.GetPowerString(), 1);
                 return;
+            case "Command":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    // Only allies will obey your commands.
+                    if (targets[i].GetTeam() != skillUser.GetTeam()){continue;}
+                    switch (specifics)
+                    {
+                        case "Attack":
+                        if (battle.map.FacingActor(targets[i]))
+                        {
+                            battle.attackManager.ActorAttacksActor(targets[i], battle.map.ReturnClosestFacingActor(targets[i]), battle.map, battle.moveManager);
+                        }
+                        break;
+                        case "Forward":
+                        // Try to move forward.
+                        if (battle.map.FacingEmptyTile(targets[i]))
+                        {
+                            battle.moveManager.CommandMovement(targets[i], battle.map);
+                        }
+                        break;
+                        case "Backward":
+                        // Try to move backward.
+                        if (battle.map.FacingEmptyTile(targets[i], false))
+                        {
+                            battle.moveManager.CommandMovement(targets[i], battle.map, false);
+                        }
+                        break;
+                    }
+                }
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);

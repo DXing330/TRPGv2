@@ -245,6 +245,43 @@ public class BattleMap : MapManager
         // If someone's name is on the tile then it's not empty.
         return (actorTiles[tileNumber].Length > 1);
     }
+    public bool FacingEmptyTile(TacticActor actor, bool forward = true)
+    {
+        int dir = actor.GetDirection();
+        if (!forward)
+        {
+            dir = (dir + 3) % 6;
+        }
+        return !TileNotEmpty(mapUtility.PointInDirection(actor.GetLocation(), dir, mapSize));
+    }
+    public bool FacingActor(TacticActor actor)
+    {
+        int startingPoint = actor.GetLocation();
+        int direction = actor.GetDirection();
+        for (int i = 0; i < actor.GetAttackRange(); i++)
+        {
+            if (TileNotEmpty(mapUtility.PointInDirection(startingPoint, direction, mapSize)))
+            {
+                return true;
+            }
+            startingPoint = mapUtility.PointInDirection(startingPoint, direction, mapSize);
+        }
+        return false;
+    }
+    public TacticActor ReturnClosestFacingActor(TacticActor actor)
+    {
+        int startingPoint = actor.GetLocation();
+        int direction = actor.GetDirection();
+        for (int i = 0; i < actor.GetAttackRange(); i++)
+        {
+            if (TileNotEmpty(mapUtility.PointInDirection(startingPoint, direction, mapSize)))
+            {
+                return GetActorOnTile(mapUtility.PointInDirection(startingPoint, direction, mapSize));
+            }
+            startingPoint = mapUtility.PointInDirection(startingPoint, direction, mapSize);
+        }
+        return null;
+    }
     public List<int> ReturnEmptyTiles(List<int> newTiles)
     {
         for (int i = newTiles.Count - 1; i >= 0; i--)

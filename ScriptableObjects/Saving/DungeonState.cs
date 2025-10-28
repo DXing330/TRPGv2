@@ -45,6 +45,11 @@ public class DungeonState : SavedState
         allData += dungeon.GetBossFought() + delimiter;
         allData += dungeon.GetMaxStomach() + delimiter;
         allData += dungeon.GetStomach() + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.itemLocations) + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.trapLocations) + delimiter;
+        allData += dungeon.GetWeather() + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.partyModifiers) + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.partyModifierDurations) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -55,11 +60,11 @@ public class DungeonState : SavedState
         dataList = allData.Split(delimiter).ToList();
         for (int i = 0; i < dataList.Count; i++)
         {
-            LoadSpecificStat(dataList[i], i);
+            LoadStat(dataList[i], i);
         }
     }
 
-    protected void LoadSpecificStat(string stat, int index)
+    protected void LoadStat(string stat, int index)
     {
         switch (index)
         {
@@ -125,6 +130,21 @@ public class DungeonState : SavedState
                 break;
             case 20:
                 dungeon.SetStomach(int.Parse(stat));
+                break;
+            case 21:
+                dungeon.SetItemLocations(stat.Split(delimiterTwo).ToList());
+                break;
+            case 22:
+                dungeon.SetTrapLocations(stat.Split(delimiterTwo).ToList());
+                break;
+            case 23:
+                dungeon.SetWeather(stat);
+                break;
+            case 24:
+                dungeon.SetPartyBattleModifiers(stat.Split(delimiterTwo).ToList());
+                break;
+            case 25:
+                dungeon.SetPartyBattleModifierDurations(stat.Split(delimiterTwo).ToList());
                 break;
             default:
                 break;

@@ -10,26 +10,27 @@ public class DungeonMap : MapManager
     public ActorSpriteHPList actorSpriteHPList;
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
+    public WeatherFilter weatherDisplay;
     public GameObject stomachMeter;
     public void UpdateStomachMeter()
     {
         stomachMeter.transform.localScale = new Vector3((float)dungeon.GetStomach()/(float)dungeon.GetMaxStomach(),1,0);
     }
     public PopUpMessage dowsingMessage;
-    protected int DetermineClosestEnemyLocation(List<int> enemyLocations)
+    protected int DetermineClosestLocation(List<int> locations)
     {
-        if (enemyLocations.Count <= 0){return -1;}
+        if (locations.Count <= 0){return -1;}
         int distance = dungeon.GetDungeonSize();
         int index = 0;
-        for (int i = 0; i < enemyLocations.Count; i++)
+        for (int i = 0; i < locations.Count; i++)
         {
-            if (mapUtility.DistanceBetweenTiles(dungeon.GetPartyLocation(), enemyLocations[i], dungeon.GetDungeonSize()) < distance)
+            if (mapUtility.DistanceBetweenTiles(dungeon.GetPartyLocation(), locations[i], dungeon.GetDungeonSize()) < distance)
             {
                 index = i;
-                distance = mapUtility.DistanceBetweenTiles(dungeon.GetPartyLocation(), enemyLocations[i], dungeon.GetDungeonSize());
+                distance = mapUtility.DistanceBetweenTiles(dungeon.GetPartyLocation(), locations[i], dungeon.GetDungeonSize());
             }
         }
-        return enemyLocations[index];
+        return locations[index];
     }
     public void UseDowsing(string target)
     {
@@ -43,10 +44,13 @@ public class DungeonMap : MapManager
                 message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetRandomTreasureLocation(), dungeon.GetDungeonSize())) + ".";
                 break;
             case "Item":
-                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetStairsDown(), dungeon.GetDungeonSize())) + ".";
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetRandomItemLocation(), dungeon.GetDungeonSize())) + ".";
+                break;
+            case "Trap":
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestLocation(dungeon.GetTrapLocations()), dungeon.GetDungeonSize())) + ".";
                 break;
             case "Enemy":
-                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestEnemyLocation(dungeon.GetEnemyLocations()), dungeon.GetDungeonSize())) + ".";
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestLocation(dungeon.GetEnemyLocations()), dungeon.GetDungeonSize())) + ".";
                 break;
             default:
                 break;
@@ -175,6 +179,7 @@ public class DungeonMap : MapManager
         if (miniMap.active){miniMap.UpdateMiniMap();}
         UpdateActors();
         UpdateHighlights();
+        weatherDisplay.UpdateFilter(dungeon.GetWeather());
         blackScreen.SetActive(false);
     }
 
