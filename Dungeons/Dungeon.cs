@@ -22,6 +22,10 @@ public class Dungeon : ScriptableObject
         pathfinder.SetMapSize(GetDungeonSize());
     }
     public int GetDungeonSize() { return dungeonSize; }
+    public List<string> dungeonLogs;
+    public void AddDungeonLog(string newInfo){dungeonLogs.Insert(0, newInfo);}
+    public void SetDungeonLogs(List<string> newLogs){dungeonLogs = newLogs;}
+    public List<string> GetDungeonLogs(){return dungeonLogs;}
     public void MakeDungeon()
     {
         dungeonGenerator.SetTreasureCount(1 + (currentFloor / 2));
@@ -34,6 +38,7 @@ public class Dungeon : ScriptableObject
         SetTrapLocations(newDungeon[4].Split("|").ToList());
         SetItemLocations(newDungeon[5].Split("|").ToList());
         SetWeather();
+        dungeonLogs = new List<string>();
         goalTile = -1;
         if (currentFloor == goalFloor)
         {
@@ -75,7 +80,6 @@ public class Dungeon : ScriptableObject
     {
         string[] possibleWeathers = dungeonWeathers.ReturnValue(dungeonName).Split("|");
         string chosenWeather = possibleWeathers[Random.Range(0, possibleWeathers.Length)];
-        Debug.Log(chosenWeather);
         return chosenWeather;
     }
     protected int maxItemRarity = 3;
@@ -459,6 +463,7 @@ public class Dungeon : ScriptableObject
             {
                 treasureLocations.RemoveAt(i);
                 treasuresAcquired++;
+                AddDungeonLog("Found treasure. Total found: "+treasuresAcquired + ".");
             }
         }
     }
@@ -481,8 +486,14 @@ public class Dungeon : ScriptableObject
     }
     public string ClaimItem()
     {
-        itemLocations.Remove(partyLocation);
-        return GenerateItem();
+        if (ItemLocation(partyLocation))
+        {
+            itemLocations.Remove(partyLocation);
+            string item = GenerateItem();
+            AddDungeonLog("Picked up " + item + ".");
+            return item;
+        }
+        return "";
     }
     public List<int> trapLocations;
     public void SetTrapLocations(List<string> newInfo)
@@ -692,6 +703,7 @@ public class Dungeon : ScriptableObject
     }
     public void MoveFloors(bool increase = true)
     {
+        AddDungeonLog("Moved to new floor.");
         if (increase)
         {
             currentFloor++;

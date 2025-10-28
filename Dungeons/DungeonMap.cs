@@ -5,12 +5,14 @@ using UnityEngine;
 public class DungeonMap : MapManager
 {
     public GameObject blackScreen;
-    public int maxDistanceFromCenter = 3;
+    public int maxDistanceFromCenter = 2;
+    public DungeonEffectManager dungeonEffects;
     public PartyDataManager partyData;
     public ActorSpriteHPList actorSpriteHPList;
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
     public WeatherFilter weatherDisplay;
+    public StatTextList dungeonLogDisplay;
     public GameObject stomachMeter;
     public void UpdateStomachMeter()
     {
@@ -55,6 +57,7 @@ public class DungeonMap : MapManager
             default:
                 break;
         }
+        dungeon.AddDungeonLog(target + "-" + message);
         dowsingMessage.SetMessage(message);
         MoveToTile(dungeon.GetPartyLocation());
     }
@@ -65,6 +68,7 @@ public class DungeonMap : MapManager
     protected override void Start()
     {
         blackScreen.SetActive(true);
+        // If you've fought the boss and returned then you get to go to the reward scene.
         if (dungeon.GetBossFought() == 1)
         {
             sceneMover.ReturnFromDungeon();
@@ -75,7 +79,6 @@ public class DungeonMap : MapManager
         dungeon.UpdateEmptyTiles(emptyList);
         UpdateStomachMeter();
         UpdateCenterTile(dungeon.GetPartyLocation());
-        // If you've fought the boss and returned then you get to go to the reward scene.
         UpdateMap();
 
     }
@@ -86,6 +89,7 @@ public class DungeonMap : MapManager
         if (dungeon.Hungry())
         {
             // If the hunger meter is empty then the party suffers.
+            dungeon.AddDungeonLog("Feeling hungry...");
         }
         UpdateStomachMeter();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
@@ -104,7 +108,6 @@ public class DungeonMap : MapManager
             {
                 // Set a flag to know that you are fighting the final boss of the dungeon so when you load back you don't fight the boss again.
                 // If you lose to the boss it's simply a defeat in the dungeon and you get kicked out as expected.
-                // Maybe have a final boss fight here.
                 if (dungeon.PrepareBossBattle())
                 {
                     interactable = false;
@@ -123,6 +126,7 @@ public class DungeonMap : MapManager
             // This doesn't update the center when moving between dungeons for some reason.
             UpdateCenterTile(dungeon.GetPartyLocation());
             StartCoroutine(MoveFloors());
+            return;
         }
         else if (dungeon.EnemyLocation(newTile))
         {
@@ -131,6 +135,7 @@ public class DungeonMap : MapManager
             // Move to battle scene.
             interactable = false;
             sceneMover.MoveToBattle();
+            return;
         }
         else
         {
@@ -145,8 +150,27 @@ public class DungeonMap : MapManager
                 sceneMover.MoveToBattle();
                 return;
             }
-            UpdateMap();
         }
+        // Check if you stepped on an item or a trap.
+        if (dungeon.ItemLocation(newTile))
+        {
+            // Check if inventory is full.
+            if (!partyData.dungeonBag.BagFull())
+            {
+                // Claim an item.
+                partyData.dungeonBag.GainItem(dungeon.ClaimItem());
+            }
+            else
+            {
+                // Generate an inventory full error message.
+                dungeon.AddDungeonLog("Bag is full.");
+            }
+        }
+        else if (dungeon.TrapLocation(newTile))
+        {
+            // BOOM.
+        }
+        UpdateMap();
     }
 
     public void MoveInDirection(int direction)
@@ -180,6 +204,7 @@ public class DungeonMap : MapManager
         UpdateActors();
         UpdateHighlights();
         weatherDisplay.UpdateFilter(dungeon.GetWeather());
+        dungeonLogDisplay.SetStatsAndData(dungeon.GetDungeonLogs());
         blackScreen.SetActive(false);
     }
 

@@ -50,6 +50,7 @@ public class DungeonState : SavedState
         allData += dungeon.GetWeather() + delimiter;
         allData += String.Join(delimiterTwo, dungeon.partyModifiers) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.partyModifierDurations) + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetDungeonLogs()) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -145,6 +146,9 @@ public class DungeonState : SavedState
                 break;
             case 25:
                 dungeon.SetPartyBattleModifierDurations(stat.Split(delimiterTwo).ToList());
+                break;
+            case 26:
+                dungeon.SetDungeonLogs(stat.Split(delimiterTwo).ToList());
                 break;
             default:
                 break;

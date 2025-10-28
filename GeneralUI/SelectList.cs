@@ -31,6 +31,7 @@ public class SelectList : MonoBehaviour
     }
     public int GetSelected(){return selectedIndex;}
     public string selected;
+    public string GetSelectedString(){return selected;}
     public TMP_Text pageDisplay;
     public void UpdatePageDisplay()
     {

@@ -21,6 +21,7 @@ public class PartyDataManager : MonoBehaviour
     public List<SavedData> otherPartyData;
     public Inventory inventory;
     public EquipmentInventory equipmentInventory;
+    public DungeonBag dungeonBag;
     public GuildCard guildCard;
     public SavedCaravan caravan;
     public SpellBook spellBook;
