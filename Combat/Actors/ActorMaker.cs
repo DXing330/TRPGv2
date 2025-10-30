@@ -48,6 +48,8 @@ public class ActorMaker : MonoBehaviour
         {
             return;
         }
+        Debug.Log(elementPassives.ReturnValue(actor.GetElement()));
+        Debug.Log(elemental);
         string[] blocks = elemental.Split("|");
         string[] passives = blocks[0].Split(",");
         string[] levels = blocks[1].Split(",");

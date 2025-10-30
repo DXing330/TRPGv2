@@ -26,8 +26,29 @@ public class DungeonEffectManager : MonoBehaviour
         useItemName.text = selectedItem;
         useItemDescription.text = itemDescriptions.ReturnValue(selectedItem);
     }
+    public void DiscardItem()
+    {
+        partyData.dungeonBag.DiscardItem(selectedItem);
+        UpdateItemSelect();
+    }
+    // 0 = target, 1 = effect, 2 = specifics.
     public void UseItem()
     {
-        // Long switch statement incoming.
+        string[] itemEffect = itemData.ReturnValue(selectedItem).Split("|");
+        switch (itemEffect[0])
+        {
+            case "Stomach":
+                if (itemEffect[1] == "Increase")
+                {
+                    dungeon.IncreaseStomach(int.Parse(itemEffect[2]));
+                }
+                else
+                {
+                    dungeon.IncreaseStomach(-int.Parse(itemEffect[2]));
+                }
+                break;
+        }
+        partyData.dungeonBag.UseItem(selectedItem);
+        UpdateItemSelect();
     }
 }

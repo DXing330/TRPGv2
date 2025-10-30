@@ -12,8 +12,13 @@ public class DungeonGenerator : ScriptableObject
     public void SetTreasureCount(int newAmount){treasureCount = newAmount;}
     public int size;
     public int GetSize(){return size;}
-    protected int minSize = 36;
-    public int GetMinSize(){return minSize;}
+    protected int baseSize = 40;
+    protected int sizeVariance = 4;
+    protected int minItems = 2;
+    protected int maxItems = 6;
+    protected int minTraps = 1;
+    protected int maxTraps = 3;
+    public int GetMinSize(){return baseSize - sizeVariance;}
     public int minRoomSize = 6;
     public int maxRooms = 6;
     public List<int> allTiles = new List<int>();
@@ -21,7 +26,7 @@ public class DungeonGenerator : ScriptableObject
     //public List<int> impassableTiles = new List<int>();
     public List<string> GenerateDungeon(int newSize = -1, int newMaxRooms = -1)
     {
-        size = Mathf.Max(minSize, newSize);
+        size = baseSize + Random.Range(-sizeVariance, sizeVariance + 1);
         maxRooms = Mathf.Max(size/minRoomSize, newMaxRooms);
         Reset();
         List<string> dungeonData = new List<string>();
@@ -39,6 +44,7 @@ public class DungeonGenerator : ScriptableObject
             // Inside 1+ randomly selected room(s).
         ConnectPoints(start, end);
         List<int> takenLocations = new List<int>();
+        List<int> adjacentLocations = new List<int>();
         List<int> treasureLocations = new List<int>();
         for (int i = 0; i < treasureCount; i++)
         {
@@ -50,19 +56,25 @@ public class DungeonGenerator : ScriptableObject
             ConnectPoints(start, treasureLocations[i]);
         }
         // Put traps inside rooms.
+        int trapCount = Random.Range(minTraps, maxTraps + 1);
+        int itemCount = Random.Range(minItems, maxItems + 1);
         List<int> trapLocations = new List<int>();
         // Put items in room.
         List<int> itemLocations = new List<int>();
         // How do we determine how many traps and items to put?
-        for (int i = treasureCount; i < treasureCount + 3; i ++)
+        for (int i = treasureCount; i < treasureCount + trapCount; i ++)
         {
             takenLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, takenLocations));
             trapLocations.Add(takenLocations[i]);
         }
-        for (int i = treasureCount + 3; i < treasureCount + 6; i ++)
+        for (int i = treasureCount + trapCount; i < treasureCount + trapCount + itemCount; i ++)
         {
             takenLocations.Add(GetRandomPointInRoom(Random.Range(0, roomDetails.Count), end, takenLocations));
             itemLocations.Add(takenLocations[i]);
+        }
+        for (int i = 0; i < itemLocations.Count; i++)
+        {
+            ConnectPoints(start, itemLocations[i]);
         }
         dungeonData.Add(utility.ConvertIntListToString(allTiles));
         dungeonData.Add(start.ToString());

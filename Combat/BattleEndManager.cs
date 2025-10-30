@@ -116,6 +116,9 @@ public class BattleEndManager : MonoBehaviour
             {
                 CalculateSkillUps(true);
                 CalculateSkillUps(false);
+                // We don't have any reason to gain allies or loot in the main game currently.
+                allNewAllies.Disable();
+                allLootDrops.Disable();
             }
             else if (subGame)
             {

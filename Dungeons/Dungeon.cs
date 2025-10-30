@@ -20,6 +20,7 @@ public class Dungeon : ScriptableObject
     {
         dungeonSize = newInfo;
         pathfinder.SetMapSize(GetDungeonSize());
+        ResetEmptyTiles();
     }
     public int GetDungeonSize() { return dungeonSize; }
     public List<string> dungeonLogs;
@@ -74,6 +75,13 @@ public class Dungeon : ScriptableObject
     public StatDatabase dungeonItems;
     public StatDatabase itemRarities;
     public StatDatabase dungeonWeathers;
+    public StatDatabase dungeonChests;
+    protected string GenerateChest()
+    {
+        string[] chests = dungeonChests.ReturnValue(dungeonName).Split("|");
+        string chest = chests[Random.Range(0, chests.Length)];
+        return chest;
+    }
     public StatDatabase dungeonTerrains;
     // Get a new weather whenever you move floors.
     protected string GenerateWeather()
@@ -82,7 +90,7 @@ public class Dungeon : ScriptableObject
         string chosenWeather = possibleWeathers[Random.Range(0, possibleWeathers.Length)];
         return chosenWeather;
     }
-    protected int maxItemRarity = 3;
+    protected int maxItemRarity = 4;
     protected int GenerateItemRarity()
     {
         return utility.RollRarity(maxItemRarity);
@@ -167,7 +175,6 @@ public class Dungeon : ScriptableObject
         if (initial)
         {
             currentFloor = 0;
-            treasuresAcquired = 0;
             spawnCounter = 0;
             ResetAllEnemies();
             ResetQuest();
@@ -206,6 +213,7 @@ public class Dungeon : ScriptableObject
         {
             currentStomach = currentMaxStomach;
         }
+        if (currentStomach < 0){currentStomach = 0;}
     }
     public bool Hungry()
     {
@@ -347,6 +355,14 @@ public class Dungeon : ScriptableObject
         allEmptyTiles = new List<string>(newEmptyTiles);
         UpdatePartyLocations();
     }
+    public void ResetEmptyTiles()
+    {
+        allEmptyTiles = new List<string>();
+        for (int i = 0; i < GetDungeonSize() * GetDungeonSize(); i++)
+        {
+            allEmptyTiles.Add("");
+        }
+    }
     [System.NonSerialized]
     public List<string> partyLocations;
     // This also draws stairs and treasures on the same layer, why not split the layers?
@@ -455,17 +471,15 @@ public class Dungeon : ScriptableObject
     {
         return treasureLocations.Contains(nextTile);
     }
-    public void ClaimTreasure()
+    public string ClaimTreasure()
     {
-        for (int i = treasureLocations.Count- 1; i >= 0; i--)
+        if (TreasureLocation(partyLocation))
         {
-            if (treasureLocations[i] == partyLocation)
-            {
-                treasureLocations.RemoveAt(i);
-                treasuresAcquired++;
-                AddDungeonLog("Found treasure. Total found: "+treasuresAcquired + ".");
-            }
+            treasureLocations.Remove(partyLocation);
+            AddDungeonLog("Picked up treasure.");
+            return GenerateChest();
         }
+        return "";
     }
     public List<int> itemLocations;
     public int GetRandomItemLocation()
@@ -541,10 +555,6 @@ public class Dungeon : ScriptableObject
         partyLocations[partyLocation] = "";
         partyLocation = newLocation;
         partyLocations[partyLocation] = partySprite;
-        if (TreasureLocation(partyLocation))
-        {
-            ClaimTreasure();
-        }
         if (GoalTile(partyLocation))
         {
             questGoalsCompleted++;

@@ -120,6 +120,20 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public void DungeonHunger()
+    {
+        // Subtract 1 health from everyone.
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            for (int j = allParties[i].PartyCount() - 1; j >= 0; j--)
+            {
+                allParties[i].DungeonHunger(j, i != 0);
+            }
+        }
+        // Remove dead party members.
+        SetFullParty();
+    }
+
     public bool PartyMemberClassExists(string spriteName)
     {
         if (permanentPartyData.MemberExists(spriteName) || mainPartyData.MemberExists(spriteName)){ return true; }

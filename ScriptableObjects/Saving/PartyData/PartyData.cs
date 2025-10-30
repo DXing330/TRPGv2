@@ -377,6 +377,24 @@ public class PartyData : SavedData
         }
         return count;
     }
+    public void DungeonHunger(int index, bool death = false)
+    {
+        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.UpdateHealth(1);
+        if (dummyActor.GetHealth() <= 0)
+        {
+            if (death)
+            {
+                RemoveStatsAtIndex(index);
+                return;
+            }
+            else
+            {
+                dummyActor.SetCurrentHealth(1);
+            }
+        }
+        partyStats[index] = dummyActor.GetStats();
+    }
     public void Exhaust(int index, bool death = false)
     {
         dummyActor.SetStatsFromString(partyStats[index]);

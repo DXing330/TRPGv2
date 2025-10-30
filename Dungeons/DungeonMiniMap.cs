@@ -53,7 +53,7 @@ public class DungeonMiniMap : MonoBehaviour
                 else if (dungeon.GoalTile(i)){miniMapText += "<color=green>Q</color>";}
                 else if (dungeon.TreasureLocation(i)){miniMapText += "<color=green>T</color>";}
                 else if (dungeon.ItemLocation(i)){miniMapText += "<color=green>I</color>";}
-                else if (dungeon.TilePassable(i)){miniMapText += " ";}
+                else if (dungeon.TilePassable(i)){miniMapText += "_";}
                 else{miniMapText += "X";}
             }
             mapCount++;

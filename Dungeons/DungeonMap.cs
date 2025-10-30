@@ -74,13 +74,17 @@ public class DungeonMap : MapManager
             sceneMover.ReturnFromDungeon();
             return;
         }
-        mapSize = dungeon.GetDungeonSize();
-        InitializeEmptyList();
-        dungeon.UpdateEmptyTiles(emptyList);
-        UpdateStomachMeter();
+        RefreshMapSize();
         UpdateCenterTile(dungeon.GetPartyLocation());
         UpdateMap();
 
+    }
+
+    protected void RefreshMapSize()
+    {
+        mapSize = dungeon.GetDungeonSize();
+        InitializeEmptyList();
+        dungeon.UpdateEmptyTiles(emptyList);
     }
 
     protected void MoveToTile(int newTile)
@@ -89,9 +93,9 @@ public class DungeonMap : MapManager
         if (dungeon.Hungry())
         {
             // If the hunger meter is empty then the party suffers.
+            partyData.DungeonHunger();
             dungeon.AddDungeonLog("Feeling hungry...");
         }
-        UpdateStomachMeter();
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {
             UpdateCenterTile(newTile);
@@ -110,8 +114,7 @@ public class DungeonMap : MapManager
                 // If you lose to the boss it's simply a defeat in the dungeon and you get kicked out as expected.
                 if (dungeon.PrepareBossBattle())
                 {
-                    interactable = false;
-                    sceneMover.MoveToBattle();
+                    EnterBattle();
                 }
                 else
                 {
@@ -120,6 +123,7 @@ public class DungeonMap : MapManager
                 return;
             }
             dungeon.MoveFloors();
+            RefreshMapSize();
             // Save whenever moving floors.
             dungeon.dungeonState.Save();
             partyData.Save();
@@ -133,8 +137,7 @@ public class DungeonMap : MapManager
             dungeon.PrepareBattle(newTile);
             dungeon.MovePartyLocation(newTile);
             // Move to battle scene.
-            interactable = false;
-            sceneMover.MoveToBattle();
+            EnterBattle();
             return;
         }
         else
@@ -146,13 +149,26 @@ public class DungeonMap : MapManager
                 // Move to battle if they did.
                 dungeon.EnemyBeginsBattle();
                 UpdateMap();
-                interactable = false;
-                sceneMover.MoveToBattle();
+                EnterBattle();
                 return;
             }
         }
-        // Check if you stepped on an item or a trap.
-        if (dungeon.ItemLocation(newTile))
+        // Check if you stepped on a treasure, item or trap.
+        if (dungeon.TreasureLocation(newTile))
+        {
+            // Check if inventory is full.
+            if (!partyData.dungeonBag.BagFull())
+            {
+                // Claim an item.
+                partyData.dungeonBag.GainItem(dungeon.ClaimTreasure());
+            }
+            else
+            {
+                // Generate an inventory full error message.
+                dungeon.AddDungeonLog("Bag is full.");
+            }
+        }
+        else if (dungeon.ItemLocation(newTile))
         {
             // Check if inventory is full.
             if (!partyData.dungeonBag.BagFull())
@@ -171,6 +187,13 @@ public class DungeonMap : MapManager
             // BOOM.
         }
         UpdateMap();
+    }
+
+    protected void EnterBattle()
+    {
+        interactable = false;
+        partyData.Save();
+        sceneMover.MoveToBattle();
     }
 
     public void MoveInDirection(int direction)
@@ -203,6 +226,7 @@ public class DungeonMap : MapManager
         if (miniMap.active){miniMap.UpdateMiniMap();}
         UpdateActors();
         UpdateHighlights();
+        UpdateStomachMeter();
         weatherDisplay.UpdateFilter(dungeon.GetWeather());
         dungeonLogDisplay.SetStatsAndData(dungeon.GetDungeonLogs());
         blackScreen.SetActive(false);

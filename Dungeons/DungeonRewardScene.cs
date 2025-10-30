@@ -14,58 +14,74 @@ public class DungeonRewardScene : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     // Obtain skills.
     public PartyDataManager partyData;
-    public TacticActor dummyActor;
-    public Equipment dummyEquip;
-    public StatDatabase equipmentData;
     public StatDatabase rewardData;
     public StatTextList allItemRewards;
     public StatTextList allEquipmentRewards;
     public GameObject questRewardPanel;
     public TMP_Text questGoldReward;
-    public TMP_Text finalReward;
     public QuestSuccessChecker questSuccessChecker;
     public int questGold;
-    public List<string> itemRewards;
-    public List<int> rewardQuantities;
     public List<string> equipmentRewards;
+    public TreasureChestManager treasureChestManager;
 
     void Start()
     {
         CalculateRewards();
         DisplayRewards();
         //DisplayCombatRewards();
-        ClaimRewards();
-    }
-
-    protected void DisplayRewards()
-    {
-        List<string> quantityStrings = new List<string>();
-        for (int i = 0; i < rewardQuantities.Count; i++)
-        {
-            quantityStrings.Add(rewardQuantities[i].ToString());
-        }
-        allItemRewards.SetStatsAndData(itemRewards, quantityStrings);
-        List<string> equipmentNames = new List<string>();
-        for (int i = 0; i < equipmentRewards.Count; i++)
-        {
-            dummyEquip.SetAllStats(equipmentRewards[i]);
-            equipmentNames.Add(dummyEquip.GetName());
-        }
-        allEquipmentRewards.SetStatsAndData(equipmentNames);
+        //ClaimRewards();
     }
 
     protected void CalculateRewards()
     {
-        itemRewards.Clear();
+        /*itemRewards.Clear();
         rewardQuantities.Clear();
         for (int i = 0; i < dungeon.GetTreasuresAcquired(); i++)
         {
             int rewardType = Random.Range(0, dungeon.treasures.Count);
             int rewardAmount = Random.Range(1, int.Parse(dungeon.maxPossibleTreasureQuantities[rewardType])+1);
             AddItemReward(dungeon.treasures[rewardType], rewardAmount);
-        }
+        }*/
+        treasureChestManager.OpenAllChests();
         CalculateQuestRewards();
-        CalculateEquipmentRewards();
+        // Do you still get equipment from clearing dungeons?
+        //CalculateEquipmentRewards();
+    }
+
+    protected void CalculateQuestRewards()
+    {
+        questGold = 0;
+        questRewardPanel.SetActive(false);
+        if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
+        {
+            questGold = dungeon.GetQuestReward();
+            questRewardPanel.SetActive(true);
+            questGoldReward.text = questGold.ToString();
+            partyData.inventory.AddItemQuantity("Gold", questGold);
+        }
+        partyData.guildCard.GainGuildExp((questGold*questGold/100));
+        partyData.guildCard.RefreshAll();
+    }
+
+    protected void DisplayRewards()
+    {
+        allItemRewards.SetStatsAndData(treasureChestManager.GetItemsFound(), treasureChestManager.GetQuantitiesFound());
+        allEquipmentRewards.SetStatsAndData(treasureChestManager.GetEquipmentFound());
+    }
+
+    // Handled by the treasure chests.
+    /*protected void AddItemReward(string item, int amount)
+    {
+        int indexOf = itemRewards.IndexOf(item);
+        if (indexOf == -1)
+        {
+            itemRewards.Add(item);
+            rewardQuantities.Add(amount);
+        }
+        else
+        {
+            rewardQuantities[indexOf] = rewardQuantities[indexOf] + amount;
+        }
     }
 
     protected void CalculateEquipmentRewards()
@@ -85,7 +101,7 @@ public class DungeonRewardScene : MonoBehaviour
         }
     }
 
-    protected string ReturnRandomEquipmentOfRarity(int minRarity = 0, int maxRarity = 4)
+        protected string ReturnRandomEquipmentOfRarity(int minRarity = 0, int maxRarity = 4)
     {
         string equip = equipmentData.ReturnRandomValue();
         dummyEquip.SetAllStats(equip);
@@ -94,36 +110,6 @@ public class DungeonRewardScene : MonoBehaviour
             return equip;
         }
         return ReturnRandomEquipmentOfRarity(minRarity, maxRarity);
-    }
-
-    protected void CalculateQuestRewards()
-    {
-        questGold = 0;
-        questRewardPanel.SetActive(false);
-        if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
-        {
-            questGold = dungeon.GetQuestReward();
-            questRewardPanel.SetActive(true);
-            questGoldReward.text = questGold.ToString();
-            finalReward.text = questGold.ToString();
-            partyData.inventory.AddItemQuantity("Gold", questGold);
-        }
-        partyData.guildCard.GainGuildExp((questGold*questGold/100));
-        partyData.guildCard.RefreshAll();
-    }
-
-    protected void AddItemReward(string item, int amount)
-    {
-        int indexOf = itemRewards.IndexOf(item);
-        if (indexOf == -1)
-        {
-            itemRewards.Add(item);
-            rewardQuantities.Add(amount);
-        }
-        else
-        {
-            rewardQuantities[indexOf] = rewardQuantities[indexOf] + amount;
-        }
     }
 
     protected void ClaimRewards()
@@ -136,6 +122,5 @@ public class DungeonRewardScene : MonoBehaviour
         {
             partyData.equipmentInventory.AddEquipmentByStats(equipmentRewards[i]);
         }
-    }
-
+    }*/
 }

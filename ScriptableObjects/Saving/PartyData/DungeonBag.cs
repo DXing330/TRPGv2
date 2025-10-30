@@ -38,6 +38,38 @@ public class DungeonBag : SavedData
             items.RemoveAt(indexOf);
         }
     }
+    public List<string> ReturnAllChests()
+    {
+        List<string> chests = new List<string>();
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (items[i].Contains("Chest"))
+            {
+                chests.Add(items[i]);
+                items.RemoveAt(i);
+            }
+        }
+        return chests;
+    }
+    public void OpenChest(string chest)
+    {
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (items[i] == chest)
+            {
+                items.RemoveAt(i);
+                return;
+            }
+        }
+    }
+    public void DiscardItem(string item)
+    {
+        int indexOf = items.IndexOf(item);
+        if (indexOf >= 0)
+        {
+            items.RemoveAt(indexOf);
+        }
+    }
     public override void NewGame()
     {
         allData = newGameData;
