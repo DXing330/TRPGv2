@@ -83,7 +83,17 @@ public class SelectList : MonoBehaviour
         textList[GetSelected()%textList.Count].color = colors.GetColor(color);
     }
     public int currentPage;
-
+    public int GetPage(){return currentPage;}
+    public void SetPage(int newInfo)
+    {
+        currentPage = newInfo;
+        // In case the new max page is less than the previous.
+        if (currentPage > MaxPages())
+        {
+            currentPage = MaxPages();
+        }
+        UpdateCurrentPage(utility.GetCurrentPageStrings(currentPage, textObjects, selectable));
+    }
     [ContextMenu("Right")]
     public void ChangeRight(){ChangePage();}
     [ContextMenu("Left")]

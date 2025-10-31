@@ -8,6 +8,13 @@ public class DungeonMiniMap : MonoBehaviour
     public Dungeon dungeon;
     public bool active = false;
     public bool copy = false;
+    public int mapDiameter = 32;
+    List<int> viewedTiles;
+    public void UpdateViewedTiles()
+    {
+        viewedTiles = mainMap.GetCurrentTiles(mapDiameter);
+    }
+    public DungeonMap mainMap;
     public DungeonMiniMap copiedMap;
     public string miniMapText;
     public GameObject miniMapObject;
@@ -28,6 +35,10 @@ public class DungeonMiniMap : MonoBehaviour
             {
                 miniMapText = copiedMap.miniMapText;
             }
+            else
+            {
+                UpdateMiniMapString();
+            }
             UpdateMiniMap();
         }
         else{miniMapObject.SetActive(false);}
@@ -40,15 +51,22 @@ public class DungeonMiniMap : MonoBehaviour
 
     public void UpdateMiniMapString(List<int> currentTiles = null)
     {
+        UpdateViewedTiles();
         miniMapText = "";
         int mapCount = 0;
-        for (int i = 0; i < dungeon.viewedTiles.Count; i++)
+        for (int j = 0; j < viewedTiles.Count; j++)
         {
-            if (dungeon.viewedTiles[i] == 0){miniMapText += "?";}
+            int i = viewedTiles[j];
+            // If it's out of bounds.
+            if (i < 0){miniMapText += "?";}
+            // If you haven't explored yet.
+            else if (dungeon.viewedTiles[i] == 0){miniMapText += "?";}
             else
             {
+                // (YOU)
                 if (i == dungeon.partyLocation){miniMapText += "<color=blue>P</color>";}
-                else if (dungeon.EnemyLocation(i) && currentTiles.Contains(i)){miniMapText += "<color=red>E</color>";}
+                // Viewable enemy.
+                else if (dungeon.EnemyLocation(i) && currentTiles != null && currentTiles.Contains(i)){miniMapText += "<color=red>E</color>";}
                 else if (dungeon.StairsDownLocation(i)){miniMapText += "<color=green>S</color>";}
                 else if (dungeon.GoalTile(i)){miniMapText += "<color=green>Q</color>";}
                 else if (dungeon.TreasureLocation(i)){miniMapText += "<color=green>T</color>";}
@@ -57,7 +75,7 @@ public class DungeonMiniMap : MonoBehaviour
                 else{miniMapText += "X";}
             }
             mapCount++;
-            if (mapCount >= dungeon.GetDungeonSize())
+            if (mapCount >= mapDiameter)
             {
                 miniMapText += "\n";
                 mapCount = 0;

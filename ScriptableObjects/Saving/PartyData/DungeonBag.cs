@@ -19,11 +19,16 @@ public class DungeonBag : SavedData
         return items.Count >= maxCapacity;
     }
     public List<string> items;
+    public void DropItems(){items.Clear();}
     public List<string> GetItems(){return items;}
     public void SetItems(List<string> newInfo)
     {
         utility.RemoveEmptyListItems(newInfo);
         items = newInfo;
+    }
+    public string ReturnBagLimitString()
+    {
+        return items.Count + "/" + maxCapacity;
     }
     public void GainItem(string newItem)
     {

@@ -214,7 +214,12 @@ public class DungeonMap : MapManager
     public void UpdateHighlights()
     {
         mapDisplayers[3].ResetHighlights(mapTiles);
-        mapDisplayers[3].HighlightTileSet(mapTiles, mapUtility.AdjacentTiles(dungeon.GetPartyLocation(), mapSize), currentTiles);
+        //mapDisplayers[3].HighlightTileSet(mapTiles, mapUtility.AdjacentTiles(dungeon.GetPartyLocation(), mapSize), currentTiles);
+    }
+
+    public List<int> GetCurrentTiles(int diameter)
+    {
+        return currentTileManager.GetCurrentTilesFromCenter(centerTile, mapSize, diameter);
     }
 
     public override void UpdateMap()

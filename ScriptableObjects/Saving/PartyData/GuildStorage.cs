@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
@@ -9,9 +10,51 @@ using UnityEngine;
 public class GuildStorage : SavedData
 {
     public string delimiterTwo;
+    public int maxDungeonStorage;
+    public string ReturnDungeonStorageLimitString()
+    {
+        return storedDungeonItems.Count + "/" + maxDungeonStorage;
+    }
+    public bool MaxedDungeonStorage()
+    {
+        return storedDungeonItems.Count >= maxDungeonStorage;
+    }
+    public List<string> storedDungeonItems;
+    public List<string> GetStoredDungeonItems(){return storedDungeonItems;}
+    public void StoreDungeonItem(string newInfo)
+    {
+        storedDungeonItems.Add(newInfo);
+        storedDungeonItems.Sort();
+    }
+    public void WithdrawDungeonItem(string newInfo)
+    {
+        int indexOf = storedDungeonItems.IndexOf(newInfo);
+        if (indexOf < 0){return;}
+        storedDungeonItems.RemoveAt(indexOf);
+        storedDungeonItems.Sort();
+    }
     public int maxStorage;
+    public bool MaxedStorage()
+    {
+        int quantity = 0;
+        for (int i = 0; i < storedQuantities.Count; i++)
+        {
+            quantity += utility.SafeParseInt(storedQuantities[i], 0);
+        }
+        return quantity >= maxStorage;
+    }
     public List<string> storedItems;
     public List<string> storedQuantities;
+    public int storedGold;
+    public int GetStoredGold(){return storedGold;}
+    public void StoreGold(int amount)
+    {
+        storedGold += amount;
+    }
+    public void WithdrawGold(int amount)
+    {
+        storedGold -= amount;
+    }
 
     public override void NewGame()
     {
@@ -25,19 +68,13 @@ public class GuildStorage : SavedData
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = maxStorage+delimiter;
-        for (int i = 0; i < storedItems.Count; i++)
-        {
-            allData += storedItems[i];
-            if (i < storedItems.Count - 1){allData += delimiterTwo;}
-        }
-        allData += delimiter;
-        for (int i = 0; i < storedQuantities.Count; i++)
-        {
-            allData += storedQuantities[i];
-            if (i < storedQuantities.Count - 1){allData += delimiterTwo;}
-        }
-        allData += delimiter;
+        allData = "";
+        allData += maxDungeonStorage + delimiter;
+        allData += String.Join(delimiterTwo, storedDungeonItems) + delimiter;
+        allData += maxStorage + delimiter;
+        allData += String.Join(delimiterTwo, storedItems) + delimiter;
+        allData += String.Join(delimiterTwo, storedQuantities) + delimiter;
+        allData += storedGold + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -51,8 +88,36 @@ public class GuildStorage : SavedData
             return;
         }
         dataList = allData.Split(delimiter).ToList();
-        maxStorage = int.Parse(dataList[0]);
-        storedItems = dataList[1].Split(delimiterTwo).ToList();
-        storedQuantities = dataList[2].Split(delimiterTwo).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
+    }
+
+    protected void LoadStat(string stat, int index)
+    {
+        switch (index)
+        {
+            default:
+            break;
+            case 0:
+            maxDungeonStorage = utility.SafeParseInt(stat, 1);
+            break;
+            case 1:
+            storedDungeonItems = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+            break;
+            case 2:
+            maxStorage = utility.SafeParseInt(stat, 1);
+            break;
+            case 3:
+            storedItems = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+            break;
+            case 4:
+            storedQuantities = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+            break;
+            case 5:
+            storedGold = utility.SafeParseInt(stat);
+            break;
+        }
     }
 }

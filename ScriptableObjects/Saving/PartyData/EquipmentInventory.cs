@@ -156,6 +156,9 @@ public class EquipmentInventory : SavedData
         allWeapons.Clear();
         allArmor.Clear();
         allCharms.Clear();
+        allHelmets.Clear();
+        allBoots.Clear();
+        allGloves.Clear();
         if (dataList.Count <= 0){return;}
         string[] dataBlocks = dataList[0].Split("|");
         for (int i = 0; i < dataList.Count; i++)

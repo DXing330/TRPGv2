@@ -15,4 +15,10 @@ public class GuildHub : MonoBehaviour
         partyData.SetFullParty();
         actorSpriteHPList.RefreshData();
     }
+
+    // Don't let them keep the chests if they don't complete the dungeon.
+    protected void RemoveChests()
+    {
+        partyData.dungeonBag.ReturnAllChests();
+    }
 }

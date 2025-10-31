@@ -18,6 +18,7 @@ public class StatDatabase : ScriptableObject
     public string valueDelimiter;
     public string allKeys;
     public string allValues;
+    public bool defaultsEnabled;
     public string defaultKey;
     public string defaultValue;
     public List<string> keys;
@@ -97,7 +98,8 @@ public class StatDatabase : ScriptableObject
         {
             return possibleKeys[Random.Range(0, possibleKeys.Count)];
         }
-        return defaultKey;
+        if (defaultsEnabled){return defaultKey;}
+        return "";
     }
 
     public string ReturnKeyAtIndex(int index)
@@ -106,7 +108,8 @@ public class StatDatabase : ScriptableObject
         {
             return keys[index];
         }
-        return defaultKey;
+        if (defaultsEnabled){return defaultKey;}
+        return "";
     }
 
     public List<string> GetAllKeys()
@@ -155,9 +158,16 @@ public class StatDatabase : ScriptableObject
 
     public virtual string ReturnValue(string key)
     {
-        int indexOf = keys.IndexOf(key);
-        if (indexOf < 0 || indexOf >= values.Count){return defaultValue;}
-        return values[indexOf];
+        int index = keys.IndexOf(key);
+        if (index >= 0 && index < values.Count)
+        {
+            return values[index];
+        }
+        else
+        {
+            if (defaultsEnabled){return defaultValue;}
+            return "";
+        }
     }
 
     public string ReturnValueAtIndex(int index)
@@ -166,7 +176,8 @@ public class StatDatabase : ScriptableObject
         {
             return values[index];
         }
-        return defaultValue;
+        if (defaultsEnabled){return defaultValue;}
+        return "";
     }
 
     public string ReturnRandomValue()
