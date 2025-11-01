@@ -377,7 +377,20 @@ public class PartyData : SavedData
         }
         return count;
     }
-    public void DungeonHunger(int index, bool death = false)
+    public void NaturalRegeneration(List<string> regenPassives)
+    {
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            if (dummyActor.AnyPassiveExists(regenPassives))
+            {
+                dummyActor.UpdateHealth(1, false);
+                partyStats[i] = dummyActor.GetStats();
+            }
+        }
+    }
+    // By hunger/etc.
+    public bool HungerChipDamage(int index, bool death = false)
     {
         dummyActor.SetStatsFromString(partyStats[index]);
         dummyActor.UpdateHealth(1);
@@ -386,14 +399,41 @@ public class PartyData : SavedData
             if (death)
             {
                 RemoveStatsAtIndex(index);
-                return;
+                return false;
             }
             else
             {
-                dummyActor.SetCurrentHealth(1);
+                return true;
             }
         }
         partyStats[index] = dummyActor.GetStats();
+        return false;
+    }
+    public bool StatusChipDamage(List<string> statuses, bool death = false)
+    {
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            if (dummyActor.AnyStatusExists(statuses))
+            {
+                dummyActor.UpdateHealth(1);
+                if (dummyActor.GetHealth() <= 0)
+                {
+                    if (death)
+                    {
+                        RemoveStatsAtIndex(i);
+                        return false;
+                    }
+                    else
+                    {
+                        // If you can't die then just quit the dungeon losing all gold and items.
+                        return true;
+                    }
+                }
+            }
+            partyStats[i] = dummyActor.GetStats();
+        }
+        return false;
     }
     public void Exhaust(int index, bool death = false)
     {

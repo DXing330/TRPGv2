@@ -34,18 +34,8 @@ public class DungeonRewardScene : MonoBehaviour
 
     protected void CalculateRewards()
     {
-        /*itemRewards.Clear();
-        rewardQuantities.Clear();
-        for (int i = 0; i < dungeon.GetTreasuresAcquired(); i++)
-        {
-            int rewardType = Random.Range(0, dungeon.treasures.Count);
-            int rewardAmount = Random.Range(1, int.Parse(dungeon.maxPossibleTreasureQuantities[rewardType])+1);
-            AddItemReward(dungeon.treasures[rewardType], rewardAmount);
-        }*/
         treasureChestManager.OpenAllChests();
         CalculateQuestRewards();
-        // Do you still get equipment from clearing dungeons?
-        //CalculateEquipmentRewards();
     }
 
     protected void CalculateQuestRewards()

@@ -120,18 +120,47 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
-    public void DungeonHunger()
+    public void NaturalRegeneration(List<string> regenPassives)
     {
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            allParties[i].NaturalRegeneration(regenPassives);
+        }
+    }
+
+    public bool DungeonHunger()
+    {
+        bool permStarved = false;
         // Subtract 1 health from everyone.
         for (int i = 0; i < allParties.Count; i++)
         {
             for (int j = allParties[i].PartyCount() - 1; j >= 0; j--)
             {
-                allParties[i].DungeonHunger(j, i != 0);
+                permStarved = allParties[i].HungerChipDamage(j, i != 0);
+                if (permStarved){return true;}
             }
         }
         // Remove dead party members.
         SetFullParty();
+        return false;
+    }
+
+    public bool StatusDamage(List<string> damagingStatuses)
+    {
+        bool permanentPartyDeath = false;
+        // Subtract 1 health from everyone with certain statuses.
+        for (int i = 0; i < allParties.Count; i++)
+        {
+            permanentPartyDeath = allParties[i].StatusChipDamage(damagingStatuses, i != 0);
+            // This can only be true if i == 0
+            if (permanentPartyDeath)
+            {
+                return true;
+            }
+        }
+        // Remove dead party members.
+        SetFullParty();
+        return false;
     }
 
     public bool PartyMemberClassExists(string spriteName)

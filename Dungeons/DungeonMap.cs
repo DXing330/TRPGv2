@@ -5,6 +5,7 @@ using UnityEngine;
 public class DungeonMap : MapManager
 {
     public GameObject blackScreen;
+    public GameObject failureScreen;
     public int maxDistanceFromCenter = 2;
     public DungeonEffectManager dungeonEffects;
     public PartyDataManager partyData;
@@ -89,12 +90,28 @@ public class DungeonMap : MapManager
 
     protected void MoveToTile(int newTile)
     {
+        // Whenever moving, regenerators will regenerate.
+        dungeonEffects.ApplyNaturalRegeneration();
         // Whenever moving, decrease the hunger meter.
         if (dungeon.Hungry())
         {
             // If the hunger meter is empty then the party suffers.
-            partyData.DungeonHunger();
+            if (partyData.DungeonHunger())
+            {
+                // If you starve then autofail.
+                failureScreen.SetActive(true);
+                return;
+            }
             dungeon.AddDungeonLog("Feeling hungry...");
+        }
+        // When moving take damage from some statuses.
+        if (dungeonEffects.ApplyDamagingStatus())
+        {
+            // If this is true then the main characters have died from status damage.
+            // Return home in defeat.
+            // Of course you can save scum to avoid this and restart the floor if you want.
+            failureScreen.SetActive(true);
+            return;
         }
         if (mapUtility.DistanceBetweenTiles(newTile, centerTile, mapSize) > maxDistanceFromCenter)
         {

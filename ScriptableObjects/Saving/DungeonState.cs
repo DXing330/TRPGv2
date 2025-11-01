@@ -118,7 +118,7 @@ public class DungeonState : SavedState
                 dungeon.SetGoalTile(int.Parse(stat));
                 break;
             case 16:
-                dungeon.SetTreasuresAcquired(int.Parse(stat));
+                //dungeon.SetTreasuresAcquired(int.Parse(stat));
                 break;
             case 17:
                 dungeon.SetViewedTiles(stat.Split(delimiterTwo).ToList());

@@ -576,6 +576,18 @@ public class ActorStats : ActorPassives
         }
         return uniqueCount;
     }
+    public bool AnyStatusExists(List<string> names = null)
+    {
+        if (names == null)
+        {
+            return statuses.Count > 0;
+        }
+        for (int i = 0; i < names.Count; i++)
+        {
+            if (StatusExists(names[i])){return true;}
+        }
+        return false;
+    }
     public bool StatusExists(string statusName)
     {
         return statuses.Contains(statusName);

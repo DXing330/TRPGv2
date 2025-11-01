@@ -11,7 +11,18 @@ public class ActorPassives : MonoBehaviour
         passiveLevels.Clear();
     }
     public List<string> passiveSkills;
-
+    public bool AnyPassiveExists(List<string> pNames)
+    {
+        for (int i = 0; i < pNames.Count; i++)
+        {
+            if (PassiveExists(pNames[i])){return true;}
+        }
+        return false;
+    }
+    public bool PassiveExists(string pName)
+    {
+        return passiveSkills.Contains(pName);
+    }
     // Usually only get new passives based on equipment at the start of battle, before you start organizing passives.
     // Can also use to this learn new permanent passive skills.
     public void AddPassiveSkill(string skillName, string skillLevel)

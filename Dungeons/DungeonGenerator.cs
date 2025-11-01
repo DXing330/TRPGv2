@@ -12,8 +12,8 @@ public class DungeonGenerator : ScriptableObject
     public void SetTreasureCount(int newAmount){treasureCount = newAmount;}
     public int size;
     public int GetSize(){return size;}
-    protected int baseSize = 40;
-    protected int sizeVariance = 4;
+    protected int baseSize = 32;
+    protected int sizeVariance = 6;
     protected int minItems = 2;
     protected int maxItems = 6;
     protected int minTraps = 1;
@@ -26,7 +26,14 @@ public class DungeonGenerator : ScriptableObject
     //public List<int> impassableTiles = new List<int>();
     public List<string> GenerateDungeon(int newSize = -1, int newMaxRooms = -1)
     {
-        size = baseSize + Random.Range(-sizeVariance, sizeVariance + 1);
+        if (newSize < baseSize - sizeVariance)
+        {
+            size = baseSize + Random.Range(-sizeVariance, sizeVariance + 1);
+        }
+        else
+        {
+            size = newSize;
+        }
         maxRooms = Mathf.Max(size/minRoomSize, newMaxRooms);
         Reset();
         List<string> dungeonData = new List<string>();

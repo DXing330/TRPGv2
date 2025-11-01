@@ -30,7 +30,7 @@ public class Dungeon : ScriptableObject
     public void MakeDungeon()
     {
         dungeonGenerator.SetTreasureCount(1 + (currentFloor / 2));
-        List<string> newDungeon = dungeonGenerator.GenerateDungeon();
+        List<string> newDungeon = dungeonGenerator.GenerateDungeon(averageSize + Random.Range(-sizeVariance, sizeVariance + 1));
         SetDungeonSize(dungeonGenerator.GetSize());
         SetFloorTiles(newDungeon[0].Split("|").ToList());
         SetPartyLocation(int.Parse(newDungeon[1]));
@@ -184,8 +184,10 @@ public class Dungeon : ScriptableObject
         possibleEnemies = dungeonInfo[2].Split(",").ToList();
         minEnemies = int.Parse(dungeonInfo[3]);
         maxEnemies = int.Parse(dungeonInfo[4]);
-        treasures = dungeonInfo[5].Split(",").ToList();
-        maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
+        //treasures = dungeonInfo[5].Split(",").ToList();
+        //maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
+        averageSize = int.Parse(dungeonInfo[5]);
+        sizeVariance = int.Parse(dungeonInfo[6]);
         enemyModifiers = dungeonInfo[7].Split(",").ToList();
         bossEnemies = dungeonInfo[8].Split(",").ToList();
         currentStomach = baseMaxStomach;
@@ -194,8 +196,10 @@ public class Dungeon : ScriptableObject
         utility.RemoveEmptyListItems(bossEnemies);
     }
     public string GetDungeonName(){ return dungeonName; }
-    public List<string> treasures;
-    public List<string> maxPossibleTreasureQuantities;
+    //public List<string> treasures;
+    //public List<string> maxPossibleTreasureQuantities;
+    public int averageSize;
+    public int sizeVariance;
     public List<string> possibleEnemies;
     public List<string> enemyModifiers;
     public List<string> bossEnemies;
@@ -234,6 +238,7 @@ public class Dungeon : ScriptableObject
     public List<int> partyModifierDurations;
     public void SetPartyBattleModifierDurations(List<string> newInfo)
     {
+        utility.RemoveEmptyListItems(newInfo);
         partyModifierDurations = utility.ConvertStringListToIntList(newInfo);
     }
     public void UpdatePartyModifierDurations()
@@ -274,9 +279,8 @@ public class Dungeon : ScriptableObject
     public int currentFloor;
     public void SetCurrentFloor(int newInfo){ currentFloor = newInfo; }
     public int GetCurrentFloor() { return currentFloor; }
-    public int treasuresAcquired;
-    public void SetTreasuresAcquired(int newInfo){ treasuresAcquired = newInfo; }
-    public int GetTreasuresAcquired() { return treasuresAcquired; }
+    //public int treasuresAcquired;
+    public int GetTreasuresAcquired() { return 0; }
     public int spawnCounter;
     // Store all the floors, incase you can go up or down floors?
     //public List<string> allFloorData;
@@ -365,7 +369,7 @@ public class Dungeon : ScriptableObject
     }
     [System.NonSerialized]
     public List<string> partyLocations;
-    // This also draws stairs and treasures on the same layer, why not split the layers?
+    // This also draws stairs/trsr on the same layer, why not split the layers?
     public void UpdatePartyLocations()
     {
         // Make a new list.
