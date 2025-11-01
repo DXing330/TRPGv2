@@ -23,4 +23,12 @@ public class References : MonoBehaviour
             savedDataReferences[i].Save();
         }
     }
+
+    public void Load()
+    {
+        for (int i = 0; i < savedDataReferences.Count; i++)
+        {
+            savedDataReferences[i].Load();
+        }
+    }
 }

@@ -11,7 +11,7 @@ public class GuildHub : MonoBehaviour
     public void Start()
     {
         partyData.Save();
-        references.Save();
+        RemoveChests();
         partyData.SetFullParty();
         actorSpriteHPList.RefreshData();
     }

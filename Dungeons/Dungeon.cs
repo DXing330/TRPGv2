@@ -219,11 +219,11 @@ public class Dungeon : ScriptableObject
         }
         if (currentStomach < 0){currentStomach = 0;}
     }
-    public bool Hungry()
+    public bool Hungry(int partySize)
     {
         if (currentStomach > 0)
         {
-            currentStomach--;
+            currentStomach -= partySize;
             return false;
         }
         return true;
@@ -240,6 +240,13 @@ public class Dungeon : ScriptableObject
     {
         utility.RemoveEmptyListItems(newInfo);
         partyModifierDurations = utility.ConvertStringListToIntList(newInfo);
+        for (int i = partyModifierDurations.Count - 1; i >= 0; i--)
+        {
+            if (partyModifierDurations[i] == 0)
+            {
+                partyModifierDurations.RemoveAt(i);
+            }
+        }
     }
     public void UpdatePartyModifierDurations()
     {
@@ -302,16 +309,30 @@ public class Dungeon : ScriptableObject
             viewedTiles.Add(0);
         }
     }
-    public void UpdateViewedTiles(List<int> currentTiles)
+    public void UpdateViewedTiles(List<int> currentTiles, int viewedTile = -1)
     {
         for (int i = 0; i < currentTiles.Count; i++)
         {
             if (currentTiles[i] < 0 || currentTiles[i] >= viewedTiles.Count){continue;}
             viewedTiles[currentTiles[i]] = 1;
         }
+        if (viewedTile >= 0){viewedTiles[viewedTile] = 1;}
+    }
+    public void ViewAllTiles()
+    {
+        for (int i = 0; i < viewedTiles.Count; i++)
+        {
+            viewedTiles[i] = 1;
+        }
     }
     [System.NonSerialized]
     public List<string> currentFloorTiles;
+    public int ReturnRandomTile()
+    {
+        int tileNumber = Random.Range(0, currentFloorTiles.Count);
+        if (currentFloorTiles[tileNumber] != passableTileType){return ReturnRandomTile();}
+        return tileNumber;
+    }
     public void LoadFloorTiles(List<string> newTiles)
     {
         currentFloorTiles = new List<string>(newTiles);
@@ -329,10 +350,32 @@ public class Dungeon : ScriptableObject
             }
         }
     }
+    // Only used to destroy walls? Can be expanded later if needed.
+    public void UpdateFloorTiles(List<int> tileNumbers)
+    {
+        if (tileNumbers.Count <= 0)
+        {
+            for (int i = 0; i < currentFloorTiles.Count; i++)
+            {
+                currentFloorTiles[i] = passableTileType;
+            }
+            LoadFloorTiles(currentFloorTiles);
+            return;
+        }
+        for (int i = 0; i < tileNumbers.Count; i++)
+        {
+            if (tileNumbers[i] >= 0 && tileNumbers[i] < currentFloorTiles.Count)
+            {
+                currentFloorTiles[tileNumbers[i]] = passableTileType;
+            }
+        }
+        // Refresh the move costs.
+        LoadFloorTiles(currentFloorTiles);
+    }
     public List<string> GetCurrentFloorTiles() { return currentFloorTiles; }
     [System.NonSerialized]
     public List<int> moveCosts;
-    public void SetFloorTiles(List<string> newTiles, int floor = 0)
+    public void SetFloorTiles(List<string> newTiles)
     {
         currentFloorTiles = new List<string>(newTiles);
         moveCosts = new List<int>();
@@ -428,6 +471,41 @@ public class Dungeon : ScriptableObject
         allEnemyParties = new List<string>(newInfo);
     }
     public List<int> allEnemyLocations;
+    public void TeleportEnemyAtLocation(int location, string specifics = "")
+    {
+        int indexOf = allEnemyLocations.IndexOf(location);
+        if (indexOf >= 0)
+        {
+            allEnemyLocations[indexOf] = ReturnRandomTile();
+        }
+    }
+    public void RemoveEnemyAtLocation(int location)
+    {
+        int indexOf = allEnemyLocations.IndexOf(location);
+        if (indexOf >= 0)
+        {
+            RemoveEnemyAtIndex(indexOf);
+        }
+    }
+    public void TransformEnemyAtLocation(int location, string specifics)
+    {
+        int indexOf = allEnemyLocations.IndexOf(location);
+        if (indexOf >= 0)
+        {
+            RemoveEnemyAtIndex(indexOf);
+            switch (specifics)
+            {
+                default:
+                break;
+                case "Item":
+                itemLocations.Add(location);
+                break;
+                case "Treasure":
+                treasureLocations.Add(location);
+                break;
+            }
+        }
+    }
     public List<int> GetEnemyLocations()
     {
         return allEnemyLocations;
@@ -459,6 +537,7 @@ public class Dungeon : ScriptableObject
         return allEnemyLocations.Contains(nextTile);
     }
     public List<int> treasureLocations;
+    public List<int> GetTreasureLocations(){return treasureLocations;}
     public int GetRandomTreasureLocation()
     {
         if (treasureLocations.Count <= 0)
@@ -486,6 +565,7 @@ public class Dungeon : ScriptableObject
         return "";
     }
     public List<int> itemLocations;
+    public List<int> GetItemLocations(){return itemLocations;}
     public int GetRandomItemLocation()
     {
         if (itemLocations.Count <= 0)
@@ -513,7 +593,18 @@ public class Dungeon : ScriptableObject
         }
         return "";
     }
+    public List<string> ClaimAllItems()
+    {
+        List<string> allItems = new List<string>();
+        for (int i = 0; i < itemLocations.Count; i++)
+        {
+            allItems.Add(GenerateItem());
+        }
+        itemLocations.Clear();
+        return allItems;
+    }
     public List<int> trapLocations;
+    public void ResetTraps(){trapLocations.Clear();}
     public void SetTrapLocations(List<string> newInfo)
     {
         trapLocations = utility.ConvertStringListToIntList(newInfo);

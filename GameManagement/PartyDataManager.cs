@@ -361,6 +361,7 @@ public class PartyDataManager : MonoBehaviour
         {
             tempPartyData.SetMemberStats(dummyActor, selected - permanentCount - mainCount);
         }
+        SetFullParty();
     }
 
     public void RemovePartyMember(int selected)

@@ -18,6 +18,18 @@ public class DungeonBag : SavedData
     {
         return items.Count >= maxCapacity;
     }
+    public void TrimItems()
+    {
+        if (items.Count > maxCapacity)
+        {
+            List<string> trimmedItems = new List<string>();
+            for (int i = 0; i < maxCapacity; i++)
+            {
+                trimmedItems.Add(items[i]);
+            }
+            SetItems(trimmedItems);
+        }
+    }
     public List<string> items;
     public void DropItems(){items.Clear();}
     public List<string> GetItems(){return items;}
@@ -34,6 +46,14 @@ public class DungeonBag : SavedData
     {
         if (newItem == ""){return;}
         items.Add(newItem);
+    }
+    public void GainItems(List<string> newItems)
+    {
+        for (int i = 0; i < newItems.Count; i++)
+        {
+            GainItem(newItems[i]);
+        }
+        TrimItems();
     }
     public void UseItem(string usedItem)
     {
@@ -98,8 +118,11 @@ public class DungeonBag : SavedData
         dataPath = Application.persistentDataPath+"/"+filename;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else{allData = newGameData;}
-        if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
-        else{return;}
+        dataList = allData.Split(delimiter).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
     }
     protected void LoadStat(string stat, int index)
     {

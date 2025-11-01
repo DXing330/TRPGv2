@@ -35,6 +35,12 @@ public class DungeonMap : MapManager
         }
         return locations[index];
     }
+    public int DetermineClosestEnemyLocation()
+    {
+        if (dungeon.GetEnemyLocations().Count <= 0){return -1;}
+        else if (dungeon.GetEnemyLocations().Count == 1){return dungeon.GetEnemyLocations()[0];}
+        return DetermineClosestLocation(dungeon.GetEnemyLocations());
+    }
     public void UseDowsing(string target)
     {
         string message = "The rods point ";
@@ -53,7 +59,7 @@ public class DungeonMap : MapManager
                 message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestLocation(dungeon.GetTrapLocations()), dungeon.GetDungeonSize())) + ".";
                 break;
             case "Enemy":
-                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestLocation(dungeon.GetEnemyLocations()), dungeon.GetDungeonSize())) + ".";
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestEnemyLocation(), dungeon.GetDungeonSize())) + ".";
                 break;
             default:
                 break;
@@ -81,6 +87,16 @@ public class DungeonMap : MapManager
 
     }
 
+    public void QuitDungeon()
+    {
+        sceneMover.ReturnFromDungeon(false);
+    }
+
+    public void EscapeDungeon()
+    {
+        sceneMover.ReturnFromDungeon();
+    }
+
     protected void RefreshMapSize()
     {
         mapSize = dungeon.GetDungeonSize();
@@ -88,12 +104,17 @@ public class DungeonMap : MapManager
         dungeon.UpdateEmptyTiles(emptyList);
     }
 
+    public void TeleportToTile(int newTile)
+    {
+        MoveToTile(newTile);
+    }
+
     protected void MoveToTile(int newTile)
     {
         // Whenever moving, regenerators will regenerate.
         dungeonEffects.ApplyNaturalRegeneration();
         // Whenever moving, decrease the hunger meter.
-        if (dungeon.Hungry())
+        if (dungeon.Hungry(partyData.ReturnTotalPartyCount()))
         {
             // If the hunger meter is empty then the party suffers.
             if (partyData.DungeonHunger())
@@ -170,6 +191,7 @@ public class DungeonMap : MapManager
                 return;
             }
         }
+        dungeon.UpdatePartyModifierDurations();
         // Check if you stepped on a treasure, item or trap.
         if (dungeon.TreasureLocation(newTile))
         {
@@ -219,6 +241,11 @@ public class DungeonMap : MapManager
         int newTile = mapUtility.PointInDirection(dungeon.GetPartyLocation(), direction, mapSize);
         if (newTile < 0 || newTile == dungeon.GetPartyLocation() || !dungeon.TilePassable(newTile)){return;}
         MoveToTile(newTile);
+    }
+
+    public List<int> AdjacentTilesToParty()
+    {
+        return mapUtility.AdjacentTiles(dungeon.GetPartyLocation(), mapSize);
     }
 
     public void UpdateActors()

@@ -6,6 +6,7 @@ public class StartGameManager : MonoBehaviour
 {
     public PartyDataManager partyManager;
     public List<SavedData> gameData;
+    public References references;
     public PartyDataManager roguelikeParty;
     public List<SavedData> roguelikeGameData;
     public StSState roguelikeState;
@@ -19,6 +20,7 @@ public class StartGameManager : MonoBehaviour
         {
             gameData[i].Load();
         }
+        references.Load();
     }
 
     public void StartRoguelike()

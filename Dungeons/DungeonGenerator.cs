@@ -14,10 +14,10 @@ public class DungeonGenerator : ScriptableObject
     public int GetSize(){return size;}
     protected int baseSize = 32;
     protected int sizeVariance = 6;
-    protected int minItems = 2;
+    /*protected int minItems = 2; // scale off room count
     protected int maxItems = 6;
-    protected int minTraps = 1;
-    protected int maxTraps = 3;
+    protected int minTraps = 1; // scale off treasure count
+    protected int maxTraps = 3;*/
     public int GetMinSize(){return baseSize - sizeVariance;}
     public int minRoomSize = 6;
     public int maxRooms = 6;
@@ -63,8 +63,8 @@ public class DungeonGenerator : ScriptableObject
             ConnectPoints(start, treasureLocations[i]);
         }
         // Put traps inside rooms.
-        int trapCount = Random.Range(minTraps, maxTraps + 1);
-        int itemCount = Random.Range(minItems, maxItems + 1);
+        int trapCount = Random.Range(1, (treasureCount / 2) + 1);
+        int itemCount = Random.Range(maxRooms / 2, maxRooms * 2);
         List<int> trapLocations = new List<int>();
         // Put items in room.
         List<int> itemLocations = new List<int>();

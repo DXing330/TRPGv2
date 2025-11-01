@@ -20,6 +20,13 @@ public class AttackManager : ScriptableObject
     public void FlatDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        int hitRoll = Random.Range(0, 100);
+        if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
+        {
+            // Miss.
+            map.combatLog.UpdateNewestLog("The attack misses!");
+            return;
+        }
         advantage = 0;
         damageMultiplier = baseMultiplier;
         baseDamage = damage;
@@ -49,6 +56,11 @@ public class AttackManager : ScriptableObject
                 break;
         }
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
+        int critRoll = Random.Range(0, 100);
+        if (critRoll < attacker.GetCritChance())
+        {
+            baseDamage = baseDamage * attacker.GetCritDamage() / baseMultiplier;
+        }
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         defender.TakeDamage(baseDamage);

@@ -48,7 +48,24 @@ public class SceneTracker : SavedData
             dataList.Clear();
             dataList.Add(allData);
         }
-        SetPreviousScene(dataList[0]);
-        SetCurrentScene(dataList[1]);
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
+    }
+
+    protected void LoadStat(string stat, int index)
+    {
+        switch (index)
+        {
+            default:
+            break;
+            case 0:
+            SetPreviousScene(stat);
+            break;
+            case 1:
+            SetCurrentScene(stat);
+            break;
+        }
     }
 }

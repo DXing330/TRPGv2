@@ -9,6 +9,7 @@ public class StorageUI : MonoBehaviour
     {
         storage.Load();
         UpdateDungeonStorage();
+        UpdateGoldStorage();
     }
     public GeneralUtility utility;
     public PartyDataManager partyData;
