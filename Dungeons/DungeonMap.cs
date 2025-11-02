@@ -146,6 +146,7 @@ public class DungeonMap : MapManager
         }
         if (dungeon.StairsDownLocation(newTile))
         {
+            interactable = false;
             if (dungeon.FinalFloor())
             {
                 // Set a flag to know that you are fighting the final boss of the dungeon so when you load back you don't fight the boss again.
@@ -193,7 +194,11 @@ public class DungeonMap : MapManager
         }
         dungeon.UpdatePartyModifierDurations();
         // Check if you stepped on a treasure, item or trap.
-        if (dungeon.TreasureLocation(newTile))
+        if (dungeon.TrapLocation(newTile))
+        {
+            dungeonEffects.ActivateTrap(dungeon.TriggerTrap());
+        }
+        else if (dungeon.TreasureLocation(newTile))
         {
             // Check if inventory is full.
             if (!partyData.dungeonBag.BagFull())
@@ -220,10 +225,6 @@ public class DungeonMap : MapManager
                 // Generate an inventory full error message.
                 dungeon.AddDungeonLog("Bag is full.");
             }
-        }
-        else if (dungeon.TrapLocation(newTile))
-        {
-            // BOOM.
         }
         UpdateMap();
     }

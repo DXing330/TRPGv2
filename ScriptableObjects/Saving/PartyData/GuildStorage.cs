@@ -19,11 +19,20 @@ public class GuildStorage : SavedData
     {
         return storedDungeonItems.Count >= maxDungeonStorage;
     }
+    public bool DungeonStorageAvailable(int count)
+    {
+        return storedDungeonItems.Count + count <= maxDungeonStorage;
+    }
     public List<string> storedDungeonItems;
     public List<string> GetStoredDungeonItems(){return storedDungeonItems;}
     public void StoreDungeonItem(string newInfo)
     {
         storedDungeonItems.Add(newInfo);
+        storedDungeonItems.Sort();
+    }
+    public void StoreDungeonItems(List<string> newInfo)
+    {
+        storedDungeonItems.AddRange(newInfo);
         storedDungeonItems.Sort();
     }
     public void WithdrawDungeonItem(string newInfo)

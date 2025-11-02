@@ -265,6 +265,11 @@ public class Dungeon : ScriptableObject
         partyModifiers.Add(newMod);
         partyModifierDurations.Add(duration);
     }
+    public void ClearPartyModifiers()
+    {
+        partyModifiers.Clear();
+        partyModifierDurations.Clear();
+    }
     public string currentWeather;
     public void SetWeather(string newInfo = "")
     {
@@ -452,6 +457,7 @@ public class Dungeon : ScriptableObject
     }
     protected void RemoveEnemyAtIndex(int indexOf)
     {
+        if (indexOf >= allEnemySprites.Count || indexOf < 0){return;}
         allEnemySprites.RemoveAt(indexOf);
         allEnemyParties.RemoveAt(indexOf);
         allEnemyLocations.RemoveAt(indexOf);
@@ -459,6 +465,7 @@ public class Dungeon : ScriptableObject
     public List<string> allEnemySprites;
     public void SetEnemySprites(List<string> newInfo)
     {
+        allEnemySprites.Clear();
         utility.RemoveEmptyListItems(newInfo);
         if (newInfo.Count <= 0) { return; }
         allEnemySprites = new List<string>(newInfo);
@@ -466,6 +473,7 @@ public class Dungeon : ScriptableObject
     public List<string> allEnemyParties;
     public void SetEnemyParties(List<string> newInfo)
     {
+        allEnemyParties.Clear();
         utility.RemoveEmptyListItems(newInfo);
         if (newInfo.Count <= 0) { return; }
         allEnemyParties = new List<string>(newInfo);
@@ -512,6 +520,7 @@ public class Dungeon : ScriptableObject
     }
     public void SetEnemyLocations(List<string> newInfo)
     {
+        allEnemyLocations.Clear();
         utility.RemoveEmptyListItems(newInfo);
         if (newInfo.Count <= 0) { return; }
         allEnemyLocations.Clear();
@@ -603,6 +612,14 @@ public class Dungeon : ScriptableObject
         itemLocations.Clear();
         return allItems;
     }
+    public void TransformAllItems()
+    {
+        for (int i = 0; i < itemLocations.Count; i++)
+        {
+            ForceSpawnEnemy(itemLocations[i]);
+        }
+        itemLocations.Clear();
+    }
     public List<int> trapLocations;
     public void ResetTraps(){trapLocations.Clear();}
     public void SetTrapLocations(List<string> newInfo)
@@ -620,7 +637,9 @@ public class Dungeon : ScriptableObject
     public string TriggerTrap()
     {
         trapLocations.Remove(partyLocation);
-        return GenerateTrap();
+        string trapName = GenerateTrap();
+        AddDungeonLog("Stepped on a " + trapName + ".");
+        return trapName;
     }
     public string treasureSprite;
     public string itemSprite;
@@ -731,19 +750,23 @@ public class Dungeon : ScriptableObject
             spawnCounter = 0;
         }
     }
-    protected void SpawnEnemy()
+    public void SpawnEnemy()
     {
         int spawnLocation = FindRandomEmptyTile();
-        if (spawnLocation == -1){return;}
+        ForceSpawnEnemy(spawnLocation);
+    }
+    public void ForceSpawnEnemy(int spawnLocation)
+    {
+        if (spawnLocation == -1 || spawnLocation >= currentFloorTiles.Count || currentFloorTiles[spawnLocation] != passableTileType){return;}
         int enemyCount = Random.Range(minEnemies, maxEnemies + 1);
         string enemyString = "";
         for (int i = 0; i < enemyCount; i++)
         {
             enemyString += possibleEnemies[Random.Range(0, possibleEnemies.Count)];
-            // The first one is the sprite.
             if (i < enemyCount - 1){enemyString += "|";}
         }
         string[] allEnemies = enemyString.Split("|");
+        // The first one is the sprite.
         allEnemySprites.Add(allEnemies[0]);
         allEnemyLocations.Add(spawnLocation);
         allEnemyParties.Add(enemyString);

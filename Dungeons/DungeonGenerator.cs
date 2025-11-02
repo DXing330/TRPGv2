@@ -64,7 +64,7 @@ public class DungeonGenerator : ScriptableObject
         }
         // Put traps inside rooms.
         int trapCount = Random.Range(1, (treasureCount / 2) + 1);
-        int itemCount = Random.Range(maxRooms / 2, maxRooms * 2);
+        int itemCount = Random.Range(roomDetails.Count / 2, roomDetails.Count + roomDetails.Count / 2 + 1);
         List<int> trapLocations = new List<int>();
         // Put items in room.
         List<int> itemLocations = new List<int>();

@@ -31,6 +31,7 @@ public class DungeonBag : SavedData
         }
     }
     public List<string> items;
+    public int GetItemCount(){return items.Count;}
     public void DropItems(){items.Clear();}
     public List<string> GetItems(){return items;}
     public void SetItems(List<string> newInfo)
@@ -75,6 +76,34 @@ public class DungeonBag : SavedData
             }
         }
         return chests;
+    }
+    public void TransformItemsOfType(string original, string transformed)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].Contains(original))
+            {
+                items[i] = transformed;
+            }
+        }
+    }
+    public void RemoveItemsOfType(string type, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            RemoveItemOfType(type);
+        }
+    }
+    public void RemoveItemOfType(string type)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].Contains(type))
+            {
+                items.RemoveAt(i);
+                return;
+            }
+        }
     }
     public void OpenChest(string chest)
     {

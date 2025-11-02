@@ -18,7 +18,6 @@ public class DungeonEffectManager : MonoBehaviour
     public string selectedItem;
     public StatDatabase damagingStatus;
     public StatDatabase regenPassives;
-    public int damageAmount;
     public bool ApplyDamagingStatus()
     {
         return partyData.StatusDamage(damagingStatus.GetAllKeys());
@@ -57,7 +56,28 @@ public class DungeonEffectManager : MonoBehaviour
         UpdateItemSelect();
     }
 
-    protected void ApplyEffect(string target, string effect, string specifics)
+    public string debugTrapName;
+    [ContextMenu("Debug Trap")]
+    public void DebugTrap()
+    {
+        ActivateTrap(debugTrapName);
+    }
+
+    public void ActivateTrap(string trapName)
+    {
+        string[] trapEffect = trapData.ReturnValue(trapName).Split("|");
+        string[] targets = trapEffect[0].Split(",");
+        string[] effects = trapEffect[1].Split(",");
+        string[] specifics = trapEffect[2].Split(",");
+        for (int i = 0; i < targets.Length; i++)
+        {
+            ApplyEffect(targets[i], effects[i], specifics[i], true);
+        }
+        dungeonMap.UpdateMap();
+    }
+
+    // Traps are similar but negative effects.
+    protected void ApplyEffect(string target, string effect, string specifics, bool trap = false)
     {
         List<int> adjacentTiles = dungeonMap.AdjacentTilesToParty();
         switch (target)
@@ -73,11 +93,17 @@ public class DungeonEffectManager : MonoBehaviour
                 dungeonMap.UpdateMap();
                 break;
             case "AdjacentEnemies":
-            for (int i = 0; i < adjacentTiles.Count; i++)
+                for (int i = 0; i < adjacentTiles.Count; i++)
                 {
                     AffectEnemyOnTile(adjacentTiles[i], effect, specifics);
                 }
                 dungeonMap.UpdateMap();
+                break;
+            case "SpawnAdjacentEnemies":
+                for (int i = 0; i < adjacentTiles.Count; i++)
+                {
+                    dungeon.ForceSpawnEnemy(adjacentTiles[i]);
+                }
                 break;
             case "ClosestEnemy":
                 // The map will get the closest enemy.
@@ -104,6 +130,9 @@ public class DungeonEffectManager : MonoBehaviour
             case "BattleMod":
                 dungeon.AddPartyModifier(effect, int.Parse(specifics));
                 break;
+            case "ClearBattleMod":
+                dungeon.ClearPartyModifiers();
+                break;
             case "Stomach":
                 if (effect == "Increase")
                 {
@@ -121,6 +150,11 @@ public class DungeonEffectManager : MonoBehaviour
                 break;
             case "AllItems":
                 // For now just claim them all. Can be expanded later.
+                if (trap)
+                {
+                    dungeon.TransformAllItems();
+                    break;
+                }
                 partyData.dungeonBag.GainItems(dungeon.ClaimAllItems());
                 break;
             case "AllTiles":
@@ -130,6 +164,9 @@ public class DungeonEffectManager : MonoBehaviour
             case "AdjacentTiles":
                 dungeon.UpdateFloorTiles(adjacentTiles);
                 dungeonMap.UpdateMap();
+                break;
+            case "Inventory":
+                AffectInventory(effect, specifics);
                 break;
         }
     }
@@ -220,6 +257,28 @@ public class DungeonEffectManager : MonoBehaviour
             break;
             case "Teleport":
             dungeon.TeleportEnemyAtLocation(tileNumber, specifics);
+            break;
+        }
+    }
+
+    protected void AffectInventory(string effect, string specifics)
+    {
+        string[] details = specifics.Split("=");
+        switch (effect)
+        {
+            default:
+            break;
+            case "Remove":
+            partyData.dungeonBag.RemoveItemsOfType(details[0], int.Parse(details[1]));
+            break;
+            case "Transform":
+            partyData.dungeonBag.TransformItemsOfType(details[0], details[1]);
+            break;
+            case "RemoveGold":
+            partyData.inventory.LoseGold(int.Parse(specifics));
+            break;
+            case "Clear":
+            partyData.dungeonBag.DropItems();
             break;
         }
     }

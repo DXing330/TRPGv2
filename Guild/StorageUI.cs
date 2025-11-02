@@ -38,7 +38,7 @@ public class StorageUI : MonoBehaviour
         dungeonStorageSelect.SetSelectables(storage.GetStoredDungeonItems());
         dungeonStorageLimitText.text = storage.ReturnDungeonStorageLimitString();
         dungeonBagSelect.SetPage(bagPage);
-        dungeonBagSelect.SetPage(storagePage);
+        dungeonStorageSelect.SetPage(storagePage);
     }
     public void StoreItem()
     {
@@ -47,6 +47,13 @@ public class StorageUI : MonoBehaviour
         if (selected < 0){return;}
         partyData.dungeonBag.UseItem(dungeonBagSelect.GetSelectedString());
         storage.StoreDungeonItem(dungeonBagSelect.GetSelectedString());
+        UpdateDungeonStorage(true);
+    }
+    public void StoreAllItems()
+    {
+        if (!storage.DungeonStorageAvailable(partyData.dungeonBag.GetItemCount())){return;}
+        storage.StoreDungeonItems(partyData.dungeonBag.GetItems());
+        partyData.dungeonBag.DropItems();
         UpdateDungeonStorage(true);
     }
     public void WithdrawItem()
