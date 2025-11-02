@@ -10,25 +10,27 @@ public class GuildCard : SavedData
 {
     public string delimiterTwo;
     // Higher rank -> larger party, more equipment, harder quests
+    protected int maxRank = 12;
     public int guildRank;
+    public List<string> guildRankNames;
+    public string GetGuildRankName()
+    {
+        if (guildRank < 0){return guildRankNames[0];}
+        else if (guildRank >= maxRank){return guildRankNames[maxRank - 1];}
+        return guildRankNames[guildRank];
+    }
     public void SetGuildRank(int newRank) { guildRank = newRank; }
     public int GetGuildRank() { return guildRank; }
-    // Require 6 * rank cubed?
     // Gain exp = difficulty of quest squared?
     public int guildExp;
     public void SetGuildExp(int newExp) { guildExp = newExp; }
     public void GainGuildExp(int amount)
     {
-        guildExp += amount;
-        if (guildExp > GetGuildRank() * GetGuildRank() * GetGuildRank())
+        guildExp += Mathf.Max(1, amount / guildRank);
+        if (guildExp > utility.Exponent(3, guildRank) && guildRank < maxRank)
         {
             guildRank++;
         }
-    }
-    public void RefreshAll()
-    {
-        newHireables = 1;
-        newQuests = 1;
     }
     public int GetGuildExp() { return guildExp; }
     public List<string> acceptedQuests;
@@ -134,29 +136,6 @@ public class GuildCard : SavedData
     {
         availableQuests = new List<string>(newQuests);
     }
-    // Hiring area only refreshes after a quest is completed/failed.
-    public int newHireables = 1;
-    public bool RefreshHireables()
-    {
-        if (newHireables == 1)
-        {
-            newHireables = 0;
-            return true;
-        }
-        return false;
-    }
-    public List<string> newHireClasses;
-    public void SetNewHireClasses(List<string> newClasses)
-    {
-        newHireClasses = newClasses;
-    }
-    public List<string> GetNewHireClasses() { return newHireClasses; }
-    public List<string> newHireNames;
-    public void SetNewHireNames(List<string> newNames)
-    {
-        newHireNames = newNames;
-    }
-    public List<string> GetNewHireNames() { return newHireNames; }
     public override void NewGame()
     {
         allData = newGameData;
@@ -168,14 +147,14 @@ public class GuildCard : SavedData
     {
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter;
-        allData += String.Join(delimiterTwo, acceptedQuests);
+        /*allData += String.Join(delimiterTwo, acceptedQuests);
         allData += delimiter + newQuests.ToString() + delimiter;
         allData += String.Join(delimiterTwo, availableQuests);
         allData += delimiter + newHireables.ToString() + delimiter;
         allData += String.Join(delimiterTwo, newHireClasses);
         allData += delimiter;
         allData += String.Join(delimiterTwo, newHireNames);
-        allData += delimiter;
+        allData += delimiter;*/
         File.WriteAllText(dataPath, allData);
     }
 
@@ -186,7 +165,27 @@ public class GuildCard : SavedData
         else { allData = newGameData; }
         if (allData.Length < newGameData.Length) { allData = newGameData; }
         dataList = allData.Split(delimiter).ToList();
-        guildRank = int.Parse(dataList[0]);
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
+    }
+
+    protected void LoadStat(string stat, int index)
+    {
+        switch (index)
+        {
+            default:
+            break;
+            case 0:
+            guildRank = int.Parse(stat);
+            break;
+            case 1:
+            guildExp = int.Parse(stat);
+            break;
+        }
+    }
+        /*guildRank = int.Parse(dataList[0]);
         guildExp = int.Parse(dataList[1]);
         acceptedQuests = dataList[2].Split(delimiterTwo).ToList();
         newQuests = int.Parse(dataList[3]);
@@ -213,5 +212,5 @@ public class GuildCard : SavedData
                 newQuests = 1; // If you fail a quest then you can receive new quests.
             }
         }
-    }
+    }*/
 }

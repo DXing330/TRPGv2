@@ -28,36 +28,19 @@ public class HiringManager : MonoBehaviour
     // Only so many hireables appear each day/week/etc?
     public SelectStatTextList hirelingList;
     public StatTextList hirelingStats;
+    public PopUpMessage popUp;
     // As you perform you can hire more/better hirelings.
-    public int minHirelings = 2;
-    public int priceFeeRatio = 10;
-
     public List<string> currentHirelingClasses;
     public List<string> currentHirelingNames;
 
-    protected void UpdateGuildCardHirelings()
-    {
-        partyData.guildCard.SetNewHireClasses(currentHirelingClasses);
-        partyData.guildCard.SetNewHireNames(currentHirelingNames);
-    }
-
     protected void GenerateHirelings()
     {
-        if (!partyData.guildCard.RefreshHireables())
+        currentHirelingClasses.Clear();
+        currentHirelingNames.Clear();
+        for (int i = 0; i < hireableActors.Count; i++)
         {
-            currentHirelingClasses = partyData.guildCard.GetNewHireClasses();
-            currentHirelingNames = partyData.guildCard.GetNewHireNames();
-        }
-        else
-        {
-            currentHirelingClasses.Clear();
-            currentHirelingNames.Clear();
-            for (int i = 0; i < minHirelings+partyData.guildCard.GetGuildRank(); i++)
-            {
-                currentHirelingClasses.Add(hireableActors[Random.Range(0, hireableActors.Count)]);
-                currentHirelingNames.Add(GenerateRandomName());
-            }
-            UpdateGuildCardHirelings();
+            currentHirelingClasses.Add(hireableActors[Random.Range(0, hireableActors.Count)]);
+            currentHirelingNames.Add(GenerateRandomName());
         }
         hirelingList.SetStatsAndData(currentHirelingClasses, currentHirelingNames);
     }
@@ -86,6 +69,7 @@ public class HiringManager : MonoBehaviour
         stats.Add("Energy");
         stats.Add("Move Speed");
         stats.Add("Initiative");
+        stats.Add("Class");
         data.Add(price);
         data.Add(dummyActor.GetBaseHealth().ToString());
         data.Add(dummyActor.GetBaseAttack().ToString());
@@ -93,6 +77,7 @@ public class HiringManager : MonoBehaviour
         data.Add(dummyActor.GetBaseEnergy().ToString());
         data.Add(dummyActor.GetMoveSpeed().ToString());
         data.Add(dummyActor.GetInitiative().ToString());
+        data.Add(className);
         hirelingStats.SetStatsAndData(stats, data);
     }
 
@@ -100,8 +85,7 @@ public class HiringManager : MonoBehaviour
     {
         if (!partyData.OpenSlots())
         {
-            Debug.Log("You aren't allowed to hire any more hirelings.");
-            Debug.Log("Rank up more in order to be trusted with more men.");
+            popUp.SetMessage("You aren't allowed to hire any more hirelings. Rank up more in order to be trusted with more men.");
             return;
         }
         int selected = hirelingList.GetSelected();
@@ -116,7 +100,10 @@ public class HiringManager : MonoBehaviour
             currentHirelingNames.RemoveAt(selected);
             hirelingList.ResetSelected();
             hirelingList.SetStatsAndData(currentHirelingClasses, currentHirelingNames);
-            UpdateGuildCardHirelings();
+        }
+        else
+        {
+            popUp.SetMessage("You can't afford to hire them.");
         }
     }
 }

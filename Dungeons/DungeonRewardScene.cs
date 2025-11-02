@@ -50,7 +50,6 @@ public class DungeonRewardScene : MonoBehaviour
             partyData.inventory.AddItemQuantity("Gold", questGold);
         }
         partyData.guildCard.GainGuildExp((questGold*questGold/100));
-        partyData.guildCard.RefreshAll();
     }
 
     protected void DisplayRewards()

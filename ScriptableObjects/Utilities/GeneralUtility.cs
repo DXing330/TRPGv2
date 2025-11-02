@@ -299,6 +299,16 @@ public class GeneralUtility : ScriptableObject
         return (lastValue) * (lastValue + 1) / 2;
     }
 
+    public int Exponent(int eBase, int exponent)
+    {
+        int value = 1;
+        for (int i = 0; i < exponent; i++)
+        {
+            value *= eBase;
+        }
+        return value;
+    }
+
     public int RollRarity(int maxRarity, int rollBonus = 0)
     {
         int rarity = 0;

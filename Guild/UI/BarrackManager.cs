@@ -4,24 +4,21 @@ using UnityEngine;
 
 public class BarrackManager : MonoBehaviour
 {
+    public GeneralUtility utility;
     public CharacterList mainParty;
-    public PartyDataManager partyDataManager;
+    public PartyDataManager partyData;
     public PartyData mainPartyData;
     public CharacterList barracksParty;
     public BarracksData barracksData;
     void Start()
     {
-        mainActors.UpdateTextSize();
-        barracksActors.UpdateTextSize();
-        actorStats.UpdateTextSize();
-        actorPassives.UpdateTextSize();
-        mainPartyData = partyDataManager.mainPartyData;
+        mainPartyData = partyData.mainPartyData;
+        barracksData.Load();
         UpdateLists();
     }
     protected void UpdateLists()
     {
         mainParty.UpdateBasedOnPartyData(mainPartyData);
-        barracksData.Load();
         barracksParty.UpdateBasedOnPartyData(barracksData);
         barracksActors.RefreshData();
         mainActors.RefreshData();
@@ -31,6 +28,7 @@ public class BarrackManager : MonoBehaviour
     public ActorSpriteHPList barracksActors;
     public SelectStatTextList actorStats;
     public SelectStatTextList actorPassives;
+    public PopUpMessage popUp;
 
     public void UpdateSelectedBarrackActor()
     {
@@ -49,13 +47,19 @@ public class BarrackManager : MonoBehaviour
         actorPassives.ResetSelected();
         selectedActor.SetStatsFromString(mainActors.allActorData[mainActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
-        actorPassives.UpdateActorPassiveTexts(selectedActor, partyDataManager.ReturnMainPartyEquipment(mainActors.GetSelected()));
+        actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnMainPartyEquipment(mainActors.GetSelected()));
     }
 
     public void MoveToBarracks()
     {
         if (mainActors.GetSelected() < 0){return;}
-        barracksData.AddFromParty(mainActors.GetSelected(), partyDataManager);
+        // Arbitrary limit to barracks?
+        if (barracksData.PartyCount() > utility.Exponent(partyData.guildCard.GetGuildRank(), 2))
+        {
+            popUp.SetMessage("You aren't allowed to station any more allies here. Rank up more in order to be given more housing funds.");
+            return;
+        }
+        barracksData.AddFromParty(mainActors.GetSelected(), partyData);
         UpdateLists();
         mainActors.ResetSelected();
         actorStats.ResetSelected();
@@ -68,8 +72,12 @@ public class BarrackManager : MonoBehaviour
     {
         if (barracksActors.GetSelected() < 0){return;}
         // Make sure you don't make the party size larger than its allowed to be.
-        if (!partyDataManager.OpenSlots()){return;}
-        barracksData.AddFromBarracks(barracksActors.GetSelected(), partyDataManager);
+        if (!partyData.OpenSlots())
+        {
+            popUp.SetMessage("You aren't allowed to increase your party size any further. Rank up more in order to be trusted with more men.");
+            return;
+        }
+        barracksData.AddFromBarracks(barracksActors.GetSelected(), partyData);
         UpdateLists();
         barracksActors.ResetSelected();
         actorStats.ResetSelected();

@@ -9,6 +9,11 @@ public class RenamePartyMemberUI : MonoBehaviour
     public ActorSpriteHPList actorList;
     public NameRater nameRater;
 
+    void Start()
+    {
+        
+    }
+
     public void RenamePartyMember()
     {
         int selected = actorList.GetSelected();
