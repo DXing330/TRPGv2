@@ -64,6 +64,11 @@ public class DungeonBag : SavedData
             items.RemoveAt(indexOf);
         }
     }
+    public bool ItemExists(string itemName)
+    {
+        int indexOf = items.IndexOf(itemName);
+        return indexOf >= 0;
+    }
     public List<string> ReturnAllChests()
     {
         List<string> chests = new List<string>();
@@ -103,6 +108,13 @@ public class DungeonBag : SavedData
                 items.RemoveAt(i);
                 return;
             }
+        }
+    }
+    public void RemoveAllItemsOfType(string type)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            RemoveItemOfType(type);
         }
     }
     public void OpenChest(string chest)

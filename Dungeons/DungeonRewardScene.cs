@@ -28,13 +28,12 @@ public class DungeonRewardScene : MonoBehaviour
     {
         CalculateRewards();
         DisplayRewards();
-        //DisplayCombatRewards();
-        //ClaimRewards();
     }
 
     protected void CalculateRewards()
     {
         treasureChestManager.OpenAllChests();
+        // Escape orb means you don't complete any quests.
         CalculateQuestRewards();
     }
 
@@ -42,13 +41,23 @@ public class DungeonRewardScene : MonoBehaviour
     {
         questGold = 0;
         questRewardPanel.SetActive(false);
-        /*if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
+        // Check which quests were active in the dungeon.
+        List<int> indices = partyData.guildCard.GetQuestIndicesAtLocation(dungeon.GetDungeonName());
+        for (int i = indices.Count - 1; i >= 0; i--)
         {
-            questRewardPanel.SetActive(true);
-            questGoldReward.text = questGold.ToString();
+            if (questSuccessChecker.QuestSuccessful(partyData, i, dungeon))
+            {
+                questRewardPanel.SetActive(true);
+                questGold += partyData.guildCard.GetQuestRewards()[i];
+                questGoldReward.text = questGold.ToString();
+                partyData.guildCard.CompleteRequest(i);
+            }
+        }
+        if (questGold > 0)
+        {
             partyData.inventory.AddItemQuantity("Gold", questGold);
-        }*/
-        partyData.guildCard.GainGuildExp((questGold*questGold/100));
+            partyData.guildCard.GainGuildExp((questGold*questGold/100));
+        }
     }
 
     protected void DisplayRewards()
@@ -56,59 +65,4 @@ public class DungeonRewardScene : MonoBehaviour
         allItemRewards.SetStatsAndData(treasureChestManager.GetItemsFound(), treasureChestManager.GetQuantitiesFound());
         allEquipmentRewards.SetStatsAndData(treasureChestManager.GetEquipmentFound());
     }
-
-    // Handled by the treasure chests.
-    /*protected void AddItemReward(string item, int amount)
-    {
-        int indexOf = itemRewards.IndexOf(item);
-        if (indexOf == -1)
-        {
-            itemRewards.Add(item);
-            rewardQuantities.Add(amount);
-        }
-        else
-        {
-            rewardQuantities[indexOf] = rewardQuantities[indexOf] + amount;
-        }
-    }
-
-    protected void CalculateEquipmentRewards()
-    {
-        string equipRewards = rewardData.ReturnValue(dungeon.GetDungeonName());
-        string[] blocks = equipRewards.Split("|");
-        if (blocks[0] == "0")
-        {
-            return;
-        }
-        int minRarity = int.Parse(blocks[1]);
-        int maxRarity = int.Parse(blocks[2]);
-        equipmentRewards = new List<string>();
-        for (int i = 0; i < int.Parse(blocks[0]); i++)
-        {
-            equipmentRewards.Add(ReturnRandomEquipmentOfRarity(minRarity, maxRarity));
-        }
-    }
-
-        protected string ReturnRandomEquipmentOfRarity(int minRarity = 0, int maxRarity = 4)
-    {
-        string equip = equipmentData.ReturnRandomValue();
-        dummyEquip.SetAllStats(equip);
-        if (dummyEquip.GetRarity() <= maxRarity && dummyEquip.GetRarity() >= minRarity)
-        {
-            return equip;
-        }
-        return ReturnRandomEquipmentOfRarity(minRarity, maxRarity);
-    }
-
-    protected void ClaimRewards()
-    {
-        for (int i = 0; i < itemRewards.Count; i++)
-        {
-            inventory.AddItemQuantity(itemRewards[i], rewardQuantities[i]);
-        }
-        for (int i = 0; i < equipmentRewards.Count; i++)
-        {
-            partyData.equipmentInventory.AddEquipmentByStats(equipmentRewards[i]);
-        }
-    }*/
 }

@@ -42,6 +42,25 @@ public class GuildCard : SavedData
     {
         return utility.CountStringsInList(dungeonLocations, locationName);
     }
+    public List<int> GetQuestIndicesAtLocation(string location)
+    {
+        List<int> indices = new List<int>();
+        for (int i = 0; i < dungeonLocations.Count; i++)
+        {
+            if (dungeonLocations[i] == location){indices.Add(i);}
+        }
+        return indices;
+    }
+    public List<string> ReturnQuestGoalsAtLocation(string location)
+    {
+        List<int> indices = GetQuestIndicesAtLocation(location);
+        List<string> goals = new List<string>();
+        for (int i = 0; i < indices.Count; i++)
+        {
+            goals.Add(dungeonQuestGoals[indices[i]]);
+        }
+        return goals;
+    }
     public void SetDungeonQuestLocations(List<string> newInfo)
     {
         dungeonLocations = newInfo;
@@ -53,11 +72,22 @@ public class GuildCard : SavedData
         dungeonQuestGoals = newInfo;
         utility.RemoveEmptyListItems(dungeonQuestGoals);
     }
+    public List<string> GetQuestGoals(){return dungeonQuestGoals;}
     public List<int> dungeonQuestFloors;
     public void SetDungeonQuestFloors(List<string> newInfo)
     {
         dungeonQuestFloors = utility.ConvertStringListToIntList(newInfo);
         dungeonQuestFloors = utility.RemoveEmptyValues(dungeonQuestFloors);
+    }
+    public List<int> ReturnQuestFloorsAtLocation(string location)
+    {
+        List<int> indices = GetQuestIndicesAtLocation(location);
+        List<int> floors = new List<int>();
+        for (int i = 0; i < indices.Count; i++)
+        {
+            floors.Add(dungeonQuestFloors[indices[i]]);
+        }
+        return floors;
     }
     public List<int> dungeonQuestRewards;
     public void SetDungeonQuestRewards(List<string> newInfo)
@@ -65,7 +95,8 @@ public class GuildCard : SavedData
         dungeonQuestRewards = utility.ConvertStringListToIntList(newInfo);
         dungeonQuestRewards = utility.RemoveEmptyValues(dungeonQuestRewards);
     }
-    public void AcceptDungeonQuest(string dungeonLocation, string goal, int floor, int reward)
+    public List<int> GetQuestRewards(){return dungeonQuestRewards;}
+    public void AcceptDungeonRequest(string dungeonLocation, string goal, int floor, int reward)
     {
         dungeonLocations.Add(dungeonLocation);
         dungeonQuestGoals.Add(goal);
@@ -116,10 +147,10 @@ public class GuildCard : SavedData
     {
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter;
-        allData += String.Join(delimiterTwo, dungeonLocations);
-        allData += String.Join(delimiterTwo, dungeonQuestGoals);
-        allData += String.Join(delimiterTwo, dungeonQuestFloors);
-        allData += String.Join(delimiterTwo, dungeonQuestRewards);
+        allData += String.Join(delimiterTwo, dungeonLocations) + delimiter;
+        allData += String.Join(delimiterTwo, dungeonQuestGoals) + delimiter;
+        allData += String.Join(delimiterTwo, dungeonQuestFloors) + delimiter;
+        allData += String.Join(delimiterTwo, dungeonQuestRewards) + delimiter;
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }

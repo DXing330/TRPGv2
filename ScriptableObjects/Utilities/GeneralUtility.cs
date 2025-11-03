@@ -325,7 +325,7 @@ public class GeneralUtility : ScriptableObject
         else if (root == 1){return rBase;}
         if (rBase <= 0){return 0;}
         else if (rBase == 1){return 1;}
-        for (int i = 2; i < rBase; i++)
+        for (int i = 2; i < rBase + 1; i++)
         {
             // Rounds down.
             if (Exponent(i, root) > rBase){return i - 1;}

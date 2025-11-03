@@ -112,7 +112,7 @@ public class DungeonState : SavedState
                 //dungeon.SetQuestReward(int.Parse(stat)); Handled by dungeon reward scene.
                 break;
             case 14:
-                dungeon.SetQuestFloors(stat.Split(delimiterTwo).ToList());
+                dungeon.SetQuestFloors(utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList()));
                 break;
             case 15:
                 dungeon.SetQuestTiles(stat.Split(delimiterTwo).ToList());

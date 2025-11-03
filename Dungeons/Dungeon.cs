@@ -15,6 +15,8 @@ public class Dungeon : ScriptableObject
     public PartyData tempParty;
     public string escortName;
     public string GetEscortName(){return escortName;}
+    public string searchName = "Necklace";
+    public string GetSearchName(){return searchName;}
     public int dungeonSize;
     public void SetDungeonSize(int newInfo)
     {
@@ -27,6 +29,8 @@ public class Dungeon : ScriptableObject
     public void AddDungeonLog(string newInfo){dungeonLogs.Insert(0, newInfo);}
     public void SetDungeonLogs(List<string> newLogs){dungeonLogs = newLogs;}
     public List<string> GetDungeonLogs(){return dungeonLogs;}
+    public bool escaped = false;
+    public void EscapeOrb(){escaped = true;}
     // Called whenever starting a new floor.
     public void MakeDungeon()
     {
@@ -40,6 +44,7 @@ public class Dungeon : ScriptableObject
         SetTrapLocations(newDungeon[4].Split("|").ToList());
         SetItemLocations(newDungeon[5].Split("|").ToList());
         SetWeather();
+        escaped = false;
         dungeonLogs = new List<string>();
         // Reset the goals every floor.
         goalTileMappings.Clear();
@@ -146,9 +151,9 @@ public class Dungeon : ScriptableObject
         return goalTileMappings[indexOf];
     }
     public List<int> goalFloors;
-    public void SetQuestFloors(List<string> newInfo)
+    public void SetQuestFloors(List<int> newInfo)
     {
-        goalFloors = utility.ConvertStringListToIntList(newInfo);
+        goalFloors = newInfo;
         utility.RemoveEmptyValues(goalFloors);
     }
     public List<int> GetGoalFloors(){return goalFloors;}
@@ -461,7 +466,7 @@ public class Dungeon : ScriptableObject
         {
             if (goalTileMappings[i] == "Search")
             {
-                partyLocations[goalTiles[i]] = "Necklace";
+                partyLocations[goalTiles[i]] = searchName;
             }
             else if (goalTileMappings[i] == "Rescue")
             {

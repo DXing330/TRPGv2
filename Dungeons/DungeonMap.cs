@@ -94,6 +94,7 @@ public class DungeonMap : MapManager
 
     public void EscapeDungeon()
     {
+        dungeon.EscapeOrb();
         sceneMover.ReturnFromDungeon();
     }
 
@@ -142,6 +143,19 @@ public class DungeonMap : MapManager
         {
             partyData.AddTempPartyMember(dungeon.GetEscortName());
             actorSpriteHPList.RefreshData();
+        }
+        else if (dungeon.GoalOnTile(newTile) == "Search")
+        {
+            if (!partyData.dungeonBag.BagFull())
+            {
+                // Claim an item.
+                partyData.dungeonBag.GainItem(dungeon.GetSearchName());
+            }
+            else
+            {
+                // Generate an inventory full error message.
+                dungeon.AddDungeonLog("Bag is full, you cannot pick up the requested item.");
+            }
         }
         if (dungeon.StairsDownLocation(newTile))
         {

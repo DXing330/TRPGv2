@@ -22,6 +22,8 @@ public class DungeonSelectList : MonoBehaviour
     {
         dungeon.SetDungeonName(currentDungeons[selected]);
         // Set Quest Info.
+        dungeon.SetQuestGoals(partyData.guildCard.ReturnQuestGoalsAtLocation(dungeon.GetDungeonName()));
+        dungeon.SetQuestFloors(partyData.guildCard.ReturnQuestFloorsAtLocation(dungeon.GetDungeonName()));
         dungeon.MakeDungeon();
         // Move Scene.
         sceneMover.MoveToDungeon();
