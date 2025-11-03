@@ -22,8 +22,18 @@ public class DungeonSelectList : MonoBehaviour
     {
         dungeon.SetDungeonName(currentDungeons[selected]);
         // Set Quest Info.
-        dungeon.SetQuestGoals(partyData.guildCard.ReturnQuestGoalsAtLocation(dungeon.GetDungeonName()));
+        List<string> questGoals = partyData.guildCard.ReturnQuestGoalsAtLocation(dungeon.GetDungeonName());
+        dungeon.SetQuestGoals(questGoals);
         dungeon.SetQuestFloors(partyData.guildCard.ReturnQuestFloorsAtLocation(dungeon.GetDungeonName()));
+        // Add any temp party members.
+        for (int i = 0; i < questGoals.Count; i++)
+        {
+            if (questGoals[i] == "Escort")
+            {
+                partyData.AddTempPartyMember(dungeon.GetEscortName());
+            }
+        }
+        partyData.Save();
         dungeon.MakeDungeon();
         // Move Scene.
         sceneMover.MoveToDungeon();

@@ -143,6 +143,7 @@ public class DungeonMap : MapManager
         {
             partyData.AddTempPartyMember(dungeon.GetEscortName());
             actorSpriteHPList.RefreshData();
+            dungeon.RemoveGoalTile(newTile);
         }
         else if (dungeon.GoalOnTile(newTile) == "Search")
         {
@@ -150,6 +151,7 @@ public class DungeonMap : MapManager
             {
                 // Claim an item.
                 partyData.dungeonBag.GainItem(dungeon.GetSearchName());
+                dungeon.RemoveGoalTile(newTile);
             }
             else
             {

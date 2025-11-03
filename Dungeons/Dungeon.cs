@@ -67,6 +67,9 @@ public class Dungeon : ScriptableObject
                 default:
                 goalTiles.Add(FindRandomEmptyTile());
                 break;
+                case "Escort":
+                goalTiles.Add(-1);
+                break;
                 case "Defeat":
                 goalTiles.Add(stairsDown);
                 string[] bossGroups = dungeonBosses.ReturnValue(dungeonName).Split(",");
@@ -165,6 +168,13 @@ public class Dungeon : ScriptableObject
     }
     public List<string> GetGoalMappings(){return goalTileMappings;}
     public List<int> goalTiles;
+    public void RemoveGoalTile(int tileNumber)
+    {
+        int indexOf = goalTiles.IndexOf(tileNumber);
+        if (indexOf < 0){return;}
+        goalTileMappings.RemoveAt(indexOf);
+        goalTiles.RemoveAt(indexOf);
+    }
     public void SetQuestTiles(List<string> newInfo)
     {
         goalTiles = utility.ConvertStringListToIntList(newInfo);
@@ -758,6 +768,7 @@ public class Dungeon : ScriptableObject
     }
     public bool TilePassable(int tileNumber)
     {
+        if (tileNumber < 0 || tileNumber >= currentFloorTiles.Count){return false;}
         return currentFloorTiles[tileNumber] == passableTileType;
     }
     public bool TileEmpty(int tileNumber)
@@ -849,7 +860,7 @@ public class Dungeon : ScriptableObject
         int tries = dungeonSize * dungeonSize;
         for (int i = 0; i < tries; i++)
         {
-            tile = Random.Range(0, partyLocations.Count);
+            tile = Random.Range(0, tries);
             if (TileEmpty(tile)){break;}
             else{tile = -1;}
         }

@@ -54,7 +54,7 @@ public class DungeonRequests : MonoBehaviour
     {
         string location = DetermineLocation();
         string type = requestTypes[Random.Range(0, requestTypes.Count)];
-        int floor = DetermineFloor(location);
+        int floor = DetermineFloor(location, type);
         int reward = DetermineReward(location, type, floor);
         string requestDetails = location + "|" + type + "|" + floor + "|" + reward;
         return requestDetails;
@@ -68,9 +68,10 @@ public class DungeonRequests : MonoBehaviour
         return possibleLocations[Random.Range(min, max)];
     }
 
-    protected int DetermineFloor(string location)
+    protected int DetermineFloor(string location, string type)
     {
         int maxFloors = int.Parse(dungeonData.ReturnValue(location).Split("|")[0]);
+        if (type == "Escort"){return maxFloors;}
         return Random.Range(Mathf.Min(1, maxFloors), maxFloors + 1);
     }
 
