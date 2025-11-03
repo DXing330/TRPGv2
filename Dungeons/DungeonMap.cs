@@ -138,10 +138,9 @@ public class DungeonMap : MapManager
         {
             UpdateCenterTile(newTile);
         }
-        if (dungeon.GetQuestGoal() == "Rescue" && dungeon.GoalTile(newTile))
+        if (dungeon.GoalOnTile(newTile) == "Rescue")
         {
             partyData.AddTempPartyMember(dungeon.GetEscortName());
-            dungeon.SetGoalsCompleted(1);
             actorSpriteHPList.RefreshData();
         }
         if (dungeon.StairsDownLocation(newTile))
@@ -297,6 +296,7 @@ public class DungeonMap : MapManager
             if (i == 2)
             {
                 loadingScreen.FinishLoadingScreen();
+                interactable = true;
             }
             yield return new WaitForSeconds(loadingScreen.totalFadeTime);
         }

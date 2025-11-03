@@ -33,11 +33,11 @@ public class DungeonState : SavedState
         // Current floor.
         allData += dungeon.GetCurrentFloor() + delimiter;
         // Quest/Goal Info // Not always needed.
-        allData += dungeon.GetQuestGoal() + delimiter;
-        allData += dungeon.GetGoalsCompleted() + delimiter;
-        allData += dungeon.GetQuestReward() + delimiter;
-        allData += dungeon.GetGoalFloor() + delimiter;
-        allData += dungeon.GetGoalTile() + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetQuestGoals()) + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetGoalMappings()) + delimiter;
+        allData += "dungeon.GetGoalTile()" + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetGoalFloors()) + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetGoalTiles()) + delimiter;
         // Collected treasure count.
         allData += dungeon.GetTreasuresAcquired() + delimiter;
         // Viewed tiles
@@ -103,19 +103,19 @@ public class DungeonState : SavedState
                 dungeon.SetCurrentFloor(int.Parse(stat));
                 break;
             case 11:
-                dungeon.SetQuestGoal(stat);
+                dungeon.SetQuestGoals(stat.Split(delimiterTwo).ToList());
                 break;
             case 12:
-                dungeon.SetGoalsCompleted(int.Parse(stat));
+                dungeon.SetGoalMappings(stat.Split(delimiterTwo).ToList());
                 break;
             case 13:
-                dungeon.SetQuestReward(int.Parse(stat));
+                //dungeon.SetQuestReward(int.Parse(stat)); Handled by dungeon reward scene.
                 break;
             case 14:
-                dungeon.SetGoalFloor(int.Parse(stat));
+                dungeon.SetQuestFloors(stat.Split(delimiterTwo).ToList());
                 break;
             case 15:
-                dungeon.SetGoalTile(int.Parse(stat));
+                dungeon.SetQuestTiles(stat.Split(delimiterTwo).ToList());
                 break;
             case 16:
                 //dungeon.SetTreasuresAcquired(int.Parse(stat));

@@ -27,6 +27,7 @@ public class Dungeon : ScriptableObject
     public void AddDungeonLog(string newInfo){dungeonLogs.Insert(0, newInfo);}
     public void SetDungeonLogs(List<string> newLogs){dungeonLogs = newLogs;}
     public List<string> GetDungeonLogs(){return dungeonLogs;}
+    // Called whenever starting a new floor.
     public void MakeDungeon()
     {
         dungeonGenerator.SetTreasureCount(1 + (currentFloor / 2));
@@ -40,8 +41,10 @@ public class Dungeon : ScriptableObject
         SetItemLocations(newDungeon[5].Split("|").ToList());
         SetWeather();
         dungeonLogs = new List<string>();
-        goalTile = -1;
-        if (currentFloor == goalFloor)
+        // Reset the goals every floor.
+        goalTileMappings.Clear();
+        goalTiles.Clear();
+        if (goalFloors.Contains(currentFloor))
         {
             GenerateQuestGoal();
         }
@@ -49,24 +52,25 @@ public class Dungeon : ScriptableObject
     }
     protected void GenerateQuestGoal()
     {
-        switch (questGoal)
+        
+        for (int i = 0; i < goalFloors.Count; i++)
         {
-            case "Search":
-            goalTile = FindRandomEmptyTile();
-            break;
-            case "Defeat":
-            goalTile = stairsDown;
-            // Spawn a random boss tier enemy on the stairs.
-            string[] bossGroups = dungeonBosses.ReturnValue(dungeonName).Split(",");
-            // The enemy is based on the dungeon name.
-            string bossParty = bossGroups[Random.Range(0, bossGroups.Length)];
-            allEnemySprites.Add(bossParty.Split("|")[0]);
-            allEnemyLocations.Add(goalTile);
-            allEnemyParties.Add(bossParty);
-            break;
-            case "Rescue":
-            goalTile = FindRandomEmptyTile();
-            break;
+            if (goalFloors[i] != currentFloor){continue;}
+            goalTileMappings.Add(questGoals[i]);
+            switch (questGoals[i])
+            {
+                default:
+                goalTiles.Add(FindRandomEmptyTile());
+                break;
+                case "Defeat":
+                goalTiles.Add(stairsDown);
+                string[] bossGroups = dungeonBosses.ReturnValue(dungeonName).Split(",");
+                string bossParty = bossGroups[Random.Range(0, bossGroups.Length)];
+                allEnemySprites.Add(bossParty.Split("|")[0]);
+                allEnemyLocations.Add(stairsDown);
+                allEnemyParties.Add(bossParty);
+                break;
+            }
         }
     }
     // List of dungeons and their stats.
@@ -113,43 +117,63 @@ public class Dungeon : ScriptableObject
         return trapRarities.ReturnRandomKeyBasedOnIntValue(rarity);
     }
     // Need to determine what floor the goal is on.
-    public string questInfo;
-    public string GetQuestInfo(){return questInfo;}
-    public int goalFloor;
-    public void SetGoalFloor(int newInfo){ goalFloor = newInfo; }
-    public int GetGoalFloor(){ return goalFloor; }
-    public int goalTile;
-    public void SetGoalTile(int newInfo){ goalTile = newInfo; }
-    public int GetGoalTile(){ return goalTile; }
+    public List<string> questGoals;
+    public void SetQuestGoals(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        questGoals = newInfo;
+    }
+    public List<string> GetQuestGoals()
+    {
+        return questGoals;
+    }
+    public List<string> GetFloorGoals()
+    {
+        List<string> floorGoals = new List<string>();
+        for (int i = 0; i < goalFloors.Count; i++)
+        {
+            if (goalFloors[i] == currentFloor)
+            {
+                floorGoals.Add(questGoals[i]);
+            }
+        }
+        return floorGoals;
+    }
+    public string GoalOnTile(int tileNumber)
+    {
+        int indexOf = goalTiles.IndexOf(tileNumber);
+        if (indexOf < 0){return "";}
+        return goalTileMappings[indexOf];
+    }
+    public List<int> goalFloors;
+    public void SetQuestFloors(List<string> newInfo)
+    {
+        goalFloors = utility.ConvertStringListToIntList(newInfo);
+        utility.RemoveEmptyValues(goalFloors);
+    }
+    public List<int> GetGoalFloors(){return goalFloors;}
+    public List<string> goalTileMappings;
+    public void SetGoalMappings(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        goalTileMappings = newInfo;
+    }
+    public List<string> GetGoalMappings(){return goalTileMappings;}
+    public List<int> goalTiles;
+    public void SetQuestTiles(List<string> newInfo)
+    {
+        goalTiles = utility.ConvertStringListToIntList(newInfo);
+        utility.RemoveEmptyValues(goalTiles);
+    }
+    public List<int> GetGoalTiles(){return goalTiles;}
     public bool GoalTile(int tileNumber)
     {
-        if (goalFloor != currentFloor) { return false; }
-        return tileNumber == goalTile;
+        if (!goalFloors.Contains(currentFloor)){return false;}
+        return goalTiles.Contains(tileNumber);
     }
-    public string questGoal;
-    public void SetQuestGoal(string newInfo){ questGoal = newInfo; }
-    public string GetQuestGoal() { return questGoal; }
-    public int questGoalsCompleted;
-    public void SetGoalsCompleted(int newAmount){questGoalsCompleted = newAmount;}
-    public int GetGoalsCompleted(){return questGoalsCompleted;}
-    public int questReward;
-    public void SetQuestReward(int newInfo){ questReward = newInfo; }
-    public int GetQuestReward() { return questReward; }
+
     public void SetQuestInfo(string newQuest)
     {
-        questInfo = newQuest;
-        goalFloor = Random.Range(currentFloor, maxFloors+1);
-        string[] questData = questInfo.Split("|");
-        SetQuestGoal(questData[0]);
-        SetGoalsCompleted(0);
-        SetQuestReward(int.Parse(questData[2]));
-    }
-    protected void ResetQuest()
-    {
-        questInfo = "";
-        goalFloor = -1;
-        questGoalsCompleted = 0;
-        questReward = 0;
     }
     public string dungeonName;
     public int bossFought = 0;
@@ -177,7 +201,6 @@ public class Dungeon : ScriptableObject
             currentFloor = 0;
             spawnCounter = 0;
             ResetAllEnemies();
-            ResetQuest();
         }
         maxFloors = int.Parse(dungeonInfo[0]);
         type = dungeonInfo[1];
@@ -434,16 +457,15 @@ public class Dungeon : ScriptableObject
         {
             partyLocations[allEnemyLocations[i]] = allEnemySprites[i];
         }
-        if (currentFloor == goalFloor && goalTile >= 0)
+        for (int i = 0; i < goalTiles.Count; i++)
         {
-            switch (questGoal)
+            if (goalTileMappings[i] == "Search")
             {
-                case "Search":
-                partyLocations[goalTile] = "Necklace";
-                break;
-                case "Rescue":
-                partyLocations[goalTile] = escortName;
-                break;
+                partyLocations[goalTiles[i]] = "Necklace";
+            }
+            else if (goalTileMappings[i] == "Rescue")
+            {
+                partyLocations[goalTiles[i]] = escortName;
             }
         }
         partyLocations[partyLocation] = partySprite;
@@ -671,8 +693,7 @@ public class Dungeon : ScriptableObject
         partyLocations[partyLocation] = partySprite;
         if (GoalTile(partyLocation))
         {
-            questGoalsCompleted++;
-            goalTile = -1;
+            // TODO: Pick up item/add party member.
         }
         MoveEnemies();
         TryToSpawnEnemy();

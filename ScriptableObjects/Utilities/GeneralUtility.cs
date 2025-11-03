@@ -123,6 +123,18 @@ public class GeneralUtility : ScriptableObject
         return stringList;
     }
 
+    public List<int> RemoveEmptyValues(List<int> intList, int emptyValue = 0)
+    {
+        for (int i = intList.Count - 1; i >= 0; i--)
+        {
+            if (intList[i] == emptyValue)
+            {
+                intList.RemoveAt(i);
+            }
+        }
+        return intList;
+    }
+
     public List<string> QuickSortIntStringList(List<string> intStrings, int left, int right)
     {
         int i = left;
@@ -143,9 +155,6 @@ public class GeneralUtility : ScriptableObject
                 string temp = (intStrings[i]);
                 intStrings[i] = intStrings[j];
                 intStrings[j] = temp;
-                /*TacticActor tempActor = actors[i];
-                actors[i] = actors[j];
-                actors[j] = tempActor;*/
                 i++;
                 j--;
             }
@@ -299,7 +308,7 @@ public class GeneralUtility : ScriptableObject
         return (lastValue) * (lastValue + 1) / 2;
     }
 
-    public int Exponent(int eBase, int exponent)
+    public int Exponent(int eBase, int exponent = 2)
     {
         int value = 1;
         for (int i = 0; i < exponent; i++)
@@ -307,6 +316,22 @@ public class GeneralUtility : ScriptableObject
             value *= eBase;
         }
         return value;
+    }
+
+    public int Root(int rBase, int root = 2)
+    {
+        // The most retarded, hard coded and slow method possible.
+        if (root <= 0){return 1;}
+        else if (root == 1){return rBase;}
+        if (rBase <= 0){return 0;}
+        else if (rBase == 1){return 1;}
+        for (int i = 2; i < rBase; i++)
+        {
+            // Rounds down.
+            if (Exponent(i, root) > rBase){return i - 1;}
+        }
+        // Not sure how to get here.
+        return -1;
     }
 
     public int RollRarity(int maxRarity, int rollBonus = 0)

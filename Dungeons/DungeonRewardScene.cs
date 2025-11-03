@@ -42,13 +42,12 @@ public class DungeonRewardScene : MonoBehaviour
     {
         questGold = 0;
         questRewardPanel.SetActive(false);
-        if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
+        /*if (questSuccessChecker.QuestSuccessful(dungeon, partyData))
         {
-            questGold = dungeon.GetQuestReward();
             questRewardPanel.SetActive(true);
             questGoldReward.text = questGold.ToString();
             partyData.inventory.AddItemQuantity("Gold", questGold);
-        }
+        }*/
         partyData.guildCard.GainGuildExp((questGold*questGold/100));
     }
 

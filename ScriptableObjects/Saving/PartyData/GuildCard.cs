@@ -33,6 +33,138 @@ public class GuildCard : SavedData
         }
     }
     public int GetGuildExp() { return guildExp; }
+    // Separate dungeon vs overworld requests?
+    // You can't fail a dungeon quest, you just keep trying til you succeed.
+    // But there is a limit to how many quests you can accept at one time.
+    public bool RequestLimit(){return dungeonLocations.Count >= guildRank;}
+    public List<string> dungeonLocations;
+    public int QuestsAtLocation(string locationName)
+    {
+        return utility.CountStringsInList(dungeonLocations, locationName);
+    }
+    public void SetDungeonQuestLocations(List<string> newInfo)
+    {
+        dungeonLocations = newInfo;
+        utility.RemoveEmptyListItems(dungeonLocations);
+    }
+    public List<string> dungeonQuestGoals;
+    public void SetDungeonQuestGoals(List<string> newInfo)
+    {
+        dungeonQuestGoals = newInfo;
+        utility.RemoveEmptyListItems(dungeonQuestGoals);
+    }
+    public List<int> dungeonQuestFloors;
+    public void SetDungeonQuestFloors(List<string> newInfo)
+    {
+        dungeonQuestFloors = utility.ConvertStringListToIntList(newInfo);
+        dungeonQuestFloors = utility.RemoveEmptyValues(dungeonQuestFloors);
+    }
+    public List<int> dungeonQuestRewards;
+    public void SetDungeonQuestRewards(List<string> newInfo)
+    {
+        dungeonQuestRewards = utility.ConvertStringListToIntList(newInfo);
+        dungeonQuestRewards = utility.RemoveEmptyValues(dungeonQuestRewards);
+    }
+    public void AcceptDungeonQuest(string dungeonLocation, string goal, int floor, int reward)
+    {
+        dungeonLocations.Add(dungeonLocation);
+        dungeonQuestGoals.Add(goal);
+        dungeonQuestFloors.Add(floor);
+        dungeonQuestRewards.Add(reward);
+    }
+    public List<string> ReturnGoalsAtDungeon(string dungeonName)
+    {
+        List<string> data = new List<string>();
+        for (int i = 0; i < dungeonLocations.Count; i++)
+        {
+            if (dungeonLocations[i] == dungeonName)
+            {
+                data.Add(dungeonQuestGoals[i]);
+            }
+        }
+        return data;
+    }
+    public List<int> ReturnFloorsAtDungeon(string dungeonName)
+    {
+        List<int> data = new List<int>();
+        for (int i = 0; i < dungeonLocations.Count; i++)
+        {
+            if (dungeonLocations[i] == dungeonName)
+            {
+                data.Add(dungeonQuestFloors[i]);
+            }
+        }
+        return data;
+    }
+    public void CompleteRequest(int index)
+    {
+        if (index < 0 || index >= dungeonLocations.Count){return;}
+        dungeonLocations.RemoveAt(index);
+        dungeonQuestGoals.RemoveAt(index);
+        dungeonQuestFloors.RemoveAt(index);
+        dungeonQuestRewards.RemoveAt(index);
+    }
+
+    public override void NewGame()
+    {
+        allData = newGameData;
+        dataPath = Application.persistentDataPath + "/" + filename;
+        File.WriteAllText(dataPath, allData);
+    }
+
+    public override void Save()
+    {
+        dataPath = Application.persistentDataPath + "/" + filename;
+        allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter;
+        allData += String.Join(delimiterTwo, dungeonLocations);
+        allData += String.Join(delimiterTwo, dungeonQuestGoals);
+        allData += String.Join(delimiterTwo, dungeonQuestFloors);
+        allData += String.Join(delimiterTwo, dungeonQuestRewards);
+        allData += delimiter;
+        File.WriteAllText(dataPath, allData);
+    }
+
+    public override void Load()
+    {
+        dataPath = Application.persistentDataPath + "/" + filename;
+        if (File.Exists(dataPath)) { allData = File.ReadAllText(dataPath); }
+        else { allData = newGameData; }
+        if (allData.Length < newGameData.Length) { allData = newGameData; }
+        dataList = allData.Split(delimiter).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
+    }
+
+    protected void LoadStat(string stat, int index)
+    {
+        switch (index)
+        {
+            default:
+            break;
+            case 0:
+            guildRank = int.Parse(stat);
+            break;
+            case 1:
+            guildExp = int.Parse(stat);
+            break;
+            case 2:
+            SetDungeonQuestLocations(stat.Split(delimiterTwo).ToList());
+            break;
+            case 3:
+            SetDungeonQuestGoals(stat.Split(delimiterTwo).ToList());
+            break;
+            case 4:
+            SetDungeonQuestFloors(stat.Split(delimiterTwo).ToList());
+            break;
+            case 5:
+            SetDungeonQuestRewards(stat.Split(delimiterTwo).ToList());
+            break;
+        }
+    }
+
+        // Overworld quest stuff.
     public List<string> acceptedQuests;
     public Request dummyRequest;
     public int failPenalty = 0;
@@ -135,55 +267,6 @@ public class GuildCard : SavedData
     public void SetAvailableQuests(List<string> newQuests)
     {
         availableQuests = new List<string>(newQuests);
-    }
-    public override void NewGame()
-    {
-        allData = newGameData;
-        dataPath = Application.persistentDataPath + "/" + filename;
-        File.WriteAllText(dataPath, allData);
-    }
-
-    public override void Save()
-    {
-        dataPath = Application.persistentDataPath + "/" + filename;
-        allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter;
-        /*allData += String.Join(delimiterTwo, acceptedQuests);
-        allData += delimiter + newQuests.ToString() + delimiter;
-        allData += String.Join(delimiterTwo, availableQuests);
-        allData += delimiter + newHireables.ToString() + delimiter;
-        allData += String.Join(delimiterTwo, newHireClasses);
-        allData += delimiter;
-        allData += String.Join(delimiterTwo, newHireNames);
-        allData += delimiter;*/
-        File.WriteAllText(dataPath, allData);
-    }
-
-    public override void Load()
-    {
-        dataPath = Application.persistentDataPath + "/" + filename;
-        if (File.Exists(dataPath)) { allData = File.ReadAllText(dataPath); }
-        else { allData = newGameData; }
-        if (allData.Length < newGameData.Length) { allData = newGameData; }
-        dataList = allData.Split(delimiter).ToList();
-        for (int i = 0; i < dataList.Count; i++)
-        {
-            LoadStat(dataList[i], i);
-        }
-    }
-
-    protected void LoadStat(string stat, int index)
-    {
-        switch (index)
-        {
-            default:
-            break;
-            case 0:
-            guildRank = int.Parse(stat);
-            break;
-            case 1:
-            guildExp = int.Parse(stat);
-            break;
-        }
     }
         /*guildRank = int.Parse(dataList[0]);
         guildExp = int.Parse(dataList[1]);
