@@ -38,6 +38,7 @@ public class GuildCard : SavedData
     // But there is a limit to how many quests you can accept at one time.
     public bool RequestLimit(){return dungeonLocations.Count >= guildRank;}
     public List<string> dungeonLocations;
+    public List<string> GetQuestLocations(){return dungeonLocations;}
     public int QuestsAtLocation(string locationName)
     {
         return utility.CountStringsInList(dungeonLocations, locationName);
@@ -79,6 +80,7 @@ public class GuildCard : SavedData
         dungeonQuestFloors = utility.ConvertStringListToIntList(newInfo);
         dungeonQuestFloors = utility.RemoveEmptyValues(dungeonQuestFloors);
     }
+    public List<int> GetQuestFloors(){return dungeonQuestFloors;}
     public List<int> ReturnQuestFloorsAtLocation(string location)
     {
         List<int> indices = GetQuestIndicesAtLocation(location);

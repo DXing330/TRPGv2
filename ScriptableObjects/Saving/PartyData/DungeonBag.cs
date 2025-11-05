@@ -82,6 +82,15 @@ public class DungeonBag : SavedData
         }
         return chests;
     }
+    public int ReturnChestCount()
+    {
+        int count = 0;
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (items[i].Contains("Chest")){count++;}
+        }
+        return count;
+    }
     public void TransformItemsOfType(string original, string transformed)
     {
         for (int i = 0; i < items.Count; i++)

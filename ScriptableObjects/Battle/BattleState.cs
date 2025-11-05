@@ -9,7 +9,7 @@ using UnityEngine;
 public class BattleState : SavedState
 {
     public bool subGame = false;
-    public void SetBattleModifiers()
+    public void UpdateBattleModifiers()
     {
         allyBattleModifiers = partyList.GetBattleModifiers();
         enemyBattleModifiers = enemyList.GetBattleModifiers();
@@ -17,10 +17,6 @@ public class BattleState : SavedState
     public List<string> allyBattleModifiers;
     public List<string> GetAllyBattleModifiers()
     {
-        if (!subGame)
-        {
-            return new List<string>();
-        }
         return allyBattleModifiers;
     }
     public List<string> enemyBattleModifiers;
@@ -115,7 +111,7 @@ public class BattleState : SavedState
         allData += winningTeam;
         allData += delimiter;
         // Whenever moving to a battle scene, the battle modifiers should already be determined.
-        SetBattleModifiers();
+        UpdateBattleModifiers();
         allData += String.Join(delimiterTwo, allyBattleModifiers);
         allData += delimiter;
         allData += String.Join(delimiterTwo, enemyBattleModifiers);
@@ -159,10 +155,10 @@ public class BattleState : SavedState
                 winningTeam = int.Parse(stat);
                 break;
             case 4:
-                allyBattleModifiers = stat.Split(delimiterTwo).ToList();
+                allyBattleModifiers = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
                 break;
             case 5:
-                enemyBattleModifiers = stat.Split(delimiterTwo).ToList();
+                enemyBattleModifiers = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
                 break;
             case 6:
                 SetWeather(stat);

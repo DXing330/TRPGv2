@@ -22,7 +22,9 @@ public class CharacterList : ScriptableObject
     }
     public void SetBattleModifiers(List<string> newInfo)
     {
+        Debug.Log(newInfo.Count);
         battleModifiers = new List<string>(newInfo);
+        Debug.Log(battleModifiers.Count);
     }
     public List<string> characterNames;
     public void SetCharacterNames(List<string> newInfo)
@@ -111,6 +113,14 @@ public class CharacterList : ScriptableObject
     public void ResetLists()
     {
         battleModifiers.Clear();
+        characterNames.Clear();
+        characters.Clear();
+        stats.Clear();
+        equipment.Clear();
+    }
+
+    public void ResetCharacters()
+    {
         characterNames.Clear();
         characters.Clear();
         stats.Clear();

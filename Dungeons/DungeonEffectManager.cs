@@ -63,8 +63,15 @@ public class DungeonEffectManager : MonoBehaviour
         ActivateTrap(debugTrapName);
     }
 
+    [ContextMenu("Battle Modifiers")]
+    public void DebugBattleMods()
+    {
+        dungeon.DebugPartyMods();
+    }
+
     public void ActivateTrap(string trapName)
     {
+        if (!trapData.KeyExists(trapName)){return;}
         string[] trapEffect = trapData.ReturnValue(trapName).Split("|");
         string[] targets = trapEffect[0].Split(",");
         string[] effects = trapEffect[1].Split(",");
@@ -173,7 +180,14 @@ public class DungeonEffectManager : MonoBehaviour
 
     protected bool AffectActor(TacticActor actor, string effect, string specifics, int index)
     {
-        basicEffects.AffectActor(actor, effect, specifics);
+        if (effect == "Status")
+        {
+            basicEffects.AffectActor(actor, effect, specifics, -1);
+        }
+        else
+        {
+            basicEffects.AffectActor(actor, effect, specifics);
+        }
         // A main party member has died, you lose.
         if (actor.GetHealth() <= 0 && index <= 1){return true;}
         partyData.UpdatePartyMember(actor, index);

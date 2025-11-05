@@ -15,7 +15,6 @@ public class GuildHub : MonoBehaviour
     public void Start()
     {
         RemoveDungeonData();
-        partyData.SetFullParty();
         partyData.Save();
         actorSpriteHPList.RefreshData();
         guildRank.text = partyData.guildCard.GetGuildRankName();
@@ -24,6 +23,7 @@ public class GuildHub : MonoBehaviour
     // Don't let them keep the chests if they don't complete the dungeon.
     protected void RemoveDungeonData()
     {
+        partyData.fullParty.ResetLists();
         partyData.dungeonBag.ReturnAllChests();
         for (int i = 0; i < questItems.Count; i++)
         {

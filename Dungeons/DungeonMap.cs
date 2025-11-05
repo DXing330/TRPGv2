@@ -9,7 +9,6 @@ public class DungeonMap : MapManager
     public int maxDistanceFromCenter = 2;
     public DungeonEffectManager dungeonEffects;
     public PartyDataManager partyData;
-    public ActorSpriteHPList actorSpriteHPList;
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
     public WeatherFilter weatherDisplay;
@@ -61,12 +60,15 @@ public class DungeonMap : MapManager
             case "Enemy":
                 message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), DetermineClosestEnemyLocation(), dungeon.GetDungeonSize())) + ".";
                 break;
+            case "Quest":
+                message += mapUtility.IntDirectionToString(mapUtility.DirectionBetweenLocations(dungeon.GetPartyLocation(), dungeon.GetRandomQuestLocation(), dungeon.GetDungeonSize())) + ".";
+                break;
             default:
                 break;
         }
         dungeon.AddDungeonLog(target + "-" + message);
         dowsingMessage.SetMessage(message);
-        MoveToTile(dungeon.GetPartyLocation());
+        UpdateMap();
     }
     public SceneMover sceneMover;
     public bool interactable = true;
@@ -129,9 +131,6 @@ public class DungeonMap : MapManager
         // When moving take damage from some statuses.
         if (dungeonEffects.ApplyDamagingStatus())
         {
-            // If this is true then the main characters have died from status damage.
-            // Return home in defeat.
-            // Of course you can save scum to avoid this and restart the floor if you want.
             failureScreen.SetActive(true);
             return;
         }
@@ -142,7 +141,7 @@ public class DungeonMap : MapManager
         if (dungeon.GoalOnTile(newTile) == "Rescue")
         {
             partyData.AddTempPartyMember(dungeon.GetEscortName());
-            actorSpriteHPList.RefreshData();
+            dungeon.AddDungeonLog("Located " + dungeon.GetEscortName() + ".");
             dungeon.RemoveGoalTile(newTile);
         }
         else if (dungeon.GoalOnTile(newTile) == "Search")
@@ -152,6 +151,7 @@ public class DungeonMap : MapManager
                 // Claim an item.
                 partyData.dungeonBag.GainItem(dungeon.GetSearchName());
                 dungeon.RemoveGoalTile(newTile);
+                dungeon.AddDungeonLog("Picked up " + dungeon.GetSearchName() + ".");
             }
             else
             {
@@ -215,6 +215,14 @@ public class DungeonMap : MapManager
         }
         else if (dungeon.TreasureLocation(newTile))
         {
+            // Check if mimic.
+            if (dungeon.MimicFight())
+            {
+                dungeon.PrepareMimicBattle(partyData);
+                dungeon.AddDungeonLog("The treasure chest is made of mimics.");
+                EnterBattle();
+                return;
+            }
             // Check if inventory is full.
             if (!partyData.dungeonBag.BagFull())
             {

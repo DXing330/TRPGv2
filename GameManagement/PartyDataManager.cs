@@ -576,7 +576,7 @@ public class PartyDataManager : MonoBehaviour
     [ContextMenu("SetParty")]
     public void SetFullParty()
     {
-        fullParty.ResetLists();
+        fullParty.ResetCharacters();
         fullParty.AddToParty(permanentPartyData.GetNames(), permanentPartyData.GetStats(), permanentPartyData.GetSpriteNames(), permanentPartyData.GetEquipmentStats());
         fullParty.AddToParty(mainPartyData.GetNames(), mainPartyData.GetStats(), mainPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats());
         fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames(), tempPartyData.GetEquipmentStats());

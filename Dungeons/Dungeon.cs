@@ -11,6 +11,8 @@ public class Dungeon : ScriptableObject
     public DungeonState dungeonState;
     public ActorPathfinder pathfinder;
     public DungeonGenerator dungeonGenerator;
+    // Apply battle modifiers before going into battle.
+    public CharacterList playerPartyList;
     public CharacterList enemyList;
     public PartyData tempParty;
     public string escortName;
@@ -46,6 +48,7 @@ public class Dungeon : ScriptableObject
         SetWeather();
         escaped = false;
         dungeonLogs = new List<string>();
+        AddDungeonLog("Entered floor "+currentFloor);
         // Reset the goals every floor.
         goalTileMappings.Clear();
         goalTiles.Clear();
@@ -168,6 +171,11 @@ public class Dungeon : ScriptableObject
     }
     public List<string> GetGoalMappings(){return goalTileMappings;}
     public List<int> goalTiles;
+    public int GetRandomQuestLocation()
+    {
+        if (goalTiles.Count <= 0){return -1;}
+        return goalTiles[Random.Range(0, goalTiles.Count)];
+    }
     public void RemoveGoalTile(int tileNumber)
     {
         int indexOf = goalTiles.IndexOf(tileNumber);
@@ -273,6 +281,7 @@ public class Dungeon : ScriptableObject
         utility.RemoveEmptyListItems(newInfo);
         partyModifiers = newInfo;
     }
+    public List<string> GetPartyModifiers(){return partyModifiers;}
     public List<int> partyModifierDurations;
     public void SetPartyBattleModifierDurations(List<string> newInfo)
     {
@@ -452,6 +461,7 @@ public class Dungeon : ScriptableObject
         {
             allEmptyTiles.Add("");
         }
+        partyLocations = new List<string>(allEmptyTiles);
     }
     [System.NonSerialized]
     public List<string> partyLocations;
@@ -583,6 +593,31 @@ public class Dungeon : ScriptableObject
         return allEnemyLocations.Contains(nextTile);
     }
     public List<int> treasureLocations;
+    public int mimicChance;
+    public string mimicString;
+    public void PrepareMimicBattle(PartyDataManager partyData)
+    {
+        // One mimic per chest plus one mimic per party member.
+        List<string> mimicList = new List<string>();
+        for (int i = 0; i < partyData.ReturnTotalPartyCount() + partyData.dungeonBag.ReturnChestCount(); i++)
+        {
+            mimicList.Add(mimicString);
+        }
+        SetEnemyParty(mimicList);
+    }
+    public bool MimicFight()
+    {
+        int rng = Random.Range(0, 100);
+        if (rng < mimicChance)
+        {
+            if (TreasureLocation(partyLocation))
+            {
+                treasureLocations.Remove(partyLocation);
+            }
+            return true;
+        }
+        return false;
+    }
     public List<int> GetTreasureLocations(){return treasureLocations;}
     public int GetRandomTreasureLocation()
     {
@@ -714,14 +749,24 @@ public class Dungeon : ScriptableObject
         TryToSpawnEnemy();
         if (partyLocation == stairsDown){MoveFloors();}
     }
+    public void DebugPartyMods()
+    {
+        playerPartyList.SetBattleModifiers(GetPartyModifiers());
+    }
+    protected void SetEnemyParty(List<string> enemyParty)
+    {
+        // Apply any battle modifiers based on the dungeon.
+        playerPartyList.SetBattleModifiers(GetPartyModifiers());
+        enemyList.SetBattleModifiers(enemyModifiers);
+        enemyList.SetLists(enemyParty);
+    }
     public void PrepareBattle(int tileLocation)
     {
         // Determine which enemy party to use.
         int indexOf = allEnemyLocations.IndexOf(tileLocation);
         if (indexOf == -1){return;}
-        // Apply any battle modifiers based on the dungeon.
         // Use that enemy to determine the enemy party.
-        enemyList.SetLists(allEnemyParties[indexOf].Split("|").ToList());
+        SetEnemyParty(allEnemyParties[indexOf].Split("|").ToList());
         // Remove the enemy on that location.
         RemoveEnemyAtIndex(indexOf);
     }
@@ -749,7 +794,7 @@ public class Dungeon : ScriptableObject
                 bossGroupEnemies.Add(quantityCount[0]);
             }
         }
-        enemyList.SetLists(bossGroupEnemies);
+        SetEnemyParty(bossGroupEnemies);
         return true;
     }
     public void EnemyBeginsBattle()
@@ -868,7 +913,6 @@ public class Dungeon : ScriptableObject
     }
     public void MoveFloors(bool increase = true)
     {
-        AddDungeonLog("Moved to new floor.");
         if (increase)
         {
             currentFloor++;

@@ -80,7 +80,7 @@ public class DungeonRequests : MonoBehaviour
         // Base reward.
         int reward = requestTypeRewards[requestTypes.IndexOf(type)];
         // Multiply by location plus floor.
-        reward *= (floor + dungeonData.GetAllKeys().IndexOf(location));
+        reward *= (floor * dungeonData.GetAllKeys().IndexOf(location));
         return reward;
     }
 
