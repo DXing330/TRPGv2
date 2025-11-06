@@ -426,6 +426,22 @@ public class ActorStats : ActorPassives
     public int GetCritDamage(){return currentCritDamage;}
     public void UpdateCritDamage(int amount){currentCritDamage += amount;}
     public List<string> activeSkills;
+    public bool SkillExists(string skillName)
+    {
+        for (int i = 0; i < activeSkills.Count; i++)
+        {
+            if (activeSkills[i].Contains(skillName)){return true;}
+        }
+        return false;
+    }
+    public string ReturnSkillContainingName(string skillName)
+    {
+        for (int i = 0; i < activeSkills.Count; i++)
+        {
+            if (activeSkills[i].Contains(skillName)){return activeSkills[i];}
+        }
+        return "";
+    }
     public void RemoveActiveSkill(int index)
     {
         activeSkills.RemoveAt(index);
@@ -435,6 +451,12 @@ public class ActorStats : ActorPassives
         if (activeSkills.Count <= 0) { return; }
         int index = UnityEngine.Random.Range(0, activeSkills.Count);
         RemoveActiveSkill(index);
+    }
+    public void RemoveRandomTempActiveSkill()
+    {
+        if (tempActives.Count <= 0) { return; }
+        int index = UnityEngine.Random.Range(0, tempActives.Count);
+        tempActives.RemoveAt(index);
     }
     public void AddActiveSkill(string skillName)
     {

@@ -461,7 +461,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "MentalState":
                 return " change mental state to " + specifics;
             case "Amnesia":
-                return " make " + target + " forget 1 active skill";
+                return " make " + target + " forget 1 temporary active skill";
             case "Active":
                 return " use " + specifics;
             case "Death":

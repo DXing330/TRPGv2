@@ -131,7 +131,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "MentalState":
                 return "Try to change the target(s) mental state to " + ASD(s) + ".";
             case "Amnesia":
-                return "Try to make the target forget " + ASD(s) + " active skill(s).";
+                return "Try to make the target forget " + ASD(s) + " temporary active skill(s).";
             case "Attack+Amnesia":
                 return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " active skill(s).";
             case "Weather":
@@ -143,7 +143,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "AllEnemies":
                 return "All enemies receive " + APD(p) + " " + ASD(s) + ".";
             case "Command":
-                return "Give a(n) " + ASD(s) + "command.";
+                return "Give a(n) " + ASD(s) + " command.";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

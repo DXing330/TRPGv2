@@ -399,6 +399,19 @@ public class ActiveManager : MonoBehaviour
                     if (targets[i].GetTeam() != skillUser.GetTeam()){continue;}
                     switch (specifics)
                     {
+                        default:
+                        break;
+                        // This is currently only for self targetting support skills.
+                        // We can handle attack skill commands later.
+                        case "Skill":
+                        // Try to make all allies use a certain type of skill.
+                        string commandSkill = targets[i].ReturnSkillContainingName(active.GetPowerString());
+                        if (activeData.KeyExists(commandSkill))
+                        {
+                            string[] commandSkillDetails = activeData.ReturnValue(commandSkill).Split("_");
+                            active.AffectActor(targets[i], commandSkillDetails[7], commandSkillDetails[8]);
+                        }
+                        break;
                         case "Attack":
                         if (battle.map.FacingActor(targets[i]))
                         {

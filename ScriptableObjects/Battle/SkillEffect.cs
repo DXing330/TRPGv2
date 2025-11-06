@@ -223,7 +223,7 @@ public class SkillEffect : ScriptableObject
                 target.SetMentalState(effectSpecifics);
                 break;
             case "Amnesia":
-                target.RemoveRandomActiveSkill();
+                target.RemoveRandomTempActiveSkill();
                 break;
             case "Counter":
                 target.UpdateCounter(int.Parse(effectSpecifics));
