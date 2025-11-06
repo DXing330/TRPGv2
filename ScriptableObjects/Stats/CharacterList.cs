@@ -22,9 +22,7 @@ public class CharacterList : ScriptableObject
     }
     public void SetBattleModifiers(List<string> newInfo)
     {
-        Debug.Log(newInfo.Count);
         battleModifiers = new List<string>(newInfo);
-        Debug.Log(battleModifiers.Count);
     }
     public List<string> characterNames;
     public void SetCharacterNames(List<string> newInfo)

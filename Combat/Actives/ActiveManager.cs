@@ -360,13 +360,13 @@ public class ActiveManager : MonoBehaviour
                         break;
                 }
                 return;
-            case "True Damage":
+            case "True Attack":
                 for (int i = 0; i < targets.Count; i++)
                 {
                     battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, power, specifics);
                 }
                 return;
-            case "Flat Damage":
+            case "Flat Attack":
                 for (int i = 0; i < targets.Count; i++)
                 {
                     battle.attackManager.FlatDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, int.Parse(specifics));

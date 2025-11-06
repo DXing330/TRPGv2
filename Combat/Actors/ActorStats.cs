@@ -443,6 +443,7 @@ public class ActorStats : ActorPassives
         activeSkills.Add(skillName);
     }
     public List<string> tempActives;
+    public List<string> GetTempActives(){return tempActives;}
     public void AddTempActive(string skillName)
     {
         if (skillName.Length <= 1) { return; }
