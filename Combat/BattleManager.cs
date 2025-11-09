@@ -54,6 +54,7 @@ public class BattleManager : MonoBehaviour
     {
         autoWinButton.SetActive(true);
         pause = true;
+        StopAllCoroutines();
         if (autoWin)
         {
             combatLog.UpdateNewestLog("Automatically Ending The Battle");
@@ -394,18 +395,11 @@ public class BattleManager : MonoBehaviour
             UI.battleStats.UpdateNonTurnActor(selectedActor);
         }
         // Move a selected actor into a new location.
-        else if (prevStartingPosition >= 0 && !map.TileNotEmpty(tileNumber))
+        else if (prevStartingPosition >= 0)
         {
             // Move the actor.
             map.ChangeActorsLocation(prevStartingPosition, tileNumber);
             prevStartingPosition = -1;
-        }
-        // You can change your selection at any time.
-        else if (prevStartingPosition >= 0 && map.TileNotEmpty(tileNumber))
-        {
-            prevStartingPosition = tileNumber;
-            selectedActor = map.GetActorOnTile(tileNumber);
-            UI.battleStats.UpdateNonTurnActor(selectedActor);
         }
     }
 
@@ -414,7 +408,7 @@ public class BattleManager : MonoBehaviour
         if (setStartingPositions)
         {
             AdjustStartingPosition(tileNumber);
-            map.UpdateStartingPositionTiles();
+            map.UpdateStartingPositionTiles(prevStartingPosition);
             return;
         }
         if (!interactable){return;}
@@ -510,7 +504,6 @@ public class BattleManager : MonoBehaviour
         attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        // Check for winning team here.
         int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
         if (winningTeam >= 0)
         {
@@ -630,7 +623,6 @@ public class BattleManager : MonoBehaviour
                 yield break;
             }
             ActivateSkill(skills[i]);
-            activeManager.ActivateSkill(this);
             if (longDelays)
             {
                 yield return new WaitForSeconds(longDelayTime * 5);
@@ -680,7 +672,6 @@ public class BattleManager : MonoBehaviour
             {
                 ActivateSkill(skill);
             }
-            activeManager.ActivateSkill(this);
             if (longDelays)
             {
                 yield return new WaitForSeconds(longDelayTime * 5);
@@ -929,7 +920,6 @@ public class BattleManager : MonoBehaviour
                 }
                 activeManager.GetTargetedTiles(targetTile, moveManager.actorPathfinder);
                 ActivateSkill(attackActive);
-                activeManager.ActivateSkill(this);
                 // Turn to face the target in case the skill is not a real attack or an AOE.
                 turnActor.SetDirection(moveManager.DirectionBetweenActors(turnActor, turnActor.GetTarget()));
             }
@@ -968,6 +958,15 @@ public class BattleManager : MonoBehaviour
         if (actor == null){actor = turnActor;}
         turnActor.RemoveTempActive(skillName);
         combatLog.UpdateNewestLog(actor.GetPersonalName()+" uses "+skillName+".");
+        activeManager.ActivateSkill(this);
+        turnNumber = map.RemoveActorsFromBattle(turnNumber);
+        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        if (winningTeam >= 0)
+        {
+            combatLog.UpdateNewestLog("Ending Battle By Using Skill");
+            EndBattle(winningTeam);
+            return;
+        }
     }
 
     public void ActivateSpell(TacticActor actor = null)
@@ -987,7 +986,6 @@ public class BattleManager : MonoBehaviour
             activeManager.SetSkillFromName(deathPassives[i]);
             activeManager.GetTargetedTiles(actor.GetLocation(), moveManager.actorPathfinder);
             ActivateSkill(deathPassives[i], actor);
-            activeManager.ActivateSkill(this);
         }
     }
 

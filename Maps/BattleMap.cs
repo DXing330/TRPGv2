@@ -106,7 +106,7 @@ public class BattleMap : MapManager
     public bool ValidStartingTile(int tileNumber)
     {
         int column = mapUtility.GetColumn(tileNumber, mapSize);
-        if (column < (AllTeamMembers(0).Count / mapSize) + 2)
+        if (column < (mapSize / 2) - 1)
         {
             return true;
         }
@@ -120,8 +120,8 @@ public class BattleMap : MapManager
         for (int i = 0; i < enemyTeam.Count; i++)
         {
             enemyTeam[i].SetLocation(RandomEnemyStartingTile());
+            UpdateMap();
         }
-        UpdateMap();
     }
     protected int RandomEnemyStartingTile()
     {
@@ -135,7 +135,7 @@ public class BattleMap : MapManager
     protected bool ValidEnemyStartingTile(int tileNumber)
     {
         int column = mapUtility.GetColumn(tileNumber, mapSize);
-        if (column > mapSize - (AllTeamMembers(1).Count / mapSize) - 2 && !excludedStartingTiles.Contains(mapInfo[tileNumber]) && !TileNotEmpty(tileNumber))
+        if (column > (mapSize / 2) - 1 && !excludedStartingTiles.Contains(mapInfo[tileNumber]) && !TileNotEmpty(tileNumber))
         {
             return true;
         }
@@ -144,8 +144,14 @@ public class BattleMap : MapManager
     public void ChangeActorsLocation(int startingTile, int newTile)
     {
         TacticActor actor = GetActorOnTile(startingTile);
+        TacticActor actor2 = GetActorOnTile(newTile);
         if (actor == null){return;}
         actor.SetLocation(newTile);
+        if (actor2 == null){}
+        else
+        {
+            actor2.SetLocation(startingTile);
+        }
         UpdateMap();
     }
     public int RemoveActorsFromBattle(int turnNumber = -1)
@@ -536,17 +542,28 @@ public class BattleMap : MapManager
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
 
-    public void UpdateStartingPositionTiles()
+    protected void HighlightTileWithoutReseting(int newTile, string colorKey, int layer = 3)
+    {
+        string colorName = colorDictionary.GetColorNameByKey(colorKey);
+        highlightedTiles[newTile] = colorName;
+        mapDisplayers[layer].HighlightCurrentTiles(mapTiles,highlightedTiles, currentTiles);
+    }
+
+    public void UpdateStartingPositionTiles(int selectedTile = -1)
     {
         List<int> tiles = new List<int>();
         for (int i = 0; i < mapSize * mapSize; i++)
         {
-            if (mapUtility.GetColumn(i, mapSize) < (AllTeamMembers(0).Count / mapSize) + 2)
+            if (mapUtility.GetColumn(i, mapSize) < (mapSize / 2) - 1)
             {
                 tiles.Add(i);
             }
         }
         UpdateHighlights(tiles, "Green", 4);
+        if (selectedTile >= 0)
+        {
+            HighlightTileWithoutReseting(selectedTile, "Blue", 4);
+        }
     }
 
     public void UpdateHighlights(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)

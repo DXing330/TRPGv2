@@ -184,7 +184,6 @@ public class ActiveSelectList : SelectList
             return;
         }
         battle.ActivateSkill(selected);
-        activeManager.ActivateSkill(battle);
         battle.turnNumber = battle.map.RemoveActorsFromBattle(battle.GetTurnIndex());
         battle.UI.battleStats.UpdateStats();
         // Check if the skill you just used was an item.

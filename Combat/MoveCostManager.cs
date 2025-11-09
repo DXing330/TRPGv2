@@ -341,6 +341,7 @@ public class MoveCostManager : MonoBehaviour
 
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
+        int displaceDamage = Mathf.Max(actor.GetWeight(), 1) * force * 6;
         int nextTile = actor.GetLocation();
         for (int i = 0; i < force; i++)
         {
@@ -348,13 +349,27 @@ public class MoveCostManager : MonoBehaviour
             // Can't push someone out of bounds.
             if (nextTile < 0) { break; }
             // Can't push someone over a mountain/wall/etc.
-            if (stopDisplacement.Contains(mapInfo[nextTile])) { break; }
+            if (stopDisplacement.Contains(mapInfo[nextTile]))
+            {
+                int collideDamage = actor.TakeEffectDamage(displaceDamage);
+                map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with a " + mapInfo[nextTile] + " and takes " + collideDamage + " damage.");
+                break;
+            }
             // Tiles are passable if no one is occupying them.
             if (map.GetActorOnTile(nextTile) == null)
             {
                 MoveActorToTile(actor, nextTile, map);
             }
-            else { break; }
+            else if (map.GetActorOnTile(nextTile) != null)
+            {
+                TacticActor oActor = map.GetActorOnTile(nextTile);
+                // Damage both the displaced actor and actor displaced into.
+                int aCollideD = actor.TakeEffectDamage(displaceDamage);
+                map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with " + oActor.GetPersonalName() + " and takes " + aCollideD + " damage.");
+                aCollideD = oActor.TakeEffectDamage(displaceDamage);
+                map.combatLog.UpdateNewestLog(oActor.GetPersonalName() + " takes " + aCollideD + " damage.");
+                break;
+            }
         }
     }
 

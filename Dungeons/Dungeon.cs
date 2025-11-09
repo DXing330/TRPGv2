@@ -255,7 +255,7 @@ public class Dungeon : ScriptableObject
     public List<string> possibleEnemies;
     public List<string> enemyModifiers;
     public List<string> bossEnemies;
-    protected int baseMaxStomach = 100;
+    public int baseMaxStomach = 300;
     public int currentMaxStomach;
     public void SetMaxStomach(int newInfo){currentMaxStomach = newInfo;}
     public int GetMaxStomach(){return currentMaxStomach;}
