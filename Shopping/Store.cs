@@ -17,6 +17,7 @@ public class Store : MonoBehaviour
     public ItemDetailViewer itemDetailViewer;
     public StatDatabase equipData;
     public StatDatabase itemsData;
+    public StatDatabase dungeonItemDescriptions;
     protected virtual void LoadStore()
     {
         equipmentSold = equipData.GetAllKeys();
@@ -54,32 +55,59 @@ public class Store : MonoBehaviour
     public List<string> equipmentPrices;
     public List<string> itemsSolds;
     public List<string> itemsPrices;
+    public List<string> dungeonItemsSolds;
+    public List<string> dungeonItemsPrices;
     public List<TMP_Text> itemsOwned;
     public List<TMP_Text> equipmentOwned;
     public SelectStatTextList equipmentDisplay;
     public SelectStatTextList itemsDisplay;
+    public bool dungeonItems = false;
+    public SelectStatTextList dungeonItemDisplay;
+    public bool buyingDungeonItems = false;
+    protected void ResetBuying()
+    {
+        buyingEquipment = false;
+        buyingItems = false;
+        itemsDisplay.ResetSelected();
+        equipmentDisplay.ResetSelected();
+        if (dungeonItems)
+        {
+            buyingDungeonItems = false;
+            dungeonItemDisplay.ResetSelected();
+        }
+    }
+    public void ClickOnDungeonItem()
+    {
+        if (!dungeonItems){return;}
+        ResetBuying();
+        buyingDungeonItems = true;
+        string item = dungeonItemDisplay.GetSelectedStat();
+        itemDetailViewer.SetInfo(item, dungeonItemDescriptions.ReturnValue(item));
+    }
     public bool buyingEquipment = false;
     public void ClickOnEquipment()
     {
+        ResetBuying();
         buyingEquipment = true;
-        buyingItems = false;
         itemDetailViewer.ViewEquip();
         itemDetailViewer.ShowInfo(equipmentDisplay.GetSelectedStat());
-        itemsDisplay.ResetSelected();
     }
     public bool buyingItems = false;
     public void ClickOnItem()
     {
-        buyingEquipment = false;
+        ResetBuying();
         buyingItems = true;
         itemDetailViewer.ViewItem();
         itemDetailViewer.ShowInfo(itemsDisplay.GetSelectedStat());
-        equipmentDisplay.ResetSelected();
     }
     protected void UpdateDisplay()
     {
         equipmentDisplay.SetStatsAndData(equipmentSold, equipmentPrices);
         itemsDisplay.SetStatsAndData(itemsSolds, itemsPrices);
+        if (dungeonItems)
+        {
+            dungeonItemDisplay.SetStatsAndData(dungeonItemsSolds, dungeonItemsPrices);
+        }
         UpdateQuantityOwned();
     }
     protected void ResetQuantityOwned()
@@ -138,6 +166,18 @@ public class Store : MonoBehaviour
         UpdateQuantityOwned();
         inventoryUI.UpdateKeyValues();
     }
+    public void TryToBuyDungeonItem()
+    {
+        if (!dungeonItems){return;}
+        if (partyData.dungeonBag.BagFull()){return;}
+        int index = dungeonItemDisplay.GetSelected();
+        if (index < 0){return;}
+        int price = int.Parse(dungeonItemDisplay.GetSelectedData());
+        if (!partyData.inventory.QuantityExists(price)){return;}
+        partyData.inventory.RemoveItemQuantity(price);
+        partyData.dungeonBag.GainItem(dungeonItemDisplay.GetSelectedStat());
+        inventoryUI.UpdateKeyValues();
+    }
 
     public void TryToBuy()
     {
@@ -148,6 +188,10 @@ public class Store : MonoBehaviour
         else if (buyingItems)
         {
             TryToBuyItem();
+        }
+        else if (buyingDungeonItems)
+        {
+            TryToBuyDungeonItem();
         }
     }
 }

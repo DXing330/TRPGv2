@@ -49,7 +49,7 @@ public class Dungeon : ScriptableObject
         // Determine if there is a merchant on the floor.
         int merchantRoll = Random.Range(0, 100);
         ResetMerchant();
-        if (merchantRoll < merchantChance)
+        if (merchantRoll < merchantChance - currentFloor)
         {
             GenerateMerchant();
         }
@@ -689,7 +689,8 @@ public class Dungeon : ScriptableObject
     public bool MimicFight()
     {
         int rng = Random.Range(0, 100);
-        if (rng < mimicChance)
+        // Deeper you go means more chance of mimics.
+        if (rng < mimicChance + currentFloor)
         {
             if (TreasureLocation(partyLocation))
             {

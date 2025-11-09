@@ -44,6 +44,12 @@ public class ItemDetailViewer : MonoBehaviour
         passiveDetails.UpdatePassiveNames(equipment.GetPassives()[index], equipment.GetPassiveLevels()[index]);
     }
 
+    public void SetInfo(string newItem, string newDescription)
+    {
+        itemName.text = newItem;
+        itemInfo.text = newDescription;
+    }
+
     public void ShowInfo(string newItem)
     {
         string data = "";
