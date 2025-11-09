@@ -131,6 +131,8 @@ public class PassiveDetailViewer : MonoBehaviour
         {
             case "None":
                 return "";
+            case "Killing":
+                return " if attack is greater than the sum of the target's health and defense";
             case "AllyCount<":
                 return " if there are less than "+specifics+" allies left";
             case "AllyCount>":

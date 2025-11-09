@@ -33,10 +33,11 @@ public class AIConditionChecker : ScriptableObject
                 return actor.GetSpriteName() == specifics;
             case "<>TempPassive":
                 return !actor.tempPassives.Contains(specifics);
+            case "SkillExists":
+                return actor.SkillExists(specifics);
             case "TempActiveCount>=":
                 return actor.GetTempActives().Count >= int.Parse(specifics);
             case "TempActiveCount<=":
-                Debug.Log(actor.GetTempActives().Count <= int.Parse(specifics));
                 return actor.GetTempActives().Count <= int.Parse(specifics);
             case "AdjacentActorCount<":
                 return map.GetAdjacentActors(actor.GetLocation()).Count < int.Parse(specifics);

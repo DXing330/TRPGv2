@@ -73,10 +73,25 @@ public class StatDatabase : ScriptableObject
         return keys.Contains(key);
     }
 
-    public string ReturnRandomKey()
+    public string ReturnRandomKey(List<string> except = null)
     {
         int index = Random.Range(0, keys.Count);
-        return keys[index];
+        string rKey = keys[index];
+        if (except != null && except.Count < keys.Count && except.Contains(rKey))
+        {
+            return ReturnRandomKey(except);
+        }
+        return rKey;
+    }
+
+    public List<string> ReturnRandomKeys(int count = 1)
+    {
+        List<string> rKeys = new List<string>();
+        for (int i = 0; i < count; i++)
+        {
+            rKeys.Add(ReturnRandomKey(rKeys));
+        }
+        return rKeys;
     }
 
     // Used specifically for selecting random enemies for the roguelike.

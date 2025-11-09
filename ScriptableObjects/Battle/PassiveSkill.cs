@@ -293,6 +293,8 @@ public class PassiveSkill : SkillEffect
                 return map.GetAdjacentEnemies(target).Count < int.Parse(conditionSpecifics);
             case "None":
                 return true;
+            case "Killing":
+                return attacker.GetAttack() >= target.GetDefense() + target.GetHealth();
             case "Distance":
                 return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
             case "Distance>":

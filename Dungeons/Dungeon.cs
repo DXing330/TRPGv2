@@ -46,6 +46,13 @@ public class Dungeon : ScriptableObject
         SetTrapLocations(newDungeon[4].Split("|").ToList());
         SetItemLocations(newDungeon[5].Split("|").ToList());
         SetWeather();
+        // Determine if there is a merchant on the floor.
+        int merchantRoll = Random.Range(0, 100);
+        ResetMerchant();
+        if (merchantRoll < merchantChance)
+        {
+            GenerateMerchant();
+        }
         escaped = false;
         dungeonLogs = new List<string>();
         AddDungeonLog("Entered floor "+currentFloor);
@@ -60,7 +67,6 @@ public class Dungeon : ScriptableObject
     }
     protected void GenerateQuestGoal()
     {
-        
         for (int i = 0; i < goalFloors.Count; i++)
         {
             if (goalFloors[i] != currentFloor){continue;}
@@ -478,6 +484,10 @@ public class Dungeon : ScriptableObject
         {
             partyLocations[itemLocations[i]] = itemSprite;
         }
+        if (GetMerchantLocation() >= 0)
+        {
+            partyLocations[GetMerchantLocation()] = merchantString;
+        }
         for (int i = 0; i < allEnemyLocations.Count; i++)
         {
             partyLocations[allEnemyLocations[i]] = allEnemySprites[i];
@@ -593,6 +603,77 @@ public class Dungeon : ScriptableObject
         return allEnemyLocations.Contains(nextTile);
     }
     public List<int> treasureLocations;
+    protected void ResetMerchant()
+    {
+        merchantLocation = -1;
+        merchantRobbed = 0;
+        merchantItems.Clear();
+        merchantPrices.Clear();
+    }
+    protected void GenerateMerchant()
+    {
+        SetMerchantLocation(FindRandomEmptyTile());
+        GenerateMerchantStock();
+    }
+    public int merchantChance;
+    public string merchantString;
+    protected int merchantStockCount = 6;
+    protected int itemPriceVariance = 5;
+    protected int pricePerRarity = 10;
+    protected int chestPrice = 50;
+    // Merchants sell 5 random items and 1 random treasure chest.
+    // Later treasure chests can contain skill books.
+    protected void GenerateMerchantStock()
+    {
+        merchantItems.Clear();
+        merchantPrices.Clear();
+        //dungeonItems.
+        merchantItems.AddRange(dungeonItems.ReturnRandomKeys(merchantStockCount - 1));
+        // Calculate item prices based on rarity.
+        for (int i = 0; i < merchantItems.Count; i++)
+        {
+            int rarity = int.Parse(itemRarities.ReturnValue(merchantItems[i]));
+            merchantPrices.Add((rarity * pricePerRarity) + Random.Range(-itemPriceVariance, itemPriceVariance));
+        }
+        merchantItems.Add(GenerateChest());
+        merchantPrices.Add(chestPrice);
+    }
+    // When stepping on a merchant tile, assuming it's not also a battle.
+    // You will have the merchant screen popup, you can view wares and add them to your cart.
+    // When you leave if you have not paid then they will ask you to pay.
+    // If you don't then good luck.
+    public List<string> merchantItems;
+    public void SetMerchantItems(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        merchantItems = newInfo;
+    }
+    public List<string> GetMerchantItems(){return merchantItems;}
+    public List<int> merchantPrices;
+    public void SetMerchantPrices(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        merchantPrices = utility.ConvertStringListToIntList(newInfo);
+    }
+    public List<int> GetMerchantPrices(){return merchantPrices;}
+    public List<string> GetMerchantPriceString()
+    {
+        return utility.ConvertIntListToStringList(merchantPrices);
+    }
+    public string merchantGuards; // Generally ogres.
+    public int merchantLocation;
+    public void SetMerchantLocation(int newInfo){merchantLocation = newInfo;}
+    public int GetMerchantLocation(){return merchantLocation;}
+    public bool MerchantLocation(int newInfo){return newInfo == merchantLocation;}
+    public int merchantRobbed;
+    public void SetMerchantRobbed(int newInfo){merchantRobbed = newInfo;}
+    public int GetMerchantRobbed(){return merchantRobbed;}
+    public void RobMerchant()
+    {
+        merchantRobbed = 1;
+        ForceSpawnEnemy(GetStairsDown());
+    }
+    public bool RobbedMerchant(){return merchantRobbed == 1;}
     public int mimicChance;
     public string mimicString;
     public void PrepareMimicBattle(PartyDataManager partyData)
@@ -629,6 +710,7 @@ public class Dungeon : ScriptableObject
     }
     public void SetTreasureLocations(List<string> newInfo)
     {
+        utility.RemoveEmptyListItems(newInfo);
         treasureLocations = utility.ConvertStringListToIntList(newInfo);
     }
     public bool TreasureLocation(int nextTile)
@@ -826,6 +908,7 @@ public class Dungeon : ScriptableObject
         // If you're lucky enemies will never spawn.
         int spawnCheck = Random.Range(0, (dungeonSize * 6) + spawnCounter);
         if (fastSpawn){spawnCheck = spawnCheck/10;}
+        if (RobbedMerchant()){spawnCheck = spawnCheck/dungeonSize;}
         if (spawnCheck < spawnCounter)
         {
             SpawnEnemy();
@@ -844,7 +927,14 @@ public class Dungeon : ScriptableObject
         string enemyString = "";
         for (int i = 0; i < enemyCount; i++)
         {
-            enemyString += possibleEnemies[Random.Range(0, possibleEnemies.Count)];
+            if (RobbedMerchant())
+            {
+                enemyString += merchantGuards;
+            }
+            else
+            {
+                enemyString += possibleEnemies[Random.Range(0, possibleEnemies.Count)];
+            }
             if (i < enemyCount - 1){enemyString += "|";}
         }
         string[] allEnemies = enemyString.Split("|");

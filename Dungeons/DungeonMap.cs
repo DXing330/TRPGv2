@@ -8,6 +8,7 @@ public class DungeonMap : MapManager
     public GameObject failureScreen;
     public int maxDistanceFromCenter = 2;
     public DungeonEffectManager dungeonEffects;
+    public DungeonMerchant merchant;
     public PartyDataManager partyData;
     public Dungeon dungeon;
     public DungeonMiniMap miniMap;
@@ -86,7 +87,6 @@ public class DungeonMap : MapManager
         RefreshMapSize();
         UpdateCenterTile(dungeon.GetPartyLocation());
         UpdateMap();
-
     }
 
     public void QuitDungeon()
@@ -96,6 +96,11 @@ public class DungeonMap : MapManager
 
     public void EscapeDungeon()
     {
+        if (dungeon.RobbedMerchant())
+        {
+            dungeon.AddDungeonLog("Something is wrong, you can't escape.");
+            return;
+        }
         dungeon.EscapeOrb();
         sceneMover.ReturnFromDungeon();
     }
@@ -109,6 +114,11 @@ public class DungeonMap : MapManager
 
     public void TeleportToTile(int newTile)
     {
+        if (dungeon.RobbedMerchant())
+        {
+            dungeon.AddDungeonLog("Something is wrong, you can't teleport.");
+            return;
+        }
         MoveToTile(newTile);
     }
 
@@ -248,6 +258,10 @@ public class DungeonMap : MapManager
                 // Generate an inventory full error message.
                 dungeon.AddDungeonLog("Bag is full.");
             }
+        }
+        if (dungeon.MerchantLocation(newTile) && !dungeon.RobbedMerchant())
+        {
+            merchant.ActivateMerchant();
         }
         UpdateMap();
     }

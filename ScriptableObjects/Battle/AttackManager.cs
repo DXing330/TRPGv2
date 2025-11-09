@@ -31,10 +31,9 @@ public class AttackManager : ScriptableObject
         damageMultiplier = baseMultiplier;
         baseDamage = damage;
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
-        if (damageMultiplier < 0) { damageMultiplier = 0; }
-        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
-        defender.TakeDamage(baseDamage);
+        if (damageMultiplier < 0) { damageMultiplier = 0; }
+        baseDamage = damageMultiplier * baseDamage / baseMultiplier;defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
     }

@@ -432,6 +432,10 @@ public class ActorStats : ActorPassives
         {
             if (activeSkills[i].Contains(skillName)){return true;}
         }
+        for (int i = 0; i < tempActives.Count; i++)
+        {
+            if (tempActives[i].Contains(skillName)){return true;}
+        }
         return false;
     }
     public string ReturnSkillContainingName(string skillName)
@@ -439,6 +443,10 @@ public class ActorStats : ActorPassives
         for (int i = 0; i < activeSkills.Count; i++)
         {
             if (activeSkills[i].Contains(skillName)){return activeSkills[i];}
+        }
+        for (int i = 0; i < tempActives.Count; i++)
+        {
+            if (tempActives[i].Contains(skillName)){return tempActives[i];}
         }
         return "";
     }
