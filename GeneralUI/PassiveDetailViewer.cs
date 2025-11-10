@@ -166,7 +166,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Adjacent Ally Sprite A":
                 return " if a " + specifics + " ally is adjacent";
             case "Adjacent Ally Sprite D":
-                return " if a " + specifics + " ally is adjacent";
+                return " if a " + specifics + " ally is adjacent to the target";
             case "AdjacentEnemyCount>":
                 return " if there are more than " + specifics + " enemies adjacent";
             case "AdjacentEnemyCount<":
@@ -176,9 +176,9 @@ public class PassiveDetailViewer : MonoBehaviour
             case "AdjacentEnemyCount<A":
                 return " if there are less than " + specifics + " enemies adjacent";
             case "AdjacentEnemyCount>D":
-                return " if there are more than " + specifics + " enemies adjacent";
+                return " if there are more than " + specifics + " enemies adjacent to the target";
             case "AdjacentEnemyCount<D":
-                return " if there are less than " + specifics + " enemies adjacent";
+                return " if there are less than " + specifics + " enemies adjacent to the target";
             case "Direction":
                 switch (specifics)
                 {
@@ -280,10 +280,22 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if on a " + specifics + " tile";
             case "Tile<>":
                 return " if not on a " + specifics + " tile";
+            case "TileEffect":
+                return " if on a " + specifics + " tile";
+            case "TileEffect<>":
+                return " if not on a " + specifics + " tile";
             case "TileA":
                 return " if on a " + specifics + " tile";
             case "Tile<>A":
                 return " if not on a " + specifics + " tile";
+            case "TileEffectA":
+                return " if on a " + specifics + " tile";
+            case "TileEffect<>A":
+                return " if not on a " + specifics + " tile";
+            case "TileEffectD":
+                return " if the target is on a " + specifics + " tile";
+            case "TileEffect<>D":
+                return " if the target is not on a " + specifics + " tile";
             case "Weapon":
                 return " if a " + specifics + " is equipped";
             case "Weather":

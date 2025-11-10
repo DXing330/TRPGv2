@@ -368,6 +368,11 @@ public class MoveCostManager : MonoBehaviour
                 map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with " + oActor.GetPersonalName() + " and takes " + aCollideD + " damage.");
                 aCollideD = oActor.TakeEffectDamage(displaceDamage);
                 map.combatLog.UpdateNewestLog(oActor.GetPersonalName() + " takes " + aCollideD + " damage.");
+                // Chain displacement for fun.
+                if (i < force - 1)
+                {
+                    DisplaceActor(oActor, direction, force - i - 1, map);
+                }
                 break;
             }
         }

@@ -618,6 +618,11 @@ public class BattleMap : MapManager
         return mapInfo[actor.GetLocation()];
     }
 
+    public string GetTileEffectOfActor(TacticActor actor)
+    {
+        return terrainEffectTiles[actor.GetLocation()];
+    }
+
     public List<TacticActor> GetActorsOnTiles(List<int> tiles)
     {
         List<TacticActor> actors = new List<TacticActor>();

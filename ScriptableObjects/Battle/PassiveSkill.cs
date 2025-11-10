@@ -184,6 +184,10 @@ public class PassiveSkill : SkillEffect
                 return map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
             case "Tile<>":
                 return !map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
+            case "TileEffect":
+                return map.GetTileInfoOfActor(actor).Contains(conditionSpecifics);
+            case "TileEffect<>":
+                return !map.GetTileInfoOfActor(actor).Contains(conditionSpecifics);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics); // Contains, since we will add more weather tiers later.
             case "Time":
@@ -263,6 +267,14 @@ public class PassiveSkill : SkillEffect
                 return map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
             case "Tile<>A":
                 return !map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
+            case "TileEffectA":
+                return map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
+            case "TileEffect<>A":
+                return !map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
+            case "TileEffectD":
+                return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
+            case "TileEffect<>D":
+                return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "Adjacent Ally A<>":
                 return !map.AllyAdjacentToActor(attacker);
             case "Adjacent Ally D<>":
