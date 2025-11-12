@@ -1,15 +1,17 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "StSState", menuName = "ScriptableObjects/StS/StSState", order = 1)]
-public class MainCampaignState : SavedState
+[CreateAssetMenu(fileName = "MainCampaign", menuName = "ScriptableObjects/Story/MainCampaign", order = 1)]
+public class MainCampaignState : SavedData
 {
+    public string delimiterTwo;
     public StatDatabase campaignData;
     // 0-prologue, 1-become strong, 2-conqueor, 3-demon army, 4-postgame
-    public int currentAct;
+    //public int currentAct;
     /*
     0-0 : Introduce setting, clear dungeons for rewards and grow stronger
     0-1 : Clear dungeon as an initiation quest
@@ -28,8 +30,8 @@ public class MainCampaignState : SavedState
     2-2 : Attack other cities
     Each city is a dungeon
     Each city you attack makes the other cities stronger (deeper dungeon, more buffs, stronger enemies)
-    Build up your army each time and move to cities to conqueor them
-    Clear the city dungeon to conqueor the city
+    Build up your army each time and move to cities to conquer them
+    Clear the city dungeon to conquer the city
     2-3 : Betray or submit to your chosen city
     2-4 : City building minigame
     1. Build outposts/villages through initial investments
@@ -47,22 +49,132 @@ public class MainCampaignState : SavedState
     3-3 : Demon lord dungeon
     4-0 : Post game super dungeons
     */
+    // Track if you win or lose during each chapter, might affect the final ending?
+    public List<int> previousChapters;
+    public List<int> GetPreviousChapters(){return previousChapters;}
+    public void SetPreviousChapters(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        previousChapters = utility.ConvertStringListToIntList(newInfo, -1);
+        utility.RemoveEmptyValues(previousChapters, -1);
+    }
     public int currentChapter;
+    public void CompleteChapter()
+    {
+        currentChapter = 1;
+        Save();
+    }
+    public int GetCurrentChapter(){return currentChapter;}
+    public void SetCurrentChapter(int newInfo){currentChapter = newInfo;}
     // Deliver on time, rescue on time, defeat on time, escort on time, explore first, defend til the end.
     public int chapterDeadline;
+    public int GetCurrentDeadline(){return chapterDeadline;}
+    public void SetCurrentDeadline(int newInfo){chapterDeadline = newInfo;}
     // Deliver, rescue, defeat, escort, explore, defend.
     public string currentRequest;
+    public string GetCurrentRequest(){return currentRequest;}
+    public void SetCurrentRequest(string newInfo){currentRequest = newInfo;}
     // Deliver what, rescue who, defeat who, escort who, explore where, defend what?
     public string requestSpecifics;
+    public string GetRequestSpecifics(){return requestSpecifics;}
+    public string GetRequestSpecificsName()
+    {
+        string[] nameQuantity = requestSpecifics.Split("*");
+        return nameQuantity[0];
+    }
+    public void SetRequestSpecifics(string newInfo){requestSpecifics = newInfo;}
     // Drop off site, last seen location, last seen location, drop off location, dungeon location, defense location.
-    public int requestLocation;
+    public string requestLocation;
+    public string GetRequestLocation(){return requestLocation;}
+    public void SetRequestLocation(string newInfo){requestLocation = newInfo;}
+
+    public void NextChapter()
+    {
+        previousChapters.Add(currentChapter);
+        NewChapter();
+    }
+
+    public void NewChapter()
+    {
+        currentChapter = 0;
+        // Check if it's the end of the main story.
+        if (campaignData.GetAllKeys().Count <= previousChapters.Count)
+        {
+            return;
+        }
+        string[] newInfo = campaignData.ReturnValueAtIndex(previousChapters.Count).Split("|");
+        SetCurrentDeadline(int.Parse(newInfo[0]));
+        SetCurrentRequest(newInfo[1]);
+        SetRequestSpecifics(newInfo[2]);
+        SetRequestLocation(newInfo[3]);
+        Save();
+    }
 
     public override void NewGame()
     {
-        currentAct = 0;
+        previousChapters.Clear();
         currentChapter = 0;
+        chapterDeadline = 0;
         currentRequest = "";
         requestSpecifics = "";
-        requestLocation = -1;
+        requestLocation = "";
+        Save();
+        Load();
+    }
+
+    public override void Save()
+    {
+        dataPath = Application.persistentDataPath+"/"+filename;
+        allData = "";
+        allData += String.Join(delimiterTwo, previousChapters) + delimiter;
+        allData += currentChapter + delimiter;
+        allData += chapterDeadline + delimiter;
+        allData += currentRequest + delimiter;
+        allData += requestSpecifics + delimiter;
+        allData += requestLocation + delimiter;
+        File.WriteAllText(dataPath, allData);
+    }
+
+    public override void Load()
+    {
+        dataPath = Application.persistentDataPath+"/"+filename;
+        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
+        else
+        {
+            NewGame();
+            return;
+        }
+        dataList = allData.Split(delimiter).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i], i);
+        }
+    }
+
+    protected void LoadStat(string stat, int index)
+    {
+        switch (index)
+        {
+            default:
+            break;
+            case 0:
+            SetPreviousChapters(stat.Split(delimiterTwo).ToList());
+            break;
+            case 1:
+            SetCurrentChapter(int.Parse(stat));
+            break;
+            case 2:
+            SetCurrentDeadline(int.Parse(stat));
+            break;
+            case 3:
+            SetCurrentRequest(stat);
+            break;
+            case 4:
+            SetRequestSpecifics(stat);
+            break;
+            case 5:
+            SetRequestLocation(stat);
+            break;
+        }
     }
 }

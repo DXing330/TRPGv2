@@ -247,12 +247,12 @@ public class GeneralUtility : ScriptableObject
         return string_list;
     }
 
-    public List<int> ConvertStringListToIntList(List<string> string_list)
+    public List<int> ConvertStringListToIntList(List<string> string_list, int safeParseValue = 0)
     {
         List<int> int_list = new List<int>();
         for (int i = 0; i < string_list.Count; i++)
         {
-            int_list.Add(SafeParseInt(string_list[i]));
+            int_list.Add(SafeParseInt(string_list[i], safeParseValue));
         }
         return int_list;
     }

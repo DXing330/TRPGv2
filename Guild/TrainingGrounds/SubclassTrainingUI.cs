@@ -27,9 +27,8 @@ public class SubclassTrainingUI : MonoBehaviour
     public PopUpMessage errorMessage;
     protected void UpdateTrainingCostDetails()
     {
-        trainingCostText.text = (totalTraineeLevels * pricePerLevel).ToString();
+        int currentLevel = partyData.ReturnActorAtIndex(traineeSelect.GetSelected()).GetLevelFromPassive(trainedClass);trainingCostText.text = ((totalTraineeLevels * pricePerLevel) + ((currentLevel + 1) * baseCostPerLevel[trainableClasses.IndexOf(trainedClass)])).ToString();
         trainedSkillText.text = trainedClass;
-        int currentLevel = partyData.ReturnActorAtIndex(traineeSelect.GetSelected()).GetLevelFromPassive(trainedClass);
         trainingEffectText.text = currentLevel + " > " + Mathf.Min((currentLevel + 1), maxTrainedLevel);
     }
     protected void UpdateTrainingDisplay()
@@ -47,7 +46,8 @@ public class SubclassTrainingUI : MonoBehaviour
         }
     }
     public List<string> trainableClasses;
-    public int pricePerLevel = 100;
+    public List<int> baseCostPerLevel;
+    public int pricePerLevel;
     public void SelectTrainer()
     {
         if (trainerSelect.GetSelected() < 0){return;}

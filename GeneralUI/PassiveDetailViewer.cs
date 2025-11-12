@@ -482,6 +482,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " die";
             case "CounterAttack":
                 return " gain " + specifics + " counter attacks";
+            case "DisablePassives":
+                return " disable " + specifics + " passives";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

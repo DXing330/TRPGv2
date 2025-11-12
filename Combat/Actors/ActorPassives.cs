@@ -315,7 +315,13 @@ public class ActorPassives : MonoBehaviour
     }
     public void SetMovingPassives(List<string> passives) { movingPassives = new List<string>(passives); }
     public List<string> deathPassives;
-    public List<string> GetDeathPassives() { return deathPassives; }
+    public bool deathPassivesActive = true;
+    public void DisableDeathPassives(){deathPassivesActive = false;}
+    public List<string> GetDeathPassives()
+    {
+        if (!deathPassivesActive){return new List<string>();}
+        return deathPassives;
+    }
     public void AddDeathPassive(string passiveName) { deathPassives.Add(passiveName); }
     public void AddDeathPassives(List<string> newSkills)
     {

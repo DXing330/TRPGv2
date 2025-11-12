@@ -6,6 +6,7 @@ using TMPro;
 public class DungeonSelectList : MonoBehaviour
 {
     public GeneralUtility utility;
+    public MainCampaignState mainStory;
     public PartyDataManager partyData;
     public List<GameObject> dungeonSelectObjects;
     public int page = 0;
@@ -21,18 +22,28 @@ public class DungeonSelectList : MonoBehaviour
     public void SelectDungeon()
     {
         dungeon.SetDungeonName(currentDungeons[selected]);
-        // Set Quest Info.
-        List<string> questGoals = partyData.guildCard.ReturnQuestGoalsAtLocation(dungeon.GetDungeonName());
-        dungeon.SetQuestGoals(questGoals);
-        dungeon.SetQuestFloors(partyData.guildCard.ReturnQuestFloorsAtLocation(dungeon.GetDungeonName()));
-        // Add any temp party members.
-        for (int i = 0; i < questGoals.Count; i++)
+        // If it's a story quest then do things differently.
+        if (currentDungeons[selected] == mainStory.GetRequestLocation() && mainStory.GetCurrentChapter() != 1)
         {
-            if (questGoals[i] == "Escort")
+
+        }
+        // Otherwise get quests from the guild card.
+        else
+        {
+            // Set Quest Info.
+            List<string> questGoals = partyData.guildCard.ReturnQuestGoalsAtLocation(dungeon.GetDungeonName());
+            dungeon.SetQuestGoals(questGoals);
+            dungeon.SetQuestFloors(partyData.guildCard.ReturnQuestFloorsAtLocation(dungeon.GetDungeonName()));
+            // Add any temp party members.
+            for (int i = 0; i < questGoals.Count; i++)
             {
-                partyData.AddTempPartyMember(dungeon.GetEscortName());
+                if (questGoals[i] == "Escort")
+                {
+                    partyData.AddTempPartyMember(dungeon.GetEscortName());
+                }
             }
         }
+        
         partyData.Save();
         dungeon.MakeDungeon();
         // Move Scene.
@@ -73,7 +84,14 @@ public class DungeonSelectList : MonoBehaviour
             dungeonSelectObjects[i].SetActive(true);
             dungeonNames[i].text = currentDungeons[i];
             difficultyTexts[i].text = utility.Root(int.Parse(dungeonData.ReturnValue(currentDungeons[i]).Split("|")[0])).ToString();
-            questCountTexts[i].text = partyData.guildCard.QuestsAtLocation(currentDungeons[i]).ToString();
+            if (currentDungeons[i] == mainStory.GetRequestLocation() && mainStory.GetCurrentChapter() != 1)
+            {
+                questCountTexts[i].text = "*";
+            }
+            else
+            {
+                questCountTexts[i].text = partyData.guildCard.QuestsAtLocation(currentDungeons[i]).ToString();
+            }
         }
     }
 }

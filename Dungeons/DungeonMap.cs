@@ -78,6 +78,22 @@ public class DungeonMap : MapManager
     protected override void Start()
     {
         blackScreen.SetActive(true);
+        // If you've fought the quest and returned then you get to complete part of the quest.
+        // For capture missions you get a captured thing as a temp party member, better keep it safe.
+        if (dungeon.GetQuestFought() == 1)
+        {
+            dungeon.SetQuestFought(0);
+            switch (dungeon.mainStory.GetCurrentRequest())
+            {
+                case "Capture":
+                partyData.AddTempPartyMember(dungeon.mainStory.GetRequestSpecificsName());
+                dungeon.AddDungeonLog("Captured the requested target.");
+                break;
+                default:
+                break;
+            }
+            return;
+        }
         // If you've fought the boss and returned then you get to go to the reward scene.
         if (dungeon.GetBossFought() == 1)
         {
@@ -153,6 +169,31 @@ public class DungeonMap : MapManager
             partyData.AddTempPartyMember(dungeon.GetEscortName());
             dungeon.AddDungeonLog("Located " + dungeon.GetEscortName() + ".");
             dungeon.RemoveGoalTile(newTile);
+        }
+        else if (dungeon.GoalOnTile(newTile) == "Deliver")
+        {
+            // Try to deliver.
+            string[] requestSpecifics = dungeon.mainStory.GetRequestSpecifics().Split("*");
+            if (partyData.dungeonBag.QuantityOfItemExists(requestSpecifics[0], int.Parse(requestSpecifics[1])))
+            {
+                partyData.dungeonBag.RemoveItemsOfType(requestSpecifics[0], int.Parse(requestSpecifics[1]));
+                partyData.dungeonBag.GainItem("Check");
+                dungeon.AddDungeonLog("Obtained a check as payment for your successful delivery.");
+            }
+            else
+            {
+                dungeon.AddDungeonLog("You currently don't have the requested delivery items.");
+            }
+        }
+        else if (dungeon.GoalOnTile(newTile) == "Capture")
+        {
+            // Enter a battle with the thing you want to capture.
+            // You have to capture it in battle.
+            dungeon.PrepareQuestBattle(newTile);
+            dungeon.MovePartyLocation(newTile);
+            // Move to battle scene.
+            EnterBattle();
+            return;
         }
         else if (dungeon.GoalOnTile(newTile) == "Search")
         {

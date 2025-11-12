@@ -8,6 +8,11 @@ using UnityEngine;
 public class Dungeon : ScriptableObject
 {
     public GeneralUtility utility;
+    public MainCampaignState mainStory;
+    public bool MainStoryQuest()
+    {
+        return (mainStory.GetCurrentChapter() != 1 && mainStory.GetRequestLocation() == GetDungeonName());
+    }
     public DungeonState dungeonState;
     public ActorPathfinder pathfinder;
     public DungeonGenerator dungeonGenerator;
@@ -17,6 +22,8 @@ public class Dungeon : ScriptableObject
     public PartyData tempParty;
     public string escortName;
     public string GetEscortName(){return escortName;}
+    public string deliverName;
+    public string GetDeliverName(){return deliverName;}
     public string searchName = "Necklace";
     public string GetSearchName(){return searchName;}
     public int dungeonSize;
@@ -144,6 +151,17 @@ public class Dungeon : ScriptableObject
     {
         return questGoals;
     }
+    // Only really used for story quests for now.
+    public List<string> questSpecifics;
+    public void SetQuestSpecifics(List<string> newInfo)
+    {
+        utility.RemoveEmptyListItems(newInfo);
+        questSpecifics = newInfo;
+    }
+    public List<string> GetQuestSpecifics()
+    {
+        return questSpecifics;
+    }
     public List<string> GetFloorGoals()
     {
         List<string> floorGoals = new List<string>();
@@ -224,6 +242,8 @@ public class Dungeon : ScriptableObject
         // This lets you know if the boss has been fought.
         // If you beat the final boss then you have cleared the dungeon.
         bossFought = 0;
+        // If you beat the quest then good things happen?
+        questFought = 0;
         string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
         if (initial)
         {
@@ -259,6 +279,16 @@ public class Dungeon : ScriptableObject
     public int currentMaxStomach;
     public void SetMaxStomach(int newInfo){currentMaxStomach = newInfo;}
     public int GetMaxStomach(){return currentMaxStomach;}
+    public void IncreaseMaxStomach(int amount)
+    {
+        currentMaxStomach += amount;
+        SetStomach(GetMaxStomach());
+    }
+    public void DecreaseMaxStomach(int amount)
+    {
+        currentMaxStomach -= amount;
+        currentStomach = Mathf.Min(currentMaxStomach, currentStomach);
+    }
     public int currentStomach;
     public void SetStomach(int newInfo){currentStomach = newInfo;}
     public int GetStomach(){return currentStomach;}
@@ -501,6 +531,16 @@ public class Dungeon : ScriptableObject
             else if (goalTileMappings[i] == "Rescue")
             {
                 partyLocations[goalTiles[i]] = escortName;
+            }
+            else if (goalTileMappings[i] == "Deliver")
+            {
+                partyLocations[goalTiles[i]] = deliverName;
+            }
+            else if (goalTileMappings[i] == "Capture")
+            {
+                // Show whatever you're trying to capture.
+                string[] captureDetails = questSpecifics[i].Split("*");
+                partyLocations[goalTiles[i]] = captureDetails[0];
             }
         }
         partyLocations[partyLocation] = partySprite;
@@ -853,6 +893,33 @@ public class Dungeon : ScriptableObject
         // Remove the enemy on that location.
         RemoveEnemyAtIndex(indexOf);
     }
+    public int questFought = 0;
+    public void SetQuestFought(int newInfo)
+    {
+        questFought = newInfo;
+    }
+    public int GetQuestFought()
+    {
+        return questFought;
+    }
+    public void PrepareQuestBattle(int tileLocation)
+    {
+        int indexOf = goalTiles.IndexOf(tileLocation);
+        if (indexOf == -1){return;}
+        string[] enemyPartyQuantities = questSpecifics[indexOf].Split("|");
+        List<string> questBattle = new List<string>();
+        for (int i = 0; i < enemyPartyQuantities.Length; i++)
+        {
+            string[] enemyQuantity = enemyPartyQuantities[i].Split("*");
+            for (int j = 0; j < int.Parse(enemyQuantity[1]); j++)
+            {
+                questBattle.Add(enemyQuantity[0]);
+            }
+        }
+        SetEnemyParty(questBattle);
+        goalTiles.RemoveAt(indexOf);
+        questSpecifics.RemoveAt(indexOf);
+    }
     public bool PrepareBossBattle()
     {
         bossFought = 1;
@@ -959,6 +1026,12 @@ public class Dungeon : ScriptableObject
             if (enemyPath.Count >= enemyChaseRange)
             {
                 // Maybe move in a random direction?
+                List<int> adjacentTiles = pathfinder.mapUtility.AdjacentTiles(currentEnemyLocation, GetDungeonSize());
+                int randomAdjacent = adjacentTiles[Random.Range(0, adjacentTiles.Count)];
+                if (currentFloorTiles[randomAdjacent] == passableTileType)
+                {
+                    allEnemyLocations[i] = randomAdjacent;
+                }
                 continue;
             }
             if (enemyPath.Count < 2)

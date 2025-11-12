@@ -151,6 +151,17 @@ public class DungeonEffectManager : MonoBehaviour
                 }
                 dungeonMap.UpdateMap();
                 break;
+            case "MaxStomach":
+                if (effect == "Increase")
+                {
+                    dungeon.IncreaseMaxStomach(int.Parse(specifics));
+                }
+                else
+                {
+                    dungeon.DecreaseMaxStomach(int.Parse(specifics));
+                }
+                dungeonMap.UpdateMap();
+                break;
             case "AllTraps":
                 // What else would you do besides remove them?
                 dungeon.ResetTraps();

@@ -4,14 +4,53 @@ using UnityEngine;
 
 public class QuestSuccessChecker : MonoBehaviour
 {
+    public bool StoryQuestSuccessful(PartyDataManager partyData, Dungeon dungeon)
+    {
+        if (!dungeon.MainStoryQuest()){return false;}
+        switch (dungeon.mainStory.GetCurrentRequest())
+        {
+            case "Complete":
+            if (dungeon.escaped){return false;}
+            return true;
+            case "Capture":
+            string captureRequirement = dungeon.mainStory.GetRequestSpecifics().Split("*")[0];
+            if (partyData.tempPartyData.PartyMemberIncluded(captureRequirement))
+            {
+                partyData.RemoveTempPartyMember(captureRequirement);
+                return true;
+            }
+            return false;
+            case "Deliver":
+            case "Search":
+            // Check if your inventory includes the quest item.
+            if (partyData.dungeonBag.ItemExists("Check"))
+            {
+                partyData.dungeonBag.UseItem("Check");
+                return true;
+            }
+            return false;
+        }
+        return CheckGoal(partyData, dungeon, dungeon.mainStory.GetCurrentRequest(), true);
+    }
+    
     public bool QuestSuccessful(PartyDataManager partyData, int index, Dungeon dungeon)
     {
         string goal = partyData.guildCard.GetQuestGoals()[index];
+        return CheckGoal(partyData, dungeon, goal);
+    }
+
+    protected bool CheckGoal(PartyDataManager partyData, Dungeon dungeon, string goal, bool main = false)
+    {
         string questItem = dungeon.GetSearchName();
         string escortName = dungeon.GetEscortName();
+        if (main)
+        {
+            questItem = dungeon.mainStory.GetRequestSpecifics().Split("*")[0];
+            escortName = dungeon.mainStory.GetRequestSpecifics().Split("*")[0];
+        }
         switch (goal)
         {
-            case "":
+            default:
             return false;
             case "Search":
             // Check if your inventory includes the quest item.
@@ -37,8 +76,5 @@ public class QuestSuccessChecker : MonoBehaviour
             }
             return false;
         }
-        // This only happens when the dungeon is completed, so default is true since if you cleared the dungeon you have defeated all required enemies.
-        if (dungeon.escaped){return false;}
-        return true;
     }
 }

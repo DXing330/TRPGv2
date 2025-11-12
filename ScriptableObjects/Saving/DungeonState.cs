@@ -35,11 +35,11 @@ public class DungeonState : SavedState
         // Quest/Goal Info // Not always needed.
         allData += String.Join(delimiterTwo, dungeon.GetQuestGoals()) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.GetGoalMappings()) + delimiter;
-        allData += "dungeon.GetGoalTile()" + delimiter;
+        allData += String.Join(delimiterTwo, dungeon.GetQuestSpecifics()) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.GetGoalFloors()) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.GetGoalTiles()) + delimiter;
         // Collected treasure count.
-        allData += dungeon.GetTreasuresAcquired() + delimiter;
+        allData += dungeon.GetQuestFought() + delimiter;
         // Viewed tiles
         allData += String.Join(delimiterTwo, dungeon.GetViewedTiles()) + delimiter;
         allData += dungeon.GetBossFought() + delimiter;
@@ -113,7 +113,7 @@ public class DungeonState : SavedState
                 dungeon.SetGoalMappings(stat.Split(delimiterTwo).ToList());
                 break;
             case 13:
-                //dungeon.SetQuestReward(int.Parse(stat)); Handled by dungeon reward scene.
+                dungeon.SetQuestSpecifics(stat.Split(delimiterTwo).ToList());
                 break;
             case 14:
                 dungeon.SetQuestFloors(utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList()));
@@ -122,7 +122,7 @@ public class DungeonState : SavedState
                 dungeon.SetQuestTiles(stat.Split(delimiterTwo).ToList());
                 break;
             case 16:
-                //dungeon.SetTreasuresAcquired(int.Parse(stat));
+                dungeon.SetQuestFought(int.Parse(stat));
                 break;
             case 17:
                 dungeon.SetViewedTiles(stat.Split(delimiterTwo).ToList());

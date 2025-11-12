@@ -35,6 +35,11 @@ public class DungeonRewardScene : MonoBehaviour
         treasureChestManager.OpenAllChests();
         // Escape orb means you don't complete any quests.
         CalculateQuestRewards();
+        if(questSuccessChecker.StoryQuestSuccessful(partyData, dungeon))
+        {
+            dungeon.mainStory.CompleteChapter();
+            partyData.Save();
+        }
     }
 
     protected void CalculateQuestRewards()

@@ -97,7 +97,11 @@ public class BattleState : SavedState
 
     public override void NewGame()
     {
-        base.NewGame();
+        dataPath = Application.persistentDataPath+"/"+filename;
+        allData = newGameData;
+        File.WriteAllText(dataPath, allData);
+        Load();
+        Save();
     }
 
     public override void Save()
@@ -133,8 +137,6 @@ public class BattleState : SavedState
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
         enemyList.AddCharacters(enemies);
-        enemyList.SetBattleModifiers(enemyBattleModifiers);
-        partyList.SetBattleModifiers(allyBattleModifiers);
         battleMapFeatures.SetTerrainType(terrainType);
     }
 
@@ -152,13 +154,16 @@ public class BattleState : SavedState
                 terrainType = stat;
                 break;
             case 3:
-                winningTeam = int.Parse(stat);
+                winningTeam = utility.SafeParseInt(stat, -1);
                 break;
             case 4:
                 allyBattleModifiers = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+                utility.RemoveEmptyListItems(allyBattleModifiers);
+                partyList.SetBattleModifiers(allyBattleModifiers);
                 break;
             case 5:
                 enemyBattleModifiers = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+                enemyList.SetBattleModifiers(enemyBattleModifiers);
                 break;
             case 6:
                 SetWeather(stat);

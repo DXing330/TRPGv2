@@ -29,6 +29,7 @@ public class SceneMover : MonoBehaviour
     public bool loadingRequired = false;
     public string overworldSceneName = "Overworld";
     public OverworldState overworldState;
+    public DayTracker dayTracker;
     public string hubSceneName = "Hub";
     public string dungeonSceneName = "Dungeon";
     public DungeonState dungeonState;
@@ -121,6 +122,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetCurrentScene(dungeonSceneName);
         sceneTracker.Save();
         // Only set when first moving to the dungeon.
+        dayTracker.DayTackerNewDay();
         dungeonState.UpdatePreviousScene();
         dungeonState.Save();
         if (loadingRequired)
@@ -185,6 +187,7 @@ public class SceneMover : MonoBehaviour
         else
         {
             sceneTracker.SetPreviousScene(dungeonState.GetPreviousScene());
+            sceneTracker.SetCurrentScene(dungeonState.GetPreviousScene());
             // Otherwise just go back to the previous scene.
             if (loadingRequired)
             {

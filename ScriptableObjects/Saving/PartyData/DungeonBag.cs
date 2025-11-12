@@ -101,6 +101,11 @@ public class DungeonBag : SavedData
             }
         }
     }
+    public bool QuantityOfItemExists(string itemName, int quantity = 1)
+    {
+        int count = utility.CountStringsInList(items, itemName);
+        return count >= quantity;
+    }
     public void RemoveItemsOfType(string type, int count)
     {
         for (int i = 0; i < count; i++)

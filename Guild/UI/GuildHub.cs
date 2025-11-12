@@ -18,6 +18,8 @@ public class GuildHub : MonoBehaviour
         partyData.Save();
         actorSpriteHPList.RefreshData();
         guildRank.text = partyData.guildCard.GetGuildRankName();
+        NextStory();
+        UpdateStory();
     }
 
     // Don't let them keep the chests if they don't complete the dungeon.
@@ -33,5 +35,50 @@ public class GuildHub : MonoBehaviour
         {
             partyData.RemoveAllTempPartyMember(questTempMembers[i]);
         }
+    }
+
+    // This will also track main story stuff, since it updates whenever you return from the dungeon and it's a new day.
+    public MainCampaignState mainStory;
+    public StatDatabase storyQuestShortTexts;
+    public StatDatabase storyQuestLongTexts;
+    public DayTracker storyDay;
+    public TMP_Text daysLeftText;
+    public TMP_Text currentMission;
+    public TMP_Text missionStatusText;
+    public PopUpMessage newStoryPopUp;
+
+    public void UpdateStory()
+    {
+        if (mainStory.GetCurrentChapter() == 1)
+        {
+            missionStatusText.text = "TRUE";
+        }
+        else{missionStatusText.text = "FALSE";}
+        currentMission.text = storyQuestShortTexts.ReturnValueAtIndex(mainStory.GetPreviousChapters().Count);
+        daysLeftText.text = storyDay.DaysLeft(mainStory.GetCurrentDeadline()).ToString();
+    }
+
+    public void NextStory()
+    {
+        // Begin the story.
+        if (mainStory.GetPreviousChapters().Count == 0 && mainStory.GetCurrentDeadline() <= 0)
+        {
+            mainStory.NewChapter();
+            ShowNextChapter();
+            return;
+        }
+        // Continue the story.
+        if (storyDay.DeadlineReached(mainStory.GetCurrentDeadline()))
+        {
+            mainStory.NextChapter();
+            storyDay.NewQuest();
+            ShowNextChapter();
+            return;
+        }
+    }
+
+    protected void ShowNextChapter()
+    {
+        newStoryPopUp.SetMessage(storyQuestLongTexts.ReturnValueAtIndex(mainStory.GetPreviousChapters().Count));
     }
 }

@@ -255,6 +255,9 @@ public class SkillEffect : ScriptableObject
             case "CritDamage":
                 target.UpdateCritDamage(int.Parse(effectSpecifics));
                 break;
+            case "DisablePassives":
+                target.DisableDeathPassives();
+                break;
         }
     }
 
