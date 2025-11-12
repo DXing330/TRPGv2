@@ -21,7 +21,6 @@ public class QuestSuccessChecker : MonoBehaviour
             }
             return false;
             case "Deliver":
-            case "Search":
             // Check if your inventory includes the quest item.
             if (partyData.dungeonBag.ItemExists("Check"))
             {

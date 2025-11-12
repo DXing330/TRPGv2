@@ -141,6 +141,21 @@ public class Dungeon : ScriptableObject
         return trapRarities.ReturnRandomKeyBasedOnIntValue(rarity);
     }
     // Need to determine what floor the goal is on.
+    protected void ResetQuests()
+    {
+        questGoals.Clear();
+        questSpecifics.Clear();
+        goalFloors.Clear();
+        goalTileMappings.Clear();
+        goalTiles.Clear();
+    }
+    public void SetStoryQuest()
+    {
+        ResetQuests();
+        questGoals.Add(mainStory.GetCurrentRequest());
+        questSpecifics.Add(mainStory.GetRequestSpecifics());
+        goalFloors.Add(Random.Range(0, maxFloors));
+    }
     public List<string> questGoals;
     public void SetQuestGoals(List<string> newInfo)
     {

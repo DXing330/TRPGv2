@@ -25,7 +25,7 @@ public class DungeonSelectList : MonoBehaviour
         // If it's a story quest then do things differently.
         if (currentDungeons[selected] == mainStory.GetRequestLocation() && mainStory.GetCurrentChapter() != 1)
         {
-
+            dungeon.SetStoryQuest();
         }
         // Otherwise get quests from the guild card.
         else
@@ -43,7 +43,6 @@ public class DungeonSelectList : MonoBehaviour
                 }
             }
         }
-        
         partyData.Save();
         dungeon.MakeDungeon();
         // Move Scene.
