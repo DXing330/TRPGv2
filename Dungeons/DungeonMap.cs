@@ -82,6 +82,7 @@ public class DungeonMap : MapManager
         // For capture missions you get a captured thing as a temp party member, better keep it safe.
         if (dungeon.GetQuestFought() == 1)
         {
+            dungeon.AddDungeonLog("Defeated the requested target.");
             dungeon.SetQuestFought(0);
             switch (dungeon.mainStory.GetCurrentRequest())
             {
@@ -92,7 +93,6 @@ public class DungeonMap : MapManager
                 default:
                 break;
             }
-            return;
         }
         // If you've fought the boss and returned then you get to go to the reward scene.
         if (dungeon.GetBossFought() == 1)

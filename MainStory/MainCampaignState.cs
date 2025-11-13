@@ -50,6 +50,10 @@ public class MainCampaignState : SavedData
     4-0 : Post game super dungeons
     */
     // Track if you win or lose during each chapter, might affect the final ending?
+    public bool CompletedStory()
+    {
+        return previousChapters.Count >= campaignData.GetAllKeys().Count;
+    }
     public List<int> previousChapters;
     public List<int> GetPreviousChapters(){return previousChapters;}
     public void SetPreviousChapters(List<string> newInfo)

@@ -277,6 +277,8 @@ public class Dungeon : ScriptableObject
         sizeVariance = int.Parse(dungeonInfo[6]);
         enemyModifiers = dungeonInfo[7].Split(",").ToList();
         bossEnemies = dungeonInfo[8].Split(",").ToList();
+        partyModifiers.Clear();
+        partyModifierDurations.Clear();
         currentStomach = baseMaxStomach;
         currentMaxStomach = baseMaxStomach;
         utility.RemoveEmptyListItems(enemyModifiers);
@@ -934,6 +936,7 @@ public class Dungeon : ScriptableObject
         SetEnemyParty(questBattle);
         goalTiles.RemoveAt(indexOf);
         questSpecifics.RemoveAt(indexOf);
+        questFought = 1;
     }
     public bool PrepareBossBattle()
     {

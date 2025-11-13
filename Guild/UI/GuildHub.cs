@@ -39,13 +39,14 @@ public class GuildHub : MonoBehaviour
 
     // This will also track main story stuff, since it updates whenever you return from the dungeon and it's a new day.
     public MainCampaignState mainStory;
+    public GameObject storyOverObject;
     public StatDatabase storyQuestShortTexts;
     public StatDatabase storyQuestLongTexts;
     public DayTracker storyDay;
     public TMP_Text daysLeftText;
     public TMP_Text currentMission;
     public TMP_Text missionStatusText;
-    public PopUpMessage newStoryPopUp;
+    public PopUpTalking newStoryPopUp;
 
     public void UpdateStory()
     {
@@ -67,6 +68,12 @@ public class GuildHub : MonoBehaviour
             ShowNextChapter();
             return;
         }
+        // End the story.
+        if (mainStory.CompletedStory())
+        {
+            storyOverObject.SetActive(true);
+            return;
+        }
         // Continue the story.
         if (storyDay.DeadlineReached(mainStory.GetCurrentDeadline()))
         {
@@ -79,6 +86,6 @@ public class GuildHub : MonoBehaviour
 
     protected void ShowNextChapter()
     {
-        newStoryPopUp.SetMessage(storyQuestLongTexts.ReturnValueAtIndex(mainStory.GetPreviousChapters().Count));
+        newStoryPopUp.StartTalking(storyQuestLongTexts.ReturnValueAtIndex(mainStory.GetPreviousChapters().Count), "Guild Owner", "Patron");
     }
 }

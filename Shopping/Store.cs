@@ -64,13 +64,19 @@ public class Store : MonoBehaviour
     public bool dungeonItems = false;
     public SelectStatTextList dungeonItemDisplay;
     public bool buyingDungeonItems = false;
-    protected void ResetBuying()
+    protected void ResetBuying(int type)
     {
         buyingEquipment = false;
         buyingItems = false;
-        itemsDisplay.ResetSelected();
-        equipmentDisplay.ResetSelected();
-        if (dungeonItems)
+        if (type != 0)
+        {
+            equipmentDisplay.ResetSelected();
+        }
+        if (type != 1)
+        {
+            itemsDisplay.ResetSelected();
+        }
+        if (dungeonItems && type != 2)
         {
             buyingDungeonItems = false;
             dungeonItemDisplay.ResetSelected();
@@ -79,7 +85,7 @@ public class Store : MonoBehaviour
     public void ClickOnDungeonItem()
     {
         if (!dungeonItems){return;}
-        ResetBuying();
+        ResetBuying(2);
         buyingDungeonItems = true;
         string item = dungeonItemDisplay.GetSelectedStat();
         itemDetailViewer.SetInfo(item, dungeonItemDescriptions.ReturnValue(item));
@@ -87,7 +93,7 @@ public class Store : MonoBehaviour
     public bool buyingEquipment = false;
     public void ClickOnEquipment()
     {
-        ResetBuying();
+        ResetBuying(0);
         buyingEquipment = true;
         itemDetailViewer.ViewEquip();
         itemDetailViewer.ShowInfo(equipmentDisplay.GetSelectedStat());
@@ -95,7 +101,7 @@ public class Store : MonoBehaviour
     public bool buyingItems = false;
     public void ClickOnItem()
     {
-        ResetBuying();
+        ResetBuying(1);
         buyingItems = true;
         itemDetailViewer.ViewItem();
         itemDetailViewer.ShowInfo(itemsDisplay.GetSelectedStat());
