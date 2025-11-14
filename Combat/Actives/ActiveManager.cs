@@ -240,6 +240,39 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.ActorAttacksActor(skillUser, targetActor, battle.map, battle.moveManager, power);
                 }
                 return;
+            case "Attack+Grapple":
+                if (targets.Count <= 0) { return; }
+                // Grapple the first target if there are multiple.
+                skillUser.GrappleActor(targets[0]);
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    for (int j = 0; j < int.Parse(specifics); j++)
+                    {
+                        battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power);
+                    }
+                }
+                return;
+            case "Grapple":
+                if (targets.Count <= 0) { return; }
+                // Grapple the first target if there are multiple.
+                skillUser.GrappleActor(targets[0]);
+                return;
+            case "Ingest":
+                if (skillUser.Grappling())
+                {
+                    skillUser.GetGrappledActor().TakeDamage(skillUser.GetBaseHealth());
+                }
+                return;
+            case "SwapRelease":
+                if (skillUser.Grappling())
+                {
+                    int prevLocation = skillUser.GetLocation();
+                    skillUser.SetLocation(skillUser.GetGrappledActor().GetLocation());
+                    skillUser.GetGrappledActor().SetLocation(prevLocation);
+                    skillUser.ReleaseGrapple();
+                    battle.map.UpdateActors();
+                }
+                return;
             case "Attack":
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)

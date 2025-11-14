@@ -132,6 +132,14 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to change the target(s) mental state to " + ASD(s) + ".";
             case "Amnesia":
                 return "Try to make the target forget " + ASD(s) + " temporary active skill(s).";
+            case "Attack+Grapple":
+                return "Grapple the target and attack them.";
+            case "Grapple":
+                return "Grapple the target.";
+            case "Ingest":
+                return "Try to consume the grappled target.";
+            case "SwapRelease":
+                return "Switch places and then release the grappled target.";
             case "Attack+Amnesia":
                 return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " active skill(s).";
             case "Weather":

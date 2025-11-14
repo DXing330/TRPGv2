@@ -484,6 +484,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " gain " + specifics + " counter attacks";
             case "DisablePassives":
                 return " disable " + specifics + " passives";
+            case "ReleaseGrapple":
+                return " release the grappled target";
+            case "BreakGrapple":
+                return " break from any grapples";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

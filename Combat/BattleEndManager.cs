@@ -205,7 +205,6 @@ public class BattleEndManager : MonoBehaviour
                 {
                     RNG = 0;
                 }
-                //Debug.Log(names[i] + ";" + spriteNames[i] + ", Current Level: " + passiveLevel + ", Roll: " + RNG + "/" + ((passiveLevel + 1) * (passiveLevel + 1)));
                 if (RNG == 0)
                 {
                     dummyActor.SetLevelOfPassive(spriteNames[i], passiveLevel + 1);
@@ -231,7 +230,6 @@ public class BattleEndManager : MonoBehaviour
                 {
                     RNG = 0;
                 }
-                //Debug.Log(names[i] + ";" + spriteNames[i] + ", Current Level: " + passiveLevel + ", Roll: " + RNG + "/" + ((passiveLevel + 1) * (passiveLevel + 1)));
                 if (RNG == 0)
                 {
                     dummyActor.SetLevelOfPassive(weaponType, passiveLevel + 1);

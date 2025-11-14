@@ -105,6 +105,18 @@ public class AIConditionChecker : ScriptableObject
                 return map.AllEnemies(actor).Count < int.Parse(specifics);
             case "EnemyCount>":
                 return map.AllEnemies(actor).Count > int.Parse(specifics);
+            case "Grappling":
+                return actor.Grappling();
+            case "Grappling<>":
+                return !actor.Grappling();
+            case "Tile":
+                return map.GetTileInfoOfActor(actor).Contains(specifics);
+            case "Tile<>":
+                return !map.GetTileInfoOfActor(actor).Contains(specifics);
+            case "TileExists":
+                return map.TileTypeExists(specifics);
+            case "TileExists<>":
+                return !map.TileTypeExists(specifics);;
         }
         return true;
     }

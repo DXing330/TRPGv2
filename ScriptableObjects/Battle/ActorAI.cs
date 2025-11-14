@@ -115,6 +115,28 @@ public class ActorAI : ScriptableObject
         return path;
     }
 
+    public List<int> FindPathToTile(TacticActor actor, BattleMap map, MoveCostManager moveManager, int tile)
+    {
+        int originalLocation = actor.GetLocation();
+        moveManager.GetAllMoveCosts(actor, map.battlingActors);
+        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, tile);
+        List<int> path = new List<int>();
+        int pathCost = 0;
+        for (int i = fullPath.Count - 1; i >= 0; i--)
+        {
+            path.Insert(0, fullPath[i]);
+            pathCost += moveManager.MoveCostOfTile(fullPath[i]);
+            if (pathCost > actor.GetMoveRange())
+            {
+                path.RemoveAt(0);
+                pathCost -= moveManager.MoveCostOfTile(fullPath[i]);
+                break;
+            }
+        }
+        actor.PayMoveCost(pathCost);
+        return path;
+    }
+
     public List<int> FindPathToTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
         int originalLocation = currentActor.GetLocation();

@@ -94,6 +94,7 @@ public class TacticActor : ActorStats
         movement = 0;
         counterAttacks = 0;
         ResetStats();
+        
     }
     public int GetMoveRangeBasedOnActions(int actionCount)
     {
@@ -181,11 +182,87 @@ public class TacticActor : ActorStats
         if (target == null){return false;}
         return target.GetHealth() > 0;
     }
-
-    public void StartTurn()
+    public TacticActor grappledActor;
+    public TacticActor GetGrappledActor(){return grappledActor;}
+    public void ResetGrappledActor(){grappledActor = null;}
+    public void ReleaseGrapple()
     {
-        // Go through passives.
-        // Go through conditions, some conditions will apply at the start of turn.
+        if (grappledActor != null)
+        {
+            grappledActor.ResetGrappledByActor();
+            ResetGrappledActor();
+        }
+    }
+    public void GrappleActor(TacticActor newGrapple)
+    {
+        // Break any grapple you have to try to grapple someone else.
+        ReleaseGrapple();
+        // Can't grabble someone that is already grappled.
+        if (newGrapple.Grappled()){return;}
+        grappledActor = newGrapple;
+        grappledActor.SetGrappledByActor(this);
+    }
+    public TacticActor grappledByActor;
+    public void SetGrappledByActor(TacticActor actor){grappledByActor = actor;}
+    public TacticActor GetGrappledByActor(){return grappledByActor;}
+    public void ResetGrappledByActor(){grappledByActor = null;}
+    public void BreakGrapple()
+    {
+        if (grappledByActor != null)
+        {
+            grappledByActor.ResetGrappledActor();
+            ResetGrappledByActor();
+        }
+    }
+    public bool Grappled(BattleMap map = null)
+    {
+        
+        if (grappledByActor != null)
+        {
+            // Dead.
+            if (grappledByActor.GetHealth() <= 0)
+            {
+                BreakGrapple();
+                return false;
+            }
+            // Too heavy to be grappled.
+            if (grappledByActor.GetWeight() < GetWeight() - 1)
+            {
+                BreakGrapple();
+                return false;
+            }
+            // Out of range.
+            if (map != null && map.DistanceBetweenActors(this, grappledByActor) > 1)
+            {
+                BreakGrapple();
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    public bool Grappling(BattleMap map = null)
+    {
+        if (grappledActor != null)
+        {
+            if (grappledActor.GetHealth() <= 0)
+            {
+                ReleaseGrapple();
+                return false;
+            }
+            if (grappledActor.GetWeight() > GetWeight() + 1)
+            {
+                ReleaseGrapple();
+                return false;
+            }
+            if (map != null && map.DistanceBetweenActors(this, grappledActor) > 1)
+            {
+                ReleaseGrapple();
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     public void EndTurn()

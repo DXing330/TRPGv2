@@ -258,6 +258,12 @@ public class SkillEffect : ScriptableObject
             case "DisablePassives":
                 target.DisableDeathPassives();
                 break;
+            case "ReleaseGrapple":
+                target.ReleaseGrapple();
+                break;
+            case "BreakGrapple":
+                target.BreakGrapple();
+                break;
         }
     }
 

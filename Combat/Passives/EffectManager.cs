@@ -27,6 +27,13 @@ public class EffectManager : MonoBehaviour
         passive.ApplyPassives(actor, passiveData, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
         status.ApplyEffects(actor, statusData, "Start");
+        // Check on grapples at the start of every turn.
+        if (actor.Grappled(map))
+        {
+            // Can't move while grappled.
+            actor.currentSpeed = 0;
+        }
+        actor.Grappling(map);
     }
 
     public void EndTurn(TacticActor actor, BattleMap map)
@@ -43,5 +50,8 @@ public class EffectManager : MonoBehaviour
                 passiveOrganizer.RemoveSortedPassive(actor, removedPassives[i]);
             }
         }
+        // Check on grapples at the end of every turn.
+        actor.Grappled(map);
+        actor.Grappling(map);
     }
 }

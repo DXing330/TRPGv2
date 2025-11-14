@@ -503,14 +503,7 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+defender.GetPersonalName()+".");
         attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
-        turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
-        if (winningTeam >= 0)
-        {
-            combatLog.UpdateNewestLog("Ending Battle By Attacking");
-            EndBattle(winningTeam);
-            return;
-        }
+        AdjustTurnNumber();
         map.UpdateMap();
         UI.UpdateTurnOrder(this);
     }
@@ -596,6 +589,20 @@ public class BattleManager : MonoBehaviour
                     StartCoroutine(NPCSkillAction(actionsLeft, chosenSkill));
                 }
                 yield break;
+            case "MoveToTile":
+                // Move to the closest tile of type.
+                int tile = map.ReturnClosestTileOfType(turnActor, turnDetails[1]);
+                if (tile < 0)
+                {
+                    StartCoroutine(StandardNPCAction(actionsLeft));
+                    yield break;
+                }
+                else
+                {
+                    List<int> path = actorAI.FindPathToTile(turnActor, map, moveManager, tile);
+                    StartCoroutine(MoveAlongPath(turnActor, path));
+                    break;
+                }
             case "Basic":
                 StartCoroutine(StandardNPCAction(actionsLeft));
                 yield break;
@@ -623,6 +630,7 @@ public class BattleManager : MonoBehaviour
                 yield break;
             }
             ActivateSkill(skills[i]);
+            AdjustTurnNumber();
             if (longDelays)
             {
                 yield return new WaitForSeconds(longDelayTime * 5);
@@ -667,10 +675,12 @@ public class BattleManager : MonoBehaviour
             if (skill == "")
             {
                 ActivateSkill(actorAI.ReturnAIActiveSkill());
+                AdjustTurnNumber();
             }
             else
             {
                 ActivateSkill(skill);
+                AdjustTurnNumber();
             }
             if (longDelays)
             {
@@ -920,6 +930,7 @@ public class BattleManager : MonoBehaviour
                 }
                 activeManager.GetTargetedTiles(targetTile, moveManager.actorPathfinder);
                 ActivateSkill(attackActive);
+                AdjustTurnNumber();
                 // Turn to face the target in case the skill is not a real attack or an AOE.
                 turnActor.SetDirection(moveManager.DirectionBetweenActors(turnActor, turnActor.GetTarget()));
             }
@@ -927,18 +938,34 @@ public class BattleManager : MonoBehaviour
         }
         else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
     }
+
+    protected void DragGrappledActor(TacticActor grappled, int tile)
+    {
+        int prevLoc = grappled.GetLocation();
+        grappled.SetLocation(tile);
+        moveManager.ApplyMovePassiveEffects(grappled, map);
+        map.ApplyMovingTileEffect(grappled, tile);
+        if (grappled.Grappling())
+        {
+            DragGrappledActor(grappled.GetGrappledActor(), prevLoc);
+        }
+    }
     
     IEnumerator MoveAlongPath(TacticActor actor, List<int> path)
     {
         for (int i = path.Count - 1; i >= 0; i--)
         {
-            actor.SetDirection(moveManager.DirectionBetweenLocations(actor.GetLocation(), path[i]));
+            int prevLoc = actor.GetLocation();
+            actor.SetDirection(moveManager.DirectionBetweenLocations(prevLoc, path[i]));
             actor.SetLocation(path[i]);
+            // Drag whoever you're grappling along.
+            if (actor.Grappling())
+            {
+                DragGrappledActor(actor.GetGrappledActor(), prevLoc);
+            }
             moveManager.ApplyMovePassiveEffects(actor, map);
-            map.ApplyTileMovingEffect(actor, path[i]);
-            map.ApplyTerrainEffect(actor, path[i]);
             map.UpdateActors();
-            if (map.ApplyTrapEffect(actor, path[i])){break;}
+            if (map.ApplyMovingTileEffect(actor, path[i])){break;}
             if (longDelays)
             {
                 yield return new WaitForSeconds(longDelayTime);
@@ -952,6 +979,17 @@ public class BattleManager : MonoBehaviour
         ResetState();
     }
 
+    public void AdjustTurnNumber()
+    {
+        turnNumber = map.RemoveActorsFromBattle(turnNumber);
+        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        if (winningTeam >= 0)
+        {
+            EndBattle(winningTeam);
+            return;
+        }
+    }
+
     public void ActivateSkill(string skillName, TacticActor actor = null)
     {
         ResetState();
@@ -959,14 +997,6 @@ public class BattleManager : MonoBehaviour
         turnActor.RemoveTempActive(skillName);
         combatLog.UpdateNewestLog(actor.GetPersonalName()+" uses "+skillName+".");
         activeManager.ActivateSkill(this);
-        turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
-        if (winningTeam >= 0)
-        {
-            combatLog.UpdateNewestLog("Ending Battle By Using Skill");
-            EndBattle(winningTeam);
-            return;
-        }
     }
 
     public void ActivateSpell(TacticActor actor = null)

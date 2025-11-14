@@ -618,6 +618,30 @@ public class BattleMap : MapManager
         return mapInfo[actor.GetLocation()];
     }
 
+    public bool TileTypeExists(string tileType)
+    {
+        return mapInfo.Contains(tileType);
+    }
+
+    public int ReturnClosestTileOfType(TacticActor actor, string tileType)
+    {
+        int tile = -1;
+        int distance = mapSize * mapSize;
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            if (mapInfo[i].Contains(tileType) && GetActorOnTile(i) == null)
+            {
+                int newDistance = mapUtility.DistanceBetweenTiles(i, actor.GetLocation(), mapSize);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    tile = i;
+                }
+            }
+        }
+        return tile;
+    }
+
     public string GetTileEffectOfActor(TacticActor actor)
     {
         return terrainEffectTiles[actor.GetLocation()];
@@ -677,6 +701,11 @@ public class BattleMap : MapManager
         return enemies[Random.Range(0, enemies.Count)].GetLocation();
     }
 
+    public int DistanceBetweenActors(TacticActor actor1, TacticActor actor2)
+    {
+        return mapUtility.DistanceBetweenTiles(actor1.GetLocation(), actor2.GetLocation(), mapSize);
+    }
+
     public TacticActor GetClosestEnemy(TacticActor actor)
     {
         List<TacticActor> enemies = AllEnemies(actor);
@@ -684,9 +713,9 @@ public class BattleMap : MapManager
         int distance = mapSize * 2;
         for (int i = 0; i < enemies.Count; i++)
         {
-            if (mapUtility.DistanceBetweenTiles(actor.GetLocation(), enemies[i].GetLocation(), mapSize) < distance)
+            if (DistanceBetweenActors(actor, enemies[i]) < distance)
             {
-                distance = mapUtility.DistanceBetweenTiles(actor.GetLocation(), enemies[i].GetLocation(), mapSize);
+                distance = DistanceBetweenActors(actor, enemies[i]);
                 index = i;
             }
         }
@@ -823,14 +852,14 @@ public class BattleMap : MapManager
         return all;
     }
 
-    public void ApplyMovingTileEffect(TacticActor actor, int tileNumber)
+    public bool ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainEffect(actor, tileNumber);
-        ApplyTrapEffect(actor, tileNumber);
+        return ApplyTrapEffect(actor, tileNumber);
     }
 
-    public void ApplyTileMovingEffect(TacticActor actor, int tileNumber)
+    protected void ApplyTileMovingEffect(TacticActor actor, int tileNumber)
     {
         string tileEffect = ReturnTileMovingPassive(actor);
         if (tileEffect.Length < 1) { return; }
@@ -841,7 +870,7 @@ public class BattleMap : MapManager
         }
     }
 
-    public void ApplyTerrainEffect(TacticActor actor, int tileNumber)
+    protected void ApplyTerrainEffect(TacticActor actor, int tileNumber)
     {
         // Get the terrain info.
         string terrainEffect = terrainEffectTiles[tileNumber];
@@ -851,7 +880,7 @@ public class BattleMap : MapManager
         passiveEffect.AffectActor(actor, data[0], data[1]);
     }
 
-    public bool ApplyTrapEffect(TacticActor actor, int tileNumber)
+    protected bool ApplyTrapEffect(TacticActor actor, int tileNumber)
     {
         string trapEffect = trappedTiles[tileNumber];
         if (trapEffect.Length < 1) { return false; }
