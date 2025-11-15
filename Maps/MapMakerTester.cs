@@ -7,6 +7,12 @@ public class MapMakerTester : MonoBehaviour
     public bool threeD = false;
     public MapCurrentTiles currentTiles;
     public MapMaker mapMaker;
+    public MapTester mapTester;
+    [ContextMenu("Refresh Map Tester")]
+    public void RefreshMapTester()
+    {
+        mapTester.SetMapInfo(mapInfo);
+    }
     public MapDisplayer mapDisplayer;
     public List<MapTile> mapTiles;
     public List<string> mapInfo;
@@ -70,6 +76,15 @@ public class MapMakerTester : MonoBehaviour
         {
             GetNewMap();
             yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    [ContextMenu("Debug Tile Numbers")]
+    public void ShowTileNumbers()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].UpdateText(i.ToString());
         }
     }
 }

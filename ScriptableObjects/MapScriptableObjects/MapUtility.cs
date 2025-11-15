@@ -123,6 +123,12 @@ public class MapUtility : ScriptableObject
         return -GetHexQ(location, size) - GetHexR(location, size);
     }
 
+    public int PointInOppositeDirection(int location, int otherPoint, int size)
+    {
+        int direction = DirectionBetweenLocations(location, otherPoint, size);
+        return PointInDirection(location, (direction + 3) % 6, size);
+    }
+
     public int PointInDirection(int location, int direction, int size)
     {
         int hexQ = GetHexQ(location, size);

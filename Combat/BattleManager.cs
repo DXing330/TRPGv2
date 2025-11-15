@@ -601,6 +601,35 @@ public class BattleManager : MonoBehaviour
                 {
                     List<int> path = actorAI.FindPathToTile(turnActor, map, moveManager, tile);
                     StartCoroutine(MoveAlongPath(turnActor, path));
+                    if (longDelays)
+                    {
+                        yield return new WaitForSeconds(longDelayTime * 5);
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(shortDelayTime * 5);
+                    }
+                    break;
+                }
+            case "MoveToSandwichTarget":
+                int sandwichingTile = map.ReturnClosestSandwichTargetBetweenTileOfType(turnActor, turnDetails[1]);
+                if (sandwichingTile < 0)
+                {
+                    StartCoroutine(StandardNPCAction(actionsLeft));
+                    yield break;
+                }
+                else
+                {
+                    List<int> sandwichPath = actorAI.FindPathToTile(turnActor, map, moveManager, sandwichingTile);
+                    StartCoroutine(MoveAlongPath(turnActor, sandwichPath));
+                    if (longDelays)
+                    {
+                        yield return new WaitForSeconds(longDelayTime * 5);
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(shortDelayTime * 5);
+                    }
                     break;
                 }
             case "Basic":

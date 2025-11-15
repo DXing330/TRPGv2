@@ -629,6 +629,10 @@ public class BattleMap : MapManager
         int distance = mapSize * mapSize;
         for (int i = 0; i < mapInfo.Count; i++)
         {
+            if (actor.GetMoveType() != "Flying" && excludedTileTypesForNonFlying.Contains(mapInfo[i]))
+            {
+                continue;
+            }
             if (mapInfo[i].Contains(tileType) && GetActorOnTile(i) == null)
             {
                 int newDistance = mapUtility.DistanceBetweenTiles(i, actor.GetLocation(), mapSize);
@@ -636,6 +640,60 @@ public class BattleMap : MapManager
                 {
                     distance = newDistance;
                     tile = i;
+                }
+            }
+        }
+        return tile;
+    }
+
+    public List<string> excludedTileTypesForNonFlying;
+    public bool TileExcluded(TacticActor actor, string tile)
+    {
+        if (actor.GetMoveType() == "Flying"){return false;}
+        return excludedTileTypesForNonFlying.Contains(tile);
+    }
+
+    public bool TargetSandwiched(TacticActor actor, string tileType)
+    {
+        if (actor.GetTarget() == null){return false;}
+        int location = actor.GetLocation();
+        int targetLoc = actor.GetTarget().GetLocation();
+        if (!mapUtility.TilesAdjacent(location, targetLoc, mapSize)){return false;}
+        int direction = mapUtility.DirectionBetweenLocations(location, targetLoc, mapSize);
+        int sandwichingPoint = mapUtility.PointInDirection(targetLoc, direction, mapSize);
+        if (sandwichingPoint < 0){return false;}
+        return mapInfo[sandwichingPoint].Contains(tileType);
+    }
+
+    public bool TargetSandwichable(TacticActor actor, string tileType)
+    {
+        return ReturnClosestSandwichTargetBetweenTileOfType(actor, tileType) >= 0;
+    }
+
+    public int ReturnClosestSandwichTargetBetweenTileOfType(TacticActor actor, string tileType)
+    {
+        int tile = -1;
+        int distance = mapSize * mapSize;
+        if (actor.GetTarget() == null){return tile;}
+        int targetLocation = actor.GetTarget().GetLocation();
+        List<int> adjacentTiles = mapUtility.AdjacentTiles(targetLocation, mapSize);
+        for (int i = 0; i < adjacentTiles.Count; i++)
+        {
+            // Check if the target is adjacent to any of the requested tile types.
+            if (mapInfo[adjacentTiles[i]].Contains(tileType))
+            {
+                // Check the opposite tile and make sure it's empty and valid.
+                int sandwichingPoint = mapUtility.PointInOppositeDirection(targetLocation, adjacentTiles[i], mapSize);
+                // Can't be out of bounds, excluded or have an actor on it.
+                if (sandwichingPoint < 0 || TileExcluded(actor, mapInfo[sandwichingPoint]) || GetActorOnTile(sandwichingPoint) != null)
+                {
+                    continue;
+                }
+                int newDistance = mapUtility.DistanceBetweenTiles(sandwichingPoint, actor.GetLocation(), mapSize);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    tile = sandwichingPoint;
                 }
             }
         }

@@ -116,7 +116,11 @@ public class AIConditionChecker : ScriptableObject
             case "TileExists":
                 return map.TileTypeExists(specifics);
             case "TileExists<>":
-                return !map.TileTypeExists(specifics);;
+                return !map.TileTypeExists(specifics);
+            case "TargetSandwiched":
+                return map.TargetSandwiched(actor, specifics);
+            case "TargetSandwichable":
+                return map.TargetSandwichable(actor, specifics);;
         }
         return true;
     }

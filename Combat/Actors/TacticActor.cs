@@ -176,7 +176,11 @@ public class TacticActor : ActorStats
     public TacticActor target;
     public void ResetTarget(){ target = null; }
     public void SetTarget(TacticActor newTarget) { target = newTarget; }
-    public TacticActor GetTarget(){return target;}
+    public TacticActor GetTarget()
+    {
+        if (!TargetAlive()){ResetTarget();}
+        return target;
+    }
     public bool TargetAlive()
     {
         if (target == null){return false;}

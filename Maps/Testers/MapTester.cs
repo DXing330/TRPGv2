@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapTester : MonoBehaviour
+public class MapTester : MapManager
 {
     public bool debugThis;
-    public MapUtility mapUtility;
     public List<string> directions;
     public int testTile;
     public int testTileTwo;
@@ -75,5 +74,51 @@ public class MapTester : MonoBehaviour
         {
             Debug.Log("Tile Number: "+i+", Direction: "+mapUtility.DirectionBetweenLocations(testTile, i, testSize));
         }
+    }
+
+    public int sandwicherLocation;
+    public int sandwichedLocation;
+    public string sandwichedTileType;
+    [ContextMenu("Test Sandwich Check")]
+    public void DebugSandwichCheck()
+    {
+        Debug.Log(SandwichCheck());
+    }
+    public bool SandwichCheck()
+    {
+        int direction = mapUtility.DirectionBetweenLocations(sandwicherLocation, sandwichedLocation, mapSize);
+        int sandwichingPoint = mapUtility.PointInDirection(sandwichedLocation, direction, mapSize);
+        Debug.Log(sandwichingPoint);
+        if (sandwichingPoint < 0){return false;}
+        return mapInfo[sandwichingPoint].Contains(sandwichedTileType);
+    }
+    [ContextMenu("Test Closest Sandwich")]
+    public void DebugClosestSandwich()
+    {
+        Debug.Log(ClosestSandwichTile());
+    }
+    public int ClosestSandwichTile()
+    {
+        int tile = -1;
+        int distance = mapSize * mapSize;
+        List<int> adjacentTiles = mapUtility.AdjacentTiles(sandwichedLocation, mapSize);
+        for (int i = 0; i < adjacentTiles.Count; i++)
+        {
+            if (mapInfo[adjacentTiles[i]].Contains(sandwichedTileType))
+            {
+                int sandwichingPoint = mapUtility.PointInOppositeDirection(sandwichedLocation, adjacentTiles[i], mapSize);
+                if (sandwichingPoint < 0)
+                {
+                    continue;
+                }
+                int newDistance = mapUtility.DistanceBetweenTiles(sandwichingPoint, sandwicherLocation, mapSize);
+                if (newDistance < distance)
+                {
+                    distance = newDistance;
+                    tile = sandwichingPoint;
+                }
+            }
+        }
+        return tile;
     }
 }

@@ -76,6 +76,10 @@ public class MapManager : MonoBehaviour
     }
     public List<int> currentTiles;
     public List<string> mapInfo;
+    public void SetMapInfo(List<string> newInfo)
+    {
+        mapInfo = new List<string>(newInfo);
+    }
     public virtual void InitializeMapInfo()
     {
         InitializeEmptyList();
