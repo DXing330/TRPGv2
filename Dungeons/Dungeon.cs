@@ -111,6 +111,13 @@ public class Dungeon : ScriptableObject
         return chest;
     }
     public StatDatabase dungeonTerrains;
+    public string GenerateTerrain()
+    {
+        string[] possible = dungeonTerrains.ReturnValue(dungeonName).Split("|");
+        string chosen = possible[Random.Range(0, possible.Length)];
+        if (chosen == ""){return type;}
+        return chosen;
+    }
     // Get a new weather whenever you move floors.
     protected string GenerateWeather()
     {

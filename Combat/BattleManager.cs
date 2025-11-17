@@ -609,7 +609,15 @@ public class BattleManager : MonoBehaviour
                     {
                         yield return new WaitForSeconds(shortDelayTime * 5);
                     }
-                    break;
+                    if (turnActor.GetActions() > 0)
+                    {
+                        StartCoroutine(StandardNPCAction(turnActor.GetActions()));
+                        yield break;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             case "MoveToSandwichTarget":
                 int sandwichingTile = map.ReturnClosestSandwichTargetBetweenTileOfType(turnActor, turnDetails[1]);
@@ -630,7 +638,15 @@ public class BattleManager : MonoBehaviour
                     {
                         yield return new WaitForSeconds(shortDelayTime * 5);
                     }
-                    break;
+                    if (turnActor.GetActions() > 0)
+                    {
+                        StartCoroutine(StandardNPCAction(turnActor.GetActions()));
+                        yield break;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             case "Basic":
                 StartCoroutine(StandardNPCAction(actionsLeft));

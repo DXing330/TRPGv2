@@ -76,6 +76,7 @@ public class MapManager : MonoBehaviour
     }
     public List<int> currentTiles;
     public List<string> mapInfo;
+    public List<string> GetMapInfo(){return mapInfo;}
     public void SetMapInfo(List<string> newInfo)
     {
         mapInfo = new List<string>(newInfo);
@@ -84,6 +85,18 @@ public class MapManager : MonoBehaviour
     {
         InitializeEmptyList();
         mapInfo = new List<string>(emptyList);
+    }
+    public List<int> ReturnTileNumbersOfTileTypes(List<string> tileTypes)
+    {
+        List<int> tileNumbers = new List<int>();
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            if (tileTypes.Contains(mapInfo[i]))
+            {
+                tileNumbers.Add(i);
+            }
+        }
+        return tileNumbers;
     }
     public void SwitchTile(int tile1, int tile2)
     {
@@ -94,6 +107,11 @@ public class MapManager : MonoBehaviour
     }
     [System.NonSerialized]
     public List<string> emptyList;
+    public List<string> ReturnEmptyList()
+    {
+        InitializeEmptyList();
+        return new List<string>(emptyList);
+    }
     protected virtual void InitializeEmptyList()
     {
         emptyList = new List<string>();
@@ -176,6 +194,12 @@ public class MapManager : MonoBehaviour
             infoAndElevation[i] += "E"+mapTiles[i].GetElevation();
         }
         return infoAndElevation;
+    }
+
+    [ContextMenu("Test Update Map")]
+    public void TestUpdateMap()
+    {
+        UpdateMap();
     }
 
     public virtual void UpdateMap()

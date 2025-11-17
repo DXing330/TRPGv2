@@ -12,6 +12,8 @@ using UnityEngine.UI;
 public class SpriteContainer : ScriptableObject
 {
     public bool elevationDifferences = false;
+    public bool copySprites = false;
+    public SpriteContainer copiedSprites;
     public GeneralUtility utility;
     public List<Sprite> sprites;
     public string allKeysAndValues;
@@ -26,6 +28,12 @@ public class SpriteContainer : ScriptableObject
         string[] blocks = allKeysAndValues.Split(delimiter);
         keys = blocks[0].Split(delimiterTwo).ToList();
         values = blocks[1].Split(delimiterTwo).ToList();
+        if (copySprites)
+        {
+            keys = new List<string>(copiedSprites.keys);
+            values = new List<string>(copiedSprites.values);
+            sprites = copiedSprites.sprites;
+        }
         #if UNITY_EDITOR
                 EditorUtility.SetDirty(this);
         #endif

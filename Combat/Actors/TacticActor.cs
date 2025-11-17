@@ -275,7 +275,8 @@ public class TacticActor : ActorStats
         // Allow some slight turn manipulation by saving your actions.
         if (actions > 0)
         {
-            UpdateTempInitiative(actions * actions);
+            UpdateTempInitiative(actions * 2);
+            ResetActions();
         }
         EndTurnResetStats();
         ResetBonusActions();

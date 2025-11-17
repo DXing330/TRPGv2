@@ -151,7 +151,7 @@ public class SceneMover : MonoBehaviour
             dungeonState.Save();
             // Set the terrain and weather based on the dungeon.
             battleState.SetWeather(dungeonState.dungeon.GetWeather());
-            battleState.ForceTerrainType(dungeonState.dungeon.type);
+            battleState.ForceTerrainType(dungeonState.dungeon.GenerateTerrain());
             battleState.Save();
         }
         if (loadingRequired)

@@ -84,6 +84,28 @@ public class StatDatabase : ScriptableObject
         return rKey;
     }
 
+    public string ReturnRandomWeightedKey(List<string> except = null)
+    {
+        int totalWeight = 0;
+        for (int i = 0; i < values.Count; i++)
+        {
+            totalWeight += int.Parse(values[i]);
+        }
+        int roll = Random.Range(0, totalWeight);
+        for (int i = 0; i < values.Count; i++)
+        {
+            if (roll < int.Parse(values[i]))
+            {
+                return keys[i];
+            }
+            else
+            {
+                roll -= int.Parse(values[i]);
+            }
+        }
+        return ReturnRandomKey(except);
+    }
+
     public List<string> ReturnRandomKeys(int count = 1)
     {
         List<string> rKeys = new List<string>();
