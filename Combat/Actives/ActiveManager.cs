@@ -257,6 +257,25 @@ public class ActiveManager : MonoBehaviour
                 // Grapple the first target if there are multiple.
                 skillUser.GrappleActor(targets[0]);
                 return;
+            case "ThrowGrappled":
+                if (!skillUser.Grappling()){return;}
+                targetTile = targetedTiles[0];
+                // Check if there is anyone there.
+                if (battle.map.GetActorOnTile(targetTile) != null)
+                {
+                    // If so then damage both thrown and thrown into.
+                    battle.moveManager.DisplaceDamage(skillUser.GetGrappledActor(), Mathf.Max(skillUser.GetWeight(), 1), battle.map, targetTile, true, battle.map.GetActorOnTile(targetTile));
+                    // Bounce the thrown onto the nearest empty tile.
+                    skillUser.GetGrappledActor().SetLocation(battle.map.GetClosestEmptyTile(battle.map.GetActorOnTile(targetTile)));
+                }
+                // Else move the thrown into the tile.
+                else
+                {
+                    skillUser.GetGrappledActor().SetLocation(targetTile);
+                }
+                battle.map.UpdateMap();
+                skillUser.ReleaseGrapple();
+                return;
             case "Ingest":
                 if (skillUser.Grappling())
                 {

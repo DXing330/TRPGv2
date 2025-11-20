@@ -339,6 +339,22 @@ public class MoveCostManager : MonoBehaviour
         map.UpdateActors();
     }
 
+    public void DisplaceDamage(TacticActor actor, int force, BattleMap map, int nextTile, bool actorCollide = false, TacticActor actor2 = null)
+    {
+        int displaceDamage = Mathf.Max(actor.GetWeight(), 1) * force * 6;
+        int collideDamage = actor.TakeEffectDamage(displaceDamage);
+        if (!actorCollide)
+        {
+            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with a " + mapInfo[nextTile] + " and takes " + collideDamage + " damage.");
+        }
+        else
+        {
+            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with " + actor2.GetPersonalName() + " and takes " + collideDamage + " damage.");
+            collideDamage = actor2.TakeEffectDamage(displaceDamage);
+            map.combatLog.UpdateNewestLog(actor2.GetPersonalName() + " takes " + collideDamage + " damage.");
+        }
+    }
+
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
         int displaceDamage = Mathf.Max(actor.GetWeight(), 1) * force * 6;
@@ -351,8 +367,7 @@ public class MoveCostManager : MonoBehaviour
             // Can't push someone over a mountain/wall/etc.
             if (stopDisplacement.Contains(mapInfo[nextTile]))
             {
-                int collideDamage = actor.TakeEffectDamage(displaceDamage);
-                map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with a " + mapInfo[nextTile] + " and takes " + collideDamage + " damage.");
+                DisplaceDamage(actor, force, map, nextTile);
                 break;
             }
             // Tiles are passable if no one is occupying them.
@@ -364,10 +379,7 @@ public class MoveCostManager : MonoBehaviour
             {
                 TacticActor oActor = map.GetActorOnTile(nextTile);
                 // Damage both the displaced actor and actor displaced into.
-                int aCollideD = actor.TakeEffectDamage(displaceDamage);
-                map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with " + oActor.GetPersonalName() + " and takes " + aCollideD + " damage.");
-                aCollideD = oActor.TakeEffectDamage(displaceDamage);
-                map.combatLog.UpdateNewestLog(oActor.GetPersonalName() + " takes " + aCollideD + " damage.");
+                DisplaceDamage(actor, force, map, nextTile, true, oActor);
                 // Chain displacement for fun.
                 if (i < force - 1)
                 {

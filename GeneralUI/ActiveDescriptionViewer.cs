@@ -136,6 +136,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Grapple the target and attack them.";
             case "Grapple":
                 return "Grapple the target.";
+            case "Throw Grappled":
+                return "Throw the grappled target.";
             case "Ingest":
                 return "Try to consume the grappled target.";
             case "SwapRelease":

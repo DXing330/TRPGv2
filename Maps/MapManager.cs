@@ -98,6 +98,15 @@ public class MapManager : MonoBehaviour
         }
         return tileNumbers;
     }
+    public virtual int ReturnRandomTileOfTileTypes(List<string> tileTypes)
+    {
+        List<int> possibleNumbers = ReturnTileNumbersOfTileTypes(tileTypes);
+        if (possibleNumbers.Count < 0)
+        {
+            return Random.Range(0, mapSize * mapSize);
+        }
+        return possibleNumbers[Random.Range(0, possibleNumbers.Count)];
+    }
     public void SwitchTile(int tile1, int tile2)
     {
         string temp = mapInfo[tile1];
@@ -218,7 +227,7 @@ public class MapManager : MonoBehaviour
         Debug.Log(tileNumber);
     }
 
-    [ContextMenu("Move 0")]
+    /*[ContextMenu("Move 0")]
     public void Move0(){MoveMap(0);}
 
     [ContextMenu("Move 1")]
@@ -234,5 +243,5 @@ public class MapManager : MonoBehaviour
     public void Move4(){MoveMap(4);}
 
     [ContextMenu("Move 5")]
-    public void Move5(){MoveMap(5);}
+    public void Move5(){MoveMap(5);}*/
 }

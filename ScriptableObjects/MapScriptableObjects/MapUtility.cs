@@ -10,7 +10,19 @@ public class MapUtility : ScriptableObject
 
     public int DistanceBetweenTiles(int tileOne, int tileTwo, int size)
     {
+        if (tileOne < 0 || tileTwo < 0)
+        {
+            return size * size;
+        }
         return (Mathf.Abs(GetHexQ(tileOne, size) - GetHexQ(tileTwo, size)) + Mathf.Abs(GetHexR(tileOne, size) - GetHexR(tileTwo, size)) + Mathf.Abs(GetHexS(tileOne, size) - GetHexS(tileTwo, size))) / 2;
+    }
+
+    public bool BorderTile(int tile, int size)
+    {
+        int col = GetColumn(tile, size);
+        int row = GetRow(tile, size);
+        if (col == 0 || col == size - 1 || row == 0 || row == size -1){return true;}
+        return false;
     }
 
     public int HorizontalDistanceBetweenTiles(int tileOne, int tileTwo, int size)

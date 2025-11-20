@@ -5,13 +5,14 @@ using UnityEngine;
 
 public class FactionMap : MapManager
 {
+    public FactionManager factionManager;
+    public ColorDictionary colorDictionary;
     public FactionMapData mapData;
     protected override void Start()
     {
         mapData.LoadMap(this);
         UpdateMap();
     }
-    // Layer 0 - tiles / buildings. Buildings override tiles when being displayed.
     protected override void UpdateCurrentTiles()
     {
         currentTiles = currentTileManager.GetCurrentTilesFromStart(0, mapSize, gridSize);
@@ -22,7 +23,18 @@ public class FactionMap : MapManager
         mapData.GenerateNewMap(this);
         UpdateMap();
     }
-    
+    public void UpdateFactionHighlights()
+    {
+        ResetHighlights();
+        for (int i = 0; i < factionManager.factions.Count; i++)
+        {
+            for (int j = 0; j < factionManager.factions[i].ownedTiles.Count; j++)
+            {
+                highlightedTiles[factionManager.factions[i].ownedTiles[j]] = factionManager.factions[i].GetFactionColor();
+            }
+        }
+        mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+    }
     public override void UpdateMap()
     {
         UpdateCurrentTiles();
@@ -32,8 +44,16 @@ public class FactionMap : MapManager
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, luxuryTiles, currentTiles);
         // Actors.
         // Highlights.
+        UpdateFactionHighlights();
     }
     public FactionManager allFactions;
+    public List<string> highlightedTiles;
+    public void ResetHighlights()
+    {
+        InitializeEmptyList();
+        highlightedTiles = new List<string>(emptyList);
+        //mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+    }
     public StatDatabase buildableData; // Maps what buildings can be placed on what tiles.
     public List<string> tileBuildings; // Buildings upgrade tile outputs and are agnostic to factions. Whoever owns the tile also owns the building.
     protected List<string> BuildingMapInfo()
@@ -50,6 +70,8 @@ public class FactionMap : MapManager
     }
     public void DestroyBuilding(int tileNumber)
     {
+        // Destroying cities is different than destroying other buildings.
+        if (tileBuildings[tileNumber] == "City"){return;}
         tileBuildings[tileNumber] = "";
         RefreshTileOutput(tileNumber);
     }
@@ -100,6 +122,23 @@ public class FactionMap : MapManager
     public void SetLuxuryTile(int tileNumber, string luxury)
     {
         luxuryTiles[tileNumber] = luxury;
+    }
+    public override int ReturnRandomTileOfTileTypes(List<string> tileTypes)
+    {
+        List<int> possibleNumbers = ReturnTileNumbersOfTileTypes(tileTypes);
+        // Can't spawn on luxury tiles.
+        for (int i = possibleNumbers.Count - 1; i >= 0; i--)
+        {
+            if (luxuryTiles[possibleNumbers[i]] != "")
+            {
+                possibleNumbers.RemoveAt(i);
+            }
+        }
+        if (possibleNumbers.Count < 0)
+        {
+            return Random.Range(0, mapSize * mapSize);
+        }
+        return possibleNumbers[Random.Range(0, possibleNumbers.Count)];
     }
     // Outputs are based on base tile + luxury + building.
     public StatDatabase baseOutputs;

@@ -780,6 +780,32 @@ public class BattleMap : MapManager
         return enemies[index];
     }
 
+    public int GetClosestEmptyTile(TacticActor actor)
+    {
+        int location = actor.GetLocation();
+        if (actor.GetHealth() < 0){return location;}
+        List<int> adjacentEmpty = GetAdjacentEmptyTiles(location);
+        if (adjacentEmpty.Count > 0)
+        {
+            return adjacentEmpty[Random.Range(0, adjacentEmpty.Count)];
+        }
+        int distance = mapSize;
+        int tile = -1;
+        for (int i = 0; i < mapSize * mapSize; i++)
+        {
+            if (!TileNotEmpty(i))
+            {
+                int newDist = mapUtility.DistanceBetweenTiles(i, location, mapSize);
+                if (newDist < distance)
+                {
+                    distance = newDist;
+                    tile = i;
+                }
+            }
+        }
+        return tile;
+    }
+
     public List<int> GetAdjacentEmptyTiles(int tileNumber)
     {
         List<int> allAdjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);

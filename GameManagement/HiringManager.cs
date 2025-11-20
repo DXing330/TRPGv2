@@ -37,7 +37,7 @@ public class HiringManager : MonoBehaviour
     {
         currentHirelingClasses.Clear();
         currentHirelingNames.Clear();
-        for (int i = 0; i < hireableActors.Count; i++)
+        for (int i = 0; i < Mathf.Max(hireableActors.Count, 6); i++)
         {
             currentHirelingClasses.Add(hireableActors[Random.Range(0, hireableActors.Count)]);
             currentHirelingNames.Add(GenerateRandomName());

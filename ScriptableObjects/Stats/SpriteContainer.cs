@@ -59,6 +59,10 @@ public class SpriteContainer : ScriptableObject
         {
             spriteName = values[indexOf];
         }
+        for (int i = 0; i < sprites.Count; i++)
+        {
+            if (sprites[i].name == spriteName){return sprites[i];}
+        }
         if (elevationDifferences)
         {
             if (!spriteName.Contains("E"))

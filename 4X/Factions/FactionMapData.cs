@@ -63,7 +63,7 @@ public class FactionMapData : SavedData
         // Generate tiles.
         string[] defaultZoneOrder = defaultZoneLayout.Split("|");
         List<string> newMapInfo = map.ReturnEmptyList();
-        for (int i = 0; i < shift * shift; i++)
+        for (int i = 0; i < cutInto * cutInto; i++)
         {
             GenerateZone(newMapInfo, row, col, shift, mapSize, defaultZoneOrder[i]);
             col += shift;
@@ -83,6 +83,7 @@ public class FactionMapData : SavedData
         // Reset buildings.
         map.ResetTileBuildings();
         map.RefreshAllTileOutputs();
+        map.factionManager.GenerateFactions();
     }
 
     public void LoadMap(FactionMap map)
