@@ -8,6 +8,7 @@ using UnityEngine;
 public class FactionManager : MonoBehaviour
 {
     public FactionMap map;
+    public FactionUnitManager unitManager;
     public List<FactionData> factions;
     public List<string> possibleFactionColors;
     public List<string> possibleFactionNames;
@@ -25,6 +26,24 @@ public class FactionManager : MonoBehaviour
             for (int j = 0; j < factions[i].cityLocations.Count; j++)
             {
                 map.tileBuildings[factions[i].cityLocations[j]] = "City";
+            }
+        }
+    }
+    
+    // Show the units.
+    public void UpdateUnitInfo()
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            // Show the workers.
+            for (int j = 0; j < factions[i].unitData.unitData.Count; j++)
+            {
+                map.actorTiles[factions[i].unitData.ReturnUnitLocationAtIndex(j)] = factions[i].unitData.GetUnitSpriteName();
+            }
+            // Override them with combat units.
+            for (int j = 0; j < factions[i].unitData.combatUnitData.Count; j++)
+            {
+                map.actorTiles[factions[i].unitData.ReturnCombatUnitLocationAtIndex(j)] = factions[i].unitData.GetCombatSpriteName();
             }
         }
     }

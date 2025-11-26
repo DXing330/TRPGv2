@@ -35,6 +35,7 @@ public class FactionMap : MapManager
         }
         mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
+    public List<string> actorTiles;
     public override void UpdateMap()
     {
         UpdateCurrentTiles();
@@ -43,6 +44,9 @@ public class FactionMap : MapManager
         // Luxurys.
         mapDisplayers[1].DisplayCurrentTiles(mapTiles, luxuryTiles, currentTiles);
         // Actors.
+        actorTiles = new List<string>(emptyList);
+        factionManager.UpdateUnitInfo();
+        mapDisplayers[2].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
         // Highlights.
         UpdateFactionHighlights();
     }

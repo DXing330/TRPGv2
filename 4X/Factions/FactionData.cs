@@ -26,7 +26,7 @@ public class FactionData : SavedData
     public int goldPerUnit;
     public int ReturnGoldUpkeep()
     {
-        return goldPerCity * cityLocations.Count;
+        return (goldPerCity * cityLocations.Count);
     }
     public int food;
     public int foodPerCity;
@@ -46,7 +46,7 @@ public class FactionData : SavedData
     public List<int> cityLocations; // Build cities in order to expand.
     // Gain all unowned tiles adjacent to your city when you build a new city.
     // During upkeep obtain resources adjacent to all cities.
-    public List<int> ownedTiles; // Determines food/resources/money.
+    public List<int> ownedTiles; // Mainly cosmetic, but can cause conflicts if others enter your territory or steal your tiles.
     public void ResetOwnedTiles()
     {
         ownedTiles.Clear();
@@ -68,15 +68,20 @@ public class FactionData : SavedData
         }
     }
     public List<string> possibleUnits;
+    public FactionUnitDataManager unitData;
     // Standing armies, might not be visible to you on the map.
     /*public List<string> ownedUnits; // Units die as they perform actions, every upkeep period spawn more units depending on various factors.
     public List<int> unitLocations; // Units spawn at cities but can move around.*/ // Store units elsewhere, cities can make units but then they are stored in another place. Track the unit faction and goals and stuff. This also allows units to combine and stuff.
     public List<string> factionBuffs; // Tech stuff, they can increase their battle modifiers as time progresses, eventually they will be very strong.
     public void SetBuffs(List<string> newInfo){factionBuffs = newInfo;}
+    public List<string> factionEquipmentSets; // Each faction will assign units equipment when creating them. Units can gain equipment over time or from battles.
     public List<string> otherFactions;
     public void SetOtherFactions(List<string> newInfo){otherFactions = newInfo;}
     public List<int> otherFactionRelations; // Politics handled by a single tracker. Main idea is tit for tat, but dislike whatever the Civ V AI dislikes as well.
     public void SetRelations(List<int> newInfo){otherFactionRelations = newInfo;}
+    // Luxury/special resources.
+    public List<string> storedResources;
+    public void SetStoredResources(List<string> newInfo){storedResources = newInfo;}
     // These stats will drive the requests that are generated.
     public string requestedResource;
     public string mainTarget;
@@ -101,12 +106,14 @@ public class FactionData : SavedData
         factionBuffs.Clear();
         otherFactions.Clear();
         otherFactionRelations.Clear();
+        storedResources.Clear();
         requestedResource = "";
         mainTarget = "";
     }
 
     public override void Save()
     {
+        unitData.Save();
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
         allData += factionName + delimiter;
@@ -125,6 +132,7 @@ public class FactionData : SavedData
         allData += String.Join(delimiterTwo, factionBuffs) + delimiter;
         allData += String.Join(delimiterTwo, otherFactions) + delimiter;
         allData += String.Join(delimiterTwo, otherFactionRelations) + delimiter;
+        allData += String.Join(delimiterTwo, storedResources) + delimiter;
         allData += requestedResource + delimiter;
         allData += mainTarget + delimiter;
         File.WriteAllText(dataPath, allData);
@@ -132,6 +140,7 @@ public class FactionData : SavedData
 
     public override void Load()
     {
+        unitData.Load();
         dataPath = Application.persistentDataPath+"/"+filename;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else
@@ -148,71 +157,75 @@ public class FactionData : SavedData
     }
 
     protected void LoadStat(string stat, int index)
-{
-    switch (index)
     {
-        default:
-            break;
-        case 0:
-            factionName = stat;
-            break;
-        case 1:
-            factionColor = stat;
-            break;
-        case 2:
-            factionLeader = stat;
-            break;
-        case 3:
-            capitalLocation = int.Parse(stat);
-            break;
-        case 4:
-            capitalHealth = int.Parse(stat);
-            break;
-        case 5:
-            morale = int.Parse(stat);
-            break;
-        case 6:
-            treasury = int.Parse(stat);
-            break;
-        case 7:
-            food = int.Parse(stat);
-            break;
-        case 8:
-            materials = int.Parse(stat);
-            break;
-        case 9:
-            playerReputation = int.Parse(stat);
-            break;
-        case 10:
-            cityLocations = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-            utility.RemoveEmptyValues(cityLocations);
-            break;
-        case 11:
-            ownedTiles = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-            utility.RemoveEmptyValues(ownedTiles);
-            break;
-        case 12:
-            possibleUnits = new List<string>(stat.Split(delimiterTwo));
-            utility.RemoveEmptyListItems(possibleUnits);
-            break;
-        case 13:
-            factionBuffs = new List<string>(stat.Split(delimiterTwo));
-            utility.RemoveEmptyListItems(factionBuffs);
-            break;
-        case 14:
-            otherFactions = new List<string>(stat.Split(delimiterTwo));
-            utility.RemoveEmptyListItems(otherFactions);
-            break;
-        case 15:
-            otherFactionRelations = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-            utility.RemoveEmptyValues(otherFactionRelations);
-            break;
-        case 16:
-            requestedResource = stat;
-            break;
-        case 17:
-            mainTarget = stat;
-            break;
+        switch (index)
+        {
+            default:
+                break;
+            case 0:
+                factionName = stat;
+                break;
+            case 1:
+                factionColor = stat;
+                break;
+            case 2:
+                factionLeader = stat;
+                break;
+            case 3:
+                capitalLocation = int.Parse(stat);
+                break;
+            case 4:
+                capitalHealth = int.Parse(stat);
+                break;
+            case 5:
+                morale = int.Parse(stat);
+                break;
+            case 6:
+                treasury = int.Parse(stat);
+                break;
+            case 7:
+                food = int.Parse(stat);
+                break;
+            case 8:
+                materials = int.Parse(stat);
+                break;
+            case 9:
+                playerReputation = int.Parse(stat);
+                break;
+            case 10:
+                cityLocations = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
+                utility.RemoveEmptyValues(cityLocations);
+                break;
+            case 11:
+                ownedTiles = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
+                utility.RemoveEmptyValues(ownedTiles);
+                break;
+            case 12:
+                possibleUnits = new List<string>(stat.Split(delimiterTwo));
+                utility.RemoveEmptyListItems(possibleUnits);
+                break;
+            case 13:
+                factionBuffs = new List<string>(stat.Split(delimiterTwo));
+                utility.RemoveEmptyListItems(factionBuffs);
+                break;
+            case 14:
+                otherFactions = new List<string>(stat.Split(delimiterTwo));
+                utility.RemoveEmptyListItems(otherFactions);
+                break;
+            case 15:
+                otherFactionRelations = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
+                utility.RemoveEmptyValues(otherFactionRelations);
+                break;
+            case 16:
+                storedResources = stat.Split(delimiterTwo).ToList();
+                utility.RemoveEmptyListItems(storedResources);
+                break;
+            case 17:
+                requestedResource = stat;
+                break;
+            case 18:
+                mainTarget = stat;
+                break;
+        }
     }
-}
 }
