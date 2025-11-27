@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,19 @@ public class FactionUnitManager : MonoBehaviour
     public FactionManager factionManager;
     public FactionUnit dummyUnit;
     public CombatUnit dummyCombatUnit;
+
+    public void FactionMakesWorker(FactionData faction)
+    {
+        // Apply the cost.
+        // Make the worker.
+        dummyUnit.ResetStats();
+        dummyUnit.SetFaction(faction.GetFactionName());
+        dummyUnit.SetLocation(faction.GetCapitalLocation());
+        dummyUnit.SetGoalSpecifics(faction.LowestResource());
+        // Add them to the unit list.
+        faction.unitData.AddUnit(dummyUnit.GetStats(), faction.GetCapitalLocation());
+    }
+
     public void AllTurns(List<FactionData> factions)
     {
         for (int i = 0; i < factions.Count; i++)
@@ -30,7 +44,60 @@ public class FactionUnitManager : MonoBehaviour
 
     protected void UnitTurn(FactionUnitDataManager faction, int index)
     {
-        // Act based on your goals.
+        // Load the unit.
+        dummyUnit.LoadStats(faction.GetUnitDataAtIndex(index));
+        // If inventory full and at capital, then drop off items and update goal.
+        if (dummyUnit.InventoryFull() && dummyUnit.GetLocation() == factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()))
+        {
+            factionManager.UnitDepositsInventory(dummyUnit, dummyUnit.GetLocation());
+            faction.UpdateUnitAtIndex(dummyUnit, index);
+            return;
+        }
+        // If inventory full and not at the capital, path towards capital/village.
+        else if (dummyUnit.InventoryFull() && dummyUnit.GetLocation() != factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()))
+        {
+            List<int> path = map.pathfinder.BasicPathToTile(dummyUnit.GetLocation(), factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()));
+            dummyUnit.SetLocation(path[path.Count - 1]);
+            faction.UpdateUnitAtIndex(dummyUnit, index);
+            return;
+        }
+        // Otherwise we'll check if they're on the best gathering spot possible.
+        int targetTile = map.ReturnUnoccupiedTileWithLargestOutput(factionManager.GetOwnedTilesOfFaction(dummyUnit.GetFaction()), dummyUnit.GetGoalSpecifics(), dummyUnit.GetLocation());
+        if (targetTile < 0)
+        {
+            targetTile = map.ReturnUnoccupiedTileWithLargestOutput(factionManager.GetOwnedTilesOfFaction(dummyUnit.GetFaction()), "Gold", dummyUnit.GetLocation());
+        }
+        if (targetTile < 0)
+        {
+            targetTile = map.ReturnUnoccupiedTileWithLargestOutput(factionManager.GetOwnedTilesOfFaction(dummyUnit.GetFaction()), "Materials", dummyUnit.GetLocation());
+        }
+        if (targetTile < 0)
+        {
+            targetTile = map.ReturnUnoccupiedTileWithLargestOutput(factionManager.GetOwnedTilesOfFaction(dummyUnit.GetFaction()), "Food", dummyUnit.GetLocation());
+        }
+        if (targetTile < 0)
+        {
+            // Literally nothing to do. Pass the turn.
+            // Save the actor here.
+            faction.UpdateUnitAtIndex(dummyUnit, index);
+            return;
+        }
+        // If on an unoccupied gathering spot then gather.
+        else if (!dummyUnit.InventoryFull() && dummyUnit.GetLocation() == targetTile)
+        {
+            // This leads to a concentration of workers at buildings.
+            dummyUnit.GainItems(map.ReturnTileOutput(targetTile).Split("+").ToList());
+            // All the better to rob and destroy.
+        }
+        // If not on a gathering spot, move toward gathering spot.
+        else
+        {
+            List<int> path = map.pathfinder.BasicPathToTile(dummyUnit.GetLocation(), targetTile);
+            dummyUnit.SetLocation(path[path.Count - 1]);
+            faction.UpdateUnitLocation(index, dummyUnit.GetLocation());
+        }
+        // You can rob or help these units when encountering them on the map, simplest way to change reputation with a faction.
+        faction.UpdateUnitAtIndex(dummyUnit, index);
     }
 
     protected void CombatUnitTurn(FactionUnitDataManager faction, int index)

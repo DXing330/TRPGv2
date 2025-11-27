@@ -15,6 +15,26 @@ public class MapPathfinder : ScriptableObject
     public List<int> distances;
     // Keep track of the tile that leads into each tile.
     public List<int> previousTiles;
+    
+    public List<int> BasicPathToTile(int start, int end)
+    {
+        List<int> path = new List<int>();
+        ResetDistances(start);
+        for (int i = 0; i < mapSize * mapSize - 1; i++)
+        {
+            CheckClosestTile();
+        }
+        path.Add(end);
+        if (start == end){return path;}
+        int nextTile = -1;
+        for (int i = 0; i < distances.Count; i++)
+        {
+            nextTile = previousTiles[path[i]];
+            if (nextTile == start){break;}
+            path.Add(nextTile);
+        }
+        return path;
+    }
 
     protected void ResetHeap()
     {

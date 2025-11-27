@@ -278,6 +278,16 @@ public class GeneralUtility : ScriptableObject
         return count;
     }
 
+    public int CountStringsInArray(string[] array, string s)
+    {
+        int count = 0;
+        for (int i = 0; i < array.Length; i++)
+        {
+            if (array[i] == s){count++;}
+        }
+        return count;
+    }
+
     public int CountCharactersInString(string dummyString, char specifics = ' ')
     {
         int count = 0;

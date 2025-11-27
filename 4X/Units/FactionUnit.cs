@@ -11,6 +11,14 @@ public class FactionUnit : MonoBehaviour
     protected string delimiter2 = "|";
     public string unitType; // Civilian/Combat
     public string faction;
+    public void SetFaction(string factionName)
+    {
+        faction = factionName;
+    }
+    public string GetFaction()
+    {
+        return faction;
+    }
     public int maxHealth;
     public int health;
     public bool Dead()
@@ -40,6 +48,15 @@ public class FactionUnit : MonoBehaviour
         return inventory.Count >= inventorySize;
     }
     public List<string> inventory; // If inventory is full then return to city and drop off inventory.
+    public void GainItems(List<string> newItems)
+    {
+        for (int i = 0; i < newItems.Count; i++)
+        {
+            if (InventoryFull()){return;}
+            if (newItems[i].Length < 2){continue;}
+            inventory.Add(newItems[i]);
+        }
+    }
     public string goal; // If inventory is not full try to acquire the goal items, goal is updated at the city.
     public string goalSpecifics;
     public string GetGoal()
@@ -55,6 +72,23 @@ public class FactionUnit : MonoBehaviour
         goal = nG;
         goalSpecifics = nGS;
     }
+    public void SetGoalSpecifics(string nGS)
+    {
+        goalSpecifics = nGS;
+    }
+
+    public void ResetStats()
+    {
+        unitType = "Worker";
+        faction = "";
+        maxHealth = 1;
+        health = 1;
+        location = -1;
+        inventorySize = 6;
+        inventory.Clear();
+        goal = "Gather";
+        goalSpecifics = "";
+    }
 
     public virtual string GetStats()
     {
@@ -65,7 +99,7 @@ public class FactionUnit : MonoBehaviour
         stats += health + delimiter;
         stats += location + delimiter;
         stats += inventorySize + delimiter;
-        stats += String.Join(delimiter2, inventorySize) + delimiter;
+        stats += String.Join(delimiter2, inventory) + delimiter;
         stats += goal + delimiter;
         stats += goalSpecifics + delimiter;
         return stats;

@@ -26,9 +26,33 @@ public class FactionUnitDataManager : SavedData
         unitLocations[index] = fUnit.GetLocation().ToString();
     }
     public List<string> unitLocations;
-    public int ReturnUnitLocationAtIndex(int index)
+    public int ReturnUnitLocationAtIndex(int index, bool combat = false)
     {
+        if (combat)
+        {
+            return int.Parse(combatUnitLocations[index]);
+        }
         return int.Parse(unitLocations[index]);
+    }
+    public void AddUnit(string unit, int location, bool combat = false)
+    {
+        if (combat)
+        {
+            combatUnitData.Add(unit);
+            combatUnitLocations.Add(location.ToString());
+            return;
+        }
+        unitData.Add(unit);
+        unitLocations.Add(location.ToString());
+    }
+    public void UpdateUnitLocation(int index, int newLocation, bool combat = false)
+    {
+        if (combat)
+        {
+            combatUnitLocations[index] = newLocation.ToString();
+            return;
+        }
+        unitLocations[index] = newLocation.ToString();
     }
     public List<string> combatUnitData;
     public void UpdateCombatUnitAtIndex(CombatUnit cUnit, int index)
@@ -41,11 +65,23 @@ public class FactionUnitDataManager : SavedData
     {
         return int.Parse(combatUnitLocations[index]);
     }
+    public string GetUnitDataAtIndex(int index, bool combat = false)
+    {
+        if (combat)
+        {
+            return combatUnitData[index];
+        }
+        return unitData[index];
+    }
 
     public override void NewGame()
     {
         unitData.Clear();
+        unitLocations.Clear();
         combatUnitData.Clear();
+        combatUnitLocations.Clear();
+        Save();
+        Load();
     }
 
     public override void Save()

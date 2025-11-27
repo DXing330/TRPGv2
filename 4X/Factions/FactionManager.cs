@@ -10,6 +10,38 @@ public class FactionManager : MonoBehaviour
     public FactionMap map;
     public FactionUnitManager unitManager;
     public List<FactionData> factions;
+    public int GetCapitalLocationOfFaction(string fName)
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            if (factions[i].GetFactionName() == fName)
+            {
+                return factions[i].GetCapitalLocation();
+            }
+        }
+        return -1;
+    }
+    public List<int> GetOwnedTilesOfFaction(string fName)
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            if (factions[i].GetFactionName() == fName)
+            {
+                return factions[i].GetOwnedTiles();
+            }
+        }
+        return new List<int>();
+    }
+    public void UnitDepositsInventory(FactionUnit unit, int location)
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            if (factions[i].GetCapitalLocation() == location && factions[i].GetFactionName() == unit.GetFaction())
+            {
+                factions[i].UnitDepositsInventory(unit);
+            }
+        }
+    }
     public List<string> possibleFactionColors;
     public List<string> possibleFactionNames;
     public List<string> possibleFactionLeaders;
@@ -23,10 +55,6 @@ public class FactionManager : MonoBehaviour
         for (int i = 0; i < factions.Count; i++)
         {
             map.tileBuildings[factions[i].GetCapitalLocation()] = "City";
-            for (int j = 0; j < factions[i].cityLocations.Count; j++)
-            {
-                map.tileBuildings[factions[i].cityLocations[j]] = "City";
-            }
         }
     }
     
@@ -107,8 +135,27 @@ public class FactionManager : MonoBehaviour
                     factions[i].GainTile(adjacentTiles[j]);
                 }
             }
+            // Make a starting worker.
+            unitManager.FactionMakesWorker(factions[i]);
             // Initialize other factions and relations.
             factions[i].Save();
+        }
+        UpdateCityInfo();
+    }
+
+    public void Save()
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            factions[i].Save();
+        }
+    }
+
+    public void Load()
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            factions[i].Load();
         }
         UpdateCityInfo();
     }

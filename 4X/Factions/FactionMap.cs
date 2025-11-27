@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class FactionMap : MapManager
 {
+    public MapPathfinder pathfinder;
     public FactionManager factionManager;
     public ColorDictionary colorDictionary;
     public FactionMapData mapData;
     protected override void Start()
     {
         mapData.LoadMap(this);
+        pathfinder.SetMapSize(mapSize);
+        factionManager.Load();
         UpdateMap();
     }
     protected override void UpdateCurrentTiles()
@@ -36,8 +39,13 @@ public class FactionMap : MapManager
         mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
     public List<string> actorTiles;
+    public bool ActorOnTile(int tileNumber)
+    {
+        return actorTiles[tileNumber] != "";
+    }
     public override void UpdateMap()
     {
+        InitializeEmptyList();
         UpdateCurrentTiles();
         // Tiles + buildings.
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, BuildingMapInfo(), currentTiles);
@@ -149,11 +157,33 @@ public class FactionMap : MapManager
     public StatDatabase luxuryOutputs;
     public StatDatabase buildingOutputs;
     public List<string> tileOutputs; // Fight over tiles with good outputs.
+    public bool OutputOnTile(int tile, string output)
+    {
+        string[] tOutput = ReturnTileOutput(tile).Split("+");
+        return tOutput.Contains(output);
+    }
+    public int ReturnUnoccupiedTileWithLargestOutput(List<int> possibleTiles, string output, int cLoc = -1)
+    {
+        int outputCount = 0;
+        int tile = -1;
+        for (int i = 0; i < possibleTiles.Count; i++)
+        {
+            if (ActorOnTile(possibleTiles[i]) && possibleTiles[i] != cLoc){continue;}
+            string[] tOutput = ReturnTileOutput(possibleTiles[i]).Split("+");
+            int tCount = utility.CountStringsInArray(tOutput, output);
+            if (tCount > outputCount)
+            {
+                outputCount = tCount;
+                tile = possibleTiles[i];
+            }
+        }
+        return tile;
+    }
     public void RefreshTileOutput(int tileNumber, bool save = true)
     {
         string newOutputs = "";
-        newOutputs += baseOutputs.ReturnValue(mapInfo[tileNumber]) + "|";
-        newOutputs += luxuryOutputs.ReturnValue(luxuryTiles[tileNumber]) + "|";
+        newOutputs += baseOutputs.ReturnValue(mapInfo[tileNumber]) + "+";
+        newOutputs += luxuryOutputs.ReturnValue(luxuryTiles[tileNumber]) + "+";
         newOutputs += buildingOutputs.ReturnValue(tileBuildings[tileNumber]);
         tileOutputs[tileNumber] = newOutputs;
         if (save)
@@ -188,4 +218,11 @@ public class FactionMap : MapManager
     // Not saved, obtained from the faction manager each turn.
     public List<string> tileOwners; // Highlight the tiles based on the owner's factions.
     public List<string> tileActors; // Show the party and any other special actors.
+
+    public void TestNewDay()
+    {
+        factionManager.unitManager.AllTurns(factionManager.factions);
+        factionManager.Save();
+        UpdateMap();
+    }
 }

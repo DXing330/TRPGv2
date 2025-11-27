@@ -11,6 +11,7 @@ public class FactionData : SavedData
     public string delimiterTwo;
     public string factionName;
     public void SetFactionName(string newInfo){factionName = newInfo;}
+    public string GetFactionName(){return factionName;}
     public string factionColor; // Each faction tile will highlight the map based on it's color.
     public void SetFactionColor(string newInfo){factionColor = newInfo;}
     public string GetFactionColor(){return factionColor;}
@@ -20,36 +21,84 @@ public class FactionData : SavedData
     public void SetCapitalLocation(int newInfo){capitalLocation = newInfo;}
     public int GetCapitalLocation(){return capitalLocation;}
     public int capitalHealth;
-    public int morale; // Unhappy means worse at fighting, happy means better at fighting. Calculated each upkeep based on population, unit count and tile outputs.
-    public int treasury; // Factions should have gold far beyond you, their gold is measured in 1000s. Updated each upkeep.
+    public int mana; // The king of resources, worth more than gold. Mana is used for research.
+    public int gold; // Factions should have gold far beyond you, their gold is measured in 100s. Gold is used for everything.
     public int goldPerCity;
     public int goldPerUnit;
     public int ReturnGoldUpkeep()
     {
-        return (goldPerCity * cityLocations.Count);
+        return 0;
     }
-    public int food;
+    public int food; // Food is used as for units/villages.
     public int foodPerCity;
+    public int foodPerUnit;
     public int ReturnFoodUpkeep()
     {
-        return foodPerCity * cityLocations.Count;
+        return 0;
     }
-    public int materials;
-    public int materialsPerCity;
-    // If you fail to pay upkeep, then lose gold, if fail to pay gold then lose a city.
+    public int materials; // Materials are used for buildings/new units.
     public int ReturnMaterialUpkeep()
     {
-        return materialsPerCity * cityLocations.Count;
+        return 0;
+    }
+    public void GainResource(string resource)
+    {
+        switch (resource)
+        {
+            default:
+            storedResources.Add(resource);
+            break;
+            case "Mana":
+            mana++;
+            break;
+            case "Gold":
+            gold++;
+            break;
+            case "Food":
+            food++;
+            break;
+            case "Materials":
+            materials++;
+            break;
+        }
+    }
+    public string LowestResource()
+    {
+        int minimum = gold;
+        string lowest = "Gold";
+        if (food < minimum)
+        {
+            minimum = food;
+            lowest = "Food";
+        }
+        if (materials < minimum)
+        {
+            minimum = materials;
+            lowest = "Materials";
+        }
+        return lowest;
+    }
+    public void UnitDepositsInventory(FactionUnit unit)
+    {
+        for (int i = 0; i < unit.inventory.Count; i++)
+        {
+            GainResource(unit.inventory[i]);
+        }
+        unit.inventory.Clear();
+        unit.SetGoalSpecifics(LowestResource());
     }
     //public List<string> factionMembers; // Not needed, just a leader is enough for Civ V, it's enough for us.
     public int playerReputation; // High enough = allies, negative enough = enemies.
-    public List<int> cityLocations; // Build cities in order to expand.
     // Gain all unowned tiles adjacent to your city when you build a new city.
     // During upkeep obtain resources adjacent to all cities.
     public List<int> ownedTiles; // Mainly cosmetic, but can cause conflicts if others enter your territory or steal your tiles.
     public void ResetOwnedTiles()
     {
         ownedTiles.Clear();
+    }
+    public List<int> GetOwnedTiles()
+    {
+        return ownedTiles;
     }
     public bool TileOwned(int tile)
     {
@@ -68,6 +117,7 @@ public class FactionData : SavedData
         }
     }
     public List<string> possibleUnits;
+    public List<SavedData> otherFactionInfo;
     public FactionUnitDataManager unitData;
     // Standing armies, might not be visible to you on the map.
     /*public List<string> ownedUnits; // Units die as they perform actions, every upkeep period spawn more units depending on various factors.
@@ -84,23 +134,38 @@ public class FactionData : SavedData
     public void SetStoredResources(List<string> newInfo){storedResources = newInfo;}
     // These stats will drive the requests that are generated.
     public string requestedResource;
+    public void SetRequestedResource(string newInfo = "")
+    {
+        requestedResource = newInfo;
+    }
+    public string GetRequestedResource()
+    {
+        if (requestedResource == "")
+        {
+            return "Gold";
+        }
+        return requestedResource;
+    }
     public string mainTarget;
     public List<string> requests; // Might be stored somewhere else later. Each faction has jobs that you can take, completing jobs increases reputation, but it might hurt reputation with other factions.
     public List<int> requestDeadlines;
 
     public override void NewGame()
     {
+        for (int i = 0; i < otherFactionInfo.Count; i++)
+        {
+            otherFactionInfo[i].NewGame();
+        }
         factionName = "";
         factionColor = "";
         factionLeader = "";
         capitalLocation = -1;
         capitalHealth = 6;
-        morale = 0;
-        treasury = 600;
-        food = 0;
-        materials = 0;
+        mana = 0;
+        gold = 100;
+        food = 100;
+        materials = 100;
         playerReputation = 0;
-        cityLocations.Clear();
         ownedTiles.Clear();
         possibleUnits.Clear();
         factionBuffs.Clear();
@@ -113,7 +178,10 @@ public class FactionData : SavedData
 
     public override void Save()
     {
-        unitData.Save();
+        for (int i = 0; i < otherFactionInfo.Count; i++)
+        {
+            otherFactionInfo[i].Save();
+        }
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
         allData += factionName + delimiter;
@@ -121,12 +189,12 @@ public class FactionData : SavedData
         allData += factionLeader + delimiter;
         allData += capitalLocation + delimiter;
         allData += capitalHealth + delimiter;
-        allData += morale + delimiter;
-        allData += treasury + delimiter;
+        allData += mana + delimiter;
+        allData += gold + delimiter;
         allData += food + delimiter;
         allData += materials + delimiter;
         allData += playerReputation + delimiter;
-        allData += String.Join(delimiterTwo, cityLocations) + delimiter;
+        allData += "" + delimiter;
         allData += String.Join(delimiterTwo, ownedTiles) + delimiter;
         allData += String.Join(delimiterTwo, possibleUnits) + delimiter;
         allData += String.Join(delimiterTwo, factionBuffs) + delimiter;
@@ -140,7 +208,10 @@ public class FactionData : SavedData
 
     public override void Load()
     {
-        unitData.Load();
+        for (int i = 0; i < otherFactionInfo.Count; i++)
+        {
+            otherFactionInfo[i].Load();
+        }
         dataPath = Application.persistentDataPath+"/"+filename;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else
@@ -178,10 +249,10 @@ public class FactionData : SavedData
                 capitalHealth = int.Parse(stat);
                 break;
             case 5:
-                morale = int.Parse(stat);
+                mana = int.Parse(stat);
                 break;
             case 6:
-                treasury = int.Parse(stat);
+                gold = int.Parse(stat);
                 break;
             case 7:
                 food = int.Parse(stat);
@@ -193,8 +264,6 @@ public class FactionData : SavedData
                 playerReputation = int.Parse(stat);
                 break;
             case 10:
-                cityLocations = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-                utility.RemoveEmptyValues(cityLocations);
                 break;
             case 11:
                 ownedTiles = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
