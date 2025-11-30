@@ -41,7 +41,58 @@ public class FactionData : SavedData
     {
         return 0;
     }
-    public void GainResource(string resource)
+    public bool ResourceAvailable(string resource, int amount)
+    {
+        switch (resource)
+        {
+            case "Mana":
+            return mana >= amount;
+            case "Gold":
+            return gold >= amount;
+            case "Food":
+            return food >= amount;
+            case "Materials":
+            return materials >= amount;
+        }
+        return false;
+    }
+    public bool ResourcesAvailable(List<string> resources, List<int> amounts)
+    {
+        for (int i = 0; i < resources.Count; i++)
+        {
+            if (!ResourceAvailable(resources[i], amounts[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    public void LoseResource(string resource, int amount = 1)
+    {
+        switch (resource)
+        {
+            case "Mana":
+            mana -= amount;
+            break;
+            case "Gold":
+            gold -= amount;
+            break;
+            case "Food":
+            food -= amount;
+            break;
+            case "Materials":
+            materials -= amount;
+            break;
+        }
+    }
+    public void LoseResources(List<string> resources, List<int> amounts)
+    {
+        for (int i = 0; i < resources.Count; i++)
+        {
+            LoseResource(resources[i], amounts[i]);
+        }
+    }
+    public void GainResource(string resource, int amount = 1)
     {
         switch (resource)
         {
@@ -49,17 +100,24 @@ public class FactionData : SavedData
             storedResources.Add(resource);
             break;
             case "Mana":
-            mana++;
+            mana += amount;
             break;
             case "Gold":
-            gold++;
+            gold += amount;
             break;
             case "Food":
-            food++;
+            food += amount;
             break;
             case "Materials":
-            materials++;
+            materials += amount;
             break;
+        }
+    }
+    public void GainResources(List<string> resources, List<int> amounts)
+    {
+        for (int i = 0; i < resources.Count; i++)
+        {
+            GainResource(resources[i], amounts[i]);
         }
     }
     public string LowestResource()
@@ -116,14 +174,31 @@ public class FactionData : SavedData
             ownedTiles.RemoveAt(indexOf);
         }
     }
-    public List<string> possibleUnits;
     public List<SavedData> otherFactionInfo;
     public FactionUnitDataManager unitData;
-    // Standing armies, might not be visible to you on the map.
-    /*public List<string> ownedUnits; // Units die as they perform actions, every upkeep period spawn more units depending on various factors.
-    public List<int> unitLocations; // Units spawn at cities but can move around.*/ // Store units elsewhere, cities can make units but then they are stored in another place. Track the unit faction and goals and stuff. This also allows units to combine and stuff.
-    public List<string> factionBuffs; // Tech stuff, they can increase their battle modifiers as time progresses, eventually they will be very strong.
-    public void SetBuffs(List<string> newInfo){factionBuffs = newInfo;}
+    // Store units elsewhere, cities can make units but then they are stored in another place. Track the unit faction and goals and stuff. This also allows units to combine and stuff.
+    public List<string> factionPassives; // Tech stuff, they can increase their battle modifiers as time progresses, eventually they will be very strong.
+    public void SetPassives(List<string> newInfo){factionPassives = newInfo;}
+    public void AddPassive(string passive, string level)
+    {
+        if (passive == "")
+        {
+            return;
+        }
+        int indexOf = factionPassives.IndexOf(passive);
+        if (indexOf < 0)
+        {
+            factionPassives.Add(passive);
+            factionPassiveLevels.Add(level);
+        }
+        else
+        {
+            int newLevel = int.Parse(factionPassiveLevels[indexOf]) + int.Parse(level);
+            factionPassiveLevels[indexOf] = newLevel.ToString();
+        }
+    }
+    public List<string> factionPassiveLevels;
+    public void SetPassiveLevels(List<string> newInfo){factionPassiveLevels = newInfo;}
     public List<string> factionEquipmentSets; // Each faction will assign units equipment when creating them. Units can gain equipment over time or from battles.
     public List<string> otherFactions;
     public void SetOtherFactions(List<string> newInfo){otherFactions = newInfo;}
@@ -167,8 +242,8 @@ public class FactionData : SavedData
         materials = 100;
         playerReputation = 0;
         ownedTiles.Clear();
-        possibleUnits.Clear();
-        factionBuffs.Clear();
+        factionPassives.Clear();
+        factionPassiveLevels.Clear();
         otherFactions.Clear();
         otherFactionRelations.Clear();
         storedResources.Clear();
@@ -196,8 +271,8 @@ public class FactionData : SavedData
         allData += playerReputation + delimiter;
         allData += "" + delimiter;
         allData += String.Join(delimiterTwo, ownedTiles) + delimiter;
-        allData += String.Join(delimiterTwo, possibleUnits) + delimiter;
-        allData += String.Join(delimiterTwo, factionBuffs) + delimiter;
+        allData += String.Join(delimiterTwo, factionPassives) + delimiter;
+        allData += String.Join(delimiterTwo, factionPassiveLevels) + delimiter;
         allData += String.Join(delimiterTwo, otherFactions) + delimiter;
         allData += String.Join(delimiterTwo, otherFactionRelations) + delimiter;
         allData += String.Join(delimiterTwo, storedResources) + delimiter;
@@ -270,12 +345,12 @@ public class FactionData : SavedData
                 utility.RemoveEmptyValues(ownedTiles);
                 break;
             case 12:
-                possibleUnits = new List<string>(stat.Split(delimiterTwo));
-                utility.RemoveEmptyListItems(possibleUnits);
+                factionPassives = new List<string>(stat.Split(delimiterTwo));
+                utility.RemoveEmptyListItems(factionPassives);
                 break;
             case 13:
-                factionBuffs = new List<string>(stat.Split(delimiterTwo));
-                utility.RemoveEmptyListItems(factionBuffs);
+                factionPassiveLevels = new List<string>(stat.Split(delimiterTwo));
+                utility.RemoveEmptyListItems(factionPassiveLevels);
                 break;
             case 14:
                 otherFactions = new List<string>(stat.Split(delimiterTwo));

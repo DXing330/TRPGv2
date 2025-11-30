@@ -7,8 +7,10 @@ using UnityEngine;
 // Any function that requires knowledge of both a faction and the map will go through here.
 public class FactionManager : MonoBehaviour
 {
+    public int factionCount;
     public FactionMap map;
     public FactionUnitManager unitManager;
+    public FactionAI factionAI;
     public List<FactionData> factions;
     public int GetCapitalLocationOfFaction(string fName)
     {
@@ -46,8 +48,9 @@ public class FactionManager : MonoBehaviour
     public List<string> possibleFactionNames;
     public List<string> possibleFactionLeaders;
     public List<string> possibleFactionStartingTiles;
-    public List<string> possibleFactionPossibleUnits;
-    public List<string> possibleFactionBattleModifiers;
+    //public List<string> possibleFactionPossibleUnits; // All factions have the same set of possible soldiers.
+    public List<string> factionStartingPassives;
+    public List<string> factionStartingPassiveLevels;
 
     // Cities override all other buildings.
     public void UpdateCityInfo()
@@ -66,11 +69,13 @@ public class FactionManager : MonoBehaviour
             // Show the workers.
             for (int j = 0; j < factions[i].unitData.unitData.Count; j++)
             {
+                map.workerTiles[factions[i].unitData.ReturnUnitLocationAtIndex(j)] = factions[i].unitData.GetUnitSpriteName();
                 map.actorTiles[factions[i].unitData.ReturnUnitLocationAtIndex(j)] = factions[i].unitData.GetUnitSpriteName();
             }
             // Override them with combat units.
             for (int j = 0; j < factions[i].unitData.combatUnitData.Count; j++)
             {
+                map.soldierTiles[factions[i].unitData.ReturnCombatUnitLocationAtIndex(j)] = factions[i].unitData.GetCombatSpriteName();
                 map.actorTiles[factions[i].unitData.ReturnCombatUnitLocationAtIndex(j)] = factions[i].unitData.GetCombatSpriteName();
             }
         }
@@ -86,6 +91,21 @@ public class FactionManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public bool TryToClaimTile(int tileNumber, FactionData faction)
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            if (factions[i] == faction){continue;}
+            if (factions[i].TileOwned(tileNumber))
+            {
+                factions[i].LoseTile(tileNumber);
+                return false;
+            }
+        }
+        faction.GainTile(tileNumber);
+        return true;
     }
 
     protected int GenerateCapitalLocation(int index)
@@ -126,6 +146,7 @@ public class FactionManager : MonoBehaviour
             factions[i].SetFactionLeader(possibleFactionLeaders[i]);
             // Set capitals.
             factions[i].SetCapitalLocation(GenerateCapitalLocation(i));
+            factions[i].GainTile(factions[i].GetCapitalLocation());
             // Add adjacent tiles to owned tiles.
             List<int> adjacentTiles = map.mapUtility.AdjacentTiles(factions[i].GetCapitalLocation(), map.mapSize);
             for (int j = 0; j < adjacentTiles.Count; j++)
@@ -135,6 +156,7 @@ public class FactionManager : MonoBehaviour
                     factions[i].GainTile(adjacentTiles[j]);
                 }
             }
+            factions[i].AddPassive(factionStartingPassives[i], factionStartingPassiveLevels[i]);
             // Make a starting worker.
             unitManager.FactionMakesWorker(factions[i]);
             // Initialize other factions and relations.

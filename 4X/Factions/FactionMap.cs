@@ -18,7 +18,7 @@ public class FactionMap : MapManager
     }
     protected override void UpdateCurrentTiles()
     {
-        currentTiles = currentTileManager.GetCurrentTilesFromStart(0, mapSize, gridSize);
+        currentTiles = currentTileManager.GetCurrentTilesFromCenter(centerTile, mapSize, gridSize);
     }
     [ContextMenu("Test New Map")]
     public void TestNewMap()
@@ -36,25 +36,39 @@ public class FactionMap : MapManager
                 highlightedTiles[factionManager.factions[i].ownedTiles[j]] = factionManager.factions[i].GetFactionColor();
             }
         }
-        mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+        mapDisplayers[4].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+    }
+    public List<string> workerTiles;
+    public bool WorkerOnTile(int tileNumber)
+    {
+        return workerTiles[tileNumber] != "";
+    }
+    public List<string> soldierTiles;
+    public bool SoldierOnTile(int tileNumber)
+    {
+        return soldierTiles[tileNumber] != "";
     }
     public List<string> actorTiles;
     public bool ActorOnTile(int tileNumber)
     {
-        return actorTiles[tileNumber] != "";
+        return (WorkerOnTile(tileNumber) || SoldierOnTile(tileNumber));
     }
     public override void UpdateMap()
     {
         InitializeEmptyList();
         UpdateCurrentTiles();
-        // Tiles + buildings.
-        mapDisplayers[0].DisplayCurrentTiles(mapTiles, BuildingMapInfo(), currentTiles);
+        // Tiles.
+        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+        // Buildings
+        mapDisplayers[1].DisplayCurrentTiles(mapTiles, BuildingMapInfo(), currentTiles);
         // Luxurys.
-        mapDisplayers[1].DisplayCurrentTiles(mapTiles, luxuryTiles, currentTiles);
+        mapDisplayers[2].DisplayCurrentTiles(mapTiles, luxuryTiles, currentTiles);
         // Actors.
+        workerTiles = new List<string>(emptyList);
+        soldierTiles = new List<string>(emptyList);
         actorTiles = new List<string>(emptyList);
         factionManager.UpdateUnitInfo();
-        mapDisplayers[2].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
+        mapDisplayers[3].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
         // Highlights.
         UpdateFactionHighlights();
     }
@@ -67,7 +81,20 @@ public class FactionMap : MapManager
         //mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
     public StatDatabase buildableData; // Maps what buildings can be placed on what tiles.
+    public List<string> BuildablesOnTiles(List<int> tileList)
+    {
+        List<string> buildables = new List<string>();
+        for (int i = 0; i < tileList.Count; i++)
+        {
+            buildables.Add(buildableData.ReturnValue(mapInfo[tileList[i]]));
+        }
+        return buildables;
+    }
     public List<string> tileBuildings; // Buildings upgrade tile outputs and are agnostic to factions. Whoever owns the tile also owns the building.
+    public bool BuildingOnTile(int tileNumber)
+    {
+        return tileBuildings[tileNumber] != "";
+    }
     protected List<string> BuildingMapInfo()
     {
         List<string> bInfo = new List<string>(mapInfo);
@@ -99,6 +126,18 @@ public class FactionMap : MapManager
             return true;
         }
         return false;
+    }
+    public List<int> FilterTilesWithoutBuildings(List<int> tileList)
+    {
+        List<int> filteredList = new List<int>(tileList);
+        for (int i = filteredList.Count - 1; i >= 0; i--)
+        {
+            if (BuildingOnTile(filteredList[i]))
+            {
+                filteredList.RemoveAt(i);
+            }
+        }
+        return filteredList;
     }
     public List<string> GetTileBuildings(){return tileBuildings;}
     public void ResetTileBuildings()
@@ -146,7 +185,7 @@ public class FactionMap : MapManager
                 possibleNumbers.RemoveAt(i);
             }
         }
-        if (possibleNumbers.Count < 0)
+        if (possibleNumbers.Count <= 0)
         {
             return Random.Range(0, mapSize * mapSize);
         }
@@ -168,13 +207,30 @@ public class FactionMap : MapManager
         int tile = -1;
         for (int i = 0; i < possibleTiles.Count; i++)
         {
-            if (ActorOnTile(possibleTiles[i]) && possibleTiles[i] != cLoc){continue;}
+            if (WorkerOnTile(possibleTiles[i]) && possibleTiles[i] != cLoc){continue;}
             string[] tOutput = ReturnTileOutput(possibleTiles[i]).Split("+");
             int tCount = utility.CountStringsInArray(tOutput, output);
             if (tCount > outputCount)
             {
                 outputCount = tCount;
                 tile = possibleTiles[i];
+            }
+        }
+        return tile;
+    }
+    public int ReturnTileWithLargestOutput(List<int> tileList)
+    {
+        int output = 0;
+        int tile = -1;
+        for (int i = 0; i < tileList.Count; i++)
+        {
+            // Skip tiles without output.
+            if (ReturnTileOutput(tileList[i]) == ""){continue;}
+            string[] outputs = ReturnTileOutput(tileList[i]).Split("+");
+            if (outputs.Length > output)
+            {
+                output = outputs.Length;
+                tile = tileList[i];
             }
         }
         return tile;
@@ -222,6 +278,7 @@ public class FactionMap : MapManager
     public void TestNewDay()
     {
         factionManager.unitManager.AllTurns(factionManager.factions);
+        factionManager.factionAI.AllTurns(factionManager.factions);
         factionManager.Save();
         UpdateMap();
     }

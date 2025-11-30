@@ -478,6 +478,18 @@ public class MapUtility : ScriptableObject
         return adjacent;
     }
 
+    public List<int> AdjacentBorders(List<int> locations, int size)
+    {
+        List<int> adjacent = new List<int>();
+        for (int i = 0; i < locations.Count; i++)
+        {
+            adjacent.AddRange(AdjacentTiles(locations[i], size));
+        }
+        adjacent = adjacent.Distinct().ToList();
+        adjacent = adjacent.Except(locations).ToList();
+        return adjacent;
+    }
+
     public bool TilesAdjacent(int location, int location2, int size)
     {
         return AdjacentTiles(location, size).Contains(location2);

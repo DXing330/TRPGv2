@@ -13,9 +13,23 @@ public class MapCurrentTiles : ScriptableObject
         if (col < 0){return col + 1;}
         return col - 1;
     }
+
+    protected List<int> ReturnMapSizeTiles(int mapSize)
+    {
+        List<int> mapSizeTiles = new List<int>();
+        for (int i = 0; i < mapSize * mapSize; i++)
+        {
+            mapSizeTiles.Add(i);
+        }
+        return mapSizeTiles;
+    }
     
     public List<int> GetCurrentTilesFromStart(int start, int mapSize, int gridSize)
     {
+        if (mapSize <= gridSize)
+        {
+            return ReturnMapSizeTiles(mapSize);
+        }
         int row = mapUtility.GetRow(start, mapSize);
         int col = mapUtility.GetColumn(start, mapSize);
         col = CheckCol(col);
@@ -24,6 +38,10 @@ public class MapCurrentTiles : ScriptableObject
 
     public List<int> GetCurrentTilesFromCenter(int center, int mapSize, int gridSize)
     {
+        if (mapSize <= gridSize)
+        {
+            return ReturnMapSizeTiles(mapSize);
+        }
         int row = mapUtility.GetRow(center, mapSize);
         int col = mapUtility.GetColumn(center, mapSize);
         row -= gridSize/2;

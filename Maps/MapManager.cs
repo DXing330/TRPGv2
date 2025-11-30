@@ -139,10 +139,12 @@ public class MapManager : MonoBehaviour
     public void UpdateCenterTile(int newInfo)
     {
         centerTile = newInfo;
+        // Can't move left or right by 1, have to move left/right by 2.
         if (mapUtility.flatTop && mapUtility.GetColumn(centerTile, mapSize) % 2 != 1)
         {
             centerTile += 1;
         }
+        // Can't move up or down by 1, have to move up or down by 2.
         else if (!mapUtility.flatTop && mapUtility.GetRow(centerTile, mapSize) % 2 != 1)
         {
             centerTile += mapSize;
@@ -183,8 +185,13 @@ public class MapManager : MonoBehaviour
     public void MoveMap(int direction)
     {
         int prevCenter = centerTile;
-        centerTile = mapUtility.PointInDirection(centerTile, direction, mapMaker.mapSize);
-        if (centerTile < 0 || centerTile == prevCenter){return;}
+        centerTile = mapUtility.PointInDirection(centerTile, direction, mapSize);
+        Debug.Log("Dir:"+direction+", PCntr:"+prevCenter+", Cntr:"+centerTile);
+        if (centerTile < 0)
+        {
+            centerTile = prevCenter;
+        }
+        UpdateCenterTile(centerTile);
         UpdateMap();
     }
 

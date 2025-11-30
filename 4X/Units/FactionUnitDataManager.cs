@@ -20,6 +20,7 @@ public class FactionUnitDataManager : SavedData
         return combatUnitSpriteName;
     }
     public List<string> unitData;
+    public int UnitCount(){return unitData.Count;}
     public void UpdateUnitAtIndex(FactionUnit fUnit, int index)
     {
         unitData[index] = fUnit.GetStats();
