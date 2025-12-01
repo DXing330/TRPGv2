@@ -38,17 +38,29 @@ public class FactionMap : MapManager
         }
         mapDisplayers[4].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
-    public List<string> workerTiles;
+    protected List<string> workerTiles;
+    public void UpdateWorkerTile(int tileNumber, string workerName = "Worker")
+    {
+        workerTiles[tileNumber] = workerName;
+    }
     public bool WorkerOnTile(int tileNumber)
     {
         return workerTiles[tileNumber] != "";
     }
-    public List<string> soldierTiles;
+    protected List<string> soldierTiles;
+    public void UpdateSoldierTile(int tileNumber, string sName)
+    {
+        soldierTiles[tileNumber] = sName;
+    }
     public bool SoldierOnTile(int tileNumber)
     {
         return soldierTiles[tileNumber] != "";
     }
-    public List<string> actorTiles;
+    protected List<string> actorTiles;
+    public void UpdateActorTile(int tileNumber, string aName)
+    {
+        actorTiles[tileNumber] = aName;
+    }
     public bool ActorOnTile(int tileNumber)
     {
         return (WorkerOnTile(tileNumber) || SoldierOnTile(tileNumber));
@@ -90,9 +102,15 @@ public class FactionMap : MapManager
         }
         return buildables;
     }
-    public List<string> tileBuildings; // Buildings upgrade tile outputs and are agnostic to factions. Whoever owns the tile also owns the building.
+    protected List<string> tileBuildings; // Buildings upgrade tile outputs and are agnostic to factions. Whoever owns the tile also owns the building.
+    public void MakeCapital(int tileNumber)
+    {
+        tileBuildings[tileNumber] = "City";
+    }
     public bool BuildingOnTile(int tileNumber)
     {
+        // Houses don't count.
+        if (tileBuildings[tileNumber].Contains("House")){return false;}
         return tileBuildings[tileNumber] != "";
     }
     protected List<string> BuildingMapInfo()
@@ -111,19 +129,46 @@ public class FactionMap : MapManager
     {
         // Destroying cities is different than destroying other buildings.
         if (tileBuildings[tileNumber] == "City"){return;}
-        tileBuildings[tileNumber] = "";
+        tileBuildings[tileNumber] = houseBuildings[houseBuildings.Count / 2];
         RefreshTileOutput(tileNumber);
     }
+    public void DestroyRandomBuilding(List<int> tiles)
+    {
+        // Shuffle the tiles.
+        utility.ShuffleIntList(tiles);
+        // Iterate, skipping cities.
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            if (BuildingOnTile(tiles[i]))
+            {
+                // If it rolls on the capital then you've lucked out this round.
+                DestroyBuilding(tiles[i]);
+                return;
+            }
+        }
+    }
+    // Have to set up houses before the final building.
+    public List<string> houseBuildings;
     public bool TryToBuildOnTile(string building, int tileNumber)
     {
         // Check if it's buildable.
-        if (tileBuildings[tileNumber] != ""){return false;}
+        if (BuildingOnTile(tileNumber)){return false;}
         List<string> buildable = buildableData.ReturnValue(mapInfo[tileNumber]).Split("|").ToList();
         if (buildable.Contains(building))
         {
-            tileBuildings[tileNumber] = building;
-            RefreshTileOutput(tileNumber);
-            return true;
+            // Check if the appropriate number of houses have been built.
+            int indexOf = houseBuildings.IndexOf(tileBuildings[tileNumber]);
+            if (indexOf < houseBuildings.Count - 1)
+            {
+                tileBuildings[tileNumber] = houseBuildings[indexOf + 1];
+                return true;
+            }
+            else if (indexOf == houseBuildings.Count - 1)
+            {
+                tileBuildings[tileNumber] = building;
+                RefreshTileOutput(tileNumber);
+                return true;
+            }
         }
         return false;
     }
@@ -138,6 +183,18 @@ public class FactionMap : MapManager
             }
         }
         return filteredList;
+    }
+    public int CountBuildingsOnTiles(List<int> tileList)
+    {
+        int count = 0;
+        for (int i = 0; i < tileList.Count; i++)
+        {
+            if (BuildingOnTile(tileList[i]))
+            {
+                count++;
+            }
+        }
+        return count;
     }
     public List<string> GetTileBuildings(){return tileBuildings;}
     public void ResetTileBuildings()
@@ -154,7 +211,7 @@ public class FactionMap : MapManager
             tileBuildings = new List<string>(emptyList);
         }
     }
-    public List<string> luxuryTiles;
+    protected List<string> luxuryTiles;
     public List<string> GetLuxuryTiles(){return luxuryTiles;}
     public void ResetLuxuryTiles()
     {
@@ -163,7 +220,7 @@ public class FactionMap : MapManager
     }
     public void SetLuxuryTiles(List<string> newInfo)
     {
-        luxuryTiles = newInfo;
+        luxuryTiles = new List<string>(newInfo);
         if (luxuryTiles.Count < mapSize * mapSize)
         {
             InitializeEmptyList();
@@ -195,7 +252,7 @@ public class FactionMap : MapManager
     public StatDatabase baseOutputs;
     public StatDatabase luxuryOutputs;
     public StatDatabase buildingOutputs;
-    public List<string> tileOutputs; // Fight over tiles with good outputs.
+    protected List<string> tileOutputs; // Fight over tiles with good outputs.
     public bool OutputOnTile(int tile, string output)
     {
         string[] tOutput = ReturnTileOutput(tile).Split("+");
@@ -242,6 +299,10 @@ public class FactionMap : MapManager
         newOutputs += luxuryOutputs.ReturnValue(luxuryTiles[tileNumber]) + "+";
         newOutputs += buildingOutputs.ReturnValue(tileBuildings[tileNumber]);
         tileOutputs[tileNumber] = newOutputs;
+        if (buildingOutputs.ReturnValue(tileBuildings[tileNumber]).Contains("Remove"))
+        {
+            tileOutputs[tileNumber] = "";
+        }
         if (save)
         {
             mapData.SaveMap(this);
@@ -264,7 +325,7 @@ public class FactionMap : MapManager
     public List<string> GetTileOutputs(){return tileOutputs;}
     public void SetTileOutputs(List<string> newInfo)
     {
-        tileOutputs = newInfo;
+        tileOutputs = new List<string>(newInfo);
         if (tileOutputs.Count < mapSize * mapSize)
         {
             InitializeEmptyList();
@@ -272,14 +333,17 @@ public class FactionMap : MapManager
         }
     }
     // Not saved, obtained from the faction manager each turn.
-    public List<string> tileOwners; // Highlight the tiles based on the owner's factions.
-    public List<string> tileActors; // Show the party and any other special actors.
 
     public void TestNewDay()
     {
         factionManager.unitManager.AllTurns(factionManager.factions);
-        factionManager.factionAI.AllTurns(factionManager.factions);
+        // Every twelve turns or so.
+        if (Random.Range(0, 13) == 0)
+        {
+            factionManager.factionAI.AllTurns(factionManager.factions);
+        }
         factionManager.Save();
+        mapData.SaveMap(this);
         UpdateMap();
     }
 }

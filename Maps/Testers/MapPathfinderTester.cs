@@ -43,6 +43,7 @@ public class MapPathfinderTester : MapManager
     public string endPathColor;
     public List<int> path;
     public List<int> ownedTiles;
+    public List<int> borders;
     public string pathColor;
     protected void PathClickOnTile(int tileNumber)
     {
@@ -83,7 +84,7 @@ public class MapPathfinderTester : MapManager
         {
             PathClickOnTile(tileNumber);
         }
-        else if (state == 1)
+        else if (state == 1 || state == 2)
         {
             BordersClickOnTile(tileNumber);
         }
@@ -118,7 +119,14 @@ public class MapPathfinderTester : MapManager
         {
             mapTiles[ownedTiles[i]].HighlightLayer(3, startPathColor);
         }
-        List<int> borders = mapUtility.AdjacentBorders(ownedTiles, mapSize);
+        if (state == 1)
+        {
+            borders = mapUtility.AdjacentBorders(ownedTiles, mapSize);
+        }
+        else if (state == 2)
+        {
+            borders = mapUtility.BorderTileSet(ownedTiles, mapSize);
+        }
         for (int i = 0; i < borders.Count; i++)
         {
             mapTiles[borders[i]].HighlightLayer(3, endPathColor);

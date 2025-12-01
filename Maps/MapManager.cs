@@ -186,7 +186,6 @@ public class MapManager : MonoBehaviour
     {
         int prevCenter = centerTile;
         centerTile = mapUtility.PointInDirection(centerTile, direction, mapSize);
-        Debug.Log("Dir:"+direction+", PCntr:"+prevCenter+", Cntr:"+centerTile);
         if (centerTile < 0)
         {
             centerTile = prevCenter;

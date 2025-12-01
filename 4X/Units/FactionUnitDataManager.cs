@@ -19,8 +19,30 @@ public class FactionUnitDataManager : SavedData
     {
         return combatUnitSpriteName;
     }
+    public int UnitCount()
+    {
+        return unitData.Count + combatUnitData.Count;
+    }
+    public void RandomUnitDesertion()
+    {
+        int index = UnityEngine.Random.Range(0, UnitCount());
+        if (index < unitData.Count)
+        {
+            RemoveUnitAtIndex(index);
+        }
+        else
+        {
+            index -= unitData.Count;
+            RemoveCombatUnitAtIndex(index);
+        }
+    }
     public List<string> unitData;
-    public int UnitCount(){return unitData.Count;}
+    public int WorkerUnitCount(){return unitData.Count;}
+    public void RemoveUnitAtIndex(int index)
+    {
+        unitData.RemoveAt(index);
+        unitLocations.RemoveAt(index);
+    }
     public void UpdateUnitAtIndex(FactionUnit fUnit, int index)
     {
         unitData[index] = fUnit.GetStats();
@@ -56,10 +78,15 @@ public class FactionUnitDataManager : SavedData
         unitLocations[index] = newLocation.ToString();
     }
     public List<string> combatUnitData;
+    public void RemoveCombatUnitAtIndex(int index)
+    {
+        combatUnitData.RemoveAt(index);
+        combatUnitLocations.RemoveAt(index);
+    }
     public void UpdateCombatUnitAtIndex(CombatUnit cUnit, int index)
     {
-        unitData[index] = cUnit.GetStats();
-        unitLocations[index] = cUnit.GetLocation().ToString();
+        combatUnitData[index] = cUnit.GetStats();
+        combatUnitLocations[index] = cUnit.GetLocation().ToString();
     }
     public List<string> combatUnitLocations;
     public int ReturnCombatUnitLocationAtIndex(int index)

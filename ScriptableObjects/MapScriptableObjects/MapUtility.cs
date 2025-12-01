@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MapUtility", menuName = "ScriptableObjects/Utility/MapUtility", order = 1)]
 public class MapUtility : ScriptableObject
 {
+    public GeneralUtility utility;
     public bool flatTop = true;
 
     public int DistanceBetweenTiles(int tileOne, int tileTwo, int size)
@@ -488,6 +489,19 @@ public class MapUtility : ScriptableObject
         adjacent = adjacent.Distinct().ToList();
         adjacent = adjacent.Except(locations).ToList();
         return adjacent;
+    }
+
+    public List<int> BorderTileSet(List<int> fullTileSet, int size)
+    {
+        List<int> borders = new List<int>();
+        for (int i = 0; i < fullTileSet.Count; i++)
+        {
+            if (!utility.IntListContainsIntList(fullTileSet, AdjacentTiles(fullTileSet[i], size)))
+            {
+                borders.Add(fullTileSet[i]);
+            }
+        }
+        return borders;
     }
 
     public bool TilesAdjacent(int location, int location2, int size)

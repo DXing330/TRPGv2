@@ -12,10 +12,10 @@ public class FactionAI : MonoBehaviour
     protected void FactionsTurn(FactionData faction)
     {
         // Make workers.
-        int workerCount = faction.unitData.UnitCount();
-        if (workerCount < faction.GetOwnedTiles().Count / 3)
+        int workerCount = faction.unitData.WorkerUnitCount();
+        if (workerCount < map.CountBuildingsOnTiles(faction.GetOwnedTiles()) - 1)
         {
-            // Workers are free but cost food for upkeep.
+            // Workers are free but cost food/gold for upkeep.
             factionManager.unitManager.FactionMakesWorker(faction);
             return;
         }
@@ -30,18 +30,19 @@ public class FactionAI : MonoBehaviour
             {
                 if (buildables[i] == ""){continue;}
                 // Check the cost.
-                map.TryToBuildOnTile(buildables[i], tilesWithoutBuildings[i]);
-                return;
+                if (faction.PayBuildingCost())
+                {
+                    map.TryToBuildOnTile(buildables[i], tilesWithoutBuildings[i]);
+                    return;
+                }
+                else{break;}
             }
         }
         // Expand to the adjacent tile with largest output.
         List<int> borderTiles = map.mapUtility.AdjacentBorders(faction.GetOwnedTiles(), map.mapSize);
         int targetTile = map.ReturnTileWithLargestOutput(borderTiles);
-        if (targetTile >= 0)
+        if (targetTile >= 0 && faction.PayExpandCost())
         {
-            // Pay cost.
-            // Great place to add grudges/intrigue.
-            // TODO: IMPLEMENT FACTION RELATIONSHIPS IN FACTION MANAGER.
             factionManager.TryToClaimTile(targetTile, faction);
             return;
         }
@@ -54,13 +55,31 @@ public class FactionAI : MonoBehaviour
 
     protected void FactionUpkeepCost(FactionData faction)
     {
-
+        faction.CollectTaxes();
+        // Feed your units.
+        if (!faction.FeedUnits())
+        {
+            // Lose a random unit.
+            faction.unitData.RandomUnitDesertion();
+        }
+        // Pay your units.
+        if (!faction.PayUnits())
+        {
+            faction.unitData.RandomUnitDesertion();
+        }
+        // Maintain your city/buildings.
+        if (!faction.MaintainBuildings(map.CountBuildingsOnTiles(faction.GetOwnedTiles())))
+        {
+            // Lose a random building.
+            map.DestroyRandomBuilding(faction.GetOwnedTiles());
+        }
     }
 
     public void AllTurns(List<FactionData> factions)
     {
         for (int i = 0; i < factions.Count; i++)
         {
+            FactionUpkeepCost(factions[i]);
             FactionsTurn(factions[i]);
         }
     }

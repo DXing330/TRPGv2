@@ -82,8 +82,8 @@ public class FactionMapData : SavedData
         }
         // Reset buildings.
         map.ResetTileBuildings();
-        map.RefreshAllTileOutputs();
         map.factionManager.GenerateFactions();
+        map.RefreshAllTileOutputs();
     }
 
     public void LoadMap(FactionMap map)

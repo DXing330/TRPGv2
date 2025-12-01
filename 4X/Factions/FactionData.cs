@@ -23,23 +23,108 @@ public class FactionData : SavedData
     public int capitalHealth;
     public int mana; // The king of resources, worth more than gold. Mana is used for research.
     public int gold; // Factions should have gold far beyond you, their gold is measured in 100s. Gold is used for everything.
-    public int goldPerCity;
-    public int goldPerUnit;
-    public int ReturnGoldUpkeep()
+    public bool PayExpandCost()
     {
-        return 0;
+        if (gold >= ownedTiles.Count * ownedTiles.Count)
+        {
+            gold -= ownedTiles.Count * ownedTiles.Count;
+            return true;
+        }
+        return false;
+    }
+    public int tilesPerGold = 6;
+    public void CollectTaxes()
+    {
+        gold += Mathf.Max(1, ownedTiles.Count / tilesPerGold);
+    }
+    public int goldPerCity;
+    public int goldPerTwoUnits;
+    public bool PayUnits()
+    {
+        bool paying = true;
+        int cost = goldPerTwoUnits * (unitData.UnitCount() / 2);
+        if (gold >= cost)
+        {
+            gold -= cost;
+        }
+        else
+        {
+            gold = 0;
+            paying = false;
+        }
+        return paying;
     }
     public int food; // Food is used as for units/villages.
     public int foodPerCity;
-    public int foodPerUnit;
-    public int ReturnFoodUpkeep()
+    public int foodPerTwoUnits;
+    public bool FeedUnits()
     {
-        return 0;
+        bool feeding = true;
+        int foodCost = foodPerTwoUnits * (unitData.UnitCount() / 2);
+        if (food >= foodCost)
+        {
+            food -= foodCost;
+        }
+        else
+        {
+            foodCost -= food;
+            food = 0;
+            // Cost twice the gold to import food.
+            if (gold >= foodCost * 2)
+            {
+                gold -= foodCost * 2;
+            }
+            else
+            {
+                gold = 0;
+                feeding = false;
+            }
+        }
+        return feeding;
     }
     public int materials; // Materials are used for buildings/new units.
-    public int ReturnMaterialUpkeep()
+    public int materialPerBuilding;
+    public int buildingCost;
+    public bool PayBuildingCost()
     {
-        return 0;
+        if (gold >= buildingCost && materials >= buildingCost)
+        {
+            gold -= buildingCost;
+            materials -= buildingCost;
+            return true;
+        }
+        else if (gold >= buildingCost + (buildingCost - materials) * 2)
+        {
+            gold -= buildingCost + (buildingCost - materials) * 2;
+            materials = 0;
+            return true;
+        }
+        return false;
+    }
+    public bool MaintainBuildings(int buildingCount)
+    {
+        bool maintaining = true;
+        // Don't count the capital for maintence.
+        int maintence = (buildingCount - 1) * materialPerBuilding;
+        if (materials >= maintence)
+        {
+            materials -= maintence;
+        }
+        else
+        {
+            maintence -= materials;
+            materials = 0;
+            if (gold >= maintence * 2)
+            {
+                gold -= maintence * 2;
+            }
+            else
+            {
+                gold = 0;
+                maintaining = false;
+            }
+        }
+        return maintaining;
     }
     public bool ResourceAvailable(string resource, int amount)
     {
@@ -204,6 +289,16 @@ public class FactionData : SavedData
     public void SetOtherFactions(List<string> newInfo){otherFactions = newInfo;}
     public List<int> otherFactionRelations; // Politics handled by a single tracker. Main idea is tit for tat, but dislike whatever the Civ V AI dislikes as well.
     public void SetRelations(List<int> newInfo){otherFactionRelations = newInfo;}
+    public void UpdateRelation(FactionData oFaction, int change)
+    {
+        for (int i = 0; i < otherFactions.Count; i++)
+        {
+            if (oFaction.GetFactionName() == otherFactions[i])
+            {
+                otherFactionRelations[i] += change;
+            }
+        }
+    }
     // Luxury/special resources.
     public List<string> storedResources;
     public void SetStoredResources(List<string> newInfo){storedResources = newInfo;}
@@ -237,9 +332,9 @@ public class FactionData : SavedData
         capitalLocation = -1;
         capitalHealth = 6;
         mana = 0;
-        gold = 100;
-        food = 100;
-        materials = 100;
+        gold = 60;
+        food = 60;
+        materials = 60;
         playerReputation = 0;
         ownedTiles.Clear();
         factionPassives.Clear();

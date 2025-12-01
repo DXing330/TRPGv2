@@ -301,6 +301,30 @@ public class GeneralUtility : ScriptableObject
         return count;
     }
 
+    public bool IntListContainsIntList(List<int> fullList, List<int> partialList)
+    {
+        for (int i = 0; i < partialList.Count; i++)
+        {
+            if (!fullList.Contains(partialList[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public bool ListContainsList(List<string> fList, List<string> pList)
+    {
+        for (int i = 0; i < pList.Count; i++)
+        {
+            if (!fList.Contains(pList[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public int SafeParseInt(string intString, int defaultValue = 0)
     {
         try
@@ -353,5 +377,17 @@ public class GeneralUtility : ScriptableObject
             if (roll == 0){rarity++;}
         }
         return rarity;
+    }
+
+    public List<int> ShuffleIntList(List<int> intList)
+    {
+        for (int i = 0; i < intList.Count; i++)
+        {
+            int rng = UnityEngine.Random.Range(0, intList.Count);
+            int value = intList[i];
+            intList[i] = intList[rng];
+            intList[rng] = value;
+        }
+        return intList;
     }
 }
