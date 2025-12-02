@@ -7,6 +7,7 @@ public class FactionAI : MonoBehaviour
     // Can build workers (cheapest), combat units (cheap), buildings (medium), expand (medium) or research (expensive).
     public FactionMap map;
     public FactionManager factionManager;
+    public FactionUnitManager unitManager;
     public List<string> factionActions;
 
     protected void FactionsTurn(FactionData faction)
@@ -57,15 +58,21 @@ public class FactionAI : MonoBehaviour
     {
         faction.CollectTaxes();
         // Feed your units.
-        if (!faction.FeedUnits())
+        int hunger = faction.FeedUnits();
+        if (hunger > 0)
         {
-            // Lose a random unit.
-            faction.unitData.RandomUnitDesertion();
+            unitManager.ChangeUnitMorale(faction.unitData, -1);
         }
         // Pay your units.
-        if (!faction.PayUnits())
+        int debt = faction.PayUnits();
+        if (debt > 0)
         {
-            faction.unitData.RandomUnitDesertion();
+            unitManager.ChangeUnitMorale(faction.unitData, -1);
+        }
+        // If paid and full then they're happy.
+        if (debt <= 0 && hunger <= 0)
+        {
+            unitManager.ChangeUnitMorale(faction.unitData, 1);
         }
         // Maintain your city/buildings.
         if (!faction.MaintainBuildings(map.CountBuildingsOnTiles(faction.GetOwnedTiles())))
@@ -73,6 +80,8 @@ public class FactionAI : MonoBehaviour
             // Lose a random building.
             map.DestroyRandomBuilding(faction.GetOwnedTiles());
         }
+        // Check if any units desert due to low morale or have died.
+        unitManager.UnitDeathsAndDesertions(faction.unitData);
     }
 
     public void AllTurns(List<FactionData> factions)

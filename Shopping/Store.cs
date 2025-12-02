@@ -15,15 +15,20 @@ public class Store : MonoBehaviour
     public PartyDataManager partyData;
     public InventoryUI inventoryUI;
     public ItemDetailViewer itemDetailViewer;
-    public StatDatabase equipData;
-    public StatDatabase itemsData;
+    public StatDatabase storeData;
     public StatDatabase dungeonItemDescriptions;
     protected virtual void LoadStore()
     {
-        equipmentSold = equipData.GetAllKeys();
-        equipmentPrices = equipData.GetAllValues();
-        itemsSolds = itemsData.GetAllKeys();
-        itemsPrices = itemsData.GetAllValues();
+        string[] storeStuff = storeData.ReturnValue(storeName).Split("|");
+        equipmentSold = storeStuff[0].Split(",").ToList();
+        equipmentPrices = storeStuff[1].Split(",").ToList();
+        itemsSolds = storeStuff[2].Split(",").ToList();
+        itemsPrices = storeStuff[3].Split(",").ToList();
+        if (dungeonItems)
+        {
+            dungeonItemsSolds = storeStuff[4].Split(",").ToList();
+            dungeonItemsSolds = storeStuff[5].Split(",").ToList();
+        }
         TrimStock();
         UpdateDisplay();
     }

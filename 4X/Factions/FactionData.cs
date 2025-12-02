@@ -39,9 +39,8 @@ public class FactionData : SavedData
     }
     public int goldPerCity;
     public int goldPerTwoUnits;
-    public bool PayUnits()
+    public int PayUnits()
     {
-        bool paying = true;
         int cost = goldPerTwoUnits * (unitData.UnitCount() / 2);
         if (gold >= cost)
         {
@@ -49,17 +48,17 @@ public class FactionData : SavedData
         }
         else
         {
+            cost -= gold;
             gold = 0;
-            paying = false;
+            return cost;
         }
-        return paying;
+        return 0;
     }
     public int food; // Food is used as for units/villages.
     public int foodPerCity;
     public int foodPerTwoUnits;
-    public bool FeedUnits()
+    public int FeedUnits()
     {
-        bool feeding = true;
         int foodCost = foodPerTwoUnits * (unitData.UnitCount() / 2);
         if (food >= foodCost)
         {
@@ -76,11 +75,12 @@ public class FactionData : SavedData
             }
             else
             {
+                foodCost -= gold / 2;
                 gold = 0;
-                feeding = false;
+                return foodCost;
             }
         }
-        return feeding;
+        return 0;
     }
     public int materials; // Materials are used for buildings/new units.
     public int materialPerBuilding;
@@ -333,8 +333,8 @@ public class FactionData : SavedData
         capitalHealth = 6;
         mana = 0;
         gold = 60;
-        food = 60;
-        materials = 60;
+        food = 20;
+        materials = 20;
         playerReputation = 0;
         ownedTiles.Clear();
         factionPassives.Clear();
@@ -453,7 +453,6 @@ public class FactionData : SavedData
                 break;
             case 15:
                 otherFactionRelations = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-                utility.RemoveEmptyValues(otherFactionRelations);
                 break;
             case 16:
                 storedResources = stat.Split(delimiterTwo).ToList();

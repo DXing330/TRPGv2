@@ -33,6 +33,17 @@ public class FactionUnit : MonoBehaviour
             health = maxHealth;
         }
     }
+    public int maxLoyalty = 6;
+    public int loyalty;
+    public void AdjustLoyalty(int amount)
+    {
+        loyalty += amount;
+        if (loyalty > maxLoyalty)
+        {
+            loyalty = maxLoyalty;
+        }
+    }
+    public int GetLoyalty(){return loyalty;}
     public int location;
     public int GetLocation()
     {
@@ -65,6 +76,7 @@ public class FactionUnit : MonoBehaviour
     }
     public string GetGoalSpecifics()
     {
+        if (goalSpecifics == ""){return "Gold";}
         return goalSpecifics;
     }
     public void SetGoal(string nG, string nGS = "")
@@ -83,6 +95,8 @@ public class FactionUnit : MonoBehaviour
         faction = "";
         maxHealth = 1;
         health = 1;
+        maxLoyalty = 6;
+        loyalty = 3;
         location = -1;
         inventorySize = 6;
         inventory.Clear();
@@ -97,6 +111,8 @@ public class FactionUnit : MonoBehaviour
         stats += faction + delimiter;
         stats += maxHealth + delimiter;
         stats += health + delimiter;
+        stats += maxLoyalty + delimiter;
+        stats += loyalty + delimiter;
         stats += location + delimiter;
         stats += inventorySize + delimiter;
         stats += String.Join(delimiter2, inventory) + delimiter;
@@ -133,19 +149,25 @@ public class FactionUnit : MonoBehaviour
             health = int.Parse(stat);
             break;
             case 4:
-            location = int.Parse(stat);
+            maxLoyalty = int.Parse(stat);
             break;
             case 5:
-            inventorySize = int.Parse(stat);
+            loyalty = int.Parse(stat);
             break;
             case 6:
+            location = int.Parse(stat);
+            break;
+            case 7:
+            inventorySize = int.Parse(stat);
+            break;
+            case 8:
             inventory = stat.Split(delimiter2).ToList();
             utility.RemoveEmptyListItems(inventory);
             break;
-            case 7:
+            case 9:
             goal = stat;
             break;
-            case 8:
+            case 10:
             goalSpecifics = stat;
             break;
         }

@@ -275,6 +275,27 @@ public class FactionMap : MapManager
         }
         return tile;
     }
+    public int ReturnClosestTileWithOutput(int start, string output)
+    {
+        int tile = -1;
+        int distance = mapSize * mapSize;
+        // Forget about efficiency, just do it. X^3 is fine desu.
+        for (int i = 0; i < tileOutputs.Count; i++)
+        {
+            if (ReturnTileOutput(i) == ""){continue;}
+            string[] outputs = ReturnTileOutput(i).Split("+");
+            if (outputs.Contains(output))
+            {
+                int newDist = mapUtility.DistanceBetweenTiles(start, i, mapSize);
+                if (newDist < distance)
+                {
+                    distance = newDist;
+                    tile = i;
+                }
+            }
+        }
+        return tile;
+    }
     public int ReturnTileWithLargestOutput(List<int> tileList)
     {
         int output = 0;
@@ -333,12 +354,16 @@ public class FactionMap : MapManager
         }
     }
     // Not saved, obtained from the faction manager each turn.
-
+    public bool fastTurns;
     public void TestNewDay()
     {
         factionManager.unitManager.AllTurns(factionManager.factions);
         // Every twelve turns or so.
-        if (Random.Range(0, 13) == 0)
+        if (fastTurns)
+        {
+            factionManager.factionAI.AllTurns(factionManager.factions);
+        }
+        else if (Random.Range(0, 13) == 0)
         {
             factionManager.factionAI.AllTurns(factionManager.factions);
         }

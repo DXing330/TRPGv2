@@ -82,7 +82,10 @@ public class SelectStatTextList : StatTextList
         HighlightSelected();
     }
     public int GetSelected(){return selectedIndex;}
-    public string GetSelectedStat(){return stats[selectedIndex];}
+    public string GetSelectedStat()
+    {
+        return stats[selectedIndex];
+    }
     public string GetSelectedData(){return data[selectedIndex];}
     public string GetCurrentPageStat(int index)
     {
