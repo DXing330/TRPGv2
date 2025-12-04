@@ -70,7 +70,6 @@ public class BattleManager : MonoBehaviour
         battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
         combatLog.UpdateNewestLog("Finished updating team stats.");
         battleEndManager.EndBattle(winningTeam);
-        battleEndManager.UpdateOverworldAfterBattle(winningTeam);
         combatLog.UpdateNewestLog("Finished updating overworld.");
     }
     public BattleUIManager UI;

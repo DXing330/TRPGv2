@@ -134,7 +134,7 @@ public class FactionUnitDataManager : SavedData
         switch (index)
         {
             default:
-                break;
+            break;
             case 0:
             unitData = stat.Split(delimiterTwo).ToList();
             utility.RemoveEmptyListItems(unitData);

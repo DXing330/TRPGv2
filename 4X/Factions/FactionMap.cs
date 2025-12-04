@@ -13,6 +13,7 @@ public class FactionMap : MapManager
     {
         mapData.LoadMap(this);
         pathfinder.SetMapSize(mapSize);
+        pathfinder.SetMoveCosts(moveCosts);
         factionManager.Load();
         UpdateMap();
     }
@@ -25,6 +26,19 @@ public class FactionMap : MapManager
     {
         mapData.GenerateNewMap(this);
         UpdateMap();
+    }
+    public List<int> moveCosts;
+    public void ResetMoveCosts()
+    {
+        moveCosts.Clear();
+    }
+    public int GetMoveCost(int tile)
+    {
+        // Out of bounds tiles are not passable.
+        if (tile < 0){return 99;}
+        // Default move cost is 1.
+        else if (tile >= moveCosts.Count){return 1;}
+        return moveCosts[tile];
     }
     public void UpdateFactionHighlights()
     {

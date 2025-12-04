@@ -9,8 +9,34 @@ public class MapPathfinder : ScriptableObject
     public Heap heap;
     public MapUtility mapUtility;
     public int mapSize;
-    public void SetMapSize(int newSize){mapSize = newSize;}
+    public void SetMapSize(int newSize)
+    {
+        mapSize = newSize;
+        ResetMoveCosts();
+    }
     public int GetMapSize(){return mapSize;}
+    // Keep track of the movecost of each tile.
+    public List<int> moveCosts;
+    protected void ResetMoveCosts()
+    {
+        moveCosts.Clear();
+    }
+    protected int GetMoveCost(int tileNumber)
+    {
+        if (tileNumber < 0)
+        {
+            return heap.bigInt;
+        }
+        else if (tileNumber >= moveCosts.Count)
+        {
+            return 1;
+        }
+        return moveCosts[tileNumber];
+    }
+    public void SetMoveCosts(List<int> newMoveCosts)
+    {
+        moveCosts = new List<int>(newMoveCosts);
+    }
     // Keep track of the distances to each tile.
     public List<int> distances;
     // Keep track of the tile that leads into each tile.
@@ -67,6 +93,7 @@ public class MapPathfinder : ScriptableObject
         int moveCost = 1;
         for (int i = 0; i < adjacentTiles.Count; i++)
         {
+            moveCost = GetMoveCost(adjacentTiles[i]);
             if (distances[closestTile]+moveCost < distances[adjacentTiles[i]])
             {
                 distances[adjacentTiles[i]] = distances[closestTile]+moveCost;

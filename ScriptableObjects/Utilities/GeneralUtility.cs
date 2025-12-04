@@ -379,6 +379,28 @@ public class GeneralUtility : ScriptableObject
         return rarity;
     }
 
+    public string RandomStringBasedOnWeight(List<string> strings, List<int> weights)
+    {
+        int totalWeight = 0;
+        for (int i = 0; i < weights.Count; i++)
+        {
+            totalWeight += weights[i];
+        }
+        int roll = UnityEngine.Random.Range(0, totalWeight);
+        for (int i = 0; i < weights.Count; i++)
+        {
+            if (roll < weights[i])
+            {
+                return strings[i];
+            }
+            else
+            {
+                roll -= weights[i];
+            }
+        }
+        return strings[0];
+    }
+
     public List<int> ShuffleIntList(List<int> intList)
     {
         for (int i = 0; i < intList.Count; i++)

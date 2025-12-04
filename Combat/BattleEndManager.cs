@@ -12,8 +12,6 @@ public class BattleEndManager : MonoBehaviour
     public PartyDataManager partyData;
     public TacticActor dummyActor;
     public Equipment dummyEquip;
-    public SavedOverworld overworld;
-    public OverworldState overworldState;
     public SceneMover sceneMover;
     public GameObject battleEndScreen;
     public TMP_Text battleResult;
@@ -71,7 +69,7 @@ public class BattleEndManager : MonoBehaviour
         partyData.Save();
     }
 
-    public void UpdateOverworldAfterBattle(int winningTeam)
+    /*public void UpdateOverworldAfterBattle(int winningTeam)
     {
         if (winningTeam != 0 || subGame) { return; }
         if (overworldState == null){return;}
@@ -90,7 +88,7 @@ public class BattleEndManager : MonoBehaviour
             case "Event":
                 break;
         }
-    }
+    }*/
 
     public void PartyDefeated()
     {

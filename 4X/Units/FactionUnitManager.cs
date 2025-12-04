@@ -88,9 +88,27 @@ public class FactionUnitManager : MonoBehaviour
         // Load the unit.
         dummyUnit.LoadStats(faction.GetUnitDataAtIndex(index));
         if (dummyUnit.Dead()){return;}
-        // If inventory full and at capital, then drop off items and update goal.
-        if (dummyUnit.InventoryFull() && dummyUnit.GetLocation() == factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()))
+        // If out of energy then relax.
+        if (dummyUnit.energy <= 0)
         {
+            dummyUnit.Relax();
+            faction.UpdateUnitAtIndex(dummyUnit, index);
+            return;
+        }
+        // If at a city, and injured then rest to heal.
+        else if (dummyUnit.GetLocation() == factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()) && dummyUnit.Hurt())
+        {
+            dummyUnit.Rest();
+            faction.UpdateUnitAtIndex(dummyUnit, index);
+            return;
+        }
+        // If inventory full and at capital, then drop off items and update goal.
+        else if (dummyUnit.InventoryFull() && dummyUnit.GetLocation() == factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()))
+        {
+            if (dummyUnit.CompletedGoal())
+            {
+                dummyUnit.GainExp(1);
+            }
             factionManager.UnitDepositsInventory(dummyUnit, dummyUnit.GetLocation());
             faction.UpdateUnitAtIndex(dummyUnit, index);
             return;
@@ -99,7 +117,7 @@ public class FactionUnitManager : MonoBehaviour
         else if (dummyUnit.InventoryFull() && dummyUnit.GetLocation() != factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()))
         {
             List<int> path = map.pathfinder.BasicPathToTile(dummyUnit.GetLocation(), factionManager.GetCapitalLocationOfFaction(dummyUnit.GetFaction()));
-            dummyUnit.SetLocation(path[path.Count - 1]);
+            MoveAlongPath(path, dummyUnit);
             faction.UpdateUnitAtIndex(dummyUnit, index);
             return;
         }
@@ -133,6 +151,7 @@ public class FactionUnitManager : MonoBehaviour
         else if (!dummyUnit.InventoryFull() && dummyUnit.GetLocation() == targetTile)
         {
             // This leads to a concentration of workers at buildings.
+            dummyUnit.UseEnergy();
             dummyUnit.GainItems(map.ReturnTileOutput(targetTile).Split("+").ToList());
             // All the better to rob and destroy.
         }
@@ -140,11 +159,42 @@ public class FactionUnitManager : MonoBehaviour
         else
         {
             List<int> path = map.pathfinder.BasicPathToTile(dummyUnit.GetLocation(), targetTile);
-            dummyUnit.SetLocation(path[path.Count - 1]);
+            MoveAlongPath(path, dummyUnit);
             faction.UpdateUnitLocation(index, dummyUnit.GetLocation());
         }
         // You can rob or help these units when encountering them on the map, simplest way to change reputation with a faction.
         faction.UpdateUnitAtIndex(dummyUnit, index);
+    }
+
+    protected void MoveAlongPath(List<int> path, FactionUnit unit, bool extraMoveUsed = false)
+    {
+        int nextTile = path[path.Count - 1];
+        path.RemoveAt(path.Count - 1);
+        int moveCost = map.GetMoveCost(nextTile);
+        if (unit.movement >= moveCost)
+        {
+            unit.SetLocation(nextTile);
+            unit.UseMovement(moveCost);
+        }
+        // If you can't afford to move there.
+        else if (unit.movement < moveCost && !extraMoveUsed)
+        {
+            extraMoveUsed = true;
+            unit.MoveFaster();
+            unit.SetLocation(nextTile);
+            unit.UseMovement(moveCost);
+        }
+        else if (unit.movement < moveCost && extraMoveUsed)
+        {
+            return;
+        }
+        // Arrived
+        if (path.Count <= 0){return;}
+        // If you can afford it, then keep moving.
+        if (unit.movement + unit.baseSpeed >= map.GetMoveCost(path[path.Count - 1]))
+        {
+            MoveAlongPath(path, unit, extraMoveUsed);
+        }
     }
 
     protected void CombatUnitTurn(FactionUnitDataManager faction, int index)

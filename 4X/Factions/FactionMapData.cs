@@ -25,6 +25,7 @@ public class FactionMapData : SavedData
     public StatDatabase zoneTileMappings;
     public StatDatabase zoneTileWeights;
     public StatDatabase luxuryTileMappings;
+    public StatDatabase tileMoveCosts;
     public int cutInto;
     public string defaultZoneLayout;
 
@@ -74,6 +75,7 @@ public class FactionMapData : SavedData
             }
         }
         map.SetMapInfo(newMapInfo);
+        UpdateMapMoveCosts(map);
         // Generate luxuries.
         map.ResetLuxuryTiles();
         for (int i = 0; i < luxuryTileMappings.GetAllKeys().Count; i++)
@@ -102,6 +104,15 @@ public class FactionMapData : SavedData
         }
     }
 
+    protected void UpdateMapMoveCosts(FactionMap map)
+    {
+        map.ResetMoveCosts();
+        for (int i = 0; i < map.mapInfo.Count; i++)
+        {
+            map.moveCosts.Add(int.Parse(tileMoveCosts.ReturnValue(map.mapInfo[i])));
+        }
+    }
+
     protected void LoadMapStat(FactionMap map, string stat, int index)
     {
         switch (index)
@@ -110,6 +121,7 @@ public class FactionMapData : SavedData
             break;
             case 0:
             map.SetMapInfo(stat.Split(delimiterTwo).ToList());
+            UpdateMapMoveCosts(map);
             break;
             case 1:
             map.SetTileBuildings(stat.Split(delimiterTwo).ToList());

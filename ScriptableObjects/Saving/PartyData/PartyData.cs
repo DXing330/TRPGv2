@@ -151,6 +151,36 @@ public class PartyData : SavedData
     {
         defeatedMemberTracker[index] = false;
     }
+    public StatDatabase allInjuries;
+    // Try to add a new injury three times, if all fail then die.
+    public bool AddInjury(int index, int maxRolls = 3)
+    {
+        // Generate a random injury.
+        dummyActor.SetStatsFromString(partyStats[index]);
+        string randomInjury = allInjuries.ReturnRandomKey();
+        int maxInjuryLevel = int.Parse(allInjuries.ReturnValue(randomInjury));
+        // Check if the actor already has the max level of that injury.
+        if (dummyActor.GetLevelFromPassive(randomInjury) >= maxInjuryLevel)
+        {
+            // Else return with one less try.
+            if (maxRolls > 0)
+            {
+                return AddInjury(index, maxRolls - 1);
+            }
+            // If no more tries then die.
+            else
+            {
+                return false;
+            }
+        }
+        // If not then add it and return true.
+        else
+        {
+            dummyActor.AddPassiveSkill(randomInjury, "1");
+            partyStats[index] = dummyActor.GetStats();
+            return true;
+        }
+    }
     public void RemoveDefeatedMembers()
     {
         if (partyStats.Count <= 0){ return; }
@@ -158,7 +188,16 @@ public class PartyData : SavedData
         {
             if (defeatedMemberTracker[i])
             {
-                RemoveStatsAtIndex(i);
+                if (!AddInjury(i))
+                {
+                    RemoveStatsAtIndex(i);
+                }
+                else
+                {
+                    dummyActor.SetStatsFromString(partyStats[i]);
+                    dummyActor.NearDeath();
+                    partyStats[i] = dummyActor.GetStats();
+                }
             }
         }
     }
@@ -169,7 +208,15 @@ public class PartyData : SavedData
             dummyActor.SetStatsFromString(partyStats[i]);
             if (dummyActor.GetHealth() <= 0)
             {
-                RemoveStatsAtIndex(i);
+                if (!AddInjury(i))
+                {
+                    RemoveStatsAtIndex(i);
+                }
+                else
+                {
+                    dummyActor.NearDeath();
+                    partyStats[i] = dummyActor.GetStats();
+                }
             }
         }
     }

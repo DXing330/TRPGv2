@@ -7,8 +7,8 @@ using UnityEngine;
 public class FactionUnit : MonoBehaviour
 {
     public GeneralUtility utility;
-    protected string delimiter = "#";
-    protected string delimiter2 = "|";
+    public string delimiter = "#";
+    public string delimiter2 = "|";
     public string unitType; // Civilian/Combat
     public string faction;
     public void SetFaction(string factionName)
@@ -20,20 +20,64 @@ public class FactionUnit : MonoBehaviour
         return faction;
     }
     public int maxHealth;
+    public virtual void GainMaxHealth(int amount)
+    {
+        maxHealth += amount;
+    }
     public int health;
-    public bool Dead()
+    public virtual void Heal(int amount)
+    {
+        health += amount;
+        if (health > maxHealth)
+        {
+            health = maxHealth;
+        }
+    }
+    public virtual void TakeDamage(int amount)
+    {
+        health -= amount;
+    }
+    public virtual bool Hurt()
+    {
+        return health < maxHealth;
+    }
+    public virtual bool Dead()
     {
         return health <= 0;
     }
-    public void Rest()
+    public virtual void Rest()
     {
         health++;
         if (health > maxHealth)
         {
             health = maxHealth;
         }
+        Relax();
+    }
+    public int maxEnergy = 6;
+    public int energy = 6;
+    public bool EnergyAvailable()
+    {
+        return energy > 0;
+    }
+    public bool UseEnergy()
+    {
+        if (EnergyAvailable())
+        {
+            energy--;
+            return true;
+        }
+        return false;
+    }
+    public virtual void Relax()
+    {
+        energy = maxEnergy;
     }
     public int maxLoyalty = 6;
+    public void AdjustMaxLoyalty(int amount)
+    {
+        maxLoyalty += amount;
+    }
     public int loyalty;
     public void AdjustLoyalty(int amount)
     {
@@ -44,6 +88,33 @@ public class FactionUnit : MonoBehaviour
         }
     }
     public int GetLoyalty(){return loyalty;}
+    public int level;
+    public int exp;
+    public virtual void GainExp(int amount)
+    {
+        exp += amount;
+        if (exp > level * level * level)
+        {
+            LevelUp();
+        }
+    }
+    public virtual void LevelUp()
+    {
+        level++;
+        exp = 0;
+        GainMaxHealth(1);
+        Heal(1);
+        AdjustMaxLoyalty(1);
+        AdjustInventorySize(1);
+        if (level % 3 == 0)
+        {
+            maxEnergy++;
+        }
+        if (level % 4 == 0)
+        {
+            baseSpeed++;
+        }
+    }
     public int location;
     public int GetLocation()
     {
@@ -53,7 +124,28 @@ public class FactionUnit : MonoBehaviour
     {
         location = newInfo;
     }
+    public int baseSpeed = 2;
+    public int movement = 2;
+    public void MoveFaster()
+    {
+        if (UseEnergy())
+        {
+            movement += baseSpeed;
+        }
+    }
+    public int GetMovement()
+    {
+        return movement;
+    }
+    public void UseMovement(int moveCost)
+    {
+        movement -= moveCost;
+    }
     public int inventorySize;
+    public virtual void AdjustInventorySize(int amount)
+    {
+        inventorySize += amount;
+    }
     public bool InventoryFull()
     {
         return inventory.Count >= inventorySize;
@@ -89,36 +181,63 @@ public class FactionUnit : MonoBehaviour
         goalSpecifics = nGS;
     }
 
+    public virtual bool CompletedGoal()
+    {
+        return inventory.Contains(goalSpecifics);
+    }
+
     public void ResetStats()
     {
         unitType = "Worker";
         faction = "";
         maxHealth = 1;
         health = 1;
+        maxEnergy = 3;
+        energy = 3;
         maxLoyalty = 6;
         loyalty = 3;
         location = -1;
+        baseSpeed = 2;
+        movement = 2;
         inventorySize = 6;
         inventory.Clear();
         goal = "Gather";
         goalSpecifics = "";
+        level = 1;
+        exp = 0;
     }
 
-    public virtual string GetStats()
+    protected virtual string GetBasicStats()
     {
         string stats = "";
         stats += unitType + delimiter;
         stats += faction + delimiter;
+        stats += level + delimiter;
+        stats += exp + delimiter;
         stats += maxHealth + delimiter;
         stats += health + delimiter;
         stats += maxLoyalty + delimiter;
         stats += loyalty + delimiter;
+        stats += maxEnergy + delimiter;
+        stats += energy + delimiter;
+        stats += baseSpeed + delimiter;
+        stats += movement + delimiter;
         stats += location + delimiter;
         stats += inventorySize + delimiter;
         stats += String.Join(delimiter2, inventory) + delimiter;
         stats += goal + delimiter;
         stats += goalSpecifics + delimiter;
         return stats;
+    }
+
+    public virtual string GetStats()
+    {
+        return GetBasicStats();
+    }
+
+    protected void NewTurn()
+    {
+        movement = baseSpeed;
     }
 
     public virtual void LoadStats(string newInfo)
@@ -128,6 +247,8 @@ public class FactionUnit : MonoBehaviour
         {
             LoadStat(stats[i], i);
         }
+        // Whenever loading it's a new turn.
+        NewTurn();
     }
 
     protected virtual void LoadStat(string stat, int index)
@@ -135,41 +256,59 @@ public class FactionUnit : MonoBehaviour
         switch (index)
         {
             default:
-            break;
+                break;
             case 0:
-            unitType = stat;
-            break;
+                unitType = stat;
+                break;
             case 1:
-            faction = stat;
-            break;
+                faction = stat;
+                break;
             case 2:
-            maxHealth = int.Parse(stat);
-            break;
+                level = int.Parse(stat);
+                break;
             case 3:
-            health = int.Parse(stat);
-            break;
+                exp = int.Parse(stat);
+                break;
             case 4:
-            maxLoyalty = int.Parse(stat);
-            break;
+                maxHealth = int.Parse(stat);
+                break;
             case 5:
-            loyalty = int.Parse(stat);
-            break;
+                health = int.Parse(stat);
+                break;
             case 6:
-            location = int.Parse(stat);
-            break;
+                maxLoyalty = int.Parse(stat);
+                break;
             case 7:
-            inventorySize = int.Parse(stat);
-            break;
+                loyalty = int.Parse(stat);
+                break;
             case 8:
-            inventory = stat.Split(delimiter2).ToList();
-            utility.RemoveEmptyListItems(inventory);
-            break;
+                maxEnergy = int.Parse(stat);
+                break;
             case 9:
-            goal = stat;
-            break;
+                energy = int.Parse(stat);
+                break;
             case 10:
-            goalSpecifics = stat;
-            break;
+                baseSpeed = int.Parse(stat);
+                break;
+            case 11:
+                movement = int.Parse(stat);
+                break;
+            case 12:
+                location = int.Parse(stat);
+                break;
+            case 13:
+                inventorySize = int.Parse(stat);
+                break;
+            case 14:
+                inventory = stat.Split(delimiter2).ToList();
+                utility.RemoveEmptyListItems(inventory);
+                break;
+            case 15:
+                goal = stat;
+                break;
+            case 16:
+                goalSpecifics = stat;
+                break;
         }
     }
 }

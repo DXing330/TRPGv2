@@ -10,22 +10,95 @@ public class CombatUnit : FactionUnit
     public List<string> actorUnits;
     public List<string> actorStats;
     public List<string> actorEquipment;
+    public void AddNewUnit(string unit, string stats, string equipment, int maxHealth)
+    {
+        actorUnits.Add(unit);
+        actorStats.Add(stats);
+        actorEquipment.Add(equipment);
+        unitMaxHealths.Add(maxHealth);
+        unitHealths.Add(maxHealth);
+    }
     // The unit health tracks how many of each unit appears in battle.
-    public List<string> unitMaxHealths;
-    public List<string> unitHealths;
+    public List<int> unitMaxHealths;
+    public List<int> unitHealths;
+    public void RemoveActorAtIndex(int index)
+    {
+        actorUnits.RemoveAt(index);
+        actorStats.RemoveAt(index);
+        actorEquipment.RemoveAt(index);
+        unitMaxHealths.RemoveAt(index);
+        unitHealths.RemoveAt(index);
+    }
+    public override void GainMaxHealth(int amount)
+    {
+        for (int i = 0; i < unitMaxHealths.Count; i++)
+        {
+            unitMaxHealths[i] += amount;
+        }
+    }
+    public override void Heal(int amount)
+    {
+        for (int i = 0; i < unitHealths.Count; i++)
+        {
+            unitHealths[i] = Mathf.Min(unitHealths[i] + amount, unitMaxHealths[i]);
+        }
+    }
+    public override void TakeDamage(int amount = 1)
+    {
+        for (int i = 0; i < unitHealths.Count; i++)
+        {
+            unitHealths[i] -= amount;
+        }
+        RemoveDeadUnits();
+    }
+    public override void Rest()
+    {
+        for (int i = 0; i < unitHealths.Count; i++)
+        {
+            unitHealths[i] = Mathf.Min(unitHealths[i] + 1, unitMaxHealths[i]);
+        }
+    }
+    public void RemoveDeadUnits()
+    {
+        for (int i = actorStats.Count - 1; i >= 0; i--)
+        {
+            if (unitHealths[i] <= 0)
+            {
+                RemoveActorAtIndex(i);
+            }
+        }
+    }
+    public override bool Dead()
+    {
+        RemoveDeadUnits();
+        if (actorStats.Count <= 0){return true;}
+        for (int i = 0; i < unitHealths.Count; i++)
+        {
+            if (unitHealths[i] > 0){return false;}
+        }
+        return true;
+    }
+    public override void GainExp(int amount)
+    {
+        exp += amount;
+        if (exp > level * level * actorUnits.Count)
+        {
+            LevelUp();
+        }
+    }
+    public override void LevelUp()
+    {
+        level++;
+        exp = 0;
+        GainMaxHealth(1);
+        Heal(1);
+        AdjustMaxLoyalty(1);
+        AdjustInventorySize(1);
+    }
 
     public override string GetStats()
     {
-        string stats = "";
-        stats += unitType + delimiter;
-        stats += faction + delimiter;
-        stats += maxHealth + delimiter;
-        stats += health + delimiter;
-        stats += location + delimiter;
-        stats += inventorySize + delimiter;
-        stats += String.Join(delimiter2, inventorySize) + delimiter;
-        stats += goal + delimiter;
-        stats += goalSpecifics + delimiter;
+        string stats = GetBasicStats();
         stats += String.Join(delimiter2, actorUnits) + delimiter;
         stats += String.Join(delimiter2, actorStats) + delimiter;
         stats += String.Join(delimiter2, actorEquipment) + delimiter;
@@ -39,54 +112,76 @@ public class CombatUnit : FactionUnit
         switch (index)
         {
             default:
-            break;
+                break;
             case 0:
-            unitType = stat;
-            break;
+                unitType = stat;
+                break;
             case 1:
-            faction = stat;
-            break;
+                faction = stat;
+                break;
             case 2:
-            maxHealth = int.Parse(stat);
-            break;
+                level = int.Parse(stat);
+                break;
             case 3:
-            health = int.Parse(stat);
-            break;
+                exp = int.Parse(stat);
+                break;
             case 4:
-            location = int.Parse(stat);
-            break;
+                maxHealth = int.Parse(stat);
+                break;
             case 5:
-            inventorySize = int.Parse(stat);
-            break;
+                health = int.Parse(stat);
+                break;
             case 6:
-            inventory = stat.Split(delimiter2).ToList();
-            utility.RemoveEmptyListItems(inventory);
-            break;
+                maxLoyalty = int.Parse(stat);
+                break;
             case 7:
-            goal = stat;
-            break;
+                loyalty = int.Parse(stat);
+                break;
             case 8:
-            goalSpecifics = stat;
-            break;
+                maxEnergy = int.Parse(stat);
+                break;
             case 9:
+                energy = int.Parse(stat);
+                break;
+            case 10:
+                baseSpeed = int.Parse(stat);
+                break;
+            case 11:
+                movement = int.Parse(stat);
+                break;
+            case 12:
+                location = int.Parse(stat);
+                break;
+            case 13:
+                inventorySize = int.Parse(stat);
+                break;
+            case 14:
+                inventory = stat.Split(delimiter2).ToList();
+                utility.RemoveEmptyListItems(inventory);
+                break;
+            case 15:
+                goal = stat;
+                break;
+            case 16:
+                goalSpecifics = stat;
+                break;
+            case 17:
             actorUnits = stat.Split(delimiter2).ToList();
             utility.RemoveEmptyListItems(actorUnits);
             break;
-            case 10:
+            case 18:
             actorStats = stat.Split(delimiter2).ToList();
             utility.RemoveEmptyListItems(actorStats);
             break;
-            case 11:
+            case 19:
             actorEquipment = stat.Split(delimiter2).ToList();
             utility.RemoveEmptyListItems(actorEquipment);
             break;
-            case 12:
-            unitMaxHealths = stat.Split(delimiter2).ToList();
-            utility.RemoveEmptyListItems(unitMaxHealths);
+            case 20:
+            unitMaxHealths = utility.ConvertStringListToIntList(stat.Split(delimiter2).ToList());
             break;
-            case 13:
-            unitHealths = stat.Split(delimiter2).ToList();
-            utility.RemoveEmptyListItems(unitHealths);
+            case 21:
+            unitHealths = utility.ConvertStringListToIntList(stat.Split(delimiter2).ToList());
             break;
         }
     }

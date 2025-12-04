@@ -27,7 +27,7 @@ public class Store : MonoBehaviour
         if (dungeonItems)
         {
             dungeonItemsSolds = storeStuff[4].Split(",").ToList();
-            dungeonItemsSolds = storeStuff[5].Split(",").ToList();
+            dungeonItemsPrices = storeStuff[5].Split(",").ToList();
         }
         TrimStock();
         UpdateDisplay();
