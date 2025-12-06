@@ -78,7 +78,7 @@ public class CombatUnit : FactionUnit
         }
         return true;
     }
-    public override void GainExp(int amount)
+    public override void GainExp(int amount = 1)
     {
         exp += amount;
         if (exp > level * level * actorUnits.Count)
@@ -94,6 +94,17 @@ public class CombatUnit : FactionUnit
         Heal(1);
         AdjustMaxLoyalty(1);
         AdjustInventorySize(1);
+    }
+
+    public override void ResetStats()
+    {
+        base.ResetStats();
+        unitType = "Soldier";
+        actorUnits.Clear();
+        actorStats.Clear();
+        actorEquipment.Clear();
+        unitMaxHealths.Clear();
+        unitHealths.Clear();
     }
 
     public override string GetStats()

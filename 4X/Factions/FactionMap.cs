@@ -7,6 +7,8 @@ public class FactionMap : MapManager
 {
     public MapPathfinder pathfinder;
     public FactionManager factionManager;
+    public FactionEnemyManager enemyFactions;
+    public MasterFactionUnitManager unitManager;
     public ColorDictionary colorDictionary;
     public FactionMapData mapData;
     protected override void Start()
@@ -25,6 +27,7 @@ public class FactionMap : MapManager
     public void TestNewMap()
     {
         mapData.GenerateNewMap(this);
+        enemyFactions.NewGame();
         UpdateMap();
     }
     public List<int> moveCosts;
@@ -66,8 +69,12 @@ public class FactionMap : MapManager
     {
         soldierTiles[tileNumber] = sName;
     }
-    public bool SoldierOnTile(int tileNumber)
+    public bool SoldierOnTile(int tileNumber, string except = "")
     {
+        if (soldierTiles[tileNumber] == except)
+        {
+            return false;
+        }
         return soldierTiles[tileNumber] != "";
     }
     protected List<string> actorTiles;
@@ -94,6 +101,7 @@ public class FactionMap : MapManager
         soldierTiles = new List<string>(emptyList);
         actorTiles = new List<string>(emptyList);
         factionManager.UpdateUnitInfo();
+        enemyFactions.UpdateUnitInfo();
         mapDisplayers[3].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
         // Highlights.
         UpdateFactionHighlights();
@@ -127,6 +135,22 @@ public class FactionMap : MapManager
         if (tileBuildings[tileNumber].Contains("House")){return false;}
         return tileBuildings[tileNumber] != "";
     }
+    public int ReturnClosestBuildingTile(int start)
+    {
+        int tile = -1;
+        int distance = mapSize * mapSize;
+        for (int i = 0; i < tileBuildings.Count; i++)
+        {
+            if (!BuildingOnTile(i)){continue;}
+            int newDist = mapUtility.DistanceBetweenTiles(start, i, mapSize);
+            if (newDist < distance)
+            {
+                distance = newDist;
+                tile = i;
+            }
+        }
+        return tile;
+    }
     protected List<string> BuildingMapInfo()
     {
         List<string> bInfo = new List<string>(mapInfo);
@@ -137,6 +161,8 @@ public class FactionMap : MapManager
                 bInfo[i] = tileBuildings[i];
             }
         }
+        // Spawn points override other building displays.
+        bInfo = enemyFactions.UpdateSpawnerBuildings(bInfo);
         return bInfo;
     }
     public void DestroyBuilding(int tileNumber)
@@ -248,10 +274,10 @@ public class FactionMap : MapManager
     public override int ReturnRandomTileOfTileTypes(List<string> tileTypes)
     {
         List<int> possibleNumbers = ReturnTileNumbersOfTileTypes(tileTypes);
-        // Can't spawn on luxury tiles.
+        // Can't spawn on luxury tiles or buildings.
         for (int i = possibleNumbers.Count - 1; i >= 0; i--)
         {
-            if (luxuryTiles[possibleNumbers[i]] != "")
+            if (luxuryTiles[possibleNumbers[i]] != "" || tileBuildings[possibleNumbers[i]] != "")
             {
                 possibleNumbers.RemoveAt(i);
             }
@@ -371,15 +397,22 @@ public class FactionMap : MapManager
     public bool fastTurns;
     public void TestNewDay()
     {
-        factionManager.unitManager.AllTurns(factionManager.factions);
-        // Every twelve turns or so.
+        // Units act.
+        unitManager.AllTurns();
         if (fastTurns)
         {
+            factionManager.AllTurns();
             factionManager.factionAI.AllTurns(factionManager.factions);
         }
-        else if (Random.Range(0, 13) == 0)
+        // Every twelve turns or so.
+        else if (Random.Range(0, 12) == 0)
         {
+            // Pay upkeep costs.
+            factionManager.AllTurns();
+            // Build/Expand.
             factionManager.factionAI.AllTurns(factionManager.factions);
+            // Build.
+            enemyFactions.AllTurns();
         }
         factionManager.Save();
         mapData.SaveMap(this);

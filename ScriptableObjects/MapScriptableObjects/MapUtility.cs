@@ -18,6 +18,22 @@ public class MapUtility : ScriptableObject
         return (Mathf.Abs(GetHexQ(tileOne, size) - GetHexQ(tileTwo, size)) + Mathf.Abs(GetHexR(tileOne, size) - GetHexR(tileTwo, size)) + Mathf.Abs(GetHexS(tileOne, size) - GetHexS(tileTwo, size))) / 2;
     }
 
+    public int ReturnClosestTile(int start, List<int> tiles, int size)
+    {
+        int tile = start;
+        int dist = size * size;
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            int newDist = DistanceBetweenTiles(start, tiles[i], size);
+            if (newDist < dist)
+            {
+                dist = newDist;
+                tile = tiles[i];
+            }
+        }
+        return tile;
+    }
+
     public bool BorderTile(int tile, int size)
     {
         int col = GetColumn(tile, size);

@@ -12,6 +12,7 @@ public class FactionEnemyUnitData : SavedData
     // Fixed per enemy faction.
     public string enemyFactionName;
     public StatDatabase actorData;
+    public List<string> spawnerTiles;
     public List<string> spawnedUnits;
     public List<int> unitWeights;
     public StatDatabase equipmentData;
@@ -30,9 +31,50 @@ public class FactionEnemyUnitData : SavedData
         return unitSpriteName;
     }
     // Variables depending on game state.
+    public int maxSpawners;
+    public bool MaxSpawners()
+    {
+        return spawnPoints.Count >= maxSpawners;
+    }
     public List<int> spawnPoints;
+    public void RemoveSpawnPoint(int index)
+    {
+        spawnPoints.RemoveAt(index);
+        spawnPointLevels.RemoveAt(index);
+        spawnPointExps.RemoveAt(index);
+    }
+    public void RemoveSpawnPointOnTile(int tile)
+    {
+        if (SpawnPointOnTile(tile))
+        {
+            RemoveSpawnPoint(SpawnIndexOnTile(tile));
+        }
+    }
+    public void AddSpawnPoint(int tile)
+    {
+        spawnPoints.Add(tile);
+        spawnPointLevels.Add(1);
+        spawnPointExps.Add(0);
+    }
+    public bool SpawnPointOnTile(int tile)
+    {
+        return spawnPoints.Contains(tile);
+    }
+    public int SpawnIndexOnTile(int tile)
+    {
+        return spawnPoints.IndexOf(tile);
+    }
     public List<int> spawnPointLevels;
     public List<int> spawnPointExps;
+    public void SpawnPointGainExp(int index, int amount)
+    {
+        spawnPointExps[index] += amount;
+        if (spawnPointExps[index] > utility.Exponent(spawnPointLevels[index], 3))
+        {
+            spawnPointLevels[index]++;
+            spawnPointExps[index] = 0;
+        }
+    }
     public void SpawnUnits(CombatUnit cUnit)
     {
         for (int i = 0; i < spawnPoints.Count; i++)
@@ -56,7 +98,11 @@ public class FactionEnemyUnitData : SavedData
     // Units will deposit their stolen goods to increase exp of their spawn point.
     public void CollectTreasure(CombatUnit cUnit)
     {
-
+        if (SpawnPointOnTile(cUnit.GetLocation()))
+        {
+            SpawnPointGainExp(SpawnIndexOnTile(cUnit.GetLocation()), cUnit.inventory.Count);
+            cUnit.inventory.Clear();
+        }
     }
     public int UnitCount()
     {
@@ -64,6 +110,10 @@ public class FactionEnemyUnitData : SavedData
     }
     public List<string> unitData;
     public List<string> GetUnitData(){return unitData;}
+    public string GetUnitDataAtIndex(int index)
+    {
+        return unitData[index];
+    }
     public void RemoveUnitAtIndex(int index)
     {
         unitData.RemoveAt(index);
@@ -97,8 +147,8 @@ public class FactionEnemyUnitData : SavedData
         spawnPoints.Clear();
         spawnPointLevels.Clear();
         spawnPointExps.Clear();
+        maxSpawners = 1;
         Save();
-        Load();
     }
 
     public override void Save()
@@ -110,17 +160,20 @@ public class FactionEnemyUnitData : SavedData
         allData += String.Join(delimiterTwo, spawnPoints) + delimiter;
         allData += String.Join(delimiterTwo, spawnPointLevels) + delimiter;
         allData += String.Join(delimiterTwo, spawnPointExps) + delimiter;
+        allData += maxSpawners + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
     public override void Load()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
+        if (File.Exists(dataPath))
+        {
+            allData = File.ReadAllText(dataPath);
+        }
         else
         {
             NewGame();
-            Save();
             return;
         }
         dataList = allData.Split(delimiter).ToList();
@@ -154,7 +207,11 @@ public class FactionEnemyUnitData : SavedData
             break;
             case 4:
             spawnPointExps = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-            utility.RemoveEmptyValues(spawnPointExps);
+            //utility.RemoveEmptyValues(spawnPointExps);
+            // Zero exp is fine.
+            break;
+            case 5:
+            maxSpawners = int.Parse(stat);
             break;
         }
     }

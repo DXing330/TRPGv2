@@ -90,7 +90,7 @@ public class FactionUnit : MonoBehaviour
     public int GetLoyalty(){return loyalty;}
     public int level;
     public int exp;
-    public virtual void GainExp(int amount)
+    public virtual void GainExp(int amount = 1)
     {
         exp += amount;
         if (exp > level * level * level)
@@ -130,7 +130,7 @@ public class FactionUnit : MonoBehaviour
     {
         if (UseEnergy())
         {
-            movement += baseSpeed;
+            movement += Mathf.Max(1, baseSpeed - inventory.Count);
         }
     }
     public int GetMovement()
@@ -151,13 +151,25 @@ public class FactionUnit : MonoBehaviour
         return inventory.Count >= inventorySize;
     }
     public List<string> inventory; // If inventory is full then return to city and drop off inventory.
+    public void GainItem(string item)
+    {
+        if (item.Length < 2){return;}
+        inventory.Add(item);
+    }
     public void GainItems(List<string> newItems)
     {
         for (int i = 0; i < newItems.Count; i++)
         {
             if (InventoryFull()){return;}
-            if (newItems[i].Length < 2){continue;}
-            inventory.Add(newItems[i]);
+            GainItem(newItems[i]);
+        }
+    }
+    public void FillInventory(string item = "Gold")
+    {
+        for (int i = 0; i < inventorySize; i++)
+        {
+            if (InventoryFull()){return;}
+            GainItem(item);
         }
     }
     public string goal; // If inventory is not full try to acquire the goal items, goal is updated at the city.
@@ -186,7 +198,7 @@ public class FactionUnit : MonoBehaviour
         return inventory.Contains(goalSpecifics);
     }
 
-    public void ResetStats()
+    public virtual void ResetStats()
     {
         unitType = "Worker";
         faction = "";
@@ -237,7 +249,7 @@ public class FactionUnit : MonoBehaviour
 
     protected void NewTurn()
     {
-        movement = baseSpeed;
+        movement = Mathf.Max(1, baseSpeed - inventory.Count);;
     }
 
     public virtual void LoadStats(string newInfo)

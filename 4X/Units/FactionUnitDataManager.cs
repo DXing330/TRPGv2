@@ -36,7 +36,21 @@ public class FactionUnitDataManager : SavedData
         unitData[index] = fUnit.GetStats();
         unitLocations[index] = fUnit.GetLocation().ToString();
     }
+    public void UpdateUnitByLocation(FactionUnit fUnit)
+    {
+        int index = unitLocations.IndexOf(fUnit.GetLocation().ToString());
+        UpdateUnitAtIndex(fUnit, index);
+    }
     public List<string> unitLocations;
+    public bool UnitAtLocation(int location)
+    {
+        return unitLocations.Contains(location.ToString());
+    }
+    public string ReturnUnitAtLocation(int location, bool combat = false)
+    {
+        int indexOf = unitLocations.IndexOf(location.ToString());
+        return unitData[indexOf];
+    }
     public int ReturnUnitLocationAtIndex(int index, bool combat = false)
     {
         if (combat)

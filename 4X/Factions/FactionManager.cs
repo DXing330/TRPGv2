@@ -9,7 +9,55 @@ public class FactionManager : MonoBehaviour
 {
     public int factionCount;
     public FactionMap map;
-    public FactionUnitManager unitManager;
+    // Simple unit stuff is handled here.
+    public FactionUnit dummyUnit;
+    public CombatUnit dummyCombatUnit;
+    public void FactionMakesWorker(FactionData faction)
+    {
+        dummyUnit.ResetStats();
+        dummyUnit.SetFaction(faction.GetFactionName());
+        dummyUnit.SetLocation(faction.GetCapitalLocation());
+        dummyUnit.SetGoalSpecifics(faction.LowestResource());
+        faction.unitData.AddUnit(dummyUnit.GetStats(), faction.GetCapitalLocation());
+    }
+    public void ChangeUnitMorale(FactionUnitDataManager faction, int amount)
+    {
+        List<string> unitData = faction.GetUnitData();
+        for (int i = 0; i < unitData.Count; i++)
+        {
+            dummyUnit.LoadStats(unitData[i]);
+            dummyUnit.AdjustLoyalty(amount);
+            faction.UpdateUnitAtIndex(dummyUnit, i);
+        }
+        unitData = faction.GetCombatUnitData();
+        for (int i = 0; i < unitData.Count; i++)
+        {
+            dummyCombatUnit.LoadStats(unitData[i]);
+            dummyCombatUnit.AdjustLoyalty(amount);
+            faction.UpdateCombatUnitAtIndex(dummyCombatUnit, i);
+        }
+    }
+    public void UnitDeathsAndDesertions(FactionUnitDataManager faction)
+    {
+        List<string> unitData = faction.GetUnitData();
+        for (int i = unitData.Count - 1; i >= 0; i--)
+        {
+            dummyUnit.LoadStats(unitData[i]);
+            if (dummyUnit.GetLoyalty() <= 0 || dummyUnit.Dead())
+            {
+                faction.RemoveUnitAtIndex(i);
+            }
+        }
+        unitData = faction.GetCombatUnitData();
+        for (int i = unitData.Count - 1; i >= 0; i--)
+        {
+            dummyCombatUnit.LoadStats(unitData[i]);
+            if (dummyCombatUnit.GetLoyalty() <= 0 || dummyUnit.Dead())
+            {
+                faction.RemoveCombatUnitAtIndex(i);
+            }
+        }
+    }
     public FactionAI factionAI;
     public List<FactionData> factions;
     public int GetCapitalLocationOfFaction(string fName)
@@ -43,6 +91,42 @@ public class FactionManager : MonoBehaviour
                 factions[i].UnitDepositsInventory(unit);
             }
         }
+    }
+    public void AllTurns()
+    {
+        for (int i = 0; i < factions.Count; i++)
+        {
+            FactionUpkeepCost(factions[i]);
+        }
+    }
+    protected void FactionUpkeepCost(FactionData faction)
+    {
+        faction.CollectTaxes();
+        // Feed your units.
+        int hunger = faction.FeedUnits();
+        if (hunger > 0)
+        {
+            ChangeUnitMorale(faction.unitData, -1);
+        }
+        // Pay your units.
+        int debt = faction.PayUnits();
+        if (debt > 0)
+        {
+            ChangeUnitMorale(faction.unitData, -1);
+        }
+        // If paid and full then they're happy.
+        if (debt <= 0 && hunger <= 0)
+        {
+            ChangeUnitMorale(faction.unitData, 1);
+        }
+        // Maintain your city/buildings.
+        if (!faction.MaintainBuildings(map.CountBuildingsOnTiles(faction.GetOwnedTiles())))
+        {
+            // Lose a random building.
+            map.DestroyRandomBuilding(faction.GetOwnedTiles());
+        }
+        // Check if any units desert due to low morale or have died.
+        UnitDeathsAndDesertions(faction.unitData);
     }
     public List<string> possibleFactionColors;
     public List<string> possibleFactionNames;
@@ -160,7 +244,7 @@ public class FactionManager : MonoBehaviour
             }
             factions[i].AddPassive(factionStartingPassives[i], factionStartingPassiveLevels[i]);
             // Make a starting worker.
-            unitManager.FactionMakesWorker(factions[i]);
+            FactionMakesWorker(factions[i]);
         }
         // Initialize other factions and relations.
         for (int i = 0; i < factions.Count; i++)
