@@ -57,7 +57,14 @@ public class MapPathfinderTester : MapManager
         {
             endPathTile = tileNumber;
             // Make the path.
-            path = pathfinder.BasicPathToTile(startPathTile, endPathTile);
+            if (state == 0)
+            {
+                path = pathfinder.BasicPathToTile(startPathTile, endPathTile);
+            }
+            else if (state == 3)
+            {
+                path = pathfinder.StraightPathToTile(startPathTile, endPathTile);
+            }
             HighlightPathTiles();
             return;
         }
@@ -80,7 +87,7 @@ public class MapPathfinderTester : MapManager
     }
     public override void ClickOnTile(int tileNumber)
     {
-        if (state == 0)
+        if (state == 0 || state == 3)
         {
             PathClickOnTile(tileNumber);
         }
@@ -99,10 +106,6 @@ public class MapPathfinderTester : MapManager
     }
     public void HighlightPathTiles()
     {
-        for (int i = 0; i < path.Count; i++)
-        {
-            mapTiles[path[i]].HighlightLayer(3, pathColor);
-        }
         if (startPathTile >= 0)
         {
             mapTiles[startPathTile].HighlightLayer(3, startPathColor);
@@ -110,6 +113,10 @@ public class MapPathfinderTester : MapManager
         if (endPathTile >= 0)
         {
             mapTiles[endPathTile].HighlightLayer(3, endPathColor);
+        }
+        for (int i = 0; i < path.Count; i++)
+        {
+            mapTiles[path[i]].HighlightLayer(3, pathColor);
         }
     }
     public void HighlightBorderTiles()

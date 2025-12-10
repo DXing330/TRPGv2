@@ -365,6 +365,29 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(attackTargetTile), battle.map, battle.moveManager);
                 }
                 return;
+            case "Charge+Attack":
+                int startChargeTile = skillUser.GetLocation();
+                targetTile = targetedTiles[0];
+                // Try to move in straight line to the target.
+                List<int> chargePath = battle.moveManager.actorPathfinder.StraightPathToTile(startChargeTile, targetTile);
+                if (chargePath.Count <= 0){return;}
+                for (int i = 0; i < chargePath.Count; i++)
+                {
+                    if (battle.map.GetActorOnTile(chargePath[i]) != null)
+                    {
+                        break;
+                    }
+                    battle.moveManager.MoveActorToTile(skillUser, chargePath[i], battle.map);
+                }
+                skillUser.SetDirection(battle.moveManager.DirectionBetweenLocations(startChargeTile, targetTile));
+                battle.map.UpdateActors();
+                // Check if an actor is on the specified tile(s).
+                int chargeInto = battle.moveManager.PointInDirection(skillUser.GetLocation(), skillUser.GetDirection());
+                if (battle.map.GetActorOnTile(chargeInto) != null)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(chargeInto), battle.map, battle.moveManager);
+                }
+                return;
             case "Displace":
                 battle.moveManager.DisplaceSkill(skillUser, targetedTiles, specifics, power, battle.map);
                 return;

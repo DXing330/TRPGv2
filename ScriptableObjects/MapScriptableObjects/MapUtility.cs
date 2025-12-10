@@ -123,6 +123,17 @@ public class MapUtility : ScriptableObject
         }
     }
 
+    public bool StraightLineBetweenPoints(int tileOne, int tileTwo, int size)
+    {
+        int q1 = GetHexQ(tileOne, size);
+        int r1 = GetHexR(tileOne, size);
+        int s1 = GetHexS(tileOne, size);
+        int q2 = GetHexQ(tileTwo, size);
+        int r2 = GetHexR(tileTwo, size);
+        int s2 = GetHexS(tileTwo, size);
+        return (q1 == q2 || r1 == r2 || s1 ==s2);
+    }
+
     public int GetHexQ(int location, int size)
     {
         if (flatTop)
@@ -635,7 +646,14 @@ public class MapUtility : ScriptableObject
 
     public int CountTilesByShapeSpan(string shape, int span)
     {
-        if (span <= 0) { return 1; }
+        if (span <= 0)
+        {
+            if (shape == "Beam")
+            {
+                return CountTilesInLineSpan(1);
+            }
+            return 1;
+        }
         switch (shape)
         {
             case "None":
@@ -646,6 +664,8 @@ public class MapUtility : ScriptableObject
                 return CountTilesInCircleSpan(span) - 1;
             case "Line":
                 return CountTilesInLineSpan(span);
+            case "Beam":
+                return CountTilesInLineSpan(span) * span;
             case "ELine":
                 return span;
             case "Cone":

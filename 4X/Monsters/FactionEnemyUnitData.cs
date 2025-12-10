@@ -69,7 +69,7 @@ public class FactionEnemyUnitData : SavedData
     public void SpawnPointGainExp(int index, int amount)
     {
         spawnPointExps[index] += amount;
-        if (spawnPointExps[index] > utility.Exponent(spawnPointLevels[index], 3))
+        if (spawnPointExps[index] > utility.Exponent(spawnPointLevels[index], 4))
         {
             spawnPointLevels[index]++;
             spawnPointExps[index] = 0;

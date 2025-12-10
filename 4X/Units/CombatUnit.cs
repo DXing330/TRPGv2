@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class CombatUnit : FactionUnit
 {
+    public TacticActor dummyActor;
     // Same as a civilian except with combat stats.
     public List<string> actorUnits;
     public List<string> actorStats;
@@ -92,6 +93,7 @@ public class CombatUnit : FactionUnit
         exp = 0;
         GainMaxHealth(1);
         Heal(1);
+        // We can also gain a random combat stat (hp/atk/def).
         AdjustMaxLoyalty(1);
         AdjustInventorySize(1);
     }

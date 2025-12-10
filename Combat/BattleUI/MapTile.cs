@@ -15,6 +15,8 @@ public class MapTile : MonoBehaviour
     public List<GameObject> highlightObjects;
     public List<RectTransform> highlightObjectTransforms;
     public int elevation = 0;
+    public Image elevationImage;
+    public GameObject elevationObject;
     public float originalWidth;
     public float originalHeight;
     public float subWidth;
@@ -41,6 +43,14 @@ public class MapTile : MonoBehaviour
             highlightObjectTransforms[i].pivot = new Vector2(0.5f, highlightYPivots[elevation]);
         }
         // Adjust the pivots so things look good.
+        if (elevation == 0 && elevationObject != null)
+        {
+            elevationObject.SetActive(false);
+        }
+    }
+    public void UpdateElevationSprite(Sprite newSprite)
+    {
+        elevationImage.sprite = newSprite;
     }
     public int GetElevation()
     {

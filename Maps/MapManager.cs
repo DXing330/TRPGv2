@@ -13,6 +13,7 @@ public class MapManager : MonoBehaviour
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
     public StatDatabase tileElevationMappings;
+    public SpriteContainer elevationSprites;
     public List<int> mapElevations;
     public int ReturnElevation(int tileNumber)
     {
@@ -64,6 +65,7 @@ public class MapManager : MonoBehaviour
         {
             mapElevations.Add(RandomElevation(mapInfo[i]));
             mapTiles[i].SetElevation(mapElevations[i]);
+            mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary(mapTiles[i].GetElevation().ToString()));
         }
     }
     protected virtual void ResetAllLayers()

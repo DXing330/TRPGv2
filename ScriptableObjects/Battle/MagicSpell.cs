@@ -12,7 +12,7 @@ public class MagicSpell : ActiveSkill
     {
         int tilesInRange = mapUtility.CountTilesByShapeSpan(GetRangeShape(), GetRange());
         int tilesInEffectRange = mapUtility.CountTilesByShapeSpan(GetShape(), GetSpan());
-        int totalTiles = tilesInRange*tilesInEffectRange;
+        int totalTiles = tilesInRange + tilesInEffectRange;
         return ((int) Mathf.Sqrt(totalTiles))*GetEnergyCost();
     }
     public string effectDelimiter = "?";

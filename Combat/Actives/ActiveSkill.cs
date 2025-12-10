@@ -115,6 +115,9 @@ public class ActiveSkill : SkillEffect
             case "Move":
                 if (skillUser == null) { return 1; }
                 return skillUser.GetSpeed();
+            case "Move+":
+                if (skillUser == null) { return 1; }
+                return skillUser.GetSpeed() + 1;
             case "AttackRange":
                 if (skillUser == null) { return 1; }
                 return skillUser.GetAttackRange();

@@ -331,6 +331,7 @@ public class BattleMap : MapManager
         battleManager.moveManager.SetMapElevations(mapElevations);
         UpdateMap();
     }
+    public StatDatabase terrainTerrainInteractions;
     public List<string> terrainEffectTiles;
     public virtual void GetNewTerrainEffects(MapFeaturesList mapFeatures)
     {
@@ -343,7 +344,15 @@ public class BattleMap : MapManager
     }
     public void ChangeTEffect(int tileNumber, string newEffect)
     {
-        terrainEffectTiles[tileNumber] = newEffect;
+        if (terrainEffectTiles[tileNumber] == "")
+        {
+            terrainEffectTiles[tileNumber] = newEffect;
+        }
+        else
+        {
+            string t_t = terrainEffectTiles[tileNumber] + "-" + newEffect;
+            terrainEffectTiles[tileNumber] = terrainTerrainInteractions.ReturnValue(t_t);
+        }
         UpdateMap();
     }
     public void SwitchTerrainEffect(int tile1, int tile2)
@@ -360,7 +369,7 @@ public class BattleMap : MapManager
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
         for (int i = 0; i < adjacent.Count; i++)
         {
-            terrainEffectTiles[adjacent[i]] = tEffect;
+            ChangeTEffect(adjacent[i], tEffect);
         }
     }
     public void RandomlySpreadTerrainEffect(int tileNumber)
@@ -368,7 +377,7 @@ public class BattleMap : MapManager
         string tEffect = terrainEffectTiles[tileNumber];
         if (tEffect == "") { return; }
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
-        terrainEffectTiles[adjacent[Random.Range(0, adjacent.Count)]] = tEffect;
+        ChangeTEffect(adjacent[Random.Range(0, adjacent.Count)], tEffect);
     }
     protected void UpdateTerrain()
     {

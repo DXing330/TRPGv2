@@ -6,6 +6,13 @@ using TMPro;
 public class SpellDetailViewer : ActiveDescriptionViewer
 {
     public MagicSpell dummySpell;
+    public string spellData;
+    [ContextMenu("Debug Spell Description")]
+    public void ShowSpellDescription()
+    {
+        dummySpell.LoadSkillFromString(spellData);
+        spellEffects.text = ReturnSpellDescription(dummySpell);
+    }
     public List<string> spellStatNames;
     public TMP_Text spellEffects;
     public List<StatTextText> spellStats;

@@ -320,7 +320,7 @@ public class MoveCostManager : MonoBehaviour
         return actorPathfinder.mapUtility.GetTilesInLineDirection(current, direction, actorPathfinder.mapSize, actorPathfinder.mapSize);
     }
 
-    protected void MoveActorToTile(TacticActor actor, int tile, BattleMap map)
+    public void MoveActorToTile(TacticActor actor, int tile, BattleMap map)
     {
         actor.SetLocation(tile);
         map.ApplyMovingTileEffect(actor, tile);

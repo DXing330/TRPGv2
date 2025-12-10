@@ -35,6 +35,7 @@ public class MasterFactionUnitManager : MonoBehaviour
     public List<FactionEnemyUnitData> enemyUnits;
     public FactionUnit dummyUnit;
     // Need two combat units incase they fight.
+    public UnitCombatManager combatManager;
     public CombatUnit turnCombatUnit;
     public CombatUnit otherCombatUnit;
     // Helper things.
