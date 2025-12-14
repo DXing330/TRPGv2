@@ -26,13 +26,15 @@ public class ActorAI : ScriptableObject
     public StatDatabase activeData;
     public StatDatabase actorAttackSkills;
     public StatDatabase actorSkillRotation;
+    public StatDatabase spriteToBossRotation;
     public StatDatabase bossSkillRotation;
 
     public List<string> ReturnBossActions(TacticActor actor, BattleMap map)
     {
         List<string> actionsSpecifics = new List<string>();
         // Get the full rotation.
-        string[] rotationBlocks = bossSkillRotation.ReturnValue(actor.GetSpriteName()).Split("#");
+        string bossRotation = spriteToBossRotation.ReturnValue(actor.GetSpriteName());
+        string[] rotationBlocks = bossSkillRotation.ReturnValue(bossRotation).Split("#");
         // Go through and determine which part of the rotation to use.
         for (int i = 0; i < rotationBlocks.Length; i++)
         {

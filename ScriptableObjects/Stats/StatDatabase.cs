@@ -27,7 +27,7 @@ public class StatDatabase : ScriptableObject
     public void DBSetDirty()
     {
         #if UNITY_EDITOR
-                EditorUtility.SetDirty(this);
+            EditorUtility.SetDirty(this);
         #endif
     }
 

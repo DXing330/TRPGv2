@@ -7,6 +7,7 @@ public class DisplayTurnOrder : MonoBehaviour
 {
     public SpriteContainer actorSprites;
     public List<LayeredImage> actorImages;
+    public int displayLayer = 1;
     public int currentTurn;
     public int actorCount;
 
@@ -15,8 +16,8 @@ public class DisplayTurnOrder : MonoBehaviour
     {
         for (int i = 0; i < actorImages.Count; i++)
         {
-            actorImages[i].SetSprite(null);
-            actorImages[i].BackgroundColor();
+            actorImages[i].SetSprite(null, displayLayer);
+            actorImages[i].BackgroundColor(displayLayer);
         }
     }
 
@@ -30,8 +31,8 @@ public class DisplayTurnOrder : MonoBehaviour
         for (int i = turnIndex; i < actors.Count; i++)
         {
             if (index >= actorImages.Count){break;}
-            actorImages[index].SetSprite(actorSprites.GetSprite(actors[i].GetSpriteName()));
-            actorImages[index].DefaultColor();
+            actorImages[index].SetSprite(actorSprites.GetSprite(actors[i].GetSpriteName()), displayLayer);
+            actorImages[index].DefaultColor(displayLayer);
             index++;
         }
     }

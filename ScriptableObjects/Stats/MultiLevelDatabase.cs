@@ -25,9 +25,11 @@ public class MultiLevelDatabase : StatDatabase
         statDatabase.SetAllKeys(multiLevelData[statKeyIndex]);
         statDatabase.SetValues(multiLevelData[statValueIndex]);
         statDatabase.Initialize();
+        statDatabase.DBSetDirty();
         multiKeyDatabase.SetAllKeys(multiLevelData[multiKeyIndex1]);
         multiKeyDatabase.SetAllSecondKeys(multiLevelData[multiKeyIndex2]);
         multiKeyDatabase.SetValues(multiLevelData[multiKeyValueIndex]);
         multiKeyDatabase.Initialize();
+        multiKeyDatabase.DBSetDirty();
     }
 }

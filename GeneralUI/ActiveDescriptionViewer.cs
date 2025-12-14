@@ -57,6 +57,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
         }
         switch (e)
         {
+            case "CurrentHealth%":
+                return "The target(s) lose " + ASD(s) + "% of their current health.";
             case "Attack":
                 return "Attack the target(s) " + ASD(s) + " time(s) with " + APD(p) + "% damage.";
             // The specifics will determine the direction anyway.

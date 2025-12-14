@@ -101,6 +101,10 @@ public class SkillEffect : ScriptableObject
                 target.UpdateAttack(int.Parse(effectSpecifics) * level);
                 target.UpdateDefense(int.Parse(effectSpecifics) * level);
                 break;
+            case "CurrentHealth%":
+                int currentHealth = target.GetHealth();
+                target.UpdateHealth(int.Parse(effectSpecifics) * currentHealth / basicDenominator);
+                break;
             case "BaseHealth":
                 target.UpdateBaseHealth(int.Parse(effectSpecifics) * level, false);
                 target.UpdateHealth(int.Parse(effectSpecifics) * level, false);
