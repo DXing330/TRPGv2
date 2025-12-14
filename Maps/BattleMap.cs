@@ -266,8 +266,6 @@ public class BattleMap : MapManager
         if (target == null){return false;}
         int direction = target.GetDirection();
         int directionBetween = mapUtility.DirectionBetweenLocations(target.GetLocation(), actor.GetLocation(), mapSize);
-        Debug.Log(direction);
-        Debug.Log(directionBetween);
         if (direction == directionBetween || (direction + 1) % 6 == directionBetween || (direction + 5) % 6 == directionBetween)
         {
             return true;

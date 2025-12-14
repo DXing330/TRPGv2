@@ -188,6 +188,7 @@ public class ActorStats : ActorPassives
         currentSpeed = moveSpeed;
         currentWeight = weight;
         currentDodge = baseDodge;
+        ResetResistances();
         // Initiative is used to determine your turn in the round.
         // At the start of your turn during the round reset it.
         ResetTempInitiative();
@@ -317,6 +318,23 @@ public class ActorStats : ActorPassives
     public int currentHealth;
     public void SetCurrentHealth(int newHealth) { currentHealth = newHealth; }
     public int GetHealth() { return currentHealth; }
+    public void Heal(int amount)
+    {
+        if (amount < 0)
+        {
+            amount = Mathf.Abs(amount);
+        }
+        currentHealth += amount;
+        if (currentHealth > GetBaseHealth()) { currentHealth = GetBaseHealth(); }
+    }
+    public void Hurt(int amount)
+    {
+        if (amount < 0)
+        {
+            amount = Mathf.Abs(amount);
+        }
+        currentHealth -= amount;
+    }
     public void UpdateHealth(int changeAmount, bool decrease = true)
     {
         if (decrease)
@@ -334,17 +352,83 @@ public class ActorStats : ActorPassives
         else { currentHealth += changeAmount; }
         if (currentHealth > GetBaseHealth()) { currentHealth = GetBaseHealth(); }
     }
-    public int TakeEffectDamage(int damage)
+    public int TakeEffectDamage(int damage, string type = "Physical")
     {
         damage -= GetDefense();
         if (damage < 0)
         {
             return 0;
         }
-        TakeDamage(damage);
+        TakeDamage(damage, type);
         return damage;
     }
-    public void TakeDamage(int damage) { UpdateHealth(damage); }
+    public List<string> dmgTypes;
+    public void TakeElementalDamage(int amount, string type)
+    {
+        TakeDamage(amount, type);
+    }
+    public List<int> baseDmgResists;
+    public List<int> currentDmgResists;
+    public int ReturnDamageResistanceOfType(string type)
+    {
+        int indexOf = dmgTypes.IndexOf(type);
+        if (indexOf < 0){return 0;}
+        return currentDmgResists[indexOf];
+    }
+    public void ResetResistances()
+    {
+        for (int i = 0; i < dmgTypes.Count; i++)
+        {
+            currentDmgResists[i] = baseDmgResists[i];
+        }
+    }
+    public void UpdateBaseDamageResist(string type, int amount)
+    {
+        int indexOf = dmgTypes.IndexOf(type);
+        if (indexOf < 0)
+        {
+            dmgTypes.Add(type);
+            baseDmgResists.Add(amount);
+            currentDmgResists.Add(amount);
+        }
+        else
+        {
+            baseDmgResists[indexOf] += amount;
+        }
+    }
+    public void UpdateCurrentDamageResist(string type, int amount)
+    {
+        int indexOf = dmgTypes.IndexOf(type);
+        if (indexOf < 0)
+        {
+            dmgTypes.Add(type);
+            baseDmgResists.Add(0);
+            currentDmgResists.Add(amount);
+        }
+        else
+        {
+            currentDmgResists[indexOf] += amount;
+        }
+    }
+    public int TakeDamage(int damage, string type = "Physical")
+    {
+        int resistance = ReturnDamageResistanceOfType(type);
+        if (resistance != 0)
+        {
+            damage = damage * (100 - resistance) / 100;
+        }
+        if (damage < 0)
+        {
+            if (resistance > 100)
+            {
+                Heal(damage);
+                return damage;
+            }
+            damage = 0;
+        }
+        UpdateHealth(damage);
+        return damage;
+    }
     public int currentEnergy;
     public void UpdateEnergy(int changeAmount, bool decrease = false)
     {
@@ -401,6 +485,9 @@ public class ActorStats : ActorPassives
         baseCritDamage = initialCritDamage;
         buffs.Clear();
         buffDurations.Clear();
+        dmgTypes.Clear();
+        baseDmgResists.Clear();
+        currentDmgResists.Clear();
         ResetStats();
         EndTurnResetStats();
     }

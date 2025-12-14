@@ -302,6 +302,13 @@ public class ActiveManager : MonoBehaviour
                     }
                 }
                 return;
+            case "ElementalAttack":
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, battle.moveManager, power, specifics);
+                }
+                return;
             case "Attack+Drain":
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)

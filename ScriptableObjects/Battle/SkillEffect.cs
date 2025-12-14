@@ -271,6 +271,14 @@ public class SkillEffect : ScriptableObject
             case "BreakGrapple":
                 target.BreakGrapple();
                 break;
+            case "BaseDamageResistance":
+                string[] baseResist = effectSpecifics.Split("=");
+                target.UpdateBaseDamageResist(baseResist[0], SafeParseInt(baseResist[1]));
+                break;
+            case "CurrentDamageResistance":
+                string[] cResist = effectSpecifics.Split("=");
+                target.UpdateBaseDamageResist(cResist[0], SafeParseInt(cResist[1]));
+                break;
         }
     }
 

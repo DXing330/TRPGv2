@@ -7,7 +7,6 @@ public class GuildHub : MonoBehaviour
 {
     public PartyDataManager partyData;
     public References references;
-    public ActorSpriteHPList actorSpriteHPList;
     public TMP_Text guildRank;
     public List<string> questItems;
     public List<string> questTempMembers;
@@ -16,7 +15,6 @@ public class GuildHub : MonoBehaviour
     {
         RemoveDungeonData();
         partyData.Save();
-        actorSpriteHPList.RefreshData();
         guildRank.text = partyData.guildCard.GetGuildRankName();
         NextStory();
         UpdateStory();

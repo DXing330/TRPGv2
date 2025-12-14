@@ -62,9 +62,10 @@ public class AttackManager : ScriptableObject
         }
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
-        defender.TakeDamage(baseDamage);
+        baseDamage = defender.TakeDamage(baseDamage, "True");
+
     }
-    public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1)
+    public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Physical")
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         // Determine if you miss or not.
@@ -109,7 +110,14 @@ public class AttackManager : ScriptableObject
         // Check if the passive affects damage.
         baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
         finalDamageCalculation += baseDamage;
-        defender.TakeDamage(baseDamage);
+        // Show the resistance calculation.
+        int resistance = defender.ReturnDamageResistanceOfType(type);
+        if (resistance != 0)
+        {
+            finalDamageCalculation += "\n" + type + " Resistance = " + resistance;
+            finalDamageCalculation += "\n" + baseDamage + " * " + (100 - resistance) + "% = " + (baseDamage * (100 - resistance) / 100);
+        }
+        baseDamage = defender.TakeDamage(baseDamage, type);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);

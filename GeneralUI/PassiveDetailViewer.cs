@@ -490,6 +490,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " release the grappled target";
             case "BreakGrapple":
                 return " break from any grapples";
+            case "BaseDamageResistance":
+                string[] bDRes = specifics.Split("=");
+                return " increase base " + bDRes[0] + " resistance by " + bDRes[1];
+            case "CurrentDamageResistance":
+                string[] cDRes = specifics.Split("=");
+                return " increase " + cDRes[0] + " resistance by " + cDRes[1];
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

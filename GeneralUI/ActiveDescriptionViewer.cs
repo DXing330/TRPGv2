@@ -61,6 +61,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "The target(s) lose " + ASD(s) + "% of their current health.";
             case "Attack":
                 return "Attack the target(s) " + ASD(s) + " time(s) with " + APD(p) + "% damage.";
+            case "ElementalAttack":
+                return "Attack the target(s) with " + ASD(s) + " energy for " + APD(p) + "% damage.";
             // The specifics will determine the direction anyway.
             case "Attack+Displace":
                 if (s == "Sideways")
