@@ -260,6 +260,20 @@ public class BattleMap : MapManager
         }
         return !TileNotEmpty(mapUtility.PointInDirection(actor.GetLocation(), dir, mapSize));
     }
+    public bool TargetFacingActor(TacticActor actor)
+    {
+        TacticActor target = actor.GetTarget();
+        if (target == null){return false;}
+        int direction = target.GetDirection();
+        int directionBetween = mapUtility.DirectionBetweenLocations(target.GetLocation(), actor.GetLocation(), mapSize);
+        Debug.Log(direction);
+        Debug.Log(directionBetween);
+        if (direction == directionBetween || (direction + 1) % 6 == directionBetween || (direction + 5) % 6 == directionBetween)
+        {
+            return true;
+        }
+        return false;
+    }
     public bool FacingActor(TacticActor actor)
     {
         int startingPoint = actor.GetLocation();

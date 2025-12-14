@@ -611,6 +611,21 @@ public class ActorStats : ActorPassives
     public List<string> statuses;
     public List<int> statusDurations;
     public List<string> GetStatuses() { return statuses; }
+    public List<string> GetUniqueStatusAndBuffs()
+    {
+        List<string> SB = GetUniqueStatuses();
+        SB.AddRange(GetBuffs());
+        return SB;
+    }
+    public List<string> GetUnqiueSBDurations()
+    {
+        List<string> SBD = GetUniqueStatusDurationsAndStacks();
+        for (int i = 0; i < buffDurations.Count; i++)
+        {
+            SBD.Add(buffDurations[i].ToString());
+        }
+        return SBD;
+    }
     public List<string> GetUniqueStatuses()
     {
         List<string> unique = new List<string>(statuses.Distinct());

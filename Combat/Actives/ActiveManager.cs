@@ -365,6 +365,15 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(attackTargetTile), battle.map, battle.moveManager);
                 }
                 return;
+            case "MoveThrough+Attack":
+                targetTile = targetedTiles[0];
+                if (battle.map.GetActorOnTile(targetTile) == null)
+                {
+                    return;
+                }
+                battle.moveManager.MoveThroughSkill(skillUser, targetTile, battle.map);
+                battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(targetTile), battle.map, battle.moveManager, power);
+                return;
             case "Charge+Attack":
                 int startChargeTile = skillUser.GetLocation();
                 targetTile = targetedTiles[0];

@@ -125,6 +125,8 @@ public class AIConditionChecker : ScriptableObject
                 return map.StraightLineBetweenActors(actor, actor.GetTarget());
             case "TargetDistance<":
                 return map.DistanceBetweenActors(actor, actor.GetTarget()) <= ReturnDistanceCheck(actor, specifics);
+            case "TargetFacingOff":
+                return map.TargetFacingActor(actor);
         }
         return true;
     }
@@ -139,6 +141,12 @@ public class AIConditionChecker : ScriptableObject
                 return actor.GetSpeed() + 1;
             case "Move++":
                 return actor.GetSpeed() + 2;
+            case "AttackRange":
+                return actor.GetAttackRange();
+            case "AttackRange+":
+                return actor.GetAttackRange() + 1;
+            case "AttackRange++":
+                return actor.GetAttackRange() + 2;
         }
         return 1;
     }

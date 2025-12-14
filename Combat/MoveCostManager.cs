@@ -310,6 +310,22 @@ public class MoveCostManager : MonoBehaviour
         }
     }
 
+    public void MoveThroughSkill(TacticActor mover, int tile, BattleMap map)
+    {
+        int distance = map.mapUtility.DistanceBetweenTiles(mover.GetLocation(), tile, map.mapSize);
+        int direction = map.mapUtility.DirectionBetweenLocations(mover.GetLocation(), tile, map.mapSize);
+        int nextLocation = tile;
+        for (int i = 0; i < distance; i++)
+        {
+            nextLocation = PointInDirection(nextLocation, direction);
+        }
+        if (map.GetActorOnTile(nextLocation) == null)
+        {
+            MoveActorToTile(mover, nextLocation, map);
+            map.UpdateActors();
+        }
+    }
+
     public int PointInDirection(int current, int direction)
     {
         return actorPathfinder.mapUtility.PointInDirection(current, direction, actorPathfinder.mapSize);
