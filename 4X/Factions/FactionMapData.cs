@@ -23,7 +23,6 @@ public class FactionMapData : SavedData
     }
 
     public StatDatabase zoneTileMappings;
-    public StatDatabase zoneTileWeights;
     public StatDatabase luxuryTileMappings;
     public StatDatabase tileMoveCosts;
     public int cutInto;

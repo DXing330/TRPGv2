@@ -107,7 +107,7 @@ public class FactionMap : MapManager
         UpdateFactionHighlights();
     }
     public FactionManager allFactions;
-    public List<string> highlightedTiles;
+    protected List<string> highlightedTiles;
     public void ResetHighlights()
     {
         InitializeEmptyList();
@@ -129,10 +129,12 @@ public class FactionMap : MapManager
     {
         tileBuildings[tileNumber] = "City";
     }
+    // Need to build up a local population before making a building.
+    public string bbbS;
     public bool BuildingOnTile(int tileNumber)
     {
         // Houses don't count.
-        if (tileBuildings[tileNumber].Contains("House")){return false;}
+        if (tileBuildings[tileNumber].Contains(bbbS)){return false;}
         return tileBuildings[tileNumber] != "";
     }
     public int ReturnClosestBuildingTile(int start)
@@ -153,7 +155,7 @@ public class FactionMap : MapManager
     }
     protected List<string> BuildingMapInfo()
     {
-        List<string> bInfo = new List<string>(mapInfo);
+        List<string> bInfo = new List<string>(emptyList);
         for (int i = 0; i < tileBuildings.Count; i++)
         {
             if (tileBuildings[i] != "")

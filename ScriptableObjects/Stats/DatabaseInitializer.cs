@@ -24,9 +24,7 @@ public class DatabaseInitializer : MonoBehaviour
         for (int i = 0; i < statData.Count; i++)
         {
             statData[i].Initialize();
-            #if UNITY_EDITOR
-                EditorUtility.SetDirty(statData[i]);
-            #endif
+            statData[i].DBSetDirty();
         }
     }
     [ContextMenu("InitializeStatAndSpriteData")]

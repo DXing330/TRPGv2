@@ -38,13 +38,13 @@ public class MapPathfinderTester : MapManager
         ResetHighlights();
     }
     public int startPathTile;
-    public string startPathColor;
+    public Color startPathColor;
     public int endPathTile;
-    public string endPathColor;
+    public Color endPathColor;
     public List<int> path;
     public List<int> ownedTiles;
     public List<int> borders;
-    public string pathColor;
+    public Color pathColor;
     protected void PathClickOnTile(int tileNumber)
     {
         if (startPathTile < 0)
@@ -101,7 +101,7 @@ public class MapPathfinderTester : MapManager
         InitializeEmptyList();
         for (int i = 0; i < mapTiles.Count; i++)
         {
-            mapTiles[i].HighlightLayer(3);
+            mapTiles[i].ResetHighlight();
         }
     }
     public void HighlightPathTiles()

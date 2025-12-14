@@ -144,6 +144,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to consume the grappled target.";
             case "SwapRelease":
                 return "Switch places and then release the grappled target.";
+            case "Swap":
+                return "Switch " + ASD(s) + " with the targeted location.";
             case "Attack+Amnesia":
                 return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " active skill(s).";
             case "Weather":

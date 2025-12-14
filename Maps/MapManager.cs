@@ -12,6 +12,7 @@ public class MapManager : MonoBehaviour
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
+    public bool showElevationSprite = false;
     public StatDatabase tileElevationMappings;
     public SpriteContainer elevationSprites;
     public List<int> mapElevations;
@@ -65,7 +66,10 @@ public class MapManager : MonoBehaviour
         {
             mapElevations.Add(RandomElevation(mapInfo[i]));
             mapTiles[i].SetElevation(mapElevations[i]);
-            mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary(mapTiles[i].GetElevation().ToString()));
+            if (showElevationSprite)
+            {
+                mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary(mapTiles[i].GetElevation().ToString()));
+            }
         }
     }
     protected virtual void ResetAllLayers()
@@ -217,6 +221,15 @@ public class MapManager : MonoBehaviour
     public void TestUpdateMap()
     {
         UpdateMap();
+    }
+
+    [ContextMenu("Test Show Elevation")]
+    public void TestShowElevation()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary(mapTiles[i].GetElevation().ToString()));
+        }
     }
 
     public virtual void UpdateMap()

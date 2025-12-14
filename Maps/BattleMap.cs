@@ -344,7 +344,7 @@ public class BattleMap : MapManager
     }
     public void ChangeTEffect(int tileNumber, string newEffect)
     {
-        if (terrainEffectTiles[tileNumber] == "")
+        if (terrainEffectTiles[tileNumber] == "" || newEffect == "")
         {
             terrainEffectTiles[tileNumber] = newEffect;
         }
@@ -1002,14 +1002,15 @@ public class BattleMap : MapManager
         string t_t = "";
         List<int> spreadingEffects = new List<int>();
         List<int> expandingEffects = new List<int>();
+        List<int> removedEffects = new List<int>();
         for (int i = 0; i < terrainEffectTiles.Count; i++)
         {
             if (terrainEffectTiles[i] == ""){ continue; }
             t_w = terrainEffectTiles[i] + "-" + GetWeather();
-            t_t = terrainEffectTiles[i] + "-" + mapInfo[i];
+            t_t = mapInfo[i] + "-" + terrainEffectTiles[i];
             if (terrainWeatherInteractions.ReturnValue(t_w) == "Remove" || terrainTileInteractions.ReturnValue(t_t) == "Remove")
             {
-                ChangeTEffect(i, "");
+                removedEffects.Add(i);
                 continue;
             }
             else if (terrainWeatherInteractions.ReturnValue(t_w) == "Expand" || terrainTileInteractions.ReturnValue(t_t) == "Expand")
@@ -1047,6 +1048,10 @@ public class BattleMap : MapManager
                     ChangeTEffect(i, blocks[1]);
                     break;
             }
+        }
+        for (int i = 0; i < removedEffects.Count; i++)
+        {
+            ChangeTEffect(removedEffects[i], "");
         }
         IncrementDelayedEffects();
         UpdateMap();

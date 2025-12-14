@@ -24,6 +24,13 @@ public class StatDatabase : ScriptableObject
     public List<string> keys;
     public List<string> values;
 
+    public void DBSetDirty()
+    {
+        #if UNITY_EDITOR
+                EditorUtility.SetDirty(this);
+        #endif
+    }
+
     public virtual void Initialize()
     {
         if (inputKeysAndValues)
@@ -34,9 +41,6 @@ public class StatDatabase : ScriptableObject
         }
         GetKeys();
         GetValues();
-        #if UNITY_EDITOR
-                EditorUtility.SetDirty(this);
-        #endif
     }
 
     public void SetAllKeys(string newKeys)

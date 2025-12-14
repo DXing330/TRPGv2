@@ -26,6 +26,7 @@ public class GroupedStatDatabase : StatDatabase
         {
             groupedDBs[i].SetAllData(blocks[i]);
             groupedDBs[i].Initialize();
+            groupedDBs[i].DBSetDirty();
         }
     }
 }

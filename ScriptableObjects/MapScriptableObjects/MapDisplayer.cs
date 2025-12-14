@@ -7,6 +7,7 @@ public class MapDisplayer : ScriptableObject
 {
     public int layer = 0;
     public List<SpriteContainer> layerSprites;
+    public ColorDictionary colorDictionary;
 
     public void DebugDisplayCurrentTiles(List<MapTile> mapTiles, List<string> mapInfo, List<int> currentTiles)
     {
@@ -73,7 +74,7 @@ public class MapDisplayer : ScriptableObject
     {
         for (int i = 0; i < (mapTiles.Count); i++)
         {
-            mapTiles[i].HighlightLayer(layer);
+            mapTiles[i].ResetHighlight();
         }
     }
 
@@ -83,10 +84,10 @@ public class MapDisplayer : ScriptableObject
         {
             if (currentTiles[i] < 0)
             {
-                mapTiles[i].HighlightLayer(layer);
+                mapTiles[i].ResetHighlight();
                 continue;
             }
-            mapTiles[i].HighlightLayer(layer, mapInfo[currentTiles[i]]);
+            mapTiles[i].HighlightTile(colorDictionary.GetColorByName(mapInfo[currentTiles[i]]));
         }
     }
 
@@ -99,7 +100,7 @@ public class MapDisplayer : ScriptableObject
             {
                 continue;
             }
-            mapTiles[indexOf].HighlightLayer(layer, highlightColor);
+            mapTiles[indexOf].HighlightTile(colorDictionary.GetColorByName(highlightColor));
         }
     }
 
@@ -109,10 +110,10 @@ public class MapDisplayer : ScriptableObject
         {
             if (currentTiles[i] < 0)
             {
-                mapTiles[i].HighlightLayer(layer);
+                mapTiles[i].ResetHighlight();
                 continue;
             }
-            mapTiles[currentTiles[i]].HighlightLayer(layer, color);
+            mapTiles[currentTiles[i]].HighlightTile(colorDictionary.GetColorByName(color));
         }
     }
 }

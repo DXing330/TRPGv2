@@ -10,58 +10,34 @@ public class MapTile : MonoBehaviour
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
     public MapManager cMap;
     public GameObject mainObject;
-    public List<GameObject> subObjects;
-    public List<RectTransform> subObjectTransforms;
-    public List<GameObject> highlightObjects;
-    public List<RectTransform> highlightObjectTransforms;
     public int elevation = 0;
     public Image elevationImage;
     public GameObject elevationObject;
-    public float originalWidth;
-    public float originalHeight;
-    public float subWidth;
-    public float subHeight;
-    public float highlightWidth;
-    public float highlightHeight;
-    public List<float> scalePerElevation;
-    public List<float> subYPivots;
-    public List<float> highlightYPivots;
+    public Image highlightImage;
+    public GameObject highlightObject;
+    public Color defaultColor;
     public void SetElevation(int newInfo)
     {
         elevation = newInfo;
-        // Scale up the tile based on elevation.
-        mainObject.transform.localScale = new Vector3(originalWidth, originalHeight * scalePerElevation[elevation], 0);
-        // Make sure that the other images are the same size.
-        for (int i = 0; i < subObjects.Count; i++)
-        {
-            subObjects[i].transform.localScale = new Vector3(subWidth, subHeight / scalePerElevation[elevation], 0);
-            subObjectTransforms[i].pivot = new Vector2(0.5f, subYPivots[elevation]);
-        }
-        for (int i = 0; i < highlightObjects.Count; i++)
-        {
-            highlightObjects[i].transform.localScale = new Vector3(highlightWidth, highlightHeight / scalePerElevation[elevation], 0);
-            highlightObjectTransforms[i].pivot = new Vector2(0.5f, highlightYPivots[elevation]);
-        }
-        // Adjust the pivots so things look good.
-        if (elevation == 0 && elevationObject != null)
-        {
-            elevationObject.SetActive(false);
-        }
     }
     public void UpdateElevationSprite(Sprite newSprite)
     {
+        if (elevation == 0)
+        {
+            elevationObject.SetActive(false);
+            return;
+        }
+        elevationObject.SetActive(true);
         elevationImage.sprite = newSprite;
     }
     public int GetElevation()
     {
         return elevation;
     }
-    public GeneralUtility utility;
     public List<GameObject> layerObjects;
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
     public List<GameObject> directionObjects;
-    public ColorDictionary colorDictionary;
     public TMP_Text tileText;
 
     public void UpdateText(string newText = ""){tileText.text = newText;}
@@ -121,29 +97,35 @@ public class MapTile : MonoBehaviour
         layers[layer].sprite = newSprite;
     }
 
+    public void ResetAllLayers()
+    {
+        for (int i = 0; i < layerObjects.Count; i++)
+        {
+            ResetLayerSprite(i);
+        }
+    }
+
     public void ResetLayerSprite(int layer)
     {
         layerObjects[layer].SetActive(false);
     }
 
-    protected void ResetHighlight(int layer)
+    public void ResetHighlight()
     {
-        layers[layer].color = colorDictionary.GetDefaultColor();
+        highlightObject.SetActive(false);
+        highlightImage.color = defaultColor;
     }
 
-    public void HighlightLayer(int layer, string color = "")
+    public void HighlightTile(Color newColor)
     {
-        if (colorDictionary.ColorNameExists(color))
-        {
-            layerObjects[layer].SetActive(true);
-            layers[layer].color = colorDictionary.GetColorByName(color);
-        }
-        else
-        {
-            ResetLayerSprite(layer);
-            ResetHighlight(layer);
-            return;
-        }
+        highlightObject.SetActive(true);
+        highlightImage.color = newColor;
+    }
+
+    public void HighlightLayer(int layer, Color newColor)
+    {
+        layerObjects[layer].SetActive(true);
+        layers[layer].color = newColor;
     }
 
     public void ClickTile()

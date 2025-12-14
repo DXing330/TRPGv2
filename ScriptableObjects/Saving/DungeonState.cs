@@ -61,6 +61,11 @@ public class DungeonState : SavedState
     public override void Load()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
+        if (!File.Exists(dataPath))
+        {
+            NewGame();
+            return;
+        }
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
         for (int i = 0; i < dataList.Count; i++)
