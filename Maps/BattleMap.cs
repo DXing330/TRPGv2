@@ -770,7 +770,20 @@ public class BattleMap : MapManager
 
     public int DistanceBetweenActors(TacticActor actor1, TacticActor actor2)
     {
+        if (actor1 == null || actor2 == null)
+        {
+            return mapSize * mapSize + 1;
+        }
         return mapUtility.DistanceBetweenTiles(actor1.GetLocation(), actor2.GetLocation(), mapSize);
+    }
+
+    public bool StraightLineBetweenActors(TacticActor actor1, TacticActor actor2)
+    {
+        if (actor1 == null || actor2 == null)
+        {
+            return false;
+        }
+        return mapUtility.StraightLineBetweenPoints(actor1.GetLocation(), actor2.GetLocation(), mapSize);
     }
 
     public TacticActor GetClosestEnemy(TacticActor actor)

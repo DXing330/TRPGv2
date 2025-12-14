@@ -54,6 +54,9 @@ public class SkillEffect : ScriptableObject
                     AffectActor(target, "Status", statuses[i], durations);
                 }
                 break;
+            case "Buff":
+                target.AddBuff(effectSpecifics, level);
+                break;
             case "RemoveStatus":
                 target.RemoveStatus(effectSpecifics);
                 break;

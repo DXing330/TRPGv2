@@ -80,6 +80,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to move " + ASD(s) + " the target and attack with " + APD(p) + "% damage.";
             case "Status":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
+            case "Buff":
+                return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
             case "RemoveStatus":
                 if (s == "All")
                 {

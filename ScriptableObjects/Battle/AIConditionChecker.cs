@@ -120,8 +120,26 @@ public class AIConditionChecker : ScriptableObject
             case "TargetSandwiched":
                 return map.TargetSandwiched(actor, specifics);
             case "TargetSandwichable":
-                return map.TargetSandwichable(actor, specifics);;
+                return map.TargetSandwichable(actor, specifics);
+            case "TargetAligned":
+                return map.StraightLineBetweenActors(actor, actor.GetTarget());
+            case "TargetDistance<":
+                return map.DistanceBetweenActors(actor, actor.GetTarget()) <= ReturnDistanceCheck(actor, specifics);
         }
         return true;
+    }
+
+    protected int ReturnDistanceCheck(TacticActor actor, string specifics)
+    {
+        switch (specifics)
+        {
+            case "Move":
+                return actor.GetSpeed();
+            case "Move+":
+                return actor.GetSpeed() + 1;
+            case "Move++":
+                return actor.GetSpeed() + 2;
+        }
+        return 1;
     }
 }

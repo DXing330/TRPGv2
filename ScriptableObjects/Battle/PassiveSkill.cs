@@ -202,6 +202,8 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == actor.GetMentalState();
             case "Status":
                 return actor.StatusExists(conditionSpecifics);
+            case "Buff":
+                return actor.BuffExists(conditionSpecifics);
             case "StatusCount>":
                 return actor.GetStatuses().Count > int.Parse(conditionSpecifics);
             case "Adjacent Ally Sprite":

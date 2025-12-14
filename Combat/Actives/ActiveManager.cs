@@ -385,7 +385,7 @@ public class ActiveManager : MonoBehaviour
                 int chargeInto = battle.moveManager.PointInDirection(skillUser.GetLocation(), skillUser.GetDirection());
                 if (battle.map.GetActorOnTile(chargeInto) != null)
                 {
-                    battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(chargeInto), battle.map, battle.moveManager);
+                    battle.attackManager.ActorAttacksActor(skillUser, battle.map.GetActorOnTile(chargeInto), battle.map, battle.moveManager, power);
                 }
                 return;
             case "Displace":

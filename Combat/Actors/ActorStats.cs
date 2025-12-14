@@ -399,6 +399,8 @@ public class ActorStats : ActorPassives
         baseDodge = initialDodge;
         baseCrit = initialCrit;
         baseCritDamage = initialCritDamage;
+        buffs.Clear();
+        buffDurations.Clear();
         ResetStats();
         EndTurnResetStats();
     }
@@ -564,7 +566,50 @@ public class ActorStats : ActorPassives
     {
         return spells.Count;
     }
+    public List<string> buffs;
+    public int defaultBuffDuration = 3;
+    public List<int> buffDurations;
+    public List<string> GetBuffs(){return buffs;}
+    public List<int> GetBuffDurations(){return buffDurations;}
+    public void AddBuff(string newCondition, int duration)
+    {
+        if (newCondition.Length <= 0) { return; }
+        if (duration < 0)
+        {
+            duration = defaultBuffDuration;
+        }
+        int indexOf = statuses.IndexOf(newCondition);
+        if (indexOf < 0)
+        {
+            buffs.Add(newCondition);
+            buffDurations.Add(duration);
+        }
+        else
+        {
+            buffDurations[indexOf] = buffDurations[indexOf] + duration;
+        }
+    }
+    public bool BuffExists(string buffName)
+    {
+        return buffs.Contains(buffName);
+    }
+    public void AdjustBuffDuration(int index, int amount = -1)
+    {
+        buffDurations[index] = buffDurations[index] + amount;
+    }
+    public void CheckBuffDuration()
+    {
+        for (int i = buffs.Count - 1; i >= 0; i--)
+        {
+            if (buffDurations[i] == 0)
+            {
+                buffs.RemoveAt(i);
+                buffDurations.RemoveAt(i);
+            }
+        }
+    }
     public List<string> statuses;
+    public List<int> statusDurations;
     public List<string> GetStatuses() { return statuses; }
     public List<string> GetUniqueStatuses()
     {
@@ -624,46 +669,6 @@ public class ActorStats : ActorPassives
     {
         return statuses.Contains(statusName);
     }
-    public string curseStatName;
-    public void AddCurse(string newInfo)
-    {
-        if (newInfo.Length <= 0){return;}
-        AddStatus(newInfo, -1);
-    }
-    public void SetCurses(string newInfo)
-    {
-        // Set implies reseting and starting from the beginning.
-        ClearStatuses();
-        int index = statNames.IndexOf(curseStatName);
-        stats[index] = newInfo;
-        string[] blocks = newInfo.Split(",");
-        for (int i = 0; i < blocks.Length; i++)
-        {
-            AddCurse(blocks[i]);
-        }
-    }
-    public List<string> GetCurses()
-    {
-        List<string> curses = new List<string>();
-        for (int i = 0; i < statuses.Count; i++)
-        {
-            if (statusDurations[i] < 0 && statuses[i].Length > 0) { curses.Add(statuses[i]); }
-        }
-        return curses;
-    }
-    public string GetCurseString()
-    {
-        List<string> curses = GetCurses();
-        string curseString = "";
-        if (curses.Count <= 0) { return curseString; }
-        for (int i = 0; i < curses.Count; i++)
-        {
-            curseString += curses[i];
-            if (i < curses.Count - 1) { curseString += ","; }
-        }
-        return curseString;
-    }
-    public List<int> statusDurations;
     public void ClearStatuses(string specifics = "*")
     {
         if (specifics == "*")
@@ -736,5 +741,44 @@ public class ActorStats : ActorPassives
                 statusDurations.RemoveAt(i);
             }
         }
+    }
+    public string curseStatName;
+    public void AddCurse(string newInfo)
+    {
+        if (newInfo.Length <= 0){return;}
+        AddStatus(newInfo, -1);
+    }
+    public void SetCurses(string newInfo)
+    {
+        // Set implies reseting and starting from the beginning.
+        ClearStatuses();
+        int index = statNames.IndexOf(curseStatName);
+        stats[index] = newInfo;
+        string[] blocks = newInfo.Split(",");
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            AddCurse(blocks[i]);
+        }
+    }
+    public List<string> GetCurses()
+    {
+        List<string> curses = new List<string>();
+        for (int i = 0; i < statuses.Count; i++)
+        {
+            if (statusDurations[i] < 0 && statuses[i].Length > 0) { curses.Add(statuses[i]); }
+        }
+        return curses;
+    }
+    public string GetCurseString()
+    {
+        List<string> curses = GetCurses();
+        string curseString = "";
+        if (curses.Count <= 0) { return curseString; }
+        for (int i = 0; i < curses.Count; i++)
+        {
+            curseString += curses[i];
+            if (i < curses.Count - 1) { curseString += ","; }
+        }
+        return curseString;
     }
 }

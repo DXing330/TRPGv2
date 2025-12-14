@@ -281,6 +281,7 @@ public class TacticActor : ActorStats
         EndTurnResetStats();
         ResetBonusActions();
         ResetMentalState();
+        CheckBuffDuration();
         CheckStatusDuration();
     }
 

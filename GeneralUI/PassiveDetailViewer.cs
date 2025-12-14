@@ -434,6 +434,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " gain the " + specifics + " skill once";
             case "Status":
                 return " inflict " + specifics+" on "+target;
+            case "Buff":
+                return " give " + specifics+" to "+target;
             case "RemoveStatus":
                 return " remove all " + specifics + " status effects from " + target;
             case "Health":

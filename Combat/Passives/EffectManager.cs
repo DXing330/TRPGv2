@@ -26,6 +26,7 @@ public class EffectManager : MonoBehaviour
         weather.ApplyEffects(actor, "Start");
         passive.ApplyPassives(actor, passiveData, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
+        status.ApplyBuffEffects(actor, statusData, "Start");
         status.ApplyEffects(actor, statusData, "Start");
         // Check on grapples at the start of every turn.
         if (actor.Grappled(map))
@@ -41,6 +42,7 @@ public class EffectManager : MonoBehaviour
         weather.LoadWeather(weatherData.ReturnValue(map.GetWeather()));
         weather.ApplyEffects(actor, "End");
         passive.ApplyPassives(actor, passiveData, "End", map);
+        status.ApplyBuffEffects(actor, statusData, "End");
         status.ApplyEffects(actor, statusData, "End");
         List<string> removedPassives = actor.DecreaseTempPassiveDurations();
         if (removedPassives.Count > 0)
