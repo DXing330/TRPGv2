@@ -180,7 +180,7 @@ public class ActorPassives : MonoBehaviour
             case "Defending":
                 defendingPassives.Add(passiveName);
                 break;
-            case "BattleStart":
+            case "BS":
                 startBattlePassives.Add(passiveName);
                 break;
             case "TakeDamage":
@@ -213,7 +213,7 @@ public class ActorPassives : MonoBehaviour
             case "Defending":
                 defendingPassives.Remove(passiveName);
                 break;
-            case "BattleStart":
+            case "BS":
                 startBattlePassives.Remove(passiveName);
                 break;
             case "TakeDamage":

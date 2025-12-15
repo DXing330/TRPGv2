@@ -11,6 +11,10 @@ public class SkillEffect : ScriptableObject
     public int baseStatusDuration = 3;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1, CombatLog combatLog = null)
     {
+        if (effectSpecifics.Contains("Scaling"))
+        {
+            string[] effectDetails = effect.Split("=");
+        }
         int changeAmount = 0;
         switch (effect)
         {
@@ -277,12 +281,53 @@ public class SkillEffect : ScriptableObject
                 break;
             case "CurrentDamageResistance":
                 string[] cResist = effectSpecifics.Split("=");
-                target.UpdateBaseDamageResist(cResist[0], SafeParseInt(cResist[1]));
+                target.UpdateCurrentDamageResist(cResist[0], SafeParseInt(cResist[1]));
+                break;
+            case "BaseElementalBonus":
+                string[] baseBonus = effectSpecifics.Split("=");
+                target.UpdateElementalDamageBonus(baseBonus[0], SafeParseInt(baseBonus[1]));
+                break;
+            case "ElementalDamageBonus":
+                string[] cBonus = effectSpecifics.Split("=");
+                target.UpdateCurrentElementalDamageBonus(cBonus[0], SafeParseInt(cBonus[1]));
+                break;
+            case "ScalingElementalBonus":
+                string[] scalingEB = effectSpecifics.Split("=");
+                target.UpdateElementalDamageBonus(scalingEB[0], GetScalingInt(target, scalingEB[1], scalingEB[2], scalingEB[3]));
+                break;
+            case "ScalingElementalResist":
+                string[] scalingER = effectSpecifics.Split("=");
+                target.UpdateBaseDamageResist(scalingER[0], GetScalingInt(target, scalingER[1], scalingER[2], scalingER[3]));
+                break;
+            case "MaxVigor":
+                target.IncreaseMaxVigor(int.Parse(effectSpecifics));
+                break;
+            case "Vigor":
+                target.RestoreVigor(int.Parse(effectSpecifics));
+                break;
+            case "ScalingVigor":
+                string[] scalingVig = effectSpecifics.Split("=");
+                target.IncreaseMaxVigor(GetScalingInt(target, scalingVig[0], scalingVig[1], scalingVig[2]));
                 break;
         }
     }
 
-    public int SafeParseInt(string intString, int defaultValue = 1)
+    protected int GetScalingInt(TacticActor target, string scaling, string scalingSpecifics, string scalingMultiplier)
+    {
+        switch (scaling)
+        {
+            case "PLevel":
+            return GetTargetPassiveLevel(target, scalingSpecifics) * SafeParseInt(scalingMultiplier);
+        }
+        return 1;
+    }
+
+    protected int GetTargetPassiveLevel(TacticActor target, string passiveName)
+    {
+        return target.GetLevelFromPassive(passiveName);
+    }
+
+    protected int SafeParseInt(string intString, int defaultValue = 1)
     {
         try
         {

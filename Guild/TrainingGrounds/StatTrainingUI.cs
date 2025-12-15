@@ -39,7 +39,7 @@ public class StatTrainingUI : MonoBehaviour
                 break;
         }
         trainingEffectText.text = stat + " > " + Mathf.Min((stat + 1), maxStats[selectedStat]);
-        trainingCostText.text = (stat * baseCosts[selectedStat]).ToString();
+        trainingCostText.text = (stat * stat * baseCosts[selectedStat]).ToString();
     }
     protected void UpdateTrainingDisplay()
     {
@@ -68,7 +68,7 @@ public class StatTrainingUI : MonoBehaviour
     }
     public void TrainStat()
     {
-        if (traineeSelect.GetSelected() < 0 && selectedStat < 0){return;}
+        if (traineeSelect.GetSelected() < 0 || selectedStat < 0){return;}
         // Check gold.
         if (int.Parse(partyGoldText.text) < int.Parse(trainingCostText.text))
         {

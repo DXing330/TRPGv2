@@ -78,7 +78,7 @@ public class PassiveOrganizer : ScriptableObject
             case "Defending":
                 defendingPassives.Add(passive);
                 break;
-            case "BattleStart":
+            case "BS":
                 startBattlePassives.Add(passive);
                 break;
             case "TakeDamage":

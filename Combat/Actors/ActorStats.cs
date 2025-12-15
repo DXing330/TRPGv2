@@ -189,6 +189,7 @@ public class ActorStats : ActorPassives
         currentWeight = weight;
         currentDodge = baseDodge;
         ResetResistances();
+        ResetDamageBonuses();
         // Initiative is used to determine your turn in the round.
         // At the start of your turn during the round reset it.
         ResetTempInitiative();
@@ -362,32 +363,94 @@ public class ActorStats : ActorPassives
         TakeDamage(damage, type);
         return damage;
     }
-    public List<string> dmgTypes;
-    public void TakeElementalDamage(int amount, string type)
+    public int maxVigor;
+    public void IncreaseMaxVigor(int amount)
     {
-        TakeDamage(amount, type);
+        maxVigor += amount;
+        currentVigor += amount;
     }
+    public int currentVigor;
+    public int GetVigor(){return currentVigor;}
+    public void UseVigor(int amount)
+    {
+        currentVigor -= amount;
+    }
+    public void RestoreVigor(int amount)
+    {
+        currentVigor += amount;
+        if (currentVigor > maxVigor)
+        {
+            currentVigor = maxVigor;
+        }
+    }
+    public List<string> bonusDmgTypes;
+    // Deal bonus damage of type.
+    public List<int> baseDmgBonuses;
+    public List<int> currentDmgBonuses;
+    public int ReturnDamageBonusOfType(string type)
+    {
+        int indexOf = bonusDmgTypes.IndexOf(type);
+        if (indexOf < 0){return 0;}
+        return currentDmgBonuses[indexOf];
+    }
+    public void ResetDamageBonuses()
+    {
+        for (int i = 0; i < bonusDmgTypes.Count; i++)
+        {
+            currentDmgBonuses[i] = baseDmgBonuses[i];
+        }
+    }
+    public void UpdateElementalDamageBonus(string type, int amount)
+    {
+        int indexOf = bonusDmgTypes.IndexOf(type);
+        if (indexOf < 0)
+        {
+            bonusDmgTypes.Add(type);
+            baseDmgBonuses.Add(amount);
+            currentDmgBonuses.Add(amount);
+        }
+        else
+        {
+            baseDmgBonuses[indexOf] += amount;
+        }
+    }
+    public void UpdateCurrentElementalDamageBonus(string type, int amount)
+    {
+        int indexOf = bonusDmgTypes.IndexOf(type);
+        if (indexOf < 0)
+        {
+            bonusDmgTypes.Add(type);
+            baseDmgBonuses.Add(0);
+            currentDmgBonuses.Add(amount);
+        }
+        else
+        {
+            currentDmgBonuses[indexOf] += amount;
+        }
+    }
+    public List<string> resistDmgTypes;
+    // Resist damage.
     public List<int> baseDmgResists;
     public List<int> currentDmgResists;
     public int ReturnDamageResistanceOfType(string type)
     {
-        int indexOf = dmgTypes.IndexOf(type);
+        int indexOf = resistDmgTypes.IndexOf(type);
         if (indexOf < 0){return 0;}
         return currentDmgResists[indexOf];
     }
     public void ResetResistances()
     {
-        for (int i = 0; i < dmgTypes.Count; i++)
+        for (int i = 0; i < resistDmgTypes.Count; i++)
         {
             currentDmgResists[i] = baseDmgResists[i];
         }
     }
     public void UpdateBaseDamageResist(string type, int amount)
     {
-        int indexOf = dmgTypes.IndexOf(type);
+        int indexOf = resistDmgTypes.IndexOf(type);
         if (indexOf < 0)
         {
-            dmgTypes.Add(type);
+            resistDmgTypes.Add(type);
             baseDmgResists.Add(amount);
             currentDmgResists.Add(amount);
         }
@@ -398,10 +461,10 @@ public class ActorStats : ActorPassives
     }
     public void UpdateCurrentDamageResist(string type, int amount)
     {
-        int indexOf = dmgTypes.IndexOf(type);
+        int indexOf = resistDmgTypes.IndexOf(type);
         if (indexOf < 0)
         {
-            dmgTypes.Add(type);
+            resistDmgTypes.Add(type);
             baseDmgResists.Add(0);
             currentDmgResists.Add(amount);
         }
@@ -483,11 +546,16 @@ public class ActorStats : ActorPassives
         baseDodge = initialDodge;
         baseCrit = initialCrit;
         baseCritDamage = initialCritDamage;
+        maxVigor = 0;
+        currentVigor = 0;
         buffs.Clear();
         buffDurations.Clear();
-        dmgTypes.Clear();
+        resistDmgTypes.Clear();
         baseDmgResists.Clear();
         currentDmgResists.Clear();
+        bonusDmgTypes.Clear();
+        baseDmgBonuses.Clear();
+        currentDmgBonuses.Clear();
         ResetStats();
         EndTurnResetStats();
     }

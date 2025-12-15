@@ -31,7 +31,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
         }
         fullDetails += "\n" + "Action Cost: " + spell.GetActionCost();
         //+"; Actions Left: " +activeSkill;
-        fullDetails += "\n"+"Mana Cost: "+spell.ReturnManaCost();
+        fullDetails += "\n"+"Vigor Cost: "+spell.ReturnManaCost();
         return fullDetails;
     }
     public string ReturnActiveDescriptionOnly(ActiveSkill activeSkill)
@@ -132,6 +132,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to change the targeted tile(s) to " + ASD(s) + ".";
             case "True Attack":
                 return "Deal damage equal to " + APD(p) + "% of " + ASD(s) + ".";
+            case "ElementalDamage":
+                return "Deal " + APD(p) + " " + ASD(s) + " damage.";
             case "Flat Attack":
                 return "Deal " + ASD(s) + " damage.";
             case "Attack+Tile":

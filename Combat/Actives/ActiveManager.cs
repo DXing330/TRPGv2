@@ -457,6 +457,12 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, battle.moveManager, power, specifics);
                 }
                 return;
+            case "ElementalDamage":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    battle.attackManager.ElementalFlatDamage(skillUser, targets[i], battle.map, battle.moveManager, power, specifics);
+                }
+                return;
             case "Flat Attack":
                 for (int i = 0; i < targets.Count; i++)
                 {
@@ -544,13 +550,13 @@ public class ActiveManager : MonoBehaviour
         return (CheckActionCost() && CheckEnergyCost());
     }
 
-    public bool CheckSpellCost(Inventory inventory)
+    public bool CheckSpellCost()
     {
         // Need to check mana in addition to energy and actions.
         bool actions = skillUser.GetActions() >= magicSpell.GetActionCost();
         // bool mana = ???
-        bool mana = inventory.QuantityExists(magicSpell.ReturnManaCost(), "Mana");
-        return (actions && mana);
+        bool vigor = skillUser.GetVigor() >= magicSpell.ReturnManaCost();
+        return (actions && vigor);
     }
 
     public bool CheckActionCost()

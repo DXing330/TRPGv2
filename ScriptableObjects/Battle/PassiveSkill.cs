@@ -438,7 +438,7 @@ public class PassiveSkill : SkillEffect
             case ">":
                 return int.Parse(conditionSpecifics) > damageAmount;
         }
-        return false;
+        return true;
     }
 
     public string CheckRelativeDirections(int dir1, int dir2)

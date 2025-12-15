@@ -8,6 +8,7 @@ public class AttackManager : ScriptableObject
     public PassiveSkill passive;
     public StatDatabase passiveData;
     public TerrainPassivesList terrainPassives;
+    public int stabMultiplier = 150;
     public int baseMultiplier;
     protected string damageRolls;
     protected string passiveEffectString;
@@ -16,17 +17,84 @@ public class AttackManager : ScriptableObject
     protected int baseDamage;
     protected int damageMultiplier;
 
+    public bool RollToHit(TacticActor attacker, TacticActor defender, BattleMap map)
+    {
+        int hitRoll = Random.Range(0, 100);
+        if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
+        {
+            map.combatLog.UpdateNewestLog("The attack misses!");
+            return false;
+        }
+        return true;
+    }
+    public int STAB(TacticActor attacker, int damage, string type)
+    {
+        if (type == attacker.GetElement())
+        {
+            finalDamageCalculation += "STAB: " + damage + " * " + stabMultiplier + "% = ";
+            damage = damage * stabMultiplier / baseMultiplier;
+            finalDamageCalculation += damage + "\n";
+        }
+        return damage;
+    }
+    public int ElementalMastery(TacticActor attacker, int damage, string type)
+    {
+        // Check for bonus damage.
+        int elementBonus = attacker.ReturnDamageBonusOfType(type);
+        if (elementBonus != 0)
+        {
+            finalDamageCalculation += type + " Mastery = +" + elementBonus + "% Damage";
+            finalDamageCalculation += "\n" + damage + " * " + (100 + elementBonus) + "% = " + (damage * (100 + elementBonus) / 100) + "\n";
+            return damage * (100 + elementBonus) / 100;
+        }
+        return damage;
+    }
+    public void ElementalResistance(TacticActor defender, int damage, string type)
+    {
+        int resistance = defender.ReturnDamageResistanceOfType(type);
+        if (resistance != 0)
+        {
+            finalDamageCalculation += "\n" + type + " Resistance = " + resistance + "%";
+            finalDamageCalculation += "\n" + baseDamage + " * " + (100 - resistance) + "% = " + (baseDamage * (100 - resistance) / 100);
+        }
+    }
+    public int CritRoll(TacticActor attacker, int damage)
+    {
+        int critRoll = Random.Range(0, 100);
+        if (critRoll < attacker.GetCritChance())
+        {
+            finalDamageCalculation += "CRITICAL HIT: " + damage + " * " + attacker.GetCritDamage() + "% = ";
+            damage = damage * attacker.GetCritDamage() / baseMultiplier;
+            finalDamageCalculation += damage + "\n";
+        }
+        return damage;
+    }
+    // Used for most spell effects.
+    public void ElementalFlatDamage(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage, string element)
+    {
+        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        if (!RollToHit(attacker, defender, map)){return;}
+        baseDamage = damage;
+        finalDamageCalculation = "";
+        // Stab
+        baseDamage = STAB(attacker, baseDamage, element);
+        // Elemental Mastery
+        baseDamage = ElementalMastery(attacker, baseDamage, element);
+        // Crit
+        baseDamage = CritRoll(attacker, baseDamage);
+        // Resistance
+        ElementalResistance(defender, baseDamage, element);
+        baseDamage = defender.TakeDamage(baseDamage, element);
+        defender.SetTarget(attacker);
+        map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
+        map.combatLog.AddDetailedLogs(finalDamageCalculation);
+    }
     // Basically used for guns/cannons other non scaling damage
     public void FlatDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
-        int hitRoll = Random.Range(0, 100);
-        if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
-        {
-            // Miss.
-            map.combatLog.UpdateNewestLog("The attack misses!");
-            return;
-        }
+        if (!RollToHit(attacker, defender, map)){return;}
         advantage = 0;
         damageMultiplier = baseMultiplier;
         baseDamage = damage;
@@ -36,6 +104,7 @@ public class AttackManager : ScriptableObject
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
     }
 
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
@@ -62,6 +131,7 @@ public class AttackManager : ScriptableObject
         }
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
         baseDamage = defender.TakeDamage(baseDamage, "True");
 
     }
@@ -69,13 +139,7 @@ public class AttackManager : ScriptableObject
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         // Determine if you miss or not.
-        int hitRoll = Random.Range(0, 100);
-        if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
-        {
-            // Miss.
-            map.combatLog.UpdateNewestLog("The attack misses!");
-            return;
-        }
+        if (!RollToHit(attacker, defender, map)){return;}
         // Attacking decreases your initative.
         attacker.UpdateTempInitiative(-1);
         advantage = 0;
@@ -90,14 +154,12 @@ public class AttackManager : ScriptableObject
         CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
+        // Check for stab.
+        baseDamage = STAB(attacker, baseDamage, type);
+        // Check for bonus damage.
+        baseDamage = ElementalMastery(attacker, baseDamage, type);
         // Check for a critical hit.
-        int critRoll = Random.Range(0, 100);
-        if (critRoll < attacker.GetCritChance())
-        {
-            finalDamageCalculation += "CRITICAL HIT: " + baseDamage + " * " + attacker.GetCritDamage() + "% = ";
-            baseDamage = baseDamage * attacker.GetCritDamage() / baseMultiplier;
-            finalDamageCalculation += baseDamage + "\n";
-        }
+        baseDamage = CritRoll(attacker, baseDamage);
         // First subtract defense.
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
         baseDamage = baseDamage - defender.GetDefense();
@@ -111,12 +173,7 @@ public class AttackManager : ScriptableObject
         baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
         finalDamageCalculation += baseDamage;
         // Show the resistance calculation.
-        int resistance = defender.ReturnDamageResistanceOfType(type);
-        if (resistance != 0)
-        {
-            finalDamageCalculation += "\n" + type + " Resistance = " + resistance;
-            finalDamageCalculation += "\n" + baseDamage + " * " + (100 - resistance) + "% = " + (baseDamage * (100 - resistance) / 100);
-        }
+        ElementalResistance(defender, baseDamage, type);
         baseDamage = defender.TakeDamage(baseDamage, type);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");

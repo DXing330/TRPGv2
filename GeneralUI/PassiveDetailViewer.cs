@@ -105,7 +105,7 @@ public class PassiveDetailViewer : MonoBehaviour
     {
         switch (data)
         {
-            case "BattleStart":
+            case "BS":
             return "At the start of each battle,";
             case "Start":
             return "At the start of each turn,";
@@ -496,6 +496,21 @@ public class PassiveDetailViewer : MonoBehaviour
             case "CurrentDamageResistance":
                 string[] cDRes = specifics.Split("=");
                 return " increase " + cDRes[0] + " resistance by " + cDRes[1];
+            case "BaseElementalBonus":
+                string[] bDBonus = specifics.Split("=");
+                return " increase base " + bDBonus[0] + " damage by " + bDBonus[1];
+            case "ElementalDamageBonus":
+                string[] cDBonus = specifics.Split("=");
+                return " increase " + cDBonus[0] + " damage by " + cDBonus[1];
+            case "ScalingElementalBonus":
+                string[] sEB = specifics.Split("=");
+                return " increase base " + sEB[0] + " damage by " + sEB[3] + "% for each level of this passive";
+            case "ScalingElementalResist":
+                string[] sER = specifics.Split("=");
+                return " increase base " + sER[0] + " resistance by " + sER[3] + "% for each level of this passive";
+            case "ScalingVigor":
+                string[] scalingVig = specifics.Split("=");
+                return " increase vigor by " + scalingVig[2] + " for each level of this passive";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

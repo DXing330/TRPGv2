@@ -83,10 +83,10 @@ public class ActiveSelectList : SelectList
         // Show the spell by name.
         activeManager.SetSpell(battle.GetTurnActor().GetSpells()[selectedIndex]);
         UpdateSelectedText(activeManager.magicSpell.GetSkillType());
-        if (!activeManager.CheckSpellCost(inventory))
+        if (!activeManager.CheckSpellCost())
         {
             // Show an error message instead of just returning?
-            ErrorMessage("Not enough mana.");
+            ErrorMessage("Not enough resources to cast this spell.");
             ResetState();
             return;
         }
