@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -981,7 +982,7 @@ public class BattleMap : MapManager
     {
         string tileEffect = ReturnTileMovingPassive(actor);
         if (tileEffect.Length < 1) { return; }
-        List<string> data = passiveData.ReturnStats(tileEffect);
+        List<string> data = tileEffect.Split("|").ToList();
         if (passiveEffect.CheckStartEndConditions(actor, data[1], data[2], this))
         {
             passiveEffect.AffectActor(actor, data[4], data[5]);

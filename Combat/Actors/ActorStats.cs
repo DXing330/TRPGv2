@@ -8,11 +8,12 @@ using UnityEngine;
 public class ActorStats : ActorPassives
 {
     public GeneralUtility utility;
+    public string delimiter = "!";
     public string allStatNames;
     [ContextMenu("LoadStatNames")]
     protected void LoadStatNames()
     {
-        statNames = allStatNames.Split("|").ToList();
+        statNames = allStatNames.Split(delimiter).ToList();
     }
     public List<string> statNames;
     public List<string> changeFormStatNames;
@@ -29,7 +30,7 @@ public class ActorStats : ActorPassives
         {
             stats[i] = GetStat(statNames[i]);
             allStats += stats[i];
-            if (i < stats.Count - 1) { allStats += "|"; }
+            if (i < stats.Count - 1) { allStats += delimiter; }
         }
         return allStats;
     }
@@ -42,7 +43,7 @@ public class ActorStats : ActorPassives
     }
     public void ChangeFormFromString(string newStats)
     {
-        ChangeForm(newStats.Split("|").ToList());
+        ChangeForm(newStats.Split(delimiter).ToList());
     }
     public void ChangeForm(List<string> newStats, List<string> newStatNames = null)
     {
@@ -64,7 +65,7 @@ public class ActorStats : ActorPassives
     }
     public void SetStatsFromString(string newStats)
     {
-        SetStats(newStats.Split("|").ToList());
+        SetStats(newStats.Split(delimiter).ToList());
     }
     public void SetStats(List<string> newStats, List<string> newStatNames = null)
     {
@@ -101,7 +102,7 @@ public class ActorStats : ActorPassives
                 return GetAttackRange().ToString();
             case "Defense":
                 return GetBaseDefense().ToString();
-            case "Movement":
+            case "MoveSpeed":
                 return GetMoveSpeed().ToString();
             case "MoveType":
                 return GetMoveType();
@@ -145,7 +146,7 @@ public class ActorStats : ActorPassives
             case "Defense":
                 SetBaseDefense(utility.SafeParseInt(newStat));
                 break;
-            case "Movement":
+            case "MoveSpeed":
                 SetMoveSpeed(utility.SafeParseInt(newStat));
                 break;
             case "MoveType":

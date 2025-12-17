@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -60,9 +61,17 @@ public class PassiveOrganizer : ScriptableObject
         actor.RemoveSortedPassive(passiveName, timing);
     }
 
-    protected void SortPassive(string passive, string timing)
+    protected void SortPassive(string passive, string timing, bool data = false)
     {
-        string passiveDetails = allPassives.ReturnValue(passive);
+        string passiveDetails = "";
+        if (data)
+        {
+            passiveDetails = passive;
+        }
+        else
+        {
+            passiveDetails = allPassives.ReturnValue(passive);
+        }
         switch (timing)
         {
             case "Moving":
@@ -95,9 +104,21 @@ public class PassiveOrganizer : ScriptableObject
         }
     }
 
+    protected void OrganizeCustomPassives(TacticActor actor)
+    {
+        List<string> customPassives = actor.GetCustomPassives();
+        for (int i = 0; i < customPassives.Count; i++)
+        {
+            List<string> customData = customPassives[i].Split("|").ToList();
+            if (customData.Count < 5){continue;}
+            SortPassive(customPassives[i], customData[0], true);
+        }
+    }
+
     public void OrganizeActorPassives(TacticActor actor)
     {
         OrganizePassivesList(actor.GetPassiveSkills(), actor.GetPassiveLevels());
+        OrganizeCustomPassives(actor);
         actor.SetStartBattlePassives(startBattlePassives);
         actor.SetStartTurnPassives(startTurnPassives);
         actor.SetEndTurnPassives(endTurnPassives);

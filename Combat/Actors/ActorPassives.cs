@@ -6,6 +6,10 @@ using UnityEngine;
 public class ActorPassives : MonoBehaviour
 {
     public List<string> customPassives;
+    public List<string> GetCustomPassives()
+    {
+        return customPassives;
+    }
     public string GetCustomPassiveString()
     {
         if (customPassives.Count == 0) { return ""; }
