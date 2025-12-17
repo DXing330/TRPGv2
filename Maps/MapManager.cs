@@ -92,6 +92,18 @@ public class MapManager : MonoBehaviour
         InitializeEmptyList();
         mapInfo = new List<string>(emptyList);
     }
+    public List<int> ReturnTileNumbersOfTileType(string type)
+    {
+        List<int> tileNumbers = new List<int>();
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            if (mapInfo[i] == type)
+            {
+                tileNumbers.Add(i);
+            }
+        }
+        return tileNumbers;
+    }
     public List<int> ReturnTileNumbersOfTileTypes(List<string> tileTypes)
     {
         List<int> tileNumbers = new List<int>();

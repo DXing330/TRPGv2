@@ -143,6 +143,13 @@ public class StatDatabase : ScriptableObject
         return "";
     }
 
+    public string ReturnKeyFromValue(string value)
+    {
+        int index = values.IndexOf(value);
+        if (index < 0){return "";}
+        return keys[index];
+    }
+
     public string ReturnKeyAtIndex(int index)
     {
         if (index >= 0 && index < keys.Count)

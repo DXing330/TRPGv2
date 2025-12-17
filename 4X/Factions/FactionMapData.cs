@@ -19,6 +19,8 @@ public class FactionMapData : SavedData
         allData += String.Join(delimiterTwo, map.GetTileBuildings()) + delimiter;
         allData += String.Join(delimiterTwo, map.GetLuxuryTiles()) + delimiter;
         allData += String.Join(delimiterTwo, map.GetTileOutputs()) + delimiter;
+        allData += String.Join(delimiterTwo, map.GetActorTiles()) + delimiter;
+        allData += String.Join(delimiterTwo, map.GetHighlights()) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -83,7 +85,12 @@ public class FactionMapData : SavedData
         }
         // Reset buildings.
         map.ResetTileBuildings();
-        map.factionManager.GenerateFactions();
+        // Reset highlights.
+        map.ResetHighlights();
+        // Reset actors.
+        map.ResetActorTiles();
+        // Make the starting cities.
+        map.cities.GenerateStartingCities();
         map.RefreshAllTileOutputs();
     }
 
@@ -130,6 +137,12 @@ public class FactionMapData : SavedData
             break;
             case 3:
             map.SetTileOutputs(stat.Split(delimiterTwo).ToList());
+            break;
+            case 4:
+            map.SetActorTiles(stat.Split(delimiterTwo).ToList());
+            break;
+            case 5:
+            map.SetHighlightedTiles(stat.Split(delimiterTwo).ToList());
             break;
         }
     }

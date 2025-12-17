@@ -11,10 +11,6 @@ public class SkillEffect : ScriptableObject
     public int baseStatusDuration = 3;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1, CombatLog combatLog = null)
     {
-        if (effectSpecifics.Contains("Scaling"))
-        {
-            string[] effectDetails = effect.Split("=");
-        }
         int changeAmount = 0;
         switch (effect)
         {

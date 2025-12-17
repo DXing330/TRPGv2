@@ -13,28 +13,4 @@ public class ActorEquipment : ActorPassives
     }
     public string slot;
     public string equipType;
-
-    public void GiveActorPassives(TacticActor actor)
-    {
-        switch (slot)
-        {
-            case "Weapon":
-            actor.AddStartBattlePassives(startBattlePassives);
-            actor.AddAttackingPassives(attackingPassives);
-            break;
-            case "Armor":
-            actor.AddStartBattlePassives(startBattlePassives);
-            actor.AddDefendingPassives(defendingPassives);
-            actor.AddTakeDamagePassives(takeDamagePassives);
-            break;
-            case "Boots":
-            actor.AddStartBattlePassives(startBattlePassives);
-            actor.AddMovingPassives(movingPassives);
-            break;
-            case "Accessory":
-            actor.AddStartTurnPassives(startTurnPassives);
-            actor.AddEndTurnPassives(endTurnPassives);
-            break;
-        }
-    }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,13 +22,10 @@ public class PassiveSkill : SkillEffect
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
         if (startBattlePassives.Count <= 0) { return; }
-        string passiveName = "";
-        List<string> passiveData = new List<string>();
         for (int h = 0; h < startBattlePassives.Count; h++)
         {
-            passiveName = startBattlePassives[h];
-            if (passiveName.Length <= 1) { continue; }
-            passiveData = allData.ReturnStats(passiveName);
+            string[] passiveData = startBattlePassives[h].Split("|");
+            if (passiveData.Length <= 4) { continue; }
             string[] conditions = passiveData[1].Split(",");
             string[] specifics = passiveData[2].Split(",");
             bool conditionsMet = true;
@@ -66,16 +64,14 @@ public class PassiveSkill : SkillEffect
                 passives.Add(map.ReturnTerrainEndPassive(actor));
                 break;
         }
-        string passiveName = "";
         List<string> passiveData = new List<string>();
         List<TacticActor> targets = new List<TacticActor>();
         List<int> tiles = new List<int>();
         for (int h = passives.Count - 1; h >= 0; h--)
         {
             targets.Clear();
-            passiveName = passives[h];
-            if (passiveName.Length <= 1) { continue; }
-            passiveData = allData.ReturnStats(passiveName);
+            passiveData = passives[h].Split("|").ToList();
+            if (passiveData.Count <= 4) { continue; }
             if (!CheckStartEndConditions(actor, passiveData[1], passiveData[2], map))
             {
                 continue;

@@ -5,6 +5,26 @@ using UnityEngine;
 
 public class ActorPassives : MonoBehaviour
 {
+    public List<string> customPassives;
+    public string GetCustomPassiveString()
+    {
+        if (customPassives.Count == 0) { return ""; }
+        return String.Join(",", customPassives);
+    }
+    public void SetCustomPassives(List<string> newPassives)
+    {
+        customPassives = new List<string>(newPassives);
+        if (customPassives.Count == 0) { return; }
+        for (int i = customPassives.Count - 1; i >= 0; i--)
+        {
+            if (customPassives[i].Length <= 1) { customPassives.RemoveAt(i); }
+        }
+    }
+    public void AddCustomPassive(string newPassive)
+    {
+        if (newPassive.Length < 6){return;}
+        customPassives.Add(newPassive);
+    }
     public void ResetPassives()
     {
         passiveSkills.Clear();
@@ -166,7 +186,7 @@ public class ActorPassives : MonoBehaviour
         switch (type)
         {
             case "Moving":
-                movingPassives.Remove(passiveName);
+                movingPassives.Add(passiveName);
                 break;
             case "Start":
                 startTurnPassives.Add(passiveName);

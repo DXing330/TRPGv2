@@ -117,6 +117,8 @@ public class ActorStats : ActorPassives
                 return GetActivesString();
             case "Spells":
                 return GetSpellsString();
+            case "CustomPassives":
+                return GetCustomPassiveString();
             case "CurrentHealth":
                 return GetHealth().ToString();
             case "Curses":
@@ -166,6 +168,9 @@ public class ActorStats : ActorPassives
                 break;
             case "Spells":
                 SetSpells(newStat.Split(",").ToList());
+                break;
+            case "CustomPassives":
+                SetCustomPassives(newStat.Split(",").ToList());
                 break;
             case "CurrentHealth":
                 SetCurrentHealth(utility.SafeParseInt(newStat));

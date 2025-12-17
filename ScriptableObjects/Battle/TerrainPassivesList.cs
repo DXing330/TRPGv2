@@ -8,7 +8,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TerrainPassivesList", menuName = "ScriptableObjects/BattleLogic/TerrainPassivesList", order = 1)]
 public class TerrainPassivesList : StatDatabase
 {
-    public List<TerrainPassives> passives;
+    public string delimiterTwo;
 
     public override void Initialize()
     {
@@ -23,11 +23,6 @@ public class TerrainPassivesList : StatDatabase
                 EditorUtility.SetDirty(this);
             #endif
         }
-        for (int i = 0; i < passives.Count; i++)
-        {
-            passives[i].SetAllData(values[i]);
-            passives[i].Initialize();
-        }
     }
 
     public bool TerrainPassivesExist(string key)
@@ -38,7 +33,7 @@ public class TerrainPassivesList : StatDatabase
 
     protected string ReturnSpecificPassive(string key, int index)
     {
-        string[] values = ReturnValue(key).Split("|");
+        string[] values = ReturnValue(key).Split(delimiterTwo);
         if (index < 0 || index >= values.Length)
         {
             return "";

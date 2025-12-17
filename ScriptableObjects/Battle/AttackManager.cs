@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -112,7 +113,7 @@ public class AttackManager : ScriptableObject
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
         // True damage ignores defender/terrain passives, making it even stronger than it should be.
-        CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
+        CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
         baseDamage = attacker.GetAttack();
         switch (type)
         {
@@ -151,8 +152,8 @@ public class AttackManager : ScriptableObject
         // Forests/other cover will reduce ranged damage greatly.
         baseDamage = attacker.GetAttack();
         CheckTerrainPassives(defender, attacker, map, moveManager);
-        CheckPassives(attacker.attackingPassives, defender, attacker, map, moveManager);
-        CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
+        CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
+        CheckPassives(defender.GetDefendingPassives(), defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
         // Check for stab.
         baseDamage = STAB(attacker, baseDamage, type);
@@ -170,7 +171,7 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Check if the passive affects damage.
-        baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, "");
+        baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, type);
         finalDamageCalculation += baseDamage;
         // Show the resistance calculation.
         ElementalResistance(defender, baseDamage, type);
@@ -237,9 +238,10 @@ public class AttackManager : ScriptableObject
         }
     }
 
-    protected void ApplyPassiveEffect(string passiveName, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    protected void ApplyPassiveEffect(string pData, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
     {
-        List<string> passiveStats = passiveData.ReturnStats(passiveName);
+        List<string> passiveStats = pData.Split("|").ToList();
+        string passiveName = passiveData.ReturnKeyFromValue(pData);
         if (passive.CheckBattleConditions(passiveStats[1], passiveStats[2], target, attacker, map, moveManager))
         {
             switch (passiveStats[3])
@@ -273,7 +275,7 @@ public class AttackManager : ScriptableObject
                 passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
                 break;
                 case "Map":
-                    map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
+                map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
                 break;
             }
         }
@@ -284,7 +286,7 @@ public class AttackManager : ScriptableObject
         int originalDamage = damage;
         for (int i = 0; i < passives.Count; i++)
         {
-            List<string> passiveStats = passiveData.ReturnStats(passives[i]);
+            List<string> passiveStats = passives[i].Split("|").ToList();
             if (passive.CheckTakeDamageCondition(passiveStats[1], passiveStats[2], originalDamage, damageType))
             {
                 damage = passive.AffectInt(damage, passiveStats[4], passiveStats[5]);

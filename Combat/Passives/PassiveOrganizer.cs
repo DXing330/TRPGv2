@@ -8,6 +8,7 @@ public class PassiveOrganizer : ScriptableObject
     public List<string> testPassiveList;
     public List<string> testPassiveLevels;
     public MultiKeyStatDatabase passiveNameLevels;
+    public StatDatabase allPassives;
     public StatDatabase passiveNames;
     public StatDatabase passiveTiming;
     public List<string> startBattlePassives;
@@ -61,34 +62,35 @@ public class PassiveOrganizer : ScriptableObject
 
     protected void SortPassive(string passive, string timing)
     {
+        string passiveDetails = allPassives.ReturnValue(passive);
         switch (timing)
         {
             case "Moving":
-                movingPassives.Add(passive);
+                movingPassives.Add(passiveDetails);
                 break;
             case "Start":
-                startTurnPassives.Add(passive);
+                startTurnPassives.Add(passiveDetails);
                 break;
             case "End":
-                endTurnPassives.Add(passive);
+                endTurnPassives.Add(passiveDetails);
                 break;
             case "Attacking":
-                attackingPassives.Add(passive);
+                attackingPassives.Add(passiveDetails);
                 break;
             case "Defending":
-                defendingPassives.Add(passive);
+                defendingPassives.Add(passiveDetails);
                 break;
             case "BS":
-                startBattlePassives.Add(passive);
+                startBattlePassives.Add(passiveDetails);
                 break;
             case "TakeDamage":
-                takeDamagePassives.Add(passive);
+                takeDamagePassives.Add(passiveDetails);
                 break;
             case "Death":
-                deathPassives.Add(passive);
+                deathPassives.Add(passiveDetails);
                 break;
             case "OOC":
-                outOfCombatPassives.Add(passive);
+                outOfCombatPassives.Add(passiveDetails);
                 break;
         }
     }

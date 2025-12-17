@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -53,7 +54,7 @@ public class MoveCostManager : MonoBehaviour
         List<string> passiveInfo = new List<string>();
         for (int i = 0; i < movingPassives.Count; i++)
         {
-            passiveInfo = passiveData.ReturnStats(movingPassives[i]);
+            passiveInfo = movingPassives[i].Split("|").ToList();
             for (int j = 0; j < currentMoveCosts.Count; j++)
             {
                 if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], mapInfo[j]))
@@ -413,8 +414,7 @@ public class MoveCostManager : MonoBehaviour
         int location = mover.GetLocation();
         for (int i = 0; i < movingPassives.Count; i++)
         {
-            passiveInfo = passiveData.ReturnStats(movingPassives[i]);
-
+            passiveInfo = movingPassives[i].Split("|").ToList();
             // Only apply passives that affect the user or the map.
             switch (passiveInfo[3])
             {

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -1057,9 +1058,10 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < deathPassives.Count; i++)
         {
             if (deathPassives[i].Length <= 0) { continue; }
-            activeManager.SetSkillFromName(deathPassives[i]);
+            List<string> passiveData = deathPassives[i].Split("|").ToList();
+            activeManager.SetSkillFromName(passiveData[5]);
             activeManager.GetTargetedTiles(actor.GetLocation(), moveManager.actorPathfinder);
-            ActivateSkill(deathPassives[i], actor);
+            ActivateSkill(passiveData[5], actor);
         }
     }
 
