@@ -107,7 +107,6 @@ public class ActorSpriteHPList : MonoBehaviour
         {
             objects[i].SetActive(true);
             dummyActor.SetPersonalName(actorNames[i]);
-            dummyActor.SetSpriteName((actorSpriteNames[i]));
             dummyActor.SetStatsFromString(actorData[i]);
             actors[i].ShowActorInfo(dummyActor);
         }

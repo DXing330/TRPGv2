@@ -18,57 +18,90 @@ public class AttackManager : ScriptableObject
     protected int baseDamage;
     protected int damageMultiplier;
 
-    public bool RollToHit(TacticActor attacker, TacticActor defender, BattleMap map)
+    public bool RollToHit(TacticActor attacker, TacticActor defender, BattleMap map, bool showLog = true)
     {
         int hitRoll = Random.Range(0, 100);
         if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
         {
-            map.combatLog.UpdateNewestLog("The attack misses!");
+            if (showLog)
+            {
+                map.combatLog.UpdateNewestLog("The attack misses!");
+            }
             return false;
         }
         return true;
     }
-    public int STAB(TacticActor attacker, int damage, string type)
+    public int STAB(TacticActor attacker, int damage, string type, bool showLog = true)
     {
-        if (type == attacker.GetElement())
+        if (attacker.SameElement(type))
         {
-            finalDamageCalculation += "STAB: " + damage + " * " + stabMultiplier + "% = ";
+            if (showLog)
+            {
+                finalDamageCalculation += "STAB: " + damage + " * " + stabMultiplier + "% = ";
+            }
             damage = damage * stabMultiplier / baseMultiplier;
-            finalDamageCalculation += damage + "\n";
+            if (showLog)
+            {
+                finalDamageCalculation += damage + "\n";
+            }
         }
         return damage;
     }
-    public int ElementalMastery(TacticActor attacker, int damage, string type)
+    public int ElementalMastery(TacticActor attacker, int damage, string type, bool showLog = true)
     {
         // Check for bonus damage.
         int elementBonus = attacker.ReturnDamageBonusOfType(type);
         if (elementBonus != 0)
         {
-            finalDamageCalculation += type + " Mastery = +" + elementBonus + "% Damage";
-            finalDamageCalculation += "\n" + damage + " * " + (100 + elementBonus) + "% = " + (damage * (100 + elementBonus) / 100) + "\n";
+            if (showLog)
+            {
+                finalDamageCalculation += type + " Mastery = +" + elementBonus + "% Damage";
+                finalDamageCalculation += "\n" + damage + " * " + (100 + elementBonus) + "% = " + (damage * (100 + elementBonus) / 100) + "\n";
+            }
             return damage * (100 + elementBonus) / 100;
         }
         return damage;
     }
-    public void ElementalResistance(TacticActor defender, int damage, string type)
+    public void ElementalResistance(TacticActor defender, int damage, string type, bool showLog = true)
     {
         int resistance = defender.ReturnDamageResistanceOfType(type);
         if (resistance != 0)
         {
-            finalDamageCalculation += "\n" + type + " Resistance = " + resistance + "%";
-            finalDamageCalculation += "\n" + baseDamage + " * " + (100 - resistance) + "% = " + (baseDamage * (100 - resistance) / 100);
+            if (showLog)
+            {
+                finalDamageCalculation += "\n" + type + " Resistance = " + resistance + "%";
+                finalDamageCalculation += "\n" + baseDamage + " * " + (100 - resistance) + "% = " + (baseDamage * (100 - resistance) / 100);
+            }
         }
     }
-    public int CritRoll(TacticActor attacker, int damage)
+    public int CritRoll(TacticActor attacker, int damage, bool showLog = true)
     {
         int critRoll = Random.Range(0, 100);
         if (critRoll < attacker.GetCritChance())
         {
-            finalDamageCalculation += "CRITICAL HIT: " + damage + " * " + attacker.GetCritDamage() + "% = ";
+            if (showLog)
+            {
+                finalDamageCalculation += "CRITICAL HIT: " + damage + " * " + attacker.GetCritDamage() + "% = ";
+            }
             damage = damage * attacker.GetCritDamage() / baseMultiplier;
-            finalDamageCalculation += damage + "\n";
+            if (showLog)
+            {
+                finalDamageCalculation += damage + "\n";
+            }
         }
         return damage;
+    }
+    // Simplified since it's just bonus damage.
+    protected void ElementalBonusDamage(TacticActor dealer, TacticActor receiver, int damage, string element, BattleMap map = null)
+    {
+        damage = STAB(dealer, damage, element, false);
+        damage = ElementalMastery(dealer, damage, element, false);
+        ElementalResistance(receiver, damage, element, false);
+        damage = receiver.TakeDamage(damage, element);
+        if (map != null)
+        {
+            map.combatLog.UpdateNewestLog(receiver.GetPersonalName() + " takes " + damage + " " + element + " damage.");
+        }
     }
     // Used for most spell effects.
     public void ElementalFlatDamage(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage, string element)
@@ -149,9 +182,9 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation = "";
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
-        // Forests/other cover will reduce ranged damage greatly.
         baseDamage = attacker.GetAttack();
         CheckTerrainPassives(defender, attacker, map, moveManager);
+        // Bonus damage can be calculated here.
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
         CheckPassives(defender.GetDefendingPassives(), defender, attacker, map, moveManager);
         baseDamage = Advantage(baseDamage, advantage);
@@ -276,6 +309,14 @@ public class AttackManager : ScriptableObject
                 break;
                 case "Map":
                 map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
+                break;
+                case "ElementalBonusDamage":
+                string[] eBD = passiveStats[5].Split("=");
+                ElementalBonusDamage(attacker, target, int.Parse(eBD[1]), eBD[0], map);
+                break;
+                case "ElementalReflectDamage":
+                string[] eRD = passiveStats[5].Split("=");
+                ElementalBonusDamage(target, attacker, int.Parse(eRD[1]), eRD[0], map);
                 break;
             }
         }

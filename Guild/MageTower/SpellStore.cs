@@ -65,7 +65,6 @@ public class SpellStore : MonoBehaviour
         List<string> casterSprites = new List<string>();
         casterNames = new List<string>();
         List<string> characterStats = partyData.fullParty.GetCharacterStats();
-        List<string> characterSprites = partyData.fullParty.GetCharacterSprites();
         List<string> characterNames = partyData.fullParty.GetCharacterNames();
         for (int i = 0; i < characterStats.Count; i++)
         {
@@ -74,7 +73,6 @@ public class SpellStore : MonoBehaviour
             {
                 casters = true;
                 casterStats.Add(characterStats[i]);
-                casterSprites.Add(characterSprites[i]);
                 casterNames.Add(characterNames[i]);
                 casterPartyIndexes.Add(i);
             }

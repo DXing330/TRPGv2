@@ -532,6 +532,20 @@ public class ActiveManager : MonoBehaviour
                     }
                 }
                 return;
+            case "ChainLightning":
+                // Keep track of the targets.
+                targets = battle.map.ChainLightningTargets(targetedTiles[0]);
+                active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+                return;
+            case "MapChainLightning":
+                // Keep track of the targets.
+                targets = battle.map.ChainLightningTargets(targetedTiles[0]);
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (targets[i] == null){continue;}
+                    battle.map.ChangeTile(targets[i].GetLocation(), specifics, active.GetPowerString());
+                }
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);

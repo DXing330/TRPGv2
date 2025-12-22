@@ -36,14 +36,15 @@ public class ActorMaker : MonoBehaviour
         // Currently species is useless at this rate.
         actor.SetSpriteName((actorName));
         actor.SetStats(actorStats.ReturnStats(actorName));
-        // Set the element based on sprite name.
-        actor.SetElement(spriteElementMapping.ReturnValue(actorName));
-        actor.SetSpecies(spriteSpeciesMapping.ReturnValue(actorName));
     }
 
-    protected void AddElementPassives(TacticActor actor)
+    protected void AddElementPassive(TacticActor actor, string element)
     {
-        string elemental = elementPassives.ReturnValue(actor.GetElement());
+        if (element == "")
+        {
+            return;
+        }
+        string elemental = elementPassives.ReturnValue(element);
         if (elemental == "")
         {
             return;
@@ -54,6 +55,15 @@ public class ActorMaker : MonoBehaviour
         for (int i = 0; i < passives.Length; i++)
         {
             actor.AddPassiveSkill(passives[i], levels[i]);
+        }
+    }
+
+    protected void AddElementPassives(TacticActor actor)
+    {
+        List<string> elements = actor.GetElements();
+        for (int i = 0; i < elements.Count; i++)
+        {
+            AddElementPassive(actor, elements[i]);
         }
     }
 
@@ -128,8 +138,7 @@ public class ActorMaker : MonoBehaviour
         // Change the sprite name.
         // Update the base stats of the actor.
         actor.SetSpriteName((newForm));
-        actor.SetElement(spriteElementMapping.ReturnValue(newForm));
-        actor.SetSpecies(spriteSpeciesMapping.ReturnValue(newForm));
+        actor.ResetElements();
         actor.ChangeForm(actorStats.ReturnStats(newForm));
         AddElementPassives(actor);
         AddSpeciesPassives(actor);

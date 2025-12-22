@@ -92,6 +92,12 @@ public class ActorStats : ActorPassives
     {
         switch (statName)
         {
+            case "Sprite":
+                return GetSpriteName();
+            case "Species":
+                return GetSpecies();
+            case "Elements":
+                return GetElementString();
             case "Health":
                 return GetBaseHealth().ToString();
             case "Energy":
@@ -131,6 +137,15 @@ public class ActorStats : ActorPassives
     {
         switch (statName)
         {
+            case "Sprite":
+                SetSpriteName(newStat);
+                break;
+            case "Species":
+                SetSpecies(newStat);
+                break;
+            case "Elements":
+                SetElementsFromString(newStat);
+                break;
             case "Health":
                 SetBaseHealth(utility.SafeParseInt(newStat));
                 break;
@@ -238,6 +253,31 @@ public class ActorStats : ActorPassives
     public void NearDeath()
     {
         SetCurrentHealth(1);
+    }
+    // STATS
+    public string species;
+    public void SetSpecies(string newSpecies){species = newSpecies;}
+    public string GetSpecies(){return species;}
+    public string spriteName;
+    public void SetSpriteName(string newName){spriteName = newName;}
+    public string GetSpriteName(){return spriteName;}
+    public List<string> elements;
+    public void ResetElements(){elements.Clear();}
+    public void SetElementsFromString(string allElements, string delimiter = ",")
+    {
+        ResetElements();
+        elements = allElements.Split(delimiter).ToList();
+    }
+    public void AddElement(string newInfo){elements.Add(newInfo);}
+    public List<string> GetElements(){return elements;}
+    public string GetElementString()
+    {
+        if (elements.Count == 0) { return ""; }
+        return String.Join(",", elements);
+    }
+    public bool SameElement(string newInfo)
+    {
+        return elements.Contains(newInfo);
     }
     public int baseHealth;
     public void SetBaseHealth(int newHealth) { baseHealth = newHealth; }
@@ -858,7 +898,7 @@ public class ActorStats : ActorPassives
     public void AddStatus(string newCondition, int duration)
     {
         // Don't add blank statuses.
-        if (newCondition.Length <= 0) { return; }
+        if (newCondition.Length <= 1 || newCondition.Trim().Length <= 1) { return; }
         // Permanent statuses can stack up infinitely and are a win condition.
         if (duration < 0)
         {

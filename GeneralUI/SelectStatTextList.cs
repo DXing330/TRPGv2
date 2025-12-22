@@ -142,7 +142,7 @@ public class SelectStatTextList : StatTextList
         stats.Add("Element");
         stats.Add("Species");
         data.Add(actor.GetMoveType());
-        data.Add(actor.GetElement());
+        data.Add(actor.GetElementString());
         data.Add(actor.GetSpecies());
         for (int i = 0; i < Mathf.Min(stats.Count, statTexts.Count); i++)
         {

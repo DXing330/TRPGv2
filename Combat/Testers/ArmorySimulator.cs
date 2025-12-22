@@ -30,10 +30,6 @@ public class ArmorySimulator : ArmoryUI
         statsObjects.SetActive(true);
         detailViewer.DisablePanel();
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
-        string spriteName = allActors.allActorSpriteNames[allActors.GetSelected()];
-        selectedActor.SetSpriteName(spriteName);
-        selectedActor.SetElement(spriteElementMapping.ReturnValue(selectedActor.GetSpriteName()));
-        selectedActor.SetSpecies(spriteSpeciesMapping.ReturnValue(selectedActor.GetSpriteName()));
         actorStats.UpdateActorStatTexts(selectedActor);
         actorSpriteStats.UpdateActorSpriteStats(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));

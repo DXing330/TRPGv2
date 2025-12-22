@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -124,9 +125,6 @@ public class TacticActor : ActorStats
         if (personalName.Length <= 0){return GetSpriteName();}
         return personalName;
     }
-    public string element;
-    public void SetElement(string newInfo){element = newInfo;}
-    public string GetElement(){return element;}
     // Used mainly for enemy AI
     public int counter = 0;
     public void ResetCounter(){counter = 0;}
@@ -137,12 +135,6 @@ public class TacticActor : ActorStats
     public void IncrementCounter(){counter++;}
     public void SetCounter(int newInfo){counter = newInfo;}
     public int GetCounter(){return counter;}
-    public string species;
-    public void SetSpecies(string newSpecies){species = newSpecies;}
-    public string GetSpecies(){return species;}
-    public string spriteName;
-    public void SetSpriteName(string newName){spriteName = newName;}
-    public string GetSpriteName(){return spriteName;}
     public int location;
     public void SetLocation(int newLocation){location = newLocation;}
     public int GetLocation(){return location;}

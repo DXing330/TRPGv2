@@ -68,6 +68,23 @@ public class PassiveDetailViewer : MonoBehaviour
         passiveGroupText.SetText(passiveLevel);
     }
 
+    public void ViewCustomPassives(TacticActor actor)
+    {
+        List<string> customPassives = actor.GetCustomPassives();
+        panel.SetActive(true);
+        passiveNames.Clear();
+        passiveInfo.Clear();
+        passiveDescription.Clear();
+        passiveGroupText.SetStatText("Custom Passives");
+        passiveGroupText.SetText(customPassives.Count.ToString());
+        for (int i = 0; i < customPassives.Count; i++)
+        {
+            passiveNames.Add("Custom "+(i+1));
+            passiveDescription.Add(ReturnPassiveDetails(customPassives[i]));
+        }
+        passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
+    }
+
     public string ReturnPassiveDetails(string newInfo)
     {
         if (!newInfo.Contains("|"))
@@ -405,9 +422,29 @@ public class PassiveDetailViewer : MonoBehaviour
         return specifics;
     }
 
+    protected string AffectMapText(string effect, string specifics)
+    {
+        switch (effect)
+        {
+            case "TerrainEffect":
+                return " create " + specifics;
+            case "Tile":
+                return " create " + specifics;
+            case "Spread":
+                return " spread " + specifics;
+            case "ChainSpread":
+                return " greatly spread " + specifics;
+        }
+        return "";
+    }
+
     protected string PassiveEffect(string effect, string specifics, string target)
     {
         specifics = AdjustSpecificsText(specifics);
+        if (target == "Map")
+        {
+            return AffectMapText(effect, specifics);
+        }
         switch (effect)
         {
             case "Increase":
@@ -468,12 +505,6 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " " + target + " gain a shield that absorbs damage equal to " + specifics + "% of max health, until the end of next turn";
             case "TempHealth":
                 return " " + target + " gain a shield that absorbs damage equal to " + specifics + ", until the end of next turn";
-            case "TerrainEffect":
-                return " create " + specifics;
-            case "Tile":
-                return " create " + specifics;
-            case "Map":
-                return " create " + specifics;
             case "MentalState":
                 return " change mental state to " + specifics;
             case "Amnesia":
@@ -511,6 +542,12 @@ public class PassiveDetailViewer : MonoBehaviour
             case "ScalingVigor":
                 string[] scalingVig = specifics.Split("=");
                 return " increase vigor by " + scalingVig[2] + " for each level of this passive";
+            case "ElementalBonusDamage":
+                string[] eBD = specifics.Split("=");
+                return " deal " + eBD[1] + " " + eBD[0] + " damage";
+            case "ElementalReflectDamage":
+                string[] eRD = specifics.Split("=");
+                return " deal " + eRD[1] + " " + eRD[0] + " damage";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

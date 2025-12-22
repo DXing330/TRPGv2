@@ -18,6 +18,11 @@ public class PassiveSkill : SkillEffect
         return specifics;
     }
 
+    public void AffectMap(TacticActor actor, string effect, string specifics, BattleMap map)
+    {
+        map.ChangeTile(actor.GetLocation(), effect, specifics);
+    }
+
     public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData, BattleState battleState)
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
@@ -118,6 +123,9 @@ public class PassiveSkill : SkillEffect
                             AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
                         }
                         break;
+                    case "Map":
+                        AffectMap(actor, effects[i], effectSpecifics[i], map);
+                        break;
                 }
             }
         }
@@ -181,9 +189,9 @@ public class PassiveSkill : SkillEffect
             case "Tile<>":
                 return !map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
             case "TileEffect":
-                return map.GetTileInfoOfActor(actor).Contains(conditionSpecifics);
+                return map.GetTileEffectOfActor(actor).Contains(conditionSpecifics);
             case "TileEffect<>":
-                return !map.GetTileInfoOfActor(actor).Contains(conditionSpecifics);
+                return !map.GetTileEffectOfActor(actor).Contains(conditionSpecifics);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics); // Contains, since we will add more weather tiers later.
             case "Time":
@@ -266,13 +274,13 @@ public class PassiveSkill : SkillEffect
             case "Tile<>A":
                 return !map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
             case "TileEffectA":
-                return map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
+                return map.GetTileEffectOfActor(attacker).Contains(conditionSpecifics);
             case "TileEffect<>A":
-                return !map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
+                return !map.GetTileEffectOfActor(attacker).Contains(conditionSpecifics);
             case "TileEffectD":
-                return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
+                return map.GetTileEffectOfActor(target).Contains(conditionSpecifics);
             case "TileEffect<>D":
-                return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
+                return !map.GetTileEffectOfActor(target).Contains(conditionSpecifics);
             case "Adjacent Ally A<>":
                 return !map.AllyAdjacentToActor(attacker);
             case "Adjacent Ally D<>":
@@ -384,13 +392,13 @@ public class PassiveSkill : SkillEffect
             case "Elevation<":
                 return map.ReturnElevation(attacker.GetLocation()) < map.ReturnElevation(target.GetLocation());
             case "ElementD":
-                return target.GetElement() == conditionSpecifics;
+                return target.SameElement(conditionSpecifics);
             case "Element<>D":
-                return target.GetElement() != conditionSpecifics;
+                return target.SameElement(conditionSpecifics);
             case "ElementA":
-                return attacker.GetElement() == conditionSpecifics;
+                return attacker.SameElement(conditionSpecifics);
             case "Element<>A":
-                return attacker.GetElement() != conditionSpecifics;
+                return attacker.SameElement(conditionSpecifics);
             case "SpeciesD":
                 return target.GetSpecies() == conditionSpecifics;
             case "Species<>D":
@@ -512,18 +520,5 @@ public class PassiveSkill : SkillEffect
                 break;
         }
         return affected;
-    }
-
-    public void AffectMap(BattleMap map, int location, string effect, string effectSpecifics)
-    {
-        switch (effect)
-        {
-            case "Tile":
-                map.ChangeTerrain(location, effectSpecifics);
-                break;
-            case "TerrainEffect":
-                map.ChangeTEffect(location, effectSpecifics);
-                break;
-        }
     }
 }

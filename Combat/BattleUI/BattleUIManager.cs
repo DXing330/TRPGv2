@@ -21,11 +21,18 @@ public class BattleUIManager : MonoBehaviour
         statusSelect.SetStatsAndData(viewedActor.GetUniqueStatusAndBuffs(), viewedActor.GetUnqiueSBDurations());
     }
     public SelectStatTextList passiveSelect;
+    public PassiveDetailViewer passiveViewer;
     public void ViewActorPassives()
     {
         TacticActor viewedActor = battleManager.GetSelectedActor();
         if (viewedActor == null){return;}
         passiveSelect.SetStatsAndData(viewedActor.GetPassiveSkills(), viewedActor.GetPassiveLevels());
+    }
+    public void ViewActorCustomPassives()
+    {
+        TacticActor viewedActor = battleManager.GetSelectedActor();
+        if (viewedActor == null){return;}
+        passiveViewer.ViewCustomPassives(viewedActor);
     }
 
     public void NPCTurn()

@@ -427,7 +427,7 @@ public class MoveCostManager : MonoBehaviour
                 case "Map":
                     if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
                     {
-                        passiveSkill.AffectMap(map, location, passiveInfo[4], passiveInfo[5]);
+                        passiveSkill.AffectMap(mover, passiveInfo[4], passiveInfo[5], map);
                     }
                     break;
             }

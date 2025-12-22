@@ -103,6 +103,43 @@ public class BattleMap : MapManager
         actor2.SetLocation(temp);
         UpdateMap();
     }
+    public int GetClosestTeamMemberInRange(int start, int range, int team, List<int> except)
+    {
+        // Get all adjacent tiles in range.
+        List<int> tilesInRange = mapUtility.GetTilesInCircleShape(start, range, mapSize);
+        for (int i = 0; i < tilesInRange.Count; i++)
+        {
+            TacticActor tempActor = GetActorOnTile(tilesInRange[i]);
+            if (tempActor != null && tempActor.GetTeam() == team && !except.Contains(tilesInRange[i]))
+            {
+                return tilesInRange[i];
+            }
+        }
+        return -1;
+    }
+    public List<TacticActor> ChainLightningTargets(int start, int bounceRange = 2, int bounceCount = 3)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        List<int> chainTiles = new List<int>();
+        TacticActor latestActor = GetActorOnTile(start);
+        if (latestActor == null){return actors;}
+        int team = latestActor.GetTeam();
+        int lightningTile = latestActor.GetLocation();
+        int nextLightningTile = -1;
+        chainTiles.Add(lightningTile);
+        for (int i = 0; i < bounceCount; i++)
+        {
+            nextLightningTile = GetClosestTeamMemberInRange(lightningTile, bounceRange, team, chainTiles);
+            if (nextLightningTile < 0){break;}
+            chainTiles.Add(nextLightningTile);
+            lightningTile = nextLightningTile;
+        }
+        for (int i = 0; i < chainTiles.Count; i++)
+        {
+            actors.Add(GetActorOnTile(chainTiles[i]));
+        }
+        return actors;
+    }
     // Should highlight all valid starting tiles to make this clear.
     public bool ValidStartingTile(int tileNumber)
     {
@@ -326,7 +363,17 @@ public class BattleMap : MapManager
             case "TerrainEffect":
                 ChangeTEffect(tileNumber, specifics);
                 break;
+            case "Spread":
+                SpreadTerrainEffect(tileNumber, specifics);
+                break;
+            case "RSpread":
+                RandomlySpreadTerrainEffect(tileNumber, specifics);
+                break;
+            case "ChainSpread":
+                ChainSpreadTerrainEffect(tileNumber, specifics);
+                break;
         }
+        UpdateMap();
     }
     public void ChangeTerrain(int tileNumber, string change)
     {
@@ -357,6 +404,7 @@ public class BattleMap : MapManager
     }
     public void ChangeTEffect(int tileNumber, string newEffect)
     {
+        if (terrainEffectTiles[tileNumber] == newEffect){return;}
         if (terrainEffectTiles[tileNumber] == "" || newEffect == "")
         {
             terrainEffectTiles[tileNumber] = newEffect;
@@ -375,22 +423,47 @@ public class BattleMap : MapManager
         terrainEffectTiles[tile2] = temp;
         UpdateMap();
     }
-    public void SpreadTerrainEffect(int tileNumber)
+    public void SpreadTerrainEffect(int tileNumber, string sTEffect = "")
     {
         string tEffect = terrainEffectTiles[tileNumber];
-        if (tEffect == "") { return; }
+        if (tEffect == ""){return;}
+        if (sTEffect != "" && tEffect != sTEffect){return;}
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
         for (int i = 0; i < adjacent.Count; i++)
         {
             ChangeTEffect(adjacent[i], tEffect);
         }
     }
-    public void RandomlySpreadTerrainEffect(int tileNumber)
+    public void RandomlySpreadTerrainEffect(int tileNumber, string sTEffect = "")
     {
         string tEffect = terrainEffectTiles[tileNumber];
-        if (tEffect == "") { return; }
+        if (tEffect == ""){return;}
+        if (sTEffect != "" && tEffect != sTEffect){return;}
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
         ChangeTEffect(adjacent[Random.Range(0, adjacent.Count)], tEffect);
+    }
+    public void ChainSpreadTerrainEffect(int tileNumber, string sTEffect = "")
+    {
+        string tEffect = terrainEffectTiles[tileNumber];
+        if (tEffect == ""){return;}
+        if (sTEffect != "" && tEffect != sTEffect){return;}
+        List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
+        List<int> chainSpread = new List<int>();
+        for (int i = 0; i < adjacent.Count; i++)
+        {
+            if (terrainEffectTiles[adjacent[i]] == tEffect)
+            {
+                chainSpread.Add(adjacent[i]);
+            }
+            else
+            {
+                ChangeTEffect(adjacent[i], tEffect);
+            }
+        }
+        for (int i = 0; i < chainSpread.Count; i++)
+        {
+            SpreadTerrainEffect(chainSpread[i], sTEffect);
+        }
     }
     protected void UpdateTerrain()
     {

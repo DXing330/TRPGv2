@@ -52,13 +52,15 @@ public class PassiveOrganizer : ScriptableObject
     public void AddSortedPassive(TacticActor actor, string passiveName)
     {
         string timing = passiveTiming.ReturnValue(passiveName);
-        actor.AddSortedPassive(passiveName, timing);
+        string passiveData = allPassives.ReturnValue(passiveName);
+        actor.AddSortedPassive(passiveData, timing);
     }
 
     public void RemoveSortedPassive(TacticActor actor, string passiveName)
     {
         string timing = passiveTiming.ReturnValue(passiveName);
-        actor.RemoveSortedPassive(passiveName, timing);
+        string passiveData = allPassives.ReturnValue(passiveName);
+        actor.RemoveSortedPassive(passiveData, timing);
     }
 
     protected void SortPassive(string passive, string timing, bool data = false)
