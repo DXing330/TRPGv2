@@ -84,6 +84,6 @@ public class GuildHub : MonoBehaviour
 
     protected void ShowNextChapter()
     {
-        newStoryPopUp.StartTalking(storyQuestLongTexts.ReturnValueAtIndex(mainStory.GetPreviousChapters().Count), "Guild Owner", "Patron");
+        newStoryPopUp.StartTalking(storyQuestLongTexts.ReturnValueAtIndex(mainStory.GetPreviousChapters().Count), "Guild Owner", "Noble");
     }
 }

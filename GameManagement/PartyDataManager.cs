@@ -172,7 +172,7 @@ public class PartyDataManager : MonoBehaviour
     public void AddTempPartyMember(string name)
     {
         // Don't need stats, just grab base stats.
-        tempPartyData.AddMember(name, actorStats.ReturnValue(name), name);
+        tempPartyData.AddMember(actorStats.ReturnValue(name), name);
         SetFullParty();
     }
 
@@ -202,9 +202,9 @@ public class PartyDataManager : MonoBehaviour
         return mainPartyData.PartyCount() < guildCard.GetGuildRank() + 2;
     }
 
-    public void HireMember(string spriteName, string stats, string personalName)
+    public void HireMember(string stats, string personalName)
     {
-        mainPartyData.AddMember(spriteName, stats, personalName);
+        mainPartyData.AddMember(stats, personalName);
         SetFullParty();
     }
 
@@ -412,6 +412,12 @@ public class PartyDataManager : MonoBehaviour
 
     public void UpdatePartyAfterBattle(List<string> codeNames, List<string> spriteNames, List<string> stats)
     {
+        for (int i = 0; i < codeNames.Count; i++)
+        {
+            Debug.Log("Code Name: "+codeNames[i]);
+            Debug.Log("Sprite Name: "+spriteNames[i]);
+            Debug.Log("Stats: "+stats[i]);
+        }
         for (int i = 0; i < allParties.Count; i++)
         {
             // Assume everyone dies at the end of every battle.

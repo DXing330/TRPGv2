@@ -35,7 +35,7 @@ public class ActorMaker : MonoBehaviour
     {
         // Currently species is useless at this rate.
         actor.SetSpriteName((actorName));
-        actor.SetStats(actorStats.ReturnStats(actorName));
+        actor.SetStatsFromString(actorStats.ReturnValue(actorName));
     }
 
     protected void AddElementPassive(TacticActor actor, string element)

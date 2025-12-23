@@ -80,7 +80,7 @@ public class StSBattleRewards : MonoBehaviour
     {
         for (int i = 0; i < allyRewards.Count; i++)
         {
-            partyData.HireMember(allyRewards[i], actorStats.ReturnValue(allyRewards[i]), allyRewards[i] + " " + Random.Range(0, 1000));
+            partyData.HireMember(actorStats.ReturnValue(allyRewards[i]), allyRewards[i] + " " + Random.Range(0, 1000));
         }
         for (int i = 0; i < equipmentRewards.Count; i++)
         {

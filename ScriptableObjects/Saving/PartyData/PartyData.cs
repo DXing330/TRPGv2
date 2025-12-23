@@ -32,11 +32,20 @@ public class PartyData : SavedData
     {
         return partyNames[index];
     }
-    public List<string> partySpriteNames;
-    public List<string> GetSpriteNames() { return partySpriteNames; }
+    public List<string> GetSpriteNames()
+    {
+        List<string> partySpriteNames = new List<string>();
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            partySpriteNames.Add(dummyActor.GetSpriteName());
+        } 
+        return partySpriteNames;
+    }
     public string GetSpriteNameAtIndex(int index)
     {
-        return partySpriteNames[index];
+        dummyActor.SetStatsFromString(partyStats[index]);
+        return dummyActor.GetSpriteName();
     }
     public List<string> partyStats;
     public List<string> GetBaseStats() { return partyStats; }
@@ -55,7 +64,10 @@ public class PartyData : SavedData
     }
     // Equipment goes here?
     public List<string> partyEquipment;
-    public List<string> GetEquipment() { return partyEquipment; }
+    public string GetEquipmentAtIndex(int index)
+    {
+        return partyEquipment[index];
+    }
     // This is not needed, we can store everything in the stats.
     //public List<string> partyCurrentStats;
     public void SetCurrentStats(string newStats, int index)
@@ -70,7 +82,6 @@ public class PartyData : SavedData
     public void ClearAllStats()
     {
         partyNames.Clear();
-        partySpriteNames.Clear();
         partyStats.Clear();
         partyEquipment.Clear();
     }
@@ -78,7 +89,6 @@ public class PartyData : SavedData
     {
         List<string> allStats = new List<string>();
         allStats.Add(partyNames[index]);
-        allStats.Add(partySpriteNames[index]);
         allStats.Add(partyStats[index]);
         allStats.Add(partyEquipment[index]);
         return allStats;
@@ -86,7 +96,6 @@ public class PartyData : SavedData
     public void RemoveStatsAtIndex(int index)
     {
         partyNames.RemoveAt(index);
-        partySpriteNames.RemoveAt(index);
         partyStats.RemoveAt(index);
         partyEquipment.RemoveAt(index);
     }
@@ -235,13 +244,11 @@ public class PartyData : SavedData
     public override void Save()
     {
         partyNames = utility.RemoveEmptyListItems(partyNames);
-        partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
         partyStats = utility.RemoveEmptyListItems(partyStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
         allData += String.Join(delimiterTwo, partyNames)+delimiter;
-        allData += String.Join(delimiterTwo, partySpriteNames)+delimiter;
         allData += String.Join(delimiterTwo, partyStats)+delimiter;
         allData += String.Join(delimiterTwo, partyEquipment)+delimiter;
         File.WriteAllText(dataPath, allData);
@@ -259,9 +266,8 @@ public class PartyData : SavedData
         if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
         else { return; }
         partyNames = dataList[0].Split(delimiterTwo).ToList();
-        partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
-        partyStats = dataList[2].Split(delimiterTwo).ToList();
-        partyEquipment = dataList[3].Split(delimiterTwo).ToList();
+        partyStats = dataList[1].Split(delimiterTwo).ToList();
+        partyEquipment = dataList[2].Split(delimiterTwo).ToList();
         Save();
         Load();
     }
@@ -273,11 +279,9 @@ public class PartyData : SavedData
         if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
         else { return; }
         partyNames = dataList[0].Split(delimiterTwo).ToList();
-        partySpriteNames = dataList[1].Split(delimiterTwo).ToList();
-        partyStats = dataList[2].Split(delimiterTwo).ToList();
-        partyEquipment = dataList[3].Split(delimiterTwo).ToList();
+        partyStats = dataList[1].Split(delimiterTwo).ToList();
+        partyEquipment = dataList[2].Split(delimiterTwo).ToList();
         partyNames = utility.RemoveEmptyListItems(partyNames);
-        partySpriteNames = utility.RemoveEmptyListItems(partySpriteNames);
         partyStats = utility.RemoveEmptyListItems(partyStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
     }
@@ -285,7 +289,7 @@ public class PartyData : SavedData
     {
         return partyStats;
     }
-    public List<string> GetEquipmentStats(string joiner = "@")
+    public List<string> GetEquipmentStats()
     {
         return partyEquipment;
     }
@@ -364,26 +368,35 @@ public class PartyData : SavedData
         int indexOf = partyNames.IndexOf(memberName);
         return indexOf;
     }
-    public void AddMember(string spriteName, string stats, string personalName = "")
+    public void AddMember(string stats, string personalName = "")
     {
-        partySpriteNames.Add(spriteName);
         partyStats.Add(stats);
         partyNames.Add(personalName);
         partyEquipment.Add("");
     }
     public bool MemberExists(string spriteName)
     {
-        int indexOf = partySpriteNames.IndexOf(spriteName);
-        return indexOf >= 0;
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            if (dummyActor.GetSpriteName() == spriteName){return true;}
+        }
+        return false;
     }
     public void RemoveMember(string spriteName)
     {
-        int indexOf = partySpriteNames.IndexOf(spriteName);
-        if (indexOf >= 0) { RemoveStatsAtIndex(indexOf); }
+        for (int i = 0; i < partyStats.Count; i++)
+        {
+            dummyActor.SetStatsFromString(partyStats[i]);
+            if (dummyActor.GetSpriteName() == spriteName)
+            {
+                RemoveStatsAtIndex(i);
+                break;
+            }
+        }
     }
-    public void AddAllStats(string personalName, string spriteName, string baseStats, string equipment)
+    public void AddAllStats(string personalName, string baseStats, string equipment)
     {
-        partySpriteNames.Add(spriteName);
         partyStats.Add(baseStats);
         partyNames.Add(personalName);
         // If equipment is empty this could cause an issue.

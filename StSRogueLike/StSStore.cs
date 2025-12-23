@@ -146,7 +146,7 @@ public class StSStore : Store
         partyData.inventory.RemoveItemQuantity(hiringCost);
         string randomActor = hireableActors[Random.Range(0, hireableActors.Count)];
         // Add them to the party.
-        partyData.HireMember(randomActor, actorStats.ReturnValue(randomActor), randomActor + " " + Random.Range(0, 999));
+        partyData.HireMember(actorStats.ReturnValue(randomActor), randomActor + " " + Random.Range(0, 999));
         // Change the text and icon to reveal what you recruited.
         hireActorText.text = "Thank you for your purchase of one (1) " + randomActor + ". No refunds, returns or exchanges.";
         hireActorImage.sprite = actorSprites.SpriteDictionary(randomActor);

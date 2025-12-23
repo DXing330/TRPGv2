@@ -44,6 +44,15 @@ public class Equipment : MonoBehaviour
     public string GetSlot(){return slot;}
     public string type;
     public string GetEquipType(){return type;}
+    public List<string> GetPassivesAndLevels()
+    {
+        List<string> passivesAndLevels = new List<string>();
+        for (int i = 0; i < passives.Count; i++)
+        {
+            passivesAndLevels.Add(passives[i] + ":" + passiveLevels[i]);
+        }
+        return passivesAndLevels;
+    }
     public List<string> passives;
     public List<string> GetPassives()
     {

@@ -13,6 +13,34 @@ public class ArmoryUI : MonoBehaviour
     public SelectStatTextList actorPassives;
     public SelectStatTextList actorActives;
     public SelectStatTextList actorEquipment;
+    public PopUpMessage equipmentStats;
+    public List<string> equipmentSlotNames;
+    public void ShowEquipmentStats()
+    {
+        if (allActors.GetSelected() < 0){return;}
+        // Show the popup with the equipment stats.
+        string allEquipment = partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected());
+        string[] dataBlocks = allEquipment.Split("@");
+        string equipment = "";
+        for (int i = 0; i < dataBlocks.Length; i++)
+        {
+            dummyEquip.SetAllStats(dataBlocks[i]);
+            if (dummyEquip.GetSlot() == equipmentSlotNames[actorEquipment.GetSelected()])
+            {
+                equipment = dataBlocks[i];
+                break;
+            }
+        }
+        if (equipment == ""){return;}
+        string message = "Equipment Stats:"+"\n";
+        List<string> pandL = dummyEquip.GetPassivesAndLevels();
+        for (int i = 0; i < pandL.Count; i++)
+        {
+            message += pandL[i] + "\n";
+        }
+        // Get the equipment from the party data.
+        equipmentStats.SetMessage(message);
+    }
     protected virtual void Start()
     {
         allActors.UpdateTextSize();

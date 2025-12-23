@@ -143,7 +143,7 @@ public class StSEvent : SavedData
             switch (eventTarget[i])
             {
                 case "Party":
-                    partyData.HireMember(eventEffect[i], actorStats.ReturnValue(eventEffect[i]), eventEffect[i] + " " + UnityEngine.Random.Range(0, 1000));
+                    partyData.HireMember(actorStats.ReturnValue(eventEffect[i]), eventEffect[i] + " " + UnityEngine.Random.Range(0, 1000));
                     break;
                 case "Inventory":
                     partyData.inventory.AddItemQuantity(eventEffect[i], int.Parse(eventSpecifics[i]));

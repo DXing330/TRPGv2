@@ -378,13 +378,10 @@ public class BattleMap : MapManager
     public void ChangeTerrain(int tileNumber, string change)
     {
         if (mapInfo[tileNumber] == change){return;}
-        string originalRank = tileTileInteractions.ReturnValue(mapInfo[tileNumber]);
-        string newRank = tileTileInteractions.ReturnValue(change);
-        if (utility.SafeParseInt(newRank, -1) > utility.SafeParseInt(originalRank, -1))
-        {
-            return;
-        }
-        mapInfo[tileNumber] = change;
+        string t_t = mapInfo[tileNumber] + "-" + change;
+        string newInfo = tileTileInteractions.ReturnValue(t_t);
+        if (newInfo == ""){return;}
+        mapInfo[tileNumber] = newInfo;
         // Update the elevation.
         mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
         mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);

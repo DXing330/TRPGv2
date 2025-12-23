@@ -35,6 +35,7 @@ public class ActorPathfinder : MapPathfinder
     protected int DeepCheckClosestTile(List<int> moveCosts)
     {
         int closestTile = heap.Pull();
+        if (closestTile < 0){return -1;}
         List<int> adjacentTiles = mapUtility.AdjacentTiles(closestTile, mapSize);
         int moveCost = 1;
         for (int i = 0; i < adjacentTiles.Count; i++)

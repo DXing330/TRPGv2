@@ -176,14 +176,14 @@ public class BattleEndManager : MonoBehaviour
             spriteNames = partyData.permanentPartyData.GetSpriteNames();
             names = partyData.permanentPartyData.GetNames();
             baseStats = partyData.permanentPartyData.GetBaseStats();
-            equipment = partyData.permanentPartyData.GetEquipment();
+            equipment = partyData.permanentPartyData.GetEquipmentStats();
         }
         else
         {
             spriteNames = partyData.mainPartyData.GetSpriteNames();
             names = partyData.mainPartyData.GetNames();
             baseStats = partyData.mainPartyData.GetBaseStats();
-            equipment = partyData.mainPartyData.GetEquipment();
+            equipment = partyData.mainPartyData.GetEquipmentStats();
         }
         for (int i = 0; i < spriteNames.Count; i++)
         {

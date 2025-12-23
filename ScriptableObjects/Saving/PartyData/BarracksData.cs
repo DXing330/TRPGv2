@@ -9,15 +9,14 @@ public class BarracksData : PartyData
     {
         // Get the data from the PartyDataManager.mainPartyData
         List<string> allStats = partyDataManager.mainPartyData.GetStatsAtIndex(index);
-        AddToBarracks(allStats[0],allStats[1],allStats[2],allStats[3]);
+        AddToBarracks(allStats[0],allStats[1],allStats[2]);
         partyDataManager.mainPartyData.RemoveStatsAtIndex(index);
         partyDataManager.Save();
         Save();
     }
-    protected void AddToBarracks(string personalName, string spriteName, string baseStats, string equipment)
+    protected void AddToBarracks(string personalName, string baseStats, string equipment)
     {
         partyNames.Add(personalName);
-        partySpriteNames.Add(spriteName);
         partyStats.Add(baseStats);
         // If equipment is empty this could cause an issue.
         if (partyEquipment.Count >= partyNames.Count)
@@ -32,7 +31,7 @@ public class BarracksData : PartyData
 
     public void AddFromBarracks(int index, PartyDataManager partyDataManager)
     {
-        partyDataManager.mainPartyData.AddAllStats(partyNames[index], partySpriteNames[index], partyStats[index], partyEquipment[index]);
+        partyDataManager.mainPartyData.AddAllStats(partyNames[index], partyStats[index], partyEquipment[index]);
         RemoveStatsAtIndex(index);
         partyDataManager.Save();
         Save();
