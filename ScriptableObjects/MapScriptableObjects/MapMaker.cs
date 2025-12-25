@@ -62,6 +62,8 @@ public class MapMaker : ScriptableObject
     {
         switch (pattern)
         {
+            case "All":
+                return AddAllTiles(originalMap, featureType, patternSpecifics);
             case "River":
                 return AddRiver(originalMap, featureType, patternSpecifics);
             case "Single":
@@ -70,6 +72,8 @@ public class MapMaker : ScriptableObject
                 return AddForest(originalMap, featureType, patternSpecifics);
             case "Wall":
                 return AddWall(originalMap, featureType, patternSpecifics);
+            case "CenterWall":
+                return AddCenterWall(originalMap, featureType, patternSpecifics);
             case "Border":
                 return AddBorder(originalMap, featureType, patternSpecifics);
             case "CenterForest":
@@ -82,6 +86,15 @@ public class MapMaker : ScriptableObject
                 return AddValley(originalMap, featureType, "Forest");
             case "WaterValley":
                 return AddValley(originalMap, featureType, "Water");
+        }
+        return originalMap;
+    }
+
+    protected List<string> AddAllTiles(List<string> originalMap, string featureType, string specifics)
+    {
+        for (int i = 0; i < originalMap.Count; i++)
+        {
+            originalMap[i] = featureType;
         }
         return originalMap;
     }
@@ -173,6 +186,32 @@ public class MapMaker : ScriptableObject
             newPoint = mapUtility.RandomPointDown(currentPoint, mapSize);
             if (newPoint == currentPoint) { break; }
             currentPoint = newPoint;
+        }
+        return originalMap;
+    }
+
+    public List<int> GetCenterWallTiles()
+    {
+        List<int> centerPoints = new List<int>();
+        int currentPoint = mapSize / 2;
+        for (int i = 0; i < mapSize; i++)
+        {
+            if (currentPoint >= mapSize * mapSize){break;}
+            centerPoints.Add(currentPoint);
+            currentPoint += mapSize;
+        }
+        return centerPoints;
+    }
+
+    // Wall through the center.
+    protected List<string> AddCenterWall(List<string> originalMap, string featureType, string specifics)
+    {
+        int currentPoint = mapSize / 2;
+        for (int i = 0; i < mapSize; i++)
+        {
+            if (currentPoint >= mapSize * mapSize){break;}
+            originalMap[currentPoint] = featureType;
+            currentPoint += mapSize;
         }
         return originalMap;
     }

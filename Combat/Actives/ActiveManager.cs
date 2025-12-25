@@ -429,12 +429,12 @@ public class ActiveManager : MonoBehaviour
                     battle.map.ChangeTEffect(targetedTiles[i], specifics);
                 }
                 return;
-            case "Trap":
+            /*case "Trap":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
                     battle.map.ChangeTrap(targetedTiles[i], specifics);
                 }
-                return;
+                return;*/
             case "Swap":
                 if (targetedTiles.Count <= 0) { return; }
                 switch (specifics)

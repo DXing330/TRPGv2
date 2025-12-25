@@ -72,7 +72,8 @@ public class BattleMap : MapManager
     {
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
-        trappedTiles = new List<string>(emptyList);
+        interactables.Clear();
+        //trappedTiles = new List<string>(emptyList);
     }
     protected override void Start()
     {
@@ -81,12 +82,26 @@ public class BattleMap : MapManager
         if (terrainEffectTiles.Count < emptyList.Count)
         {
             terrainEffectTiles = new List<string>(emptyList);
-            trappedTiles = new List<string>(emptyList);
+            interactables.Clear();
+            //trappedTiles = new List<string>(emptyList);
         }
         //base.Start();
     }
     public BattleManager battleManager;
     public List<TacticActor> battlingActors;
+    public List<int> GetAttackableTiles()
+    {
+        List<int> tiles = new List<int>();
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            tiles.Add(battlingActors[i].GetLocation());
+        }
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            tiles.Add(interactables[i].GetLocation());
+        }
+        return tiles;
+    }
     public TacticActor ReturnLatestActor()
     {
         return battlingActors[battlingActors.Count - 1];
@@ -353,15 +368,15 @@ public class BattleMap : MapManager
     public List<string> actorDirections;
     public StatDatabase tileTileInteractions;
     // Called during some battle passives.
-    public void ChangeTile(int tileNumber, string effect, string specifics)
+    public void ChangeTile(int tileNumber, string effect, string specifics, bool force = false)
     {
         switch (effect)
         {
             case "Tile":
-                ChangeTerrain(tileNumber, specifics);
+                ChangeTerrain(tileNumber, specifics, force);
                 break;
             case "TerrainEffect":
-                ChangeTEffect(tileNumber, specifics);
+                ChangeTEffect(tileNumber, specifics, force);
                 break;
             case "Spread":
                 SpreadTerrainEffect(tileNumber, specifics);
@@ -372,12 +387,29 @@ public class BattleMap : MapManager
             case "ChainSpread":
                 ChainSpreadTerrainEffect(tileNumber, specifics);
                 break;
+            case "SwitchBetween":
+                string[] between = specifics.Split("=");
+                if (between.Length < 2){return;}
+                if (mapInfo[tileNumber] == between[0])
+                {
+                    ChangeTerrain(tileNumber, between[1], true);
+                }
+                else if (mapInfo[tileNumber] == between[1])
+                {
+                    ChangeTerrain(tileNumber, between[0], true);
+                }
+                break;
         }
         UpdateMap();
     }
-    public void ChangeTerrain(int tileNumber, string change)
+    public void ChangeTerrain(int tileNumber, string change, bool force = false)
     {
         if (mapInfo[tileNumber] == change){return;}
+        if (force)
+        {
+            mapInfo[tileNumber] = change;
+            return;
+        }
         string t_t = mapInfo[tileNumber] + "-" + change;
         string newInfo = tileTileInteractions.ReturnValue(t_t);
         if (newInfo == ""){return;}
@@ -390,18 +422,25 @@ public class BattleMap : MapManager
     }
     public StatDatabase terrainTerrainInteractions;
     public List<string> terrainEffectTiles;
-    public virtual void GetNewTerrainEffects(MapFeaturesList mapFeatures)
+    public virtual void GetNewTerrainEffects(List<string> featuresAndPatterns)
     {
         terrainEffectTiles = new List<string>(emptyList);
-        for (int i = 0; i < mapFeatures.features.Count; i++)
+        for (int i = 0; i < featuresAndPatterns.Count; i++)
         {
-            terrainEffectTiles = mapMaker.AddFeature(terrainEffectTiles, mapFeatures.features[i], mapFeatures.patterns[i]);
+            string[] fPSplit = featuresAndPatterns[i].Split("=");
+            if (fPSplit.Length < 2){continue;}
+            terrainEffectTiles = mapMaker.AddFeature(terrainEffectTiles, fPSplit[0], fPSplit[1]);
         }
         UpdateMap();
     }
-    public void ChangeTEffect(int tileNumber, string newEffect)
+    public void ChangeTEffect(int tileNumber, string newEffect, bool force = false)
     {
         if (terrainEffectTiles[tileNumber] == newEffect){return;}
+        if (force)
+        {
+            terrainEffectTiles[tileNumber] = newEffect;
+            return;
+        }
         if (terrainEffectTiles[tileNumber] == "" || newEffect == "")
         {
             terrainEffectTiles[tileNumber] = newEffect;
@@ -466,19 +505,44 @@ public class BattleMap : MapManager
     {
         mapDisplayers[2].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
     }
-    public List<string> trappedTiles;
-    public List<string> stoppingTraps; // Traps that immediately stop movement.
-    public void ChangeTrap(int tileNumber, string newTrap)
+    public List<Interactable> interactables;
+    public void RemoveInteractable(Interactable iAct)
     {
-        trappedTiles[tileNumber] = newTrap;
+        interactables.Remove(iAct);
     }
-    public void TriggerTrap(int tileNumber)
+    public void AddInteractable(Interactable iAct)
     {
-        trappedTiles[tileNumber] = "";
+        interactables.Add(iAct);
     }
-    // Just like traps, you can't see these.
-    // Better remember well or write it down if it's an AOE.
-    // Enemies will get around this by either being immune, or just accepting death.
+    public Interactable GetInteractableOnTile(int tileNumber)
+    {
+        if (GetActorOnTile(tileNumber) != null){return null;}
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            if (interactables[i].GetLocation() == tileNumber)
+            {
+                return interactables[i];
+            }
+        }
+        return null;
+    }
+    public void AttackInteractable(int tileNumber, TacticActor attacker)
+    {
+        Interactable interactable = GetInteractableOnTile(tileNumber);
+        if (interactable == null){return;}
+        interactable.AttackTrigger(this, attacker);
+    }
+    public bool InteractableOnTile(int tileNumber)
+    {
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            if (interactables[i].GetLocation() == tileNumber)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public StatDatabase delayedEffectData;
     public List<string> delayedEffects;
     public List<int> delayedEffectTiles;
@@ -580,9 +644,13 @@ public class BattleMap : MapManager
         if (emptyList == null || emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         actorTiles = new List<string>(emptyList);
         actorDirections = new List<string>(emptyList);
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            actorTiles[interactables[i].GetLocation()] = interactables[i].GetSpriteName();
+        }
         for (int i = 0; i < battlingActors.Count; i++)
         {
-            actorTiles[battlingActors[i].location] = battlingActors[i].GetSpriteName();
+            actorTiles[battlingActors[i].GetLocation()] = battlingActors[i].GetSpriteName();
             actorDirections[battlingActors[i].location] = battlingActors[i].GetDirection().ToString();
         }
     }
@@ -1045,7 +1113,8 @@ public class BattleMap : MapManager
     {
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainEffect(actor, tileNumber);
-        return ApplyTrapEffect(actor, tileNumber);
+        return false;
+        //return ApplyTrapEffect(actor, tileNumber);
     }
 
     protected void ApplyTileMovingEffect(TacticActor actor, int tileNumber)
@@ -1069,7 +1138,7 @@ public class BattleMap : MapManager
         passiveEffect.AffectActor(actor, data[0], data[1]);
     }
 
-    protected bool ApplyTrapEffect(TacticActor actor, int tileNumber)
+    /*protected bool ApplyTrapEffect(TacticActor actor, int tileNumber)
     {
         string trapEffect = trappedTiles[tileNumber];
         if (trapEffect.Length < 1) { return false; }
@@ -1080,7 +1149,7 @@ public class BattleMap : MapManager
         // If a trap forces actors to stop then return true.
         if (stoppingTraps.Contains(trapEffect)) { return true; }
         return false;
-    }
+    }*/
 
     public void ApplyEndTerrainEffect(TacticActor actor)
     {

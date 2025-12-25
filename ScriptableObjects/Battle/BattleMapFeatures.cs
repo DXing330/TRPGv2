@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,32 +7,24 @@ using UnityEngine;
 public class BattleMapFeatures : ScriptableObject
 {
     public string terrainType;
+    public string delimiter = "|";
     public void SetTerrainType(string newType) { terrainType = newType; }
+    public string GetTerrainType(){return terrainType;}
     public void ResetTerrainType() { terrainType = ""; }
-    public List<string> mapFeatureKeys;
-    public List<MapFeaturesList> mapFeatures;
-    public List<MapFeaturesList> mapTerrainFeatures;
+    public StatDatabase baseTerrainLayouts;
+    public StatDatabase tEffectLayouts;
+    public StatDatabase interactableLayouts;
 
-    public MapFeaturesList CurrentMapFeatures()
+    public List<string> CurrentMapFeatures()
     {
-        for (int i = 0; i < mapFeatures.Count; i++)
-        {
-            if (terrainType == mapFeatureKeys[i])
-            {
-                return mapFeatures[i];
-            }
-        }
-        return mapFeatures[0];
+        return baseTerrainLayouts.ReturnValue(GetTerrainType()).Split(delimiter).ToList();
     }
-    public MapFeaturesList CurrentMapTerrainFeatures()
+    public List<string> CurrentMapTerrainFeatures()
     {
-        for (int i = 0; i < mapTerrainFeatures.Count; i++)
-        {
-            if (terrainType == mapFeatureKeys[i])
-            {
-                return mapTerrainFeatures[i];
-            }
-        }
-        return mapTerrainFeatures[0];
+        return tEffectLayouts.ReturnValue(GetTerrainType()).Split(delimiter).ToList();
+    }
+    public List<string> CurrentMapInteractables()
+    {
+        return interactableLayouts.ReturnValue(GetTerrainType()).Split(delimiter).ToList();
     }
 }

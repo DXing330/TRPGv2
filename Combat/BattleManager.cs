@@ -38,6 +38,7 @@ public class BattleManager : MonoBehaviour
         }
     }
     public ActorMaker actorMaker;
+    public InteractableMaker interactableMaker;
     public BattleMapFeatures battleMapFeatures;
     public InitiativeTracker initiativeTracker;
     public CombatLog combatLog;
@@ -88,8 +89,10 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog("The weather is "+map.GetWeather());
         map.SetTime(battleState.GetTime());
         combatLog.UpdateNewestLog("The time is "+map.GetTime());
+        // Always plains default map tile.
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
+        interactableMaker.GetNewInteractables(map, battleMapFeatures.CurrentMapInteractables());
         map.InitializeElevations();
         moveManager.SetMapInfo(map.mapInfo);
         moveManager.SetMapElevations(map.mapElevations);
@@ -427,7 +430,7 @@ public class BattleManager : MonoBehaviour
             break;
             case "Attack":
             if (!turnActor.ActionsLeft()){break;}
-            AttackActorOnTile(selectedTile);
+            AttackTile(selectedTile);
             break;
             case "":
             ViewActorOnTile(selectedTile);
@@ -483,14 +486,27 @@ public class BattleManager : MonoBehaviour
     protected void StartAttacking()
     {
         map.ResetHighlights();
-        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.battlingActors), "Attack");
+        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.GetAttackableTiles()), "Attack");
     }
 
-    protected void AttackActorOnTile(int tileNumber)
+    protected void AttackTile(int tileNumber)
     {
         int indexOf = moveManager.reachableTiles.IndexOf(tileNumber);
+        if (indexOf < 0)
+        {
+            ResetState();
+            return;
+        }
         selectedActor = map.GetActorOnTile(tileNumber);
-        if (indexOf < 0 || selectedActor == null)
+        if (selectedActor == null && map.InteractableOnTile(tileNumber))
+        {
+            turnActor.PayAttackCost();
+            map.AttackInteractable(tileNumber, turnActor);
+            AdjustTurnNumber();
+            map.UpdateMap();
+            return;
+        }
+        else if (selectedActor == null && !map.InteractableOnTile(tileNumber))
         {
             ResetState();
             return;

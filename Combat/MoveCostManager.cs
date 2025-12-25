@@ -122,19 +122,16 @@ public class MoveCostManager : MonoBehaviour
         return reachableTiles;
     }
 
-    public List<int> GetAttackableTiles(TacticActor actor, List<TacticActor> actors)
+    public List<int> GetAttackableTiles(TacticActor actor, List<int> attackableTiles)
     {
         List<int> attackRange = actorPathfinder.FindTilesInRange(actor.GetLocation(), actor.GetAttackRange());
         reachableTiles = new List<int>();
-        for (int i = 0; i < attackRange.Count; i++)
+        for (int i = 0; i < attackableTiles.Count; i++)
         {
-            for (int j = 0; j < actors.Count; j++)
+            if (attackRange.Contains(attackableTiles[i]))
             {
-                if (attackRange[i] == actors[j].GetLocation())
-                {
-                    reachableTiles.Add(attackRange[i]);
-                    break;
-                }
+                reachableTiles.Add(attackableTiles[i]);
+                break;
             }
         }
         return reachableTiles;

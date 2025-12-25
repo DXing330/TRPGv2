@@ -189,12 +189,14 @@ public class MapManager : MonoBehaviour
         UpdateMap();
     }
 
-    public virtual void GetNewMapFeatures(MapFeaturesList mapFeatures)
+    public virtual void GetNewMapFeatures(List<string> featuresAndPatterns, string baseTileType = "Plains")
     {
-        mapInfo = mapMaker.MakeBasicMap(mapSize, mapFeatures.baseTileType);
-        for (int i = 0; i < mapFeatures.features.Count; i++)
+        mapInfo = mapMaker.MakeBasicMap(mapSize, baseTileType);
+        for (int i = 0; i < featuresAndPatterns.Count; i++)
         {
-            mapInfo = mapMaker.AddFeature(mapInfo, mapFeatures.features[i], mapFeatures.patterns[i]);
+            string[] fPSplit = featuresAndPatterns[i].Split("=");
+            if (fPSplit.Length < 2){continue;}
+            mapInfo = mapMaker.AddFeature(mapInfo, fPSplit[0], fPSplit[1]);
         }
         UpdateMap();
     }
