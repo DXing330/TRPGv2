@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using UnityEngine;
 // Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map and anything that will result in a change of that visualization, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
+    public MapPatternLocations mapPatterns;
     public string weather;
     public WeatherFilter weatherFilter;
     public void SetWeather(string newInfo)
@@ -156,39 +158,37 @@ public class BattleMap : MapManager
         return actors;
     }
     // Should highlight all valid starting tiles to make this clear.
-    public bool ValidStartingTile(int tileNumber)
+    public bool ValidStartingTile(string pattern, int tileNumber)
     {
-        int column = mapUtility.GetColumn(tileNumber, mapSize);
-        if (column < (mapSize / 2) - 1)
-        {
-            return true;
-        }
-        return false;
+        int startTileCount = mapSize * mapSize / 2 - (mapSize * mapSize / 2) % mapSize;
+        List<int> startingTiles = mapPatterns.ReturnTilesOfPattern(pattern, startTileCount, mapSize);
+        return startingTiles.Contains(tileNumber);
     }
-    //
     public List<string> excludedStartingTiles;
-    public void RandomEnemyStartingPositions()
+    public void RandomEnemyStartingPositions(string pattern)
     {
         List<TacticActor> enemyTeam = AllTeamMembers(1);
         for (int i = 0; i < enemyTeam.Count; i++)
         {
-            enemyTeam[i].SetLocation(RandomEnemyStartingTile());
-            UpdateMap();
+            enemyTeam[i].SetLocation(RandomEnemyStartingTile(pattern));
         }
+        UpdateMap();
     }
-    protected int RandomEnemyStartingTile()
+    protected int RandomEnemyStartingTile(string pattern)
     {
-        int tile = Random.Range(0, mapSize * mapSize);
-        if (ValidEnemyStartingTile(tile))
+        int tile = UnityEngine.Random.Range(0, mapSize * mapSize);
+        if (ValidEnemyStartingTile(pattern, tile))
         {
             return tile;
         }
-        return RandomEnemyStartingTile();
+        return RandomEnemyStartingTile(pattern);
     }
-    protected bool ValidEnemyStartingTile(int tileNumber)
+    // Needs to be updated based on the spawning pattern.
+    protected bool ValidEnemyStartingTile(string pattern, int tileNumber)
     {
-        int column = mapUtility.GetColumn(tileNumber, mapSize);
-        if (column > (mapSize / 2) - 1 && !excludedStartingTiles.Contains(mapInfo[tileNumber]) && !TileNotEmpty(tileNumber))
+        int startTileCount = mapSize * mapSize / 2 - (mapSize * mapSize / 2) % mapSize;
+        List<int> startingTiles = mapPatterns.ReturnTilesOfPattern(pattern, startTileCount, mapSize);
+        if (startingTiles.Contains(tileNumber) && !excludedStartingTiles.Contains(mapInfo[tileNumber]) && !TileNotEmpty(tileNumber))
         {
             return true;
         }
@@ -476,7 +476,7 @@ public class BattleMap : MapManager
         if (tEffect == ""){return;}
         if (sTEffect != "" && tEffect != sTEffect){return;}
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
-        ChangeTEffect(adjacent[Random.Range(0, adjacent.Count)], tEffect);
+        ChangeTEffect(adjacent[UnityEngine.Random.Range(0, adjacent.Count)], tEffect);
     }
     public void ChainSpreadTerrainEffect(int tileNumber, string sTEffect = "")
     {
@@ -526,11 +526,26 @@ public class BattleMap : MapManager
         }
         return null;
     }
+    public List<Interactable> GetInteractablesOnTile(int tileNumber)
+    {
+        List<Interactable> inters = new List<Interactable>();
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            if (interactables[i].GetLocation() == tileNumber)
+            {
+                inters.Add(interactables[i]);
+            }
+        }
+        return inters;
+    }
     public void AttackInteractable(int tileNumber, TacticActor attacker)
     {
-        Interactable interactable = GetInteractableOnTile(tileNumber);
-        if (interactable == null){return;}
-        interactable.AttackTrigger(this, attacker);
+        List<Interactable> interactables = GetInteractablesOnTile(tileNumber);
+        if (interactables.Count <= 0){return;}
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            interactables[i].AttackTrigger(this, attacker);
+        }
     }
     public bool InteractableOnTile(int tileNumber)
     {
@@ -647,6 +662,7 @@ public class BattleMap : MapManager
         for (int i = 0; i < interactables.Count; i++)
         {
             actorTiles[interactables[i].GetLocation()] = interactables[i].GetSpriteName();
+            actorDirections[interactables[i].GetLocation()] = "";
         }
         for (int i = 0; i < battlingActors.Count; i++)
         {
@@ -709,17 +725,11 @@ public class BattleMap : MapManager
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles,highlightedTiles, currentTiles);
     }
 
-    public void UpdateStartingPositionTiles(int selectedTile = -1)
+    public void UpdateStartingPositionTiles(string pattern, int selectedTile = -1)
     {
-        List<int> tiles = new List<int>();
-        for (int i = 0; i < mapSize * mapSize; i++)
-        {
-            if (mapUtility.GetColumn(i, mapSize) < (mapSize / 2) - 1)
-            {
-                tiles.Add(i);
-            }
-        }
-        UpdateHighlights(tiles, "Green", 4);
+        int startTileCount = mapSize * mapSize / 2 - (mapSize * mapSize / 2) % mapSize;
+        List<int> startingTiles = mapPatterns.ReturnTilesOfPattern(pattern, startTileCount, mapSize);
+        UpdateHighlights(startingTiles, "Green", 4);
         if (selectedTile >= 0)
         {
             HighlightTileWithoutReseting(selectedTile, "Blue", 4);
@@ -733,6 +743,7 @@ public class BattleMap : MapManager
         highlightedTiles = new List<string>(emptyList);
         for (int i = 0; i < newTiles.Count; i++)
         {
+            if (newTiles[i] < 0){continue;}
             highlightedTiles[newTiles[i]] = colorName;
         }
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
@@ -916,7 +927,7 @@ public class BattleMap : MapManager
         {
             return -1;
         }
-        return enemies[Random.Range(0, enemies.Count)].GetLocation();
+        return enemies[UnityEngine.Random.Range(0, enemies.Count)].GetLocation();
     }
 
     public int DistanceBetweenActors(TacticActor actor1, TacticActor actor2)
@@ -960,7 +971,7 @@ public class BattleMap : MapManager
         List<int> adjacentEmpty = GetAdjacentEmptyTiles(location);
         if (adjacentEmpty.Count > 0)
         {
-            return adjacentEmpty[Random.Range(0, adjacentEmpty.Count)];
+            return adjacentEmpty[UnityEngine.Random.Range(0, adjacentEmpty.Count)];
         }
         int distance = mapSize;
         int tile = -1;
@@ -999,7 +1010,7 @@ public class BattleMap : MapManager
         {
             return tileNumber;
         }
-        int tile = emptyAdjacent[Random.Range(0, emptyAdjacent.Count)];
+        int tile = emptyAdjacent[UnityEngine.Random.Range(0, emptyAdjacent.Count)];
         if (TileNotEmpty(tile))
         {
             return tileNumber;
@@ -1113,6 +1124,7 @@ public class BattleMap : MapManager
     {
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainEffect(actor, tileNumber);
+        ApplyInteractableEffect(actor, tileNumber);
         return false;
         //return ApplyTrapEffect(actor, tileNumber);
     }
@@ -1138,18 +1150,15 @@ public class BattleMap : MapManager
         passiveEffect.AffectActor(actor, data[0], data[1]);
     }
 
-    /*protected bool ApplyTrapEffect(TacticActor actor, int tileNumber)
+    protected void ApplyInteractableEffect(TacticActor actor, int tileNumber)
     {
-        string trapEffect = trappedTiles[tileNumber];
-        if (trapEffect.Length < 1) { return false; }
-        List<string> data = terrainEffectData.ReturnStats(trapEffect);
-        passiveEffect.AffectActor(actor, data[0], data[1]);
-        TriggerTrap(tileNumber);
-        combatLog.UpdateNewestLog(actor.GetPersonalName() + " triggers a " + trapEffect + " trap.");
-        // If a trap forces actors to stop then return true.
-        if (stoppingTraps.Contains(trapEffect)) { return true; }
-        return false;
-    }*/
+        List<Interactable> triggered = GetInteractablesOnTile(tileNumber);
+        if (triggered.Count <= 0){return;}
+        for (int i = 0; i < triggered.Count; i++)
+        {
+            triggered[i].MoveTrigger(this, actor);
+        }
+    }
 
     public void ApplyEndTerrainEffect(TacticActor actor)
     {

@@ -11,6 +11,7 @@ public class SkillEffect : ScriptableObject
     public int baseStatusDuration = 3;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1, CombatLog combatLog = null)
     {
+        if (target == null){return;}
         int changeAmount = 0;
         switch (effect)
         {

@@ -26,6 +26,25 @@ public class InteractableMaker : MonoBehaviour
         return newInter;
     }
 
+    // Basically only used for placing traps.
+    // Later make sure traps only trigger for the opposite team?
+    public void PlaceInteractable(BattleMap map, string newInfo, int location)
+    {
+        Interactable newInter = CreateInteractable(newInfo);
+        newInter.SetLocation(location);
+        newInter.AddTargetLocation(location);
+        map.AddInteractable(newInter);
+    }
+
+    public void PlaceTrap(BattleMap map, string newInfo, int location, TacticActor placer)
+    {
+        Interactable newInter = CreateInteractable(newInfo);
+        newInter.SetLocation(location);
+        newInter.AddTargetLocation(location);
+        newInter.ForceCondition("Team<>", placer.GetTeam().ToString());
+        map.AddInteractable(newInter);
+    }
+
     public void GetNewInteractables(BattleMap map, List<string> newInfo)
     {
         for (int i = 0; i < newInfo.Count; i++)

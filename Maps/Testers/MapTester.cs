@@ -15,6 +15,38 @@ public class MapTester : MapManager
     public int testR;
     public int testS;
 
+    [ContextMenu("Test Inward Spiral")]
+    public void TestInwardSpiral()
+    {
+        string spiral = "";
+        for (int i = 0 ; i < mapSize * mapSize; i++)
+        {
+            spiral += mapUtility.SpiralInward(i, mapSize);
+            mapTiles[mapUtility.SpiralInward(i, mapSize)].UpdateText(i.ToString());
+            if (i < mapSize * mapSize - 1)
+            {
+                spiral += ",";
+            }
+        }
+        Debug.Log(spiral);
+    }
+
+    [ContextMenu("Test Outward Spiral")]
+    public void TestOutwardSpiral()
+    {
+        string spiral = "";
+        for (int i = 0 ; i < mapSize * mapSize; i++)
+        {
+            spiral += mapUtility.SpiralOutward(i, mapSize);
+            mapTiles[mapUtility.SpiralOutward(i, mapSize)].UpdateText(i.ToString());
+            if (i < mapSize * mapSize - 1)
+            {
+                spiral += ",";
+            }
+        }
+        Debug.Log(spiral);
+    }
+
     [ContextMenu("Test Distance")]
     public void TestDistance()
     {

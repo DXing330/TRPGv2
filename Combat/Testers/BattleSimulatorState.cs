@@ -109,6 +109,49 @@ public class BattleSimulatorState : BattleState
         }
         return selectedTime;
     }
+    public List<string> allStartingFormations;
+    public List<string> p1StartingFormations;
+    public List<string> p2StartingFormations;
+    public List<string> selectedStartingFormations;
+    public string selectedStartingFormation;
+    public void GetStartingFormation()
+    {
+        if (selectedStartingFormations.Count > 0)
+        {
+            selectedStartingFormation = selectedStartingFormations[UnityEngine.Random.Range(0, selectedStartingFormations.Count)];
+        }
+        else
+        {
+            selectedStartingFormation = "Random";
+        }
+        if (selectedStartingFormation == "Random")
+        {
+            selectedStartingFormation = allStartingFormations[UnityEngine.Random.Range(0, allStartingFormations.Count)];
+        }
+    }
+    public void SelectFormation(string newInfo)
+    {
+        int indexOf = selectedStartingFormations.IndexOf(newInfo);
+        if (indexOf >= 0)
+        {
+            selectedStartingFormations.RemoveAt(indexOf);
+            return;
+        }
+        selectedStartingFormations.Add(newInfo);
+    }
+    public override string GetAllySpawnPattern()
+    {
+        GetStartingFormation();
+        int indexOf = allStartingFormations.IndexOf(selectedStartingFormation);
+        if (indexOf < 0){indexOf = 0;}
+        return p1StartingFormations[indexOf];
+    }
+    public override string GetEnemySpawnPattern()
+    {
+        int indexOf = allStartingFormations.IndexOf(selectedStartingFormation);
+        if (indexOf < 0){indexOf = 0;}
+        return p2StartingFormations[indexOf];
+    }
     public StatDatabase battleModifierData;
     public List<string> allBattleModifiers;
     public List<string> selectedP1BattleMods;
@@ -236,6 +279,7 @@ public class BattleSimulatorState : BattleState
         allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle + delimiter + autoBattle + delimiter + controlAI + delimiter;
         allData += string.Join(delimiterThree, selectedP1BattleMods) + delimiter;
         allData += string.Join(delimiterThree, selectedP2BattleMods) + delimiter;
+        allData += string.Join(delimiterThree, selectedStartingFormations) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -269,8 +313,10 @@ public class BattleSimulatorState : BattleState
         controlAI = int.Parse(dataList[10]);
         selectedP1BattleMods = dataList[11].Split(delimiterThree).ToList();
         selectedP2BattleMods = dataList[12].Split(delimiterThree).ToList();
+        selectedStartingFormations = dataList[13].Split(delimiterThree).ToList();
         utility.RemoveEmptyListItems(selectedP1BattleMods);
         utility.RemoveEmptyListItems(selectedP2BattleMods);
+        utility.RemoveEmptyListItems(selectedStartingFormations);
         winningTeam = -1;
     }
 }

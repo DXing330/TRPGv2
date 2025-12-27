@@ -95,7 +95,7 @@ public class ActorMaker : MonoBehaviour
         return newActor;
     }
 
-    public List<TacticActor> SpawnTeamInPattern(int pattern, int team, List<string> teamNames, List<string> teamStats = null, List<string> teamPersonalNames = null, List<string> teamEquipment = null)
+    public List<TacticActor> SpawnTeamInPattern(string pattern, int team, List<string> teamNames, List<string> teamStats = null, List<string> teamPersonalNames = null, List<string> teamEquipment = null)
     {
         if (teamStats == null) { teamStats = new List<string>(); }
         if (teamPersonalNames == null) { teamPersonalNames = new List<string>(); }

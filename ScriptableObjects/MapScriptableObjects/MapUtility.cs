@@ -334,6 +334,11 @@ public class MapUtility : ScriptableObject
     public List<int> GetTilesInCircleShape(int startTile, int range, int size)
     {
         List<int> tiles = new List<int>();
+        if (range < 1)
+        {
+            tiles.Add(startTile);
+            return tiles;
+        }
         for (int i = 0; i < 6; i++)
         {
             int nextTile = PointInDirection(startTile, i, size);
@@ -345,12 +350,17 @@ public class MapUtility : ScriptableObject
         return tiles;
     }
 
-    public List<int> GetTilesInRingShape(int startTile, int range, int size, int width = 1)
+    public List<int> GetTilesInRingShape(int startTile, int range, int mapSize, int width = 1)
     {
         List<int> tiles = new List<int>();
-        tiles = GetTilesInCircleShape(startTile, range, size);
+        if (range < 1)
+        {
+            tiles.Add(startTile);
+            return tiles;
+        }
+        tiles = GetTilesInCircleShape(startTile, range, mapSize);
         if (width >= range) { return tiles; }
-        tiles = tiles.Except(GetTilesInCircleShape(startTile, range - width, size)).ToList();
+        tiles = tiles.Except(GetTilesInCircleShape(startTile, range - width, mapSize)).ToList();
         tiles = tiles.Distinct().ToList();
         return tiles;
     }
@@ -603,6 +613,9 @@ public class MapUtility : ScriptableObject
                 tiles = GetTilesInCircleShape(selected, span, size);
                 tiles.Remove(selected);
                 return tiles;
+            case "Ring":
+                tiles = GetTilesInRingShape(selected, span, size);
+                return tiles;
             case "Line":
                 return GetTilesInLineShape(selected, span, size);
             case "ELine":
@@ -644,6 +657,40 @@ public class MapUtility : ScriptableObject
         return tiles;
     }
 
+    public int SpiralInward(int index, int mapSize)
+    {
+        if (index == 0){return index;}
+        index = mapSize * mapSize - 1 - index;
+        int centerRow = mapSize / 2;
+        int centerCol = mapSize / 2;
+        int ring = (int) Mathf.Ceil((Mathf.Sqrt(index + 1) - 1) / 2);
+        int sideLength = ring * 2;
+        index -= (2 * ring - 1) * (2 * ring - 1) - 1;
+        int row = centerRow - ring;
+        int col = centerCol - ring;
+        if (index < sideLength)
+        {
+            return ReturnTileNumberFromRowCol(row, col + index, mapSize);
+        }
+        index -= sideLength;
+        if (index < sideLength)
+        {
+            return ReturnTileNumberFromRowCol(row + index, col + sideLength, mapSize);
+        }
+        index -= sideLength;
+        if (index < sideLength)
+        {
+            return ReturnTileNumberFromRowCol(row + sideLength, col + sideLength - index, mapSize);
+        }
+        index -= sideLength;
+        return ReturnTileNumberFromRowCol(row + sideLength - index, col, mapSize);
+    }
+
+    public int SpiralOutward(int index, int mapSize)
+    {
+        return SpiralInward(mapSize * mapSize - 1 - index, mapSize);
+    }
+
     public int CountTilesByShapeSpan(string shape, int span)
     {
         if (span <= 0)
@@ -662,6 +709,8 @@ public class MapUtility : ScriptableObject
                 return CountTilesInCircleSpan(span);
             case "ECircle":
                 return CountTilesInCircleSpan(span) - 1;
+            case "Ring":
+                return CountTilesInRingSpan(span);
             case "Line":
                 return CountTilesInLineSpan(span);
             case "Beam":
@@ -676,7 +725,14 @@ public class MapUtility : ScriptableObject
 
     protected int CountTilesInCircleSpan(int span)
     {
+        if (span < 1){return 1;}
         return 1 + (3 * span * (span + 1));
+    }
+
+    protected int CountTilesInRingSpan(int span)
+    {
+        if (span <= 1){return 1;}
+        return (CountTilesInCircleSpan(span) - CountTilesInCircleSpan(span - 1));
     }
 
     protected int CountTilesInLineSpan(int span)

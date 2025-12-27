@@ -7,7 +7,8 @@ public class MapPatternTester : MonoBehaviour
     public MapPatternLocations mapPatterns;
     public int mapSize;
     public int testSize;
-    public int testPattern;
+    public string testPattern;
+    public List<MapTile> mapTiles;
 
     [ContextMenu("Test Pattern")]
     public void TestPattern()
@@ -15,7 +16,7 @@ public class MapPatternTester : MonoBehaviour
         List<int> test = mapPatterns.ReturnTilesOfPattern(testPattern, testSize, mapSize);
         for (int i = 0; i < test.Count; i++)
         {
-            Debug.Log(test[i]);
+            mapTiles[test[i]].UpdateText(i.ToString());
         }
     }
 }

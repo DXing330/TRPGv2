@@ -142,7 +142,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.Save();
         battleState.UpdatePreviousScene();
         battleState.SetTerrainType();
-        battleState.ResetWeather();
+        battleState.ResetStats();
         battleState.UpdateEnemyNames();
         battleState.Save();
         if (SceneManager.GetActiveScene().name == dungeonSceneName)

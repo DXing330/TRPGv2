@@ -94,6 +94,39 @@ public class BattleState : SavedState
         }
         return overworldState.GetWeather();
     }
+    public string allySpawnPattern;
+    public void SetAllySpawnPattern(string newInfo = "Left"){allySpawnPattern = newInfo;}
+    public virtual string GetAllySpawnPattern(){return allySpawnPattern;}
+    public string enemySpawnPattern;
+    public void SetEnemySpawnPattern(string newInfo = "Right"){enemySpawnPattern = newInfo;}
+    public virtual string GetEnemySpawnPattern(){return enemySpawnPattern;}
+    public void ResetSpawnPatterns()
+    {
+        SetAllySpawnPattern();
+        SetEnemySpawnPattern();
+    }
+    public string alternateWinCondition;
+    public void SetAltWinCon(string newInfo = "")
+    {
+        alternateWinCondition = "";
+    }
+    public string alternateWinConditionSpecifics;
+    public void SetAltWinConSpecifics(string newInfo = "")
+    {
+        alternateWinConditionSpecifics = "";
+    }
+    public void SetNewAlternateWinCondition(string condition = "", string specifics = "")
+    {
+        alternateWinCondition = condition;
+        alternateWinConditionSpecifics = specifics;
+    }
+
+    public void ResetStats()
+    {
+        ResetWeather();
+        ResetSpawnPatterns();
+        SetNewAlternateWinCondition();
+    }
 
     public override void NewGame()
     {
@@ -121,6 +154,14 @@ public class BattleState : SavedState
         allData += String.Join(delimiterTwo, enemyBattleModifiers);
         allData += delimiter;
         allData += weather;
+        allData += delimiter;
+        allData += allySpawnPattern;
+        allData += delimiter;
+        allData += enemySpawnPattern;
+        allData += delimiter;
+        allData += alternateWinCondition;
+        allData += delimiter;
+        allData += alternateWinConditionSpecifics;
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
@@ -169,12 +210,16 @@ public class BattleState : SavedState
                 SetWeather(stat);
                 break;
             case 7:
+                SetAllySpawnPattern(stat);
                 break;
             case 8:
+                SetEnemySpawnPattern(stat);
                 break;
             case 9:
+                SetAltWinCon(stat);
                 break;
             case 10:
+                SetAltWinConSpecifics(stat);
                 break;
             case 11:
                 break;

@@ -7,6 +7,7 @@ using UnityEngine;
 public class Interactable : MonoBehaviour
 {
     public GeneralUtility utility;
+    public GameObject go;
     public string delimiter = "|";
     public bool activated = false;
     public string spriteName;
@@ -19,6 +20,23 @@ public class Interactable : MonoBehaviour
     public string trigger; // Attack / Move
     public List<string> conditions;
     public List<string> conditionSpecifics;
+    public void AddCondition(string condition, string specifics)
+    {
+        conditions.Add(condition);
+        conditionSpecifics.Add(specifics);
+    }
+    public void ForceCondition(string condition, string specifics)
+    {
+        conditions.Clear();
+        conditionSpecifics.Clear();
+        conditions.Add(condition);
+        conditionSpecifics.Add(specifics);
+    }
+    public void SetConditions(List<string> newC, List<string> newS)
+    {
+        conditions = newC;
+        conditionSpecifics = newS;
+    }
     public string target;
     public List<string> effects;
     public List<string> effectSpecifics;
@@ -121,14 +139,29 @@ public class Interactable : MonoBehaviour
         }
         return allStats;
     }
-    public void MoveTrigger()
+    public void MoveTrigger(BattleMap map, TacticActor triggerer)
     {
         if (trigger != "Move"){return;}
+        for (int i = 0; i < targetLocations.Count; i++)
+        {
+            // Check the conditions to activate.
+            if (CheckCondition(map, triggerer, i))
+            {
+                // If so then activate.
+                Activate(map, i);
+            }
+        }
+        if (activated)
+        {
+            map.combatLog.UpdateNewestLog(triggerer.GetPersonalName() + " triggered a " + GetSpriteName() + "!");
+            UpdateAfterActivation(map);
+        }
     }
     protected void RemoveInteractable(BattleMap map)
     {
         map.RemoveInteractable(this);
-        Destroy(this);
+        // Need to also destroy the gameobject?
+        Destroy(go);
     }
     public void AttackTrigger(BattleMap map, TacticActor triggerer)
     {
@@ -194,6 +227,7 @@ public class Interactable : MonoBehaviour
             map.ChangeTile(targetLocations[index], effects[state%effects.Count], effectSpecifics[state%effectSpecifics.Count], true);
             return;
             case "Actor":
+            map.passiveEffect.AffectActor(map.GetActorOnTile(targetLocations[index]), effects[state%effects.Count], effectSpecifics[state%effectSpecifics.Count], 1, map.combatLog);
             return;
         }
     }

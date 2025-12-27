@@ -14,17 +14,38 @@ public class MapPatternLocations : ScriptableObject
         return (((number+1)/2)*(sign));
     }
 
-    public List<int> ReturnTilesOfPattern(int pattern, int number, int mapSize)
+    public List<int> ReturnTilesOfPattern(string pattern, int number, int mapSize)
     {
         List<int> patternTiles = new List<int>();
         for (int i = 0; i < number; i++)
         {
-            patternTiles.Add(SingleSideSpawnPattern(pattern, i, mapSize));
+            switch (pattern)
+            {
+                default:
+                patternTiles.Add(SingleSideSpawnPattern(pattern, i, mapSize));
+                break;
+                case "Center":
+                patternTiles.Add(CenterSpawnPattern(i, mapSize));
+                break;
+                case "Outer":
+                patternTiles.Add(OuterSpawnPattern(i, mapSize));
+                break;
+            }
         }
         return patternTiles;
     }
 
-    protected int SingleSideSpawnPattern(int pattern, int index, int mapSize)
+    protected int CenterSpawnPattern(int index, int mapSize)
+    {
+        return mapUtility.SpiralOutward(index, mapSize);
+    }
+
+    protected int OuterSpawnPattern(int index, int mapSize)
+    {
+        return mapUtility.SpiralInward(index, mapSize);
+    }
+
+    protected int SingleSideSpawnPattern(string pattern, int index, int mapSize)
     {
         int row = -1;
         int column = -1;
@@ -32,7 +53,7 @@ public class MapPatternLocations : ScriptableObject
         switch (pattern)
         {
             // Right.
-            case 1:
+            case "Right":
                 column = mapSize - 1;
                 row = mapSize/2 + adjustment;
                 if (row < 0 || row >= mapSize)
@@ -40,13 +61,14 @@ public class MapPatternLocations : ScriptableObject
                     for (int i = 0; i < mapSize; i++)
                     {
                         column--;
-                        row = mapSize/2 + ReturnOscillatingFromMiddle(index - mapSize);
+                        index -= mapSize;
+                        row = mapSize/2 + ReturnOscillatingFromMiddle(index);
                         if (row >= 0 && row < mapSize){break;}
                     }
                 }
                 break;
             // Left.
-            case 3:
+            case "Left":
                 column = 0;
                 row = mapSize/2 + adjustment;
                 if (row < 0 || row >= mapSize)
@@ -54,13 +76,14 @@ public class MapPatternLocations : ScriptableObject
                     for (int i = 0; i < mapSize; i++)
                     {
                         column++;
-                        row = mapSize/2 + ReturnOscillatingFromMiddle(index - mapSize);
+                        index -= mapSize;
+                        row = mapSize/2 + ReturnOscillatingFromMiddle(index);
                         if (row >= 0 && row < mapSize){break;}
                     }
                 }
                 break;
             // Up.
-            case 0:
+            case "Top":
                 row = 0;
                 column = mapSize/2 + adjustment;
                 if (column < 0 || column >= mapSize)
@@ -68,13 +91,14 @@ public class MapPatternLocations : ScriptableObject
                     for (int i = 0; i < mapSize; i++)
                     {
                         row++;
-                        column = mapSize/2 + ReturnOscillatingFromMiddle(index - mapSize);
+                        index -= mapSize;
+                        column = mapSize/2 + ReturnOscillatingFromMiddle(index);
                         if (column >= 0 && column < mapSize){break;}
                     }
                 }
                 break;
             // Down.
-            case 2:
+            case "Bot":
                 row = mapSize - 1;
                 column = mapSize/2 + adjustment;
                 if (column < 0 || column >= mapSize)
@@ -82,7 +106,8 @@ public class MapPatternLocations : ScriptableObject
                     for (int i = 0; i < mapSize; i++)
                     {
                         row--;
-                        column = mapSize/2 + ReturnOscillatingFromMiddle(index - mapSize);
+                        index -= mapSize;
+                        column = mapSize/2 + ReturnOscillatingFromMiddle(index);
                         if (column >= 0 && column < mapSize){break;}
                     }
                 }

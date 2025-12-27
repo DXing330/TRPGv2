@@ -39,8 +39,17 @@ public class MapTile : MonoBehaviour
     public List<Image> layers;
     public List<GameObject> directionObjects;
     public TMP_Text tileText;
+    public GameObject textObject;
 
-    public void UpdateText(string newText = ""){tileText.text = newText;}
+    public void UpdateText(string newText = "")
+    {
+        if (newText == "")
+        {
+            textObject.SetActive(false);
+        }
+        textObject.SetActive(true);
+        tileText.text = newText;
+    }
 
     public void DisableLayers()
     {
@@ -90,9 +99,12 @@ public class MapTile : MonoBehaviour
 
     public void UpdateLayerSprite(Sprite newSprite, int layer = 0)
     {
-        //if (newSprite == null || layers[layer].sprite == null) // Not sure why it was like this or if removing it will make a difference.
-        if (newSprite == null) { return; }
         if (layer < 0 || layer > layers.Count) { return; }
+        if (newSprite == null)
+        {
+            layerObjects[layer].SetActive(false);
+            return;
+        }
         layerObjects[layer].SetActive(true);
         layers[layer].sprite = newSprite;
     }

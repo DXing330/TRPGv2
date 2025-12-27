@@ -99,11 +99,11 @@ public class BattleManager : MonoBehaviour
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(3, 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
+        actors = actorMaker.SpawnTeamInPattern(battleState.GetAllySpawnPattern(), 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
         actorMaker.ApplyBattleModifiers(actors, playerParty.GetBattleModifiers());
         for (int i = 0; i < Mathf.Min(partySizeCap, actors.Count); i++) { map.AddActorToBattle(actors[i]); }
         actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(1, 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
+        actors = actorMaker.SpawnTeamInPattern(battleState.GetEnemySpawnPattern(), 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
         actorMaker.ApplyBattleModifiers(actors, enemyParty.GetBattleModifiers());
         for (int i = 0; i < Mathf.Min(partySizeCap, actors.Count); i++) { map.AddActorToBattle(actors[i]); }
         // Apply relics/ascension/etc. battle modifier effects here.
@@ -133,9 +133,9 @@ public class BattleManager : MonoBehaviour
         else
         {
             // Update the UI so that you can start the battle after you finish setting positions.
-            map.RandomEnemyStartingPositions();
+            map.RandomEnemyStartingPositions(battleState.GetEnemySpawnPattern());
             UI.AdjustStartingPositions();
-            map.UpdateStartingPositionTiles();
+            map.UpdateStartingPositionTiles(battleState.GetAllySpawnPattern());
         }
     }
     public void FinishSettingStartingPositions()
@@ -386,7 +386,7 @@ public class BattleManager : MonoBehaviour
     protected void AdjustStartingPosition(int tileNumber)
     {
         // Can only set the actors in the first few columns.
-        if (!map.ValidStartingTile(tileNumber))
+        if (!map.ValidStartingTile(battleState.GetAllySpawnPattern(), tileNumber))
         {
             return;
         }
@@ -411,7 +411,7 @@ public class BattleManager : MonoBehaviour
         if (setStartingPositions)
         {
             AdjustStartingPosition(tileNumber);
-            map.UpdateStartingPositionTiles(prevStartingPosition);
+            map.UpdateStartingPositionTiles(battleState.GetAllySpawnPattern(), prevStartingPosition);
             return;
         }
         if (!interactable){return;}

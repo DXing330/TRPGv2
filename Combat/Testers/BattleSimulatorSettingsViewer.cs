@@ -31,6 +31,7 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
         UpdateSelectedTime();
         UpdateSelectedP1BattleMods();
         UpdateSelectedP2BattleMods();
+        UpdateSelectedFormations();
     }
     public TMP_Text multiBattleEnabledText;
     public TMP_Text multiBattleCountText;
@@ -188,5 +189,30 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
         int page = p2BattleModSelect.GetPage();
         p2BattleModSelect.SetStatsAndData(all, active);
         p2BattleModSelect.SetPage(page);
+    }
+    public SelectStatTextList formationSelect;
+    public void SelectFormation()
+    {
+        simulatorState.SelectFormation(formationSelect.GetSelectedStat());
+        UpdateViewer();
+    }
+    public void UpdateSelectedFormations()
+    {
+        List<string> all = new List<string>(simulatorState.allStartingFormations);
+        List<string> active = new List<string>();
+        for (int i = 0; i < all.Count; i++)
+        {
+            if (simulatorState.selectedStartingFormations.Contains(all[i]))
+            {
+                active.Add("Enabled");
+            }
+            else
+            {
+                active.Add("Not Enabled");
+            }
+        }
+        int page = formationSelect.GetPage();
+        formationSelect.SetStatsAndData(all, active);
+        formationSelect.SetPage(page);
     }
 }
