@@ -24,6 +24,7 @@ public class EffectManager : MonoBehaviour
     {
         weather.LoadWeather(weatherData.ReturnValue(map.GetWeather()));
         weather.ApplyEffects(actor, "Start");
+        map.ApplyStartTerrainEffect(actor);
         passive.ApplyPassives(actor, passiveData, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
         status.ApplyBuffEffects(actor, statusData, "Start");

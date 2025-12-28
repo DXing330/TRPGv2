@@ -94,6 +94,24 @@ public class BattleState : SavedState
         }
         return overworldState.GetWeather();
     }
+    public List<string> allStartingFormations;
+    public string spawnPattern;
+    public void SetStartingFormation(string newInfo)
+    {
+        spawnPattern = newInfo;
+        int indexOf = allStartingFormations.IndexOf(spawnPattern);
+        if (indexOf < 0)
+        {
+            ResetSpawnPatterns();
+        }
+        else
+        {
+            SetAllySpawnPattern(p1StartingFormations[indexOf]);
+            SetEnemySpawnPattern(p2StartingFormations[indexOf]);
+        }
+    }
+    public List<string> p1StartingFormations;
+    public List<string> p2StartingFormations;
     public string allySpawnPattern;
     public void SetAllySpawnPattern(string newInfo = "Left"){allySpawnPattern = newInfo;}
     public virtual string GetAllySpawnPattern(){return allySpawnPattern;}

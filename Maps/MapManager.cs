@@ -12,6 +12,22 @@ public class MapManager : MonoBehaviour
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
+    [ContextMenu("Reset Text")]
+    public void ResetText()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].UpdateText();
+        }
+    }
+    [ContextMenu("Show Tile Numbers")]
+    public void ShowTileNumbers()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].UpdateText(i.ToString());
+        }
+    }
     public bool showElevationSprite = false;
     public StatDatabase tileElevationMappings;
     public SpriteContainer elevationSprites;
@@ -199,6 +215,39 @@ public class MapManager : MonoBehaviour
             mapInfo = mapMaker.AddFeature(mapInfo, fPSplit[0], fPSplit[1]);
         }
         UpdateMap();
+    }
+
+    public List<int> AllConnectedTilesOfSameType(int tileNumber)
+    {
+        List<int> connected = new List<int>();
+        if (mapInfo[tileNumber] == "")
+        {
+            return connected;
+        }
+        string tileType = mapInfo[tileNumber];
+        List<int> viewedTiles = new List<int>();
+        List<int> queuedTiles = new List<int>();
+        viewedTiles.Add(tileNumber);
+        connected.Add(tileNumber);
+        queuedTiles.Add(tileNumber);
+        while (queuedTiles.Count > 0)
+        {
+            int currentTile = queuedTiles[0];
+            List<int> adjacentTiles = mapUtility.AdjacentTiles(currentTile, mapSize);
+            for (int i = 0; i < adjacentTiles.Count; i++)
+            {
+                // Only look at new tiles.
+                if (viewedTiles.Contains(adjacentTiles[i])){continue;}
+                viewedTiles.Add(adjacentTiles[i]);
+                if (mapInfo[adjacentTiles[i]] == tileType)
+                {
+                    connected.Add(adjacentTiles[i]);
+                    queuedTiles.Add(adjacentTiles[i]);
+                }
+            }
+            queuedTiles.RemoveAt(0);
+        }
+        return connected;
     }
 
     // Probably never use this. Moving the map should happen automatically as the player icon moves.

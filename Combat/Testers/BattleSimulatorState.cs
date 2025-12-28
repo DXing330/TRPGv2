@@ -109,9 +109,6 @@ public class BattleSimulatorState : BattleState
         }
         return selectedTime;
     }
-    public List<string> allStartingFormations;
-    public List<string> p1StartingFormations;
-    public List<string> p2StartingFormations;
     public List<string> selectedStartingFormations;
     public string selectedStartingFormation;
     public void GetStartingFormation()

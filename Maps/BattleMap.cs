@@ -63,11 +63,10 @@ public class BattleMap : MapManager
         }
         return "";
     }
-    public StatDatabase terrainEffectData;
+    public TerrainPassivesList terrainEffectData;
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
     public StatDatabase tileWeatherInteractions;
-    public StatDatabase passiveData;
     public PassiveSkill passiveEffect;
     [ContextMenu("ForceStart")]
     public void ForceStart()
@@ -402,23 +401,36 @@ public class BattleMap : MapManager
         }
         UpdateMap();
     }
+    protected void NewTileElevation(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= mapElevations.Count){return;}
+        mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
+        mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
+        battleManager.moveManager.SetMapElevations(mapElevations);
+        UpdateMap();
+    }
+    // TESTED IN BATTLEMAP TESTER.
     public void ChangeTerrain(int tileNumber, string change, bool force = false)
     {
         if (mapInfo[tileNumber] == change){return;}
         if (force)
         {
             mapInfo[tileNumber] = change;
+            NewTileElevation(tileNumber);
             return;
         }
         string t_t = mapInfo[tileNumber] + "-" + change;
         string newInfo = tileTileInteractions.ReturnValue(t_t);
-        if (newInfo == ""){return;}
-        mapInfo[tileNumber] = newInfo;
+        if (newInfo == "")
+        {
+            mapInfo[tileNumber] = change;
+        }
+        else
+        {
+            mapInfo[tileNumber] = newInfo;
+        }
         // Update the elevation.
-        mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
-        mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
-        battleManager.moveManager.SetMapElevations(mapElevations);
-        UpdateMap();
+        NewTileElevation(tileNumber);
     }
     public StatDatabase terrainTerrainInteractions;
     public List<string> terrainEffectTiles;
@@ -448,7 +460,15 @@ public class BattleMap : MapManager
         else
         {
             string t_t = terrainEffectTiles[tileNumber] + "-" + newEffect;
-            terrainEffectTiles[tileNumber] = terrainTerrainInteractions.ReturnValue(t_t);
+            string newValue = terrainTerrainInteractions.ReturnValue(t_t);
+            if (newValue == "")
+            {
+                terrainEffectTiles[tileNumber] = newEffect;
+            }
+            else
+            {
+                terrainEffectTiles[tileNumber] = newValue;
+            }
         }
         UpdateMap();
     }
@@ -478,27 +498,51 @@ public class BattleMap : MapManager
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
         ChangeTEffect(adjacent[UnityEngine.Random.Range(0, adjacent.Count)], tEffect);
     }
+    public List<int> AllConnectedTerrain(int tileNumber)
+    {
+        List<int> connected = new List<int>();
+        if (terrainEffectTiles[tileNumber] == "")
+        {
+            return connected;
+        }
+        string tEffect = terrainEffectTiles[tileNumber];
+        List<int> viewedTiles = new List<int>();
+        List<int> queuedTiles = new List<int>();
+        viewedTiles.Add(tileNumber);
+        connected.Add(tileNumber);
+        queuedTiles.Add(tileNumber);
+        while (queuedTiles.Count > 0)
+        {
+            int currentTile = queuedTiles[0];
+            List<int> adjacentTiles = mapUtility.AdjacentTiles(currentTile, mapSize);
+            for (int i = 0; i < adjacentTiles.Count; i++)
+            {
+                // Only look at new tiles.
+                if (viewedTiles.Contains(adjacentTiles[i])){continue;}
+                viewedTiles.Add(adjacentTiles[i]);
+                if (terrainEffectTiles[adjacentTiles[i]] == tEffect)
+                {
+                    connected.Add(adjacentTiles[i]);
+                    queuedTiles.Add(adjacentTiles[i]);
+                }
+            }
+            queuedTiles.RemoveAt(0);
+        }
+        return connected;
+    }
     public void ChainSpreadTerrainEffect(int tileNumber, string sTEffect = "")
     {
         string tEffect = terrainEffectTiles[tileNumber];
-        if (tEffect == ""){return;}
-        if (sTEffect != "" && tEffect != sTEffect){return;}
-        List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
-        List<int> chainSpread = new List<int>();
-        for (int i = 0; i < adjacent.Count; i++)
+        if (tEffect != sTEffect){return;}
+        // Get all connected tiles of the same teffect.
+        List<int> connected = AllConnectedTerrain(tileNumber);
+        if (connected.Count <= 0){return;}
+        // Get all borders to the connected tiles.
+        List<int> borders = mapUtility.AdjacentBorders(connected, mapSize);
+        // Try to spread to all the border tiles.
+        for (int i = 0; i < borders.Count; i++)
         {
-            if (terrainEffectTiles[adjacent[i]] == tEffect)
-            {
-                chainSpread.Add(adjacent[i]);
-            }
-            else
-            {
-                ChangeTEffect(adjacent[i], tEffect);
-            }
-        }
-        for (int i = 0; i < chainSpread.Count; i++)
-        {
-            SpreadTerrainEffect(chainSpread[i], sTEffect);
+            ChangeTEffect(borders[i], sTEffect);
         }
     }
     protected void UpdateTerrain()
@@ -1123,7 +1167,7 @@ public class BattleMap : MapManager
     public bool ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
         ApplyTileMovingEffect(actor, tileNumber);
-        ApplyTerrainEffect(actor, tileNumber);
+        ApplyTerrainMovingEffect(actor, tileNumber);
         ApplyInteractableEffect(actor, tileNumber);
         return false;
         //return ApplyTrapEffect(actor, tileNumber);
@@ -1140,14 +1184,18 @@ public class BattleMap : MapManager
         }
     }
 
-    protected void ApplyTerrainEffect(TacticActor actor, int tileNumber)
+    protected void ApplyTerrainMovingEffect(TacticActor actor, int tileNumber)
     {
         // Get the terrain info.
         string terrainEffect = terrainEffectTiles[tileNumber];
         if (terrainEffect.Length < 1) { return; }
         // Apply the terrain effect.
-        List<string> data = terrainEffectData.ReturnStats(terrainEffect);
-        passiveEffect.AffectActor(actor, data[0], data[1]);
+        string[] tMovingEffect = terrainEffectData.ReturnMovingPassive(terrainEffect).Split("|");
+        if (tMovingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
+        }
     }
 
     protected void ApplyInteractableEffect(TacticActor actor, int tileNumber)
@@ -1160,13 +1208,28 @@ public class BattleMap : MapManager
         }
     }
 
+    public void ApplyStartTerrainEffect(TacticActor actor)
+    {
+        string terrainEffect = terrainEffectTiles[actor.GetLocation()];
+        if (terrainEffect.Length < 1) { return; }
+        string[] tMovingEffect = terrainEffectData.ReturnStartPassive(terrainEffect).Split("|");
+        if (tMovingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
+        }
+    }
+
     public void ApplyEndTerrainEffect(TacticActor actor)
     {
         string terrainEffect = terrainEffectTiles[actor.GetLocation()];
         if (terrainEffect.Length < 1) { return; }
-        List<string> data = terrainEffectData.ReturnStats(terrainEffect);
-        if (data.Count < 4) { return; }
-        passiveEffect.AffectActor(actor, data[2], data[3]);
+        string[] tMovingEffect = terrainEffectData.ReturnEndPassive(terrainEffect).Split("|");
+        if (tMovingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
+        }
     }
 
     public void NextRound()

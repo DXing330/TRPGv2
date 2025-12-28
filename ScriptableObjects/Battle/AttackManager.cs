@@ -9,23 +9,32 @@ public class AttackManager : ScriptableObject
     public PassiveSkill passive;
     public StatDatabase passiveData;
     public TerrainPassivesList terrainPassives;
+    public TerrainPassivesList tEffectPassives;
     public int stabMultiplier = 150;
     public int baseMultiplier;
     protected string damageRolls;
     protected string passiveEffectString;
     protected string finalDamageCalculation;
+    // Based on attacker/defender.
     protected int advantage;
     protected int baseDamage;
     protected int damageMultiplier;
+    // Based on defender.
+    protected int dodgeChance;
+    // Based on attacker.
+    protected int hitChance;
+    protected int critDamage;
+    protected int critChance;
 
     public bool RollToHit(TacticActor attacker, TacticActor defender, BattleMap map, bool showLog = true)
     {
         int hitRoll = Random.Range(0, 100);
-        if (hitRoll >= (attacker.GetHitChance() - defender.GetDodgeChance()))
+        if (hitRoll >= (hitChance - dodgeChance))
         {
             if (showLog)
             {
                 map.combatLog.UpdateNewestLog("The attack misses!");
+                map.combatLog.AddDetailedLogs(passiveEffectString);
             }
             return false;
         }
@@ -77,13 +86,13 @@ public class AttackManager : ScriptableObject
     public int CritRoll(TacticActor attacker, int damage, bool showLog = true)
     {
         int critRoll = Random.Range(0, 100);
-        if (critRoll < attacker.GetCritChance())
+        if (critRoll < critChance)
         {
             if (showLog)
             {
-                finalDamageCalculation += "CRITICAL HIT: " + damage + " * " + attacker.GetCritDamage() + "% = ";
+                finalDamageCalculation += "CRITICAL HIT: " + damage + " * " + critDamage + "% = ";
             }
-            damage = damage * attacker.GetCritDamage() / baseMultiplier;
+            damage = damage * critDamage / baseMultiplier;
             if (showLog)
             {
                 finalDamageCalculation += damage + "\n";
@@ -128,24 +137,43 @@ public class AttackManager : ScriptableObject
     public void FlatDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        UpdateBattleStats(attacker, defender);
+        // Only the defender gets passive bonuses(?) from tile/teffects
+        CheckTerrainPassives(defender, attacker, map, moveManager, false, true);
+        CheckTEffectPassives(defender, attacker, map, moveManager, false, true);
         if (!RollToHit(attacker, defender, map)){return;}
         advantage = 0;
         damageMultiplier = baseMultiplier;
+        damageRolls = "Damage Rolls: ";
+        passiveEffectString = "Applied Passives: ";
+        finalDamageCalculation = "";
         baseDamage = damage;
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
+        baseDamage = Advantage(baseDamage, advantage);
+        finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
         baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
+        finalDamageCalculation += baseDamage;
         if (damageMultiplier < 0) { damageMultiplier = 0; }
-        baseDamage = damageMultiplier * baseDamage / baseMultiplier;defender.TakeDamage(baseDamage);
+        finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
+        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
+        finalDamageCalculation += baseDamage;
+        defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        map.combatLog.AddDetailedLogs(passiveEffectString);
+        map.combatLog.AddDetailedLogs(damageRolls);
+        map.combatLog.AddDetailedLogs(finalDamageCalculation);
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
     }
 
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
     {
+        UpdateBattleStats(attacker, defender);
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
         // True damage ignores defender/terrain passives, making it even stronger than it should be.
+        CheckTerrainPassives(defender, attacker, map, moveManager, true, false);
+        CheckTEffectPassives(defender, attacker, map, moveManager, true, false);
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
         baseDamage = attacker.GetAttack();
         switch (type)
@@ -169,21 +197,31 @@ public class AttackManager : ScriptableObject
         baseDamage = defender.TakeDamage(baseDamage, "True");
 
     }
+    protected void UpdateBattleStats(TacticActor attacker, TacticActor defender)
+    {
+        dodgeChance = defender.GetDodgeChance();
+        hitChance = attacker.GetHitChance();
+        critChance = attacker.GetCritChance();
+        critDamage = attacker.GetCritDamage();
+    }
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Physical")
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        UpdateBattleStats(attacker, defender);
+        damageRolls = "Damage Rolls: ";
+        passiveEffectString = "Applied Passives: ";
+        finalDamageCalculation = "";
+        // These affect the battle including if you hit/miss.
+        CheckTerrainPassives(defender, attacker, map, moveManager);
+        CheckTEffectPassives(defender, attacker, map, moveManager);
         // Determine if you miss or not.
         if (!RollToHit(attacker, defender, map)){return;}
         // Attacking decreases your initative.
         attacker.UpdateTempInitiative(-1);
         advantage = 0;
-        damageRolls = "Damage Rolls: ";
-        passiveEffectString = "Applied Passives: ";
-        finalDamageCalculation = "";
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
         baseDamage = attacker.GetAttack();
-        CheckTerrainPassives(defender, attacker, map, moveManager);
         // Bonus damage can be calculated here.
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
         CheckPassives(defender.GetDefendingPassives(), defender, attacker, map, moveManager);
@@ -301,6 +339,30 @@ public class AttackManager : ScriptableObject
                 baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
                 passiveEffectString += baseDamage;
                 break;
+                case "HitChance":
+                passiveEffectString += "\n";
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+hitChance+"->";
+                hitChance = passive.AffectInt(hitChance, passiveStats[4], passiveStats[5]);
+                passiveEffectString += hitChance;
+                break;
+                case "Dodge":
+                passiveEffectString += "\n";
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+dodgeChance+"->";
+                dodgeChance = passive.AffectInt(dodgeChance, passiveStats[4], passiveStats[5]);
+                passiveEffectString += dodgeChance;
+                break;
+                case "CritChance":
+                passiveEffectString += "\n";
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+critChance+"->";
+                critChance = passive.AffectInt(critChance, passiveStats[4], passiveStats[5]);
+                passiveEffectString += critChance;
+                break;
+                case "CritDamage":
+                passiveEffectString += "\n";
+                passiveEffectString += passiveName+";"+passiveStats[3]+":"+critDamage+"->";
+                critDamage = passive.AffectInt(critDamage, passiveStats[4], passiveStats[5]);
+                passiveEffectString += critDamage;
+                break;
                 case "Target":
                 passive.AffectActor(target, passiveStats[4], passiveStats[5]);
                 break;
@@ -336,14 +398,30 @@ public class AttackManager : ScriptableObject
         return damage;
     }
 
-    protected void CheckTerrainPassives(TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    protected void CheckTEffectPassives(TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager, bool forAttacker = true, bool forTarget = true)
+    {
+        string targetTile = map.terrainEffectTiles[target.GetLocation()];
+        string attackingTile = map.terrainEffectTiles[attacker.GetLocation()];
+        string defendingPassive = tEffectPassives.ReturnDefendingPassive(targetTile);
+        if (defendingPassive.Length > 1 && forTarget)
+        {
+            ApplyPassiveEffect(defendingPassive, target, attacker, map, moveManager);
+        }
+        string attackingPassive = tEffectPassives.ReturnAttackingPassive(attackingTile);
+        if (attackingPassive.Length > 1 && forAttacker)
+        {
+            ApplyPassiveEffect(attackingPassive, target, attacker, map, moveManager);
+        }
+    }
+
+    protected void CheckTerrainPassives(TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager, bool forAttacker = true, bool forTarget = true)
     {
         string targetTile = map.mapInfo[target.GetLocation()];
         string attackingTile = map.mapInfo[attacker.GetLocation()];
         if (terrainPassives.TerrainPassivesExist(targetTile))
         {
             string defendingPassive = terrainPassives.ReturnDefendingPassive(targetTile);
-            if (defendingPassive.Length > 1)
+            if (defendingPassive.Length > 1 && forTarget)
             {
                 ApplyPassiveEffect(defendingPassive, target, attacker, map, moveManager);
             }
@@ -351,7 +429,7 @@ public class AttackManager : ScriptableObject
         if (terrainPassives.TerrainPassivesExist(attackingTile))
         {
             string attackingPassive = terrainPassives.ReturnAttackingPassive(attackingTile);
-            if (attackingPassive.Length > 1)
+            if (attackingPassive.Length > 1 && forAttacker)
             {
                 ApplyPassiveEffect(attackingPassive, target, attacker, map, moveManager);
             }

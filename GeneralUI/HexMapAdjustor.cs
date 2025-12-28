@@ -73,7 +73,8 @@ public class HexMapAdjustor : MonoBehaviour
                 }
                 if (showText)
                 {
-                    mapTiles[tileIndex].UpdateText("("+mapUtility.GetHexQ(tileIndex, gridSize)+","+mapUtility.GetHexR(tileIndex, gridSize)+","+mapUtility.GetHexS(tileIndex, gridSize)+")");
+                    //mapTiles[tileIndex].UpdateText("("+mapUtility.GetHexQ(tileIndex, gridSize)+","+mapUtility.GetHexR(tileIndex, gridSize)+","+mapUtility.GetHexS(tileIndex, gridSize)+")");
+                    mapTiles[tileIndex].UpdateText(tileIndex.ToString());
                 }
                 //mapTiles[tileIndex].UpdateText("("+mapUtility.GetRow(tileIndex, gridSize)+","+mapUtility.GetColumn(tileIndex, gridSize)+")");
                 // Move right every step.

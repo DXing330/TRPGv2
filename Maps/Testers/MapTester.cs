@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -152,5 +153,13 @@ public class MapTester : MapManager
             }
         }
         return tile;
+    }
+
+    public int connectedStartPoint;
+    [ContextMenu("Test Connected")]
+    public void DebugConnectedSameTiles()
+    {
+        List<int> connectedTiles = AllConnectedTilesOfSameType(connectedStartPoint);
+        Debug.Log(String.Join(",", connectedTiles));
     }
 }

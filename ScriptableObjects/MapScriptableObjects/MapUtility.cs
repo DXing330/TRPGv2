@@ -516,24 +516,24 @@ public class MapUtility : ScriptableObject
         return adjacent;
     }
 
-    public List<int> AdjacentBorders(List<int> locations, int size)
+    public List<int> AdjacentBorders(List<int> locations, int mapSize)
     {
         List<int> adjacent = new List<int>();
         for (int i = 0; i < locations.Count; i++)
         {
-            adjacent.AddRange(AdjacentTiles(locations[i], size));
+            adjacent.AddRange(AdjacentTiles(locations[i], mapSize));
         }
         adjacent = adjacent.Distinct().ToList();
         adjacent = adjacent.Except(locations).ToList();
         return adjacent;
     }
 
-    public List<int> BorderTileSet(List<int> fullTileSet, int size)
+    public List<int> BorderTileSet(List<int> fullTileSet, int mapSize)
     {
         List<int> borders = new List<int>();
         for (int i = 0; i < fullTileSet.Count; i++)
         {
-            if (!utility.IntListContainsIntList(fullTileSet, AdjacentTiles(fullTileSet[i], size)))
+            if (!utility.IntListContainsIntList(fullTileSet, AdjacentTiles(fullTileSet[i], mapSize)))
             {
                 borders.Add(fullTileSet[i]);
             }

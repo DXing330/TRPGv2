@@ -38,6 +38,18 @@ public class MapTile : MonoBehaviour
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
     public List<GameObject> directionObjects;
+    public List<string> borderDetails;
+    public void ResetBorders()
+    {
+        borderDetails.Clear();
+        for (int i = 0; i < borderObjects.Count; i++)
+        {
+            borderObjects[i].SetActive(false);
+            borderDetails.Add("");
+        }
+    }
+    public List<GameObject> borderObjects;
+    public List<Image> borderImages;
     public TMP_Text tileText;
     public GameObject textObject;
 
