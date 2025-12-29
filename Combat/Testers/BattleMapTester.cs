@@ -55,6 +55,22 @@ public class BattleMapTester : MonoBehaviour
                 Debug.Log("Expected = " + t_t[1] + " / Actual = " + actualResult);
                 allPass = false;
             }
+            else if (result.Contains("ChainReplace"))
+            {
+                string[] cRS = result.Split("=");
+                if (cRS.Length < 2 && actualResult != t_t[1])
+                {
+                    Debug.Log(possibleChanges[i] + " failed.");
+                    Debug.Log("Expected = " + t_t[1] + " / Actual = " + actualResult);
+                    allPass = false;
+                }
+                else if (cRS.Length >= 2 && actualResult != cRS[1])
+                {
+                    Debug.Log(possibleChanges[i] + " failed.");
+                    Debug.Log("Expected = " + cRS[1] + " / Actual = " + actualResult);
+                    allPass = false;
+                }
+            }
             else if (result != "" && actualResult != result)
             {
                 Debug.Log(possibleChanges[i] + " failed.");
@@ -63,5 +79,20 @@ public class BattleMapTester : MonoBehaviour
             }
         }
         Debug.Log(allPass);
+    }
+    public List<int> testTEffectTiles;
+    public int changedTEffectTile;
+    public string startingTEffect;
+    public string changedTEffect;
+    [ContextMenu("Test TEffect Change")]
+    public void TestTEffectChange()
+    {
+        testMap.ForceStart();
+        for (int i = 0; i < testTEffectTiles.Count; i++)
+        {
+            testMap.ChangeTEffect(testTEffectTiles[i], startingTEffect, true);
+        }
+        testMap.ChangeTEffect(changedTEffectTile, changedTEffect);
+        testMap.UpdateMap();
     }
 }

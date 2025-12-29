@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class FactionMap : MapManager
 {
+    public string outputDelimiter = "&";
     public MapPathfinder pathfinder;
     public ColorDictionary colorDictionary;
     public FactionMapData mapData;
@@ -290,7 +291,7 @@ public class FactionMap : MapManager
     protected List<string> tileOutputs; // Fight over tiles with good outputs.
     public bool OutputOnTile(int tile, string output)
     {
-        string[] tOutput = ReturnTileOutput(tile).Split("+");
+        string[] tOutput = ReturnTileOutput(tile).Split(outputDelimiter);
         return tOutput.Contains(output);
     }
     public int ReturnClosestTileWithOutput(int start, string output)
@@ -301,7 +302,7 @@ public class FactionMap : MapManager
         for (int i = 0; i < tileOutputs.Count; i++)
         {
             if (ReturnTileOutput(i) == ""){continue;}
-            string[] outputs = ReturnTileOutput(i).Split("+");
+            string[] outputs = ReturnTileOutput(i).Split(outputDelimiter);
             if (outputs.Contains(output))
             {
                 int newDist = mapUtility.DistanceBetweenTiles(start, i, mapSize);
@@ -322,7 +323,7 @@ public class FactionMap : MapManager
         {
             // Skip tiles without output.
             if (ReturnTileOutput(tileList[i]) == ""){continue;}
-            string[] outputs = ReturnTileOutput(tileList[i]).Split("+");
+            string[] outputs = ReturnTileOutput(tileList[i]).Split(outputDelimiter);
             if (outputs.Length > output)
             {
                 output = outputs.Length;
@@ -334,8 +335,8 @@ public class FactionMap : MapManager
     public void RefreshTileOutput(int tileNumber, bool save = true)
     {
         string newOutputs = "";
-        newOutputs += baseOutputs.ReturnValue(mapInfo[tileNumber]) + "+";
-        newOutputs += luxuryOutputs.ReturnValue(luxuryTiles[tileNumber]) + "+";
+        newOutputs += baseOutputs.ReturnValue(mapInfo[tileNumber]) + outputDelimiter;
+        newOutputs += luxuryOutputs.ReturnValue(luxuryTiles[tileNumber]) + outputDelimiter;
         newOutputs += buildingOutputs.ReturnValue(tileBuildings[tileNumber]);
         tileOutputs[tileNumber] = newOutputs;
         if (buildingOutputs.ReturnValue(tileBuildings[tileNumber]).Contains("Remove"))

@@ -6,11 +6,23 @@ using TMPro;
 
 public class CombatLog : MonoBehaviour
 {
+    public void ForceStart()
+    {
+        combatRoundTracker.Clear();
+        combatTurnTracker.Clear();
+        allLogs.Clear();
+        currentLogs.Clear();
+        detailKeys.Clear();
+        detailedLogs.Clear();
+    }
     void Start()
     {
         combatRoundTracker.Clear();
         combatTurnTracker.Clear();
         allLogs.Clear();
+        currentLogs.Clear();
+        detailKeys.Clear();
+        detailedLogs.Clear();
     }
     public BattleManager battleManager;
     public GeneralUtility utility;
@@ -84,6 +96,10 @@ public class CombatLog : MonoBehaviour
     public List<string> currentLogs;
     public List<string> detailKeys;
     public List<string> detailedLogs;
+    public void DebugLatestDetailsLog()
+    {
+        Debug.Log(detailedLogs[detailedLogs.Count - 1]);
+    }
     public void AddDetailedLogs(string newDetail)
     {
         string key = GetLatestRound()+"|"+GetLatestTurn()+"|"+GetLatestLogCount();

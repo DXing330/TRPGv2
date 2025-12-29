@@ -9,6 +9,25 @@ public class BattleMap : MapManager
 {
     public MapPatternLocations mapPatterns;
     public string weather;
+    public TerrainPassivesList weatherPassives;
+    public void ApplyWeatherStartEffect(TacticActor actor)
+    {
+        string[] data = weatherPassives.ReturnStartPassive(weather).Split("|");
+        if (data.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, data[1], data[2], this))
+        {
+            passiveEffect.AffectActor(actor, data[4], data[5]);
+        }
+    }
+    public void ApplyWeatherEndEffect(TacticActor actor)
+    {
+        string[] data = weatherPassives.ReturnEndPassive(weather).Split("|");
+        if (data.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, data[1], data[2], this))
+        {
+            passiveEffect.AffectActor(actor, data[4], data[5]);
+        }
+    }
     public WeatherFilter weatherFilter;
     public void SetWeather(string newInfo)
     {
@@ -45,6 +64,16 @@ public class BattleMap : MapManager
         }
         return "";
     }
+    public void ApplyTileStartEffect(TacticActor actor)
+    {
+        string terrainType = mapInfo[actor.GetLocation()];
+        string[] data = terrainPassives.ReturnStartPassive(terrainType).Split("|");
+        if (data.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, data[1], data[2], this))
+        {
+            passiveEffect.AffectActor(actor, data[4], data[5]);
+        }
+    }
     public string ReturnTerrainEndPassive(TacticActor actor)
     {
         string terrainType = mapInfo[actor.GetLocation()];
@@ -53,6 +82,16 @@ public class BattleMap : MapManager
             return terrainPassives.ReturnEndPassive(terrainType);
         }
         return "";
+    }
+    public void ApplyTileEndEffect(TacticActor actor)
+    {
+        string terrainType = mapInfo[actor.GetLocation()];
+        string[] data = terrainPassives.ReturnEndPassive(terrainType).Split("|");
+        if (data.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, data[1], data[2], this))
+        {
+            passiveEffect.AffectActor(actor, data[4], data[5]);
+        }
     }
     public string ReturnTileMovingPassive(TacticActor actor)
     {
@@ -164,26 +203,35 @@ public class BattleMap : MapManager
         return startingTiles.Contains(tileNumber);
     }
     public List<string> excludedStartingTiles;
+    public void RandomAllyStartingPositions(string pattern)
+    {
+        List<TacticActor> team = AllTeamMembers(0);
+        for (int i = 0; i < team.Count; i++)
+        {
+            team[i].SetLocation(RandomStartingTile(pattern));
+        }
+        UpdateMap();
+    }
     public void RandomEnemyStartingPositions(string pattern)
     {
         List<TacticActor> enemyTeam = AllTeamMembers(1);
         for (int i = 0; i < enemyTeam.Count; i++)
         {
-            enemyTeam[i].SetLocation(RandomEnemyStartingTile(pattern));
+            enemyTeam[i].SetLocation(RandomStartingTile(pattern));
         }
         UpdateMap();
     }
-    protected int RandomEnemyStartingTile(string pattern)
+    protected int RandomStartingTile(string pattern)
     {
         int tile = UnityEngine.Random.Range(0, mapSize * mapSize);
-        if (ValidEnemyStartingTile(pattern, tile))
+        if (ValidRandomStartingTile(pattern, tile))
         {
             return tile;
         }
-        return RandomEnemyStartingTile(pattern);
+        return RandomStartingTile(pattern);
     }
     // Needs to be updated based on the spawning pattern.
-    protected bool ValidEnemyStartingTile(string pattern, int tileNumber)
+    protected bool ValidRandomStartingTile(string pattern, int tileNumber)
     {
         int startTileCount = mapSize * mapSize / 2 - (mapSize * mapSize / 2) % mapSize;
         List<int> startingTiles = mapPatterns.ReturnTilesOfPattern(pattern, startTileCount, mapSize);
@@ -386,6 +434,9 @@ public class BattleMap : MapManager
             case "ChainSpread":
                 ChainSpreadTerrainEffect(tileNumber, specifics);
                 break;
+            case "ChainReplaceTEffect":
+                ChainReplaceTEffects(tileNumber, specifics);
+                break;
             case "SwitchBetween":
                 string[] between = specifics.Split("=");
                 if (between.Length < 2){return;}
@@ -409,7 +460,15 @@ public class BattleMap : MapManager
         battleManager.moveManager.SetMapElevations(mapElevations);
         UpdateMap();
     }
-    // TESTED IN BATTLEMAP TESTER.
+    // TESTED IN BATTLEMAPTESTER
+    public void ChainReplaceTEffects(int tileNumber, string change)
+    {
+        List<int> connected = AllConnectedTerrain(tileNumber);
+        for (int i = 0; i < connected.Count; i++)
+        {
+            ChangeTEffect(connected[i], change, true);
+        }
+    }
     public void ChangeTerrain(int tileNumber, string change, bool force = false)
     {
         if (mapInfo[tileNumber] == change){return;}
@@ -420,6 +479,7 @@ public class BattleMap : MapManager
             return;
         }
         string t_t = mapInfo[tileNumber] + "-" + change;
+        // TESTED IN BATTLEMAPTESTER.
         string newInfo = tileTileInteractions.ReturnValue(t_t);
         if (newInfo == "")
         {
@@ -465,6 +525,20 @@ public class BattleMap : MapManager
             {
                 terrainEffectTiles[tileNumber] = newEffect;
             }
+            else if (newValue.Contains("ChainReplace"))
+            {
+                string[] cRS = newValue.Split("=");
+                if (cRS.Length < 2)
+                {
+                    ChainReplaceTEffects(tileNumber, newEffect);
+                }
+                else
+                {
+                    Debug.Log(cRS[1]);
+                    ChainReplaceTEffects(tileNumber, cRS[1]);
+                }
+                return;
+            }
             else
             {
                 terrainEffectTiles[tileNumber] = newValue;
@@ -498,14 +572,46 @@ public class BattleMap : MapManager
         List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
         ChangeTEffect(adjacent[UnityEngine.Random.Range(0, adjacent.Count)], tEffect);
     }
-    public List<int> AllConnectedTerrain(int tileNumber)
+    public List<int> AllConnectedTiles(int tileNumber)
     {
         List<int> connected = new List<int>();
-        if (terrainEffectTiles[tileNumber] == "")
+        string tile = mapInfo[tileNumber];
+        if (tile == "")
         {
             return connected;
         }
+        List<int> viewedTiles = new List<int>();
+        List<int> queuedTiles = new List<int>();
+        viewedTiles.Add(tileNumber);
+        connected.Add(tileNumber);
+        queuedTiles.Add(tileNumber);
+        while (queuedTiles.Count > 0)
+        {
+            int currentTile = queuedTiles[0];
+            List<int> adjacentTiles = mapUtility.AdjacentTiles(currentTile, mapSize);
+            for (int i = 0; i < adjacentTiles.Count; i++)
+            {
+                // Only look at new tiles.
+                if (viewedTiles.Contains(adjacentTiles[i])){continue;}
+                viewedTiles.Add(adjacentTiles[i]);
+                if (mapInfo[adjacentTiles[i]] == tile)
+                {
+                    connected.Add(adjacentTiles[i]);
+                    queuedTiles.Add(adjacentTiles[i]);
+                }
+            }
+            queuedTiles.RemoveAt(0);
+        }
+        return connected;
+    }
+    public List<int> AllConnectedTerrain(int tileNumber)
+    {
+        List<int> connected = new List<int>();
         string tEffect = terrainEffectTiles[tileNumber];
+        if (tEffect == "")
+        {
+            return connected;
+        }
         List<int> viewedTiles = new List<int>();
         List<int> queuedTiles = new List<int>();
         viewedTiles.Add(tileNumber);
@@ -1208,7 +1314,7 @@ public class BattleMap : MapManager
         }
     }
 
-    public void ApplyStartTerrainEffect(TacticActor actor)
+    public void ApplyTerrainStartEffect(TacticActor actor)
     {
         string terrainEffect = terrainEffectTiles[actor.GetLocation()];
         if (terrainEffect.Length < 1) { return; }

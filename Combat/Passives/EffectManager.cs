@@ -10,8 +10,6 @@ public class EffectManager : MonoBehaviour
     // Condition is a bad name, since passives have conditions to activate.
     public Condition status;
     public StatDatabase statusData;
-    public WeatherEffect weather;
-    public StatDatabase weatherData;
     public BattleState battleState;
 
 
@@ -22,9 +20,9 @@ public class EffectManager : MonoBehaviour
 
     public void StartTurn(TacticActor actor, BattleMap map)
     {
-        weather.LoadWeather(weatherData.ReturnValue(map.GetWeather()));
-        weather.ApplyEffects(actor, "Start");
-        map.ApplyStartTerrainEffect(actor);
+        map.ApplyWeatherStartEffect(actor);
+        map.ApplyTileStartEffect(actor);
+        map.ApplyTerrainStartEffect(actor);
         passive.ApplyPassives(actor, passiveData, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
         status.ApplyBuffEffects(actor, statusData, "Start");
@@ -40,8 +38,8 @@ public class EffectManager : MonoBehaviour
 
     public void EndTurn(TacticActor actor, BattleMap map)
     {
-        weather.LoadWeather(weatherData.ReturnValue(map.GetWeather()));
-        weather.ApplyEffects(actor, "End");
+        map.ApplyWeatherEndEffect(actor);
+        map.ApplyTileEndEffect(actor);
         passive.ApplyPassives(actor, passiveData, "End", map);
         status.ApplyBuffEffects(actor, statusData, "End");
         status.ApplyEffects(actor, statusData, "End");

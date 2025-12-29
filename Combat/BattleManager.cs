@@ -123,8 +123,10 @@ public class BattleManager : MonoBehaviour
             return;
         }
         // Start the combat.
+        map.RandomEnemyStartingPositions(battleState.GetEnemySpawnPattern());
         if (!setStartingPositions)
         {
+            map.RandomAllyStartingPositions(battleState.GetAllySpawnPattern());
             NextRound();
             ChangeTurn();
             if (autoBattle) { NPCTurn(); }
@@ -133,7 +135,6 @@ public class BattleManager : MonoBehaviour
         else
         {
             // Update the UI so that you can start the battle after you finish setting positions.
-            map.RandomEnemyStartingPositions(battleState.GetEnemySpawnPattern());
             UI.AdjustStartingPositions();
             map.UpdateStartingPositionTiles(battleState.GetAllySpawnPattern());
         }

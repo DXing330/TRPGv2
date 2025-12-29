@@ -32,7 +32,7 @@ public class ArmoryUI : MonoBehaviour
             }
         }
         if (equipment == ""){return;}
-        string message = "Equipment Stats:"+"\n";
+        string message = "Equipment Stats:" + "\n";
         List<string> pandL = dummyEquip.GetPassivesAndLevels();
         for (int i = 0; i < pandL.Count; i++)
         {

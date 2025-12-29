@@ -74,19 +74,19 @@ public class StSLikeRestScene : MonoBehaviour
         switch (restingChoices[index])
         {
             case "Rest":
-                restEffects[0].text = "+" + (dummyActor.GetBaseHealth() / 2).ToString();
+                restEffects[0].text = "+ " + (dummyActor.GetBaseHealth() / 2).ToString();
                 break;
             case "Health":
-                restEffects[1].text = "+" + (Mathf.Max(1, dummyActor.GetBaseHealth()/ statGainPercentage)).ToString();
+                restEffects[1].text = "+ " + (Mathf.Max(1, dummyActor.GetBaseHealth()/ statGainPercentage)).ToString();
                 break;
             case "Attack":
-                restEffects[2].text = "+1";
+                restEffects[2].text = "+ 1";
                 break;
             case "Defense":
-                restEffects[3].text = "+1";
+                restEffects[3].text = "+ 1";
                 break;
             case "Energy":
-                restEffects[4].text = "+1";
+                restEffects[4].text = "+ 1";
                 break;
             
         }

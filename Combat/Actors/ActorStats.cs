@@ -174,10 +174,10 @@ public class ActorStats : ActorPassives
                 SetInitiative(utility.SafeParseInt(newStat));
                 break;
             case "Passives":
-                SetPassiveSkills(newStat.Split(",").ToList());
+                SetPassiveSkills(newStat.Split(passiveDelimiter).ToList());
                 break;
             case "PassiveLevels":
-                SetPassiveLevels(newStat.Split(",").ToList());
+                SetPassiveLevels(newStat.Split(passiveDelimiter).ToList());
                 break;
             case "Actives":
                 SetActiveSkills(newStat.Split(",").ToList());
@@ -186,7 +186,7 @@ public class ActorStats : ActorPassives
                 SetSpells(newStat.Split(",").ToList());
                 break;
             case "CustomPassives":
-                SetCustomPassives(newStat.Split(",").ToList());
+                SetCustomPassives(newStat.Split(passiveDelimiter).ToList());
                 break;
             case "CurrentHealth":
                 SetCurrentHealth(utility.SafeParseInt(newStat));

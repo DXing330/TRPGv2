@@ -58,17 +58,6 @@ public class PassiveSkill : SkillEffect
     public void ApplyPassives(TacticActor actor, StatDatabase allData, string timing, BattleMap map)
     {
         List<string> passives = new List<string>();
-        switch (timing)
-        {
-            case "Start":
-                passives = new List<string>(actor.GetStartTurnPassives());
-                passives.Add(map.ReturnTerrainStartPassive(actor));
-                break;
-            case "End":
-                passives = new List<string>(actor.GetEndTurnPassives());
-                passives.Add(map.ReturnTerrainEndPassive(actor));
-                break;
-        }
         List<string> passiveData = new List<string>();
         List<TacticActor> targets = new List<TacticActor>();
         List<int> tiles = new List<int>();

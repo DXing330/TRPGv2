@@ -31,6 +31,7 @@ public class WeatherFilter : MonoBehaviour
     protected void SetImage(Sprite newSprite) { filter.sprite = newSprite; }
     public void ShowWeatherDetails()
     {
-        weatherDetails.SetMessage(weatherDetailViewer.ReturnStatusDetails(weatherData.ReturnValue(currentWeather)));
+        // TODO: SHOW ALL WEATHER EFFECTS
+        //weatherDetails.SetMessage(weatherDetailViewer.ReturnStatusDetails(weatherData.ReturnValue(currentWeather)));
     }
 }

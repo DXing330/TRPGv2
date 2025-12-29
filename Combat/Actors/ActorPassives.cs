@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ActorPassives : MonoBehaviour
 {
+    public string passiveDelimiter = "+";
     public List<string> customPassives;
     public List<string> GetCustomPassives()
     {
@@ -13,7 +14,7 @@ public class ActorPassives : MonoBehaviour
     public string GetCustomPassiveString()
     {
         if (customPassives.Count == 0) { return ""; }
-        return String.Join(",", customPassives);
+        return String.Join(passiveDelimiter, customPassives);
     }
     public void SetCustomPassives(List<string> newPassives)
     {
@@ -83,7 +84,7 @@ public class ActorPassives : MonoBehaviour
     public string GetPassiveString()
     {
         if (passiveSkills.Count == 0) { return ""; }
-        return String.Join(",", passiveSkills);
+        return String.Join(passiveDelimiter, passiveSkills);
     }
     public string GetPassiveAtIndex(int index)
     {
@@ -107,7 +108,7 @@ public class ActorPassives : MonoBehaviour
     public string GetPassiveLevelString()
     {
         if (passiveLevels.Count == 0) { return ""; }
-        return String.Join(",", passiveLevels);
+        return String.Join(passiveDelimiter, passiveLevels);
     }
     public int GetLevelFromPassive(string passiveName)
     {
