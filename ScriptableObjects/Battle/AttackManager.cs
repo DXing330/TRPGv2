@@ -218,7 +218,7 @@ public class AttackManager : ScriptableObject
         baseDamage = attacker.GetAttack();
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
-        finalDamageCalculation = "";UpdateBattleStats(attacker, defender);
+        finalDamageCalculation = "";
         UpdateBattleStats(attacker, defender);
         CheckMapPassives(attacker, defender, map, moveManager, true, true);
         // Determine if you miss or not.
