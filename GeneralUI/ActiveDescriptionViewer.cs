@@ -166,6 +166,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "All enemies receive " + APD(p) + " " + ASD(s) + ".";
             case "Command":
                 return "Give a(n) " + ASD(s) + " command.";
+            case "Escape":
+                return "Escape from the battle if on a border tile without any enemies nearby.";
         }
         return "The target(s) gain "+ASD(s)+" "+e+".";
     }

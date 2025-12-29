@@ -91,6 +91,9 @@ public class MainCampaignState : SavedData
     public string requestLocation;
     public string GetRequestLocation(){return requestLocation;}
     public void SetRequestLocation(string newInfo){requestLocation = newInfo;}
+    public string requestBattleDetails;
+    public string GetRequestBattleDetails(){return requestBattleDetails;}
+    public void SetRequestBattleDetails(string newInfo){requestBattleDetails = newInfo;}
 
     public void NextChapter()
     {
@@ -111,6 +114,7 @@ public class MainCampaignState : SavedData
         SetCurrentRequest(newInfo[1]);
         SetRequestSpecifics(newInfo[2]);
         SetRequestLocation(newInfo[3]);
+        SetRequestBattleDetails(newInfo[4]);
         Save();
     }
 

@@ -51,10 +51,13 @@ public class DungeonState : SavedState
         allData += String.Join(delimiterTwo, dungeon.partyModifiers) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.partyModifierDurations) + delimiter;
         allData += String.Join(delimiterTwo, dungeon.GetDungeonLogs()) + delimiter;
+        // Merchant stuff.
         allData += dungeon.GetMerchantLocation() + delimiter;
         allData += dungeon.GetMerchantRobbed() + delimiter;
         allData += dungeon.GetMerchantItems() + delimiter;
         allData += dungeon.GetMerchantPrices() + delimiter;
+        // Quest battle.
+        allData += dungeon.GetQuestBattleInfo() + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -170,6 +173,9 @@ public class DungeonState : SavedState
                 break;
             case 30:
                 dungeon.SetMerchantPrices(stat.Split(delimiterTwo).ToList());
+                break;
+            case 31:
+                dungeon.SetQuestBattleInfo(stat);
                 break;
             default:
                 break;

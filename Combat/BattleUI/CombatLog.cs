@@ -6,7 +6,7 @@ using TMPro;
 
 public class CombatLog : MonoBehaviour
 {
-    public void ForceStart()
+    protected void ResetLists()
     {
         combatRoundTracker.Clear();
         combatTurnTracker.Clear();
@@ -15,14 +15,13 @@ public class CombatLog : MonoBehaviour
         detailKeys.Clear();
         detailedLogs.Clear();
     }
+    public void ForceStart()
+    {
+        ResetLists();
+    }
     void Start()
     {
-        combatRoundTracker.Clear();
-        combatTurnTracker.Clear();
-        allLogs.Clear();
-        currentLogs.Clear();
-        detailKeys.Clear();
-        detailedLogs.Clear();
+        ResetLists();
     }
     public BattleManager battleManager;
     public GeneralUtility utility;

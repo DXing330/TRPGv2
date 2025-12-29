@@ -57,6 +57,19 @@ public class GuildHub : MonoBehaviour
         daysLeftText.text = storyDay.DaysLeft(mainStory.GetCurrentDeadline()).ToString();
     }
 
+    [ContextMenu("Debug Next Story")]
+    public void DebugNextStory()
+    {
+        if (mainStory.CompletedStory())
+        {
+            storyOverObject.SetActive(true);
+            return;
+        }
+        mainStory.NextChapter();
+        storyDay.NewQuest();
+        ShowNextChapter();
+    }
+
     public void NextStory()
     {
         // Begin the story.

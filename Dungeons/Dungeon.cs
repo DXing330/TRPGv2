@@ -148,13 +148,14 @@ public class Dungeon : ScriptableObject
         return trapRarities.ReturnRandomKeyBasedOnIntValue(rarity);
     }
     // Need to determine what floor the goal is on.
-    protected void ResetQuests()
+    public void ResetQuests()
     {
         questGoals.Clear();
         questSpecifics.Clear();
         goalFloors.Clear();
         goalTileMappings.Clear();
         goalTiles.Clear();
+        questBattleInfo = "";
     }
     public void SetStoryQuest()
     {
@@ -162,7 +163,11 @@ public class Dungeon : ScriptableObject
         questGoals.Add(mainStory.GetCurrentRequest());
         questSpecifics.Add(mainStory.GetRequestSpecifics());
         goalFloors.Add(Random.Range(0, maxFloors));
+        SetQuestBattleInfo(mainStory.GetRequestBattleDetails());
     }
+    public string questBattleInfo;
+    public void SetQuestBattleInfo(string newInfo){questBattleInfo = newInfo;}
+    public string GetQuestBattleInfo(){return questBattleInfo;}
     public List<string> questGoals;
     public void SetQuestGoals(List<string> newInfo)
     {
@@ -945,10 +950,28 @@ public class Dungeon : ScriptableObject
         questSpecifics.RemoveAt(indexOf);
         questFought = 1;
     }
+    public string bossQuestBattleDelimiter = "!";
     public bool PrepareBossBattle()
     {
         bossFought = 1;
+        // If the quest specifies a boss then that takes priority.
         List<string> bossGroupEnemies = new List<string>();
+        string[] questBattleData = questBattleInfo.Split(bossQuestBattleDelimiter);
+        // Enemies,Starting Formation,Alt Win Con,Alt Win Con Specifics
+        if (questBattleData.Length > 3)
+        {
+            string[] qBlocks = questBattleData[0].Split("&");
+            for (int i = 0; i < qBlocks.Length; i++)
+            {
+                string[] qCount = qBlocks[i].Split("*");
+                for (int j = 0; j < int.Parse(qCount[1]); j++)
+                {
+                    bossGroupEnemies.Add(qCount[0]);
+                }
+            }
+            SetEnemyParty(bossGroupEnemies);
+            return true;
+        }
         // Get a random boss from the list of bosses.
         // Set the enemy list.
         if (bossEnemies.Count <= 0)

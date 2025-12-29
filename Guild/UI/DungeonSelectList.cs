@@ -30,6 +30,7 @@ public class DungeonSelectList : MonoBehaviour
         // Otherwise get quests from the guild card.
         else
         {
+            dungeon.ResetQuests();
             // Set Quest Info.
             List<string> questGoals = partyData.guildCard.ReturnQuestGoalsAtLocation(dungeon.GetDungeonName());
             dungeon.SetQuestGoals(questGoals);

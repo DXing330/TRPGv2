@@ -24,7 +24,7 @@ public class BattleManager : MonoBehaviour
     {
         if (pause)
         {
-            int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+            int winningTeam = FindWinningTeam();
             if (winningTeam >= 0)
             {
                 return;
@@ -51,6 +51,10 @@ public class BattleManager : MonoBehaviour
     public MoveCostManager moveManager;
     public AttackManager attackManager;
     public BattleEndManager battleEndManager;
+    public int FindWinningTeam()
+    {
+        return battleEndManager.FindWinningTeam(map, battleState);
+    }
     public GameObject autoWinButton;
     protected void EndBattle(int winningTeam, bool autoWin = false)
     {
@@ -69,7 +73,7 @@ public class BattleManager : MonoBehaviour
             battleState.SetWinningTeam(winningTeam);
         }
         combatLog.UpdateNewestLog("Team "+winningTeam+" wins.");
-        battleEndManager.UpdatePartyAfterBattle(map.battlingActors, winningTeam);
+        battleEndManager.UpdatePartyAfterBattle(map, winningTeam);
         combatLog.UpdateNewestLog("Finished updating team stats.");
         battleEndManager.EndBattle(winningTeam);
         combatLog.UpdateNewestLog("Finished updating overworld.");
@@ -180,13 +184,14 @@ public class BattleManager : MonoBehaviour
     public int GetTurnIndex(){return turnNumber;}
     public TacticActor turnActor;
     public TacticActor GetTurnActor(){return turnActor;}
+    public bool movedDuringTurn = false;
     protected void NextRound()
     {
         combatLog.AddNewLog();
         // Update terrain effects/weather interactions/delayed/etc.
         map.NextRound();
         map.RemoveActorsFromBattle();
-        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        int winningTeam = FindWinningTeam();
         if (winningTeam >= 0)
         {
             combatLog.UpdateNewestLog("Ending Battle By Map Effects");
@@ -208,7 +213,7 @@ public class BattleManager : MonoBehaviour
         {
             combatLog.UpdateNewestLog("Everyone is Dead");
             // End the battle immediately.
-            int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+            int winningTeam = FindWinningTeam();
             EndBattle(winningTeam);
             return;
         }
@@ -229,7 +234,7 @@ public class BattleManager : MonoBehaviour
     public void NextTurn()
     {
         if (pause){ return; }
-        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        int winningTeam = FindWinningTeam();
         if (winningTeam >= 0)
         {
             combatLog.UpdateNewestLog("Ending Battle By Clicking Next Turn");
@@ -242,7 +247,7 @@ public class BattleManager : MonoBehaviour
         map.ApplyEndTerrainEffect(turnActor);
         // Remove dead actors.
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        winningTeam = FindWinningTeam();
         if (winningTeam >= 0)
         {
             combatLog.UpdateNewestLog("Ending Battle By Clicking Next Turn");
@@ -250,6 +255,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
         turnNumber++;
+        movedDuringTurn = false;
         if (turnNumber >= map.battlingActors.Count){NextRound();}
         ChangeTurn();
         ResetState();
@@ -308,11 +314,15 @@ public class BattleManager : MonoBehaviour
     }
     IEnumerator EndTurn()
     {
-        if (longDelays)
+        if (!movedDuringTurn)
+        {
+            yield return null;
+        }
+        else if (movedDuringTurn && longDelays)
         {
             yield return new WaitForSeconds(longDelayTime * 10);
         }
-        else
+        else if (movedDuringTurn && !longDelays)
         {
             yield return new WaitForSeconds(shortDelayTime * 10);
         }
@@ -487,12 +497,13 @@ public class BattleManager : MonoBehaviour
     protected void StartAttacking()
     {
         map.ResetHighlights();
-        map.UpdateHighlights(moveManager.GetAttackableTiles(turnActor, map.GetAttackableTiles()), "Attack");
+        map.UpdateHighlights(map.GetAttackableTiles(turnActor), "Attack");
     }
 
     protected void AttackTile(int tileNumber)
     {
-        int indexOf = moveManager.reachableTiles.IndexOf(tileNumber);
+        List<int> attackableTiles = map.GetAttackableTiles(turnActor);
+        int indexOf = attackableTiles.IndexOf(tileNumber);
         if (indexOf < 0)
         {
             ResetState();
@@ -693,14 +704,6 @@ public class BattleManager : MonoBehaviour
             }
             ActivateSkill(skills[i]);
             AdjustTurnNumber();
-            if (longDelays)
-            {
-                yield return new WaitForSeconds(longDelayTime * 5);
-            }
-            else
-            {
-                yield return new WaitForSeconds(shortDelayTime * 5);
-            }
             if (turnActor.GetActions() <= 0){break;}
         }
         StartCoroutine(EndTurn());
@@ -743,14 +746,6 @@ public class BattleManager : MonoBehaviour
             {
                 ActivateSkill(skill);
                 AdjustTurnNumber();
-            }
-            if (longDelays)
-            {
-                yield return new WaitForSeconds(longDelayTime * 5);
-            }
-            else
-            {
-                yield return new WaitForSeconds(shortDelayTime * 5);
             }
             if (turnActor.GetActions() <= 0){break;}
         }
@@ -810,14 +805,14 @@ public class BattleManager : MonoBehaviour
             {
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
-            }
-            if (longDelays)
-            {
-                yield return new WaitForSeconds(longDelayTime * 5);
-            }
-            else
-            {
-                yield return new WaitForSeconds(shortDelayTime * 5);
+                if (longDelays)
+                {
+                    yield return new WaitForSeconds(longDelayTime * 5);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(shortDelayTime * 5);
+                }
             }
             if (turnActor.GetActions() <= 0){break;}
         }
@@ -883,14 +878,14 @@ public class BattleManager : MonoBehaviour
             {
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
-            }
-            if (longDelays)
-            {
-                yield return new WaitForSeconds(longDelayTime * 5);
-            }
-            else
-            {
-                yield return new WaitForSeconds(shortDelayTime * 5);
+                if (longDelays)
+                {
+                    yield return new WaitForSeconds(longDelayTime * 5);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(shortDelayTime * 5);
+                }
             }
             if (turnActor.GetActions() <= 0) { break; }
         }
@@ -949,14 +944,14 @@ public class BattleManager : MonoBehaviour
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                     StartCoroutine(MoveAlongPath(turnActor, path));
                 }
-            }
-            if (longDelays)
-            {
-                yield return new WaitForSeconds(longDelayTime * 5);
-            }
-            else
-            {
-                yield return new WaitForSeconds(shortDelayTime * 5);
+                if (longDelays)
+                {
+                    yield return new WaitForSeconds(longDelayTime * 5);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(shortDelayTime * 5);
+                }
             }
             if (turnActor.GetActions() <= 0){break;}
         }
@@ -1015,6 +1010,7 @@ public class BattleManager : MonoBehaviour
     
     IEnumerator MoveAlongPath(TacticActor actor, List<int> path)
     {
+        movedDuringTurn = true;
         for (int i = path.Count - 1; i >= 0; i--)
         {
             int prevLoc = actor.GetLocation();
@@ -1044,7 +1040,7 @@ public class BattleManager : MonoBehaviour
     public void AdjustTurnNumber()
     {
         turnNumber = map.RemoveActorsFromBattle(turnNumber);
-        int winningTeam = battleEndManager.FindWinningTeam(map.battlingActors);
+        int winningTeam = FindWinningTeam();
         if (winningTeam >= 0)
         {
             EndBattle(winningTeam);

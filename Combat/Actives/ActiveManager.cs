@@ -140,6 +140,10 @@ public class ActiveManager : MonoBehaviour
             case "Weather":
                 battle.map.SetWeather(specifics);
                 return;
+            case "Escape":
+                if (!battle.map.ActorCanEscape(skillUser)){return;}
+                battle.map.ActorEscapesBattle(skillUser);
+                return;
             case "Time":
                 battle.map.SetTime(specifics);
                 return;

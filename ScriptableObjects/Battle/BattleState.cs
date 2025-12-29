@@ -126,24 +126,39 @@ public class BattleState : SavedState
     public string alternateWinCondition;
     public void SetAltWinCon(string newInfo = "")
     {
-        alternateWinCondition = "";
+        alternateWinCondition = newInfo;
     }
     public string alternateWinConditionSpecifics;
     public void SetAltWinConSpecifics(string newInfo = "")
     {
-        alternateWinConditionSpecifics = "";
+        alternateWinConditionSpecifics = newInfo;
     }
     public void SetNewAlternateWinCondition(string condition = "", string specifics = "")
     {
         alternateWinCondition = condition;
         alternateWinConditionSpecifics = specifics;
     }
+    public string GetAltWinCon(){return alternateWinCondition;}
+    public string GetAltWinConSpecifics(){return alternateWinConditionSpecifics;}
 
     public void ResetStats()
     {
         ResetWeather();
         ResetSpawnPatterns();
         SetNewAlternateWinCondition();
+    }
+
+    public void SetBattleDetailsFromDungeon(DungeonState dState)
+    {
+        SetWeather(dState.dungeon.GetWeather());
+        ForceTerrainType(dState.dungeon.GenerateTerrain());
+        string newInfo = dState.dungeon.GetQuestBattleInfo();
+        Debug.Log(newInfo);
+        string[] blocks = newInfo.Split(dState.dungeon.bossQuestBattleDelimiter);
+        if (blocks.Length <= 3){return;}
+        SetStartingFormation(blocks[1]);
+        SetAltWinCon(blocks[2]);
+        SetAltWinConSpecifics(blocks[3]);
     }
 
     public override void NewGame()

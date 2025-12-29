@@ -113,7 +113,6 @@ public class BattleMap : MapManager
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
         interactables.Clear();
-        //trappedTiles = new List<string>(emptyList);
     }
     protected override void Start()
     {
@@ -128,7 +127,83 @@ public class BattleMap : MapManager
         //base.Start();
     }
     public BattleManager battleManager;
+    public List<TacticActor> ReturnEndOfBattleActors()
+    {
+        List<TacticActor> endOfB = new List<TacticActor>();
+        endOfB.AddRange(escapedActors);
+        endOfB.AddRange(capturedActors);
+        endOfB.AddRange(battlingActors);
+        return endOfB;
+    }
     public List<TacticActor> battlingActors;
+    public bool EnemyExists(string spriteName)
+    {
+        for (int i = 0; i < battlingActors.Count; i++)
+        {
+            if (battlingActors[i].GetTeam() == 0){continue;}
+            if (battlingActors[i].GetSpriteName() == spriteName){return true;}
+        }
+        return false;
+    }
+    public List<TacticActor> defeatedActors;
+    public List<TacticActor> capturedActors;
+    public void CaptureActor(TacticActor actor)
+    {
+        int indexOf = battlingActors.IndexOf(actor);
+        if (indexOf >= 0)
+        {
+            capturedActors.Add(actor);
+            battlingActors.RemoveAt(indexOf);
+        }
+    }
+    public bool CapturedActor(string spriteName, string actorName = "")
+    {
+        for (int i = 0; i < capturedActors.Count; i++)
+        {
+            if (capturedActors[i].GetSpriteName() == spriteName)
+            {
+                if (actorName == ""){return true;}
+                else if (capturedActors[i].GetPersonalName() == actorName)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public List<TacticActor> escapedActors;
+    public bool ActorCanEscape(TacticActor actor)
+    {
+        if (!mapUtility.BorderTile(actor.GetLocation(), mapSize)){return false;}
+        if (GetAdjacentEnemies(actor).Count > 0){return false;}
+        return true;
+    }
+    public void ActorEscapesBattle(TacticActor actor)
+    {
+        int indexOf = battlingActors.IndexOf(actor);
+        if (indexOf >= 0)
+        {
+            // Deal with escaped actors differently at the end of battle.
+            escapedActors.Add(actor);
+            // Just play dead and leave the battle?
+            actor.SetCurrentHealth(0);
+        }
+    }
+    public bool ActorEscaped(string spriteName, string actorName = "")
+    {
+        for (int i = 0; i < escapedActors.Count; i++)
+        {
+            if (escapedActors[i].GetSpriteName() == spriteName)
+            {
+                if (actorName == ""){return true;}
+                else if (escapedActors[i].GetPersonalName() == actorName)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public List<int> GetAttackableTiles()
     {
         List<int> tiles = new List<int>();
@@ -261,10 +336,20 @@ public class BattleMap : MapManager
         {
             if (battlingActors[i].GetHealth() <= 0)
             {
-                // Apply the death passives here.
-                combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " is defeated.");
-                battleManager.ActiveDeathPassives(battlingActors[i]);
-                battlingActors.RemoveAt(i);
+                // Check if they escaped here.
+                if (ActorEscaped(battlingActors[i].GetSpriteName()))
+                {
+                    combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " escaped from the battle.");
+                    battlingActors.RemoveAt(i);
+                }
+                else
+                {
+                    // Apply the death passives here.
+                    combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " is defeated.");
+                    battleManager.ActiveDeathPassives(battlingActors[i]);
+                    defeatedActors.Add(battlingActors[i]);
+                    battlingActors.RemoveAt(i);
+                }
                 // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.
                 if (i <= originalTurnNumber) { turnNumber--; }
             }
@@ -1047,7 +1132,9 @@ public class BattleMap : MapManager
 
     public List<int> GetAttackableTiles(TacticActor actor)
     {
-        return mapUtility.GetTilesInCircleShape(actor.GetLocation(), actor.GetAttackRange(), mapSize);
+        List<int> attackable = mapUtility.GetTilesInCircleShape(actor.GetLocation(), actor.GetAttackRange(), mapSize);
+        attackable.Remove(actor.GetLocation());
+        return attackable;
     }
 
     public List<TacticActor> GetAttackableEnemies(TacticActor actor)

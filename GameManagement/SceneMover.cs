@@ -46,6 +46,12 @@ public class SceneMover : MonoBehaviour
         if (currentScene == battleSceneName)
         {
             battleState.Load();
+            if (sceneTracker.GetPreviousScene() == dungeonSceneName)
+            {
+                dungeonState.Load();
+                battleState.SetBattleDetailsFromDungeon(dungeonState);
+                battleState.Save();
+            }
             if (loadingRequired)
             {
                 StartCoroutine(LoadingScreenMoveScene(currentScene));
@@ -149,9 +155,9 @@ public class SceneMover : MonoBehaviour
         {
             // Only save the dungeon state if entering a battle from the dungeon.
             dungeonState.Save();
-            // Set the terrain and weather based on the dungeon.
-            battleState.SetWeather(dungeonState.dungeon.GetWeather());
+            battleState.SetBattleDetailsFromDungeon(dungeonState);
             battleState.ForceTerrainType(dungeonState.dungeon.GenerateTerrain());
+            // Set the spawning conditions and alternate win conditions based on the dungeon state.
             battleState.Save();
         }
         if (loadingRequired)

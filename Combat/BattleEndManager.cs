@@ -25,9 +25,35 @@ public class BattleEndManager : MonoBehaviour
     public int winnerTeam = -1;
     public void SetWinnerTeam(int newInfo) { winnerTeam = newInfo; }
 
-    public int FindWinningTeam(List<TacticActor> actors)
+    protected bool CheckAltWinConditions(BattleMap map, string alt, string specifics)
     {
+        switch (alt)
+        {
+            default:
+            return false;
+            // Check that the required ally type has escaped.
+            case "Escape":
+            return map.ActorEscaped(specifics);
+            // Check that you've captured the required enemy type.
+            case "Capture":
+            return map.CapturedActor(specifics);
+            // Check that you've defeated all the required enemy types.
+            case "Defeat":
+            return map.EnemyExists(specifics);
+        }
+    }
+
+    public int FindWinningTeam(BattleMap map, BattleState battleState)
+    {
+        // Check for party alternate win conditions.
+        // Losing/retreating/being captured is generally an autoloss, so enemies don't need alternate win conditions.
         int winningTeam = -1;
+        if (CheckAltWinConditions(map, battleState.GetAltWinCon(), battleState.GetAltWinConSpecifics()))
+        {
+            winningTeam = 0;
+            return winningTeam;
+        }
+        List<TacticActor> actors = map.battlingActors;
         List<int> teams = new List<int>();
         for (int i = 0; i < actors.Count; i++)
         {
@@ -43,8 +69,9 @@ public class BattleEndManager : MonoBehaviour
         return winningTeam;
     }
 
-    public void UpdatePartyAfterBattle(List<TacticActor> actors, int winningTeam = 0)
+    public void UpdatePartyAfterBattle(BattleMap map, int winningTeam = 0)
     {
+        List<TacticActor> actors = map.ReturnEndOfBattleActors();
         if (test)
         {
             // Update the details.
@@ -61,6 +88,7 @@ public class BattleEndManager : MonoBehaviour
         List<string> stats = new List<string>();
         for (int i = 0; i < actors.Count; i++)
         {
+            if (actors[i].GetTeam() != 0){continue;}
             codeNames.Add(actors[i].GetPersonalName());
             spriteNames.Add(actors[i].GetSpriteName());
             stats.Add(actors[i].ReturnPersistentStats());
