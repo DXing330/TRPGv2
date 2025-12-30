@@ -199,7 +199,7 @@ public class PartyDataManager : MonoBehaviour
     public bool OpenSlots()
     {
         // Default is 2 party members, plus 2 permanent for the classic 4?
-        return mainPartyData.PartyCount() < guildCard.GetGuildRank() + 2;
+        return mainPartyData.PartyCount() < guildCard.GetGuildRank() + guildCard.GetPartyLimit();
     }
 
     public void HireMember(string stats, string personalName)

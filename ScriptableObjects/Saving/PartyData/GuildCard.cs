@@ -20,6 +20,18 @@ public class GuildCard : SavedData
         return guildRankNames[guildRank];
     }
     public void SetGuildRank(int newRank) { guildRank = newRank; }
+    public void GainGuildRank()
+    {
+        if (guildRank < maxRank)
+        {
+            IncreaseGuildRank();
+        }
+    }
+    public void IncreaseGuildRank()
+    {
+        guildRank++;
+        IncreasePartyLimit();
+    }
     public int GetGuildRank() { return guildRank; }
     // Gain exp = difficulty of quest squared?
     public int guildExp;
@@ -29,10 +41,14 @@ public class GuildCard : SavedData
         guildExp += Mathf.Max(1, amount / guildRank);
         if (guildExp > utility.Exponent(3, guildRank) && guildRank < maxRank)
         {
-            guildRank++;
+            IncreaseGuildRank();
         }
     }
     public int GetGuildExp() { return guildExp; }
+    public int basePartyLimit;
+    public void SetPartyLimit(int newInfo){basePartyLimit = newInfo;}
+    public void IncreasePartyLimit(){basePartyLimit++;}
+    public int GetPartyLimit(){return basePartyLimit;}
     // Separate dungeon vs overworld requests?
     // You can't fail a dungeon quest, you just keep trying til you succeed.
     // But there is a limit to how many quests you can accept at one time.
@@ -148,7 +164,7 @@ public class GuildCard : SavedData
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter;
+        allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter + GetPartyLimit() + delimiter;
         allData += String.Join(delimiterTwo, dungeonLocations) + delimiter;
         allData += String.Join(delimiterTwo, dungeonQuestGoals) + delimiter;
         allData += String.Join(delimiterTwo, dungeonQuestFloors) + delimiter;
@@ -183,15 +199,18 @@ public class GuildCard : SavedData
             guildExp = int.Parse(stat);
             break;
             case 2:
-            SetDungeonQuestLocations(stat.Split(delimiterTwo).ToList());
+            SetPartyLimit(int.Parse(stat));
             break;
             case 3:
-            SetDungeonQuestGoals(stat.Split(delimiterTwo).ToList());
+            SetDungeonQuestLocations(stat.Split(delimiterTwo).ToList());
             break;
             case 4:
-            SetDungeonQuestFloors(stat.Split(delimiterTwo).ToList());
+            SetDungeonQuestGoals(stat.Split(delimiterTwo).ToList());
             break;
             case 5:
+            SetDungeonQuestFloors(stat.Split(delimiterTwo).ToList());
+            break;
+            case 6:
             SetDungeonQuestRewards(stat.Split(delimiterTwo).ToList());
             break;
         }
@@ -301,32 +320,4 @@ public class GuildCard : SavedData
     {
         availableQuests = new List<string>(newQuests);
     }
-        /*guildRank = int.Parse(dataList[0]);
-        guildExp = int.Parse(dataList[1]);
-        acceptedQuests = dataList[2].Split(delimiterTwo).ToList();
-        newQuests = int.Parse(dataList[3]);
-        availableQuests = dataList[4].Split(delimiterTwo).ToList();
-        newHireables = int.Parse(dataList[5]);
-        newHireClasses = dataList[6].Split(delimiterTwo).ToList();
-        newHireNames = dataList[7].Split(delimiterTwo).ToList();
-        utility.RemoveEmptyListItems(acceptedQuests);
-        utility.RemoveEmptyListItems(availableQuests);
-    }
-
-    public override void NewDay(int dayCount)
-    {
-        failPenalty = 0;
-        for (int i = acceptedQuests.Count - 1; i >= 0; i--)
-        {
-            dummyRequest.Load(acceptedQuests[i]);
-            dummyRequest.NewDay();
-            acceptedQuests[i] = dummyRequest.ReturnDetails();
-            if (dummyRequest.GetDeadline() == 0)
-            {
-                failPenalty += dummyRequest.GetFailPenalty();
-                acceptedQuests.RemoveAt(i);
-                newQuests = 1; // If you fail a quest then you can receive new quests.
-            }
-        }
-    }*/
 }

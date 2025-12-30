@@ -232,6 +232,8 @@ public class PassiveSkill : SkillEffect
             return actor.GetCounter() >= int.Parse(conditionSpecifics);
             case "Elevation":
             return map.ReturnElevation(actor.GetLocation()) == int.Parse(conditionSpecifics);
+            case "Element":
+            return actor.SameElement(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;

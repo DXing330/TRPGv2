@@ -208,6 +208,7 @@ public class AttackManager : ScriptableObject
         critChance = attacker.GetCritChance();
         critDamage = attacker.GetCritDamage();
     }
+    // Basic attack damage calculation
     public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Physical")
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));

@@ -390,6 +390,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if not attacking" + RelativeDirectionDescriptions(specifics);
             case "DirectionD":
                 return " if attacking" + RelativeDirectionDescriptions(specifics);
+            case "Element":
+                return " if " + specifics + " element";
             case "ElementD":
                 return " if the target's element is "+specifics;
             case "Element<>D":

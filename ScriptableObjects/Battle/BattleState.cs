@@ -66,14 +66,19 @@ public class BattleState : SavedState
     }
     public virtual string GetTerrainType(){return terrainType;}
     public void UpdateTerrainType(){battleMapFeatures.SetTerrainType(terrainType);}
+    public string time;
     public List<string> timeOfDayTypes;
+    public void SetTime(string newInfo)
+    {
+        time = newInfo;
+    }
     public virtual string GetTime()
     {
-        if (overworldState == null)
+        if (time == "")
         {
             return timeOfDayTypes[UnityEngine.Random.Range(0, timeOfDayTypes.Count)];
         }
-        return overworldState.GetTime();
+        return time;
     }
     public StatDatabase allWeather;
     public string weather;
@@ -159,9 +164,10 @@ public class BattleState : SavedState
         if (blocks.Length <= 5){return;}
         ForceTerrainType(blocks[1]);
         SetWeather(blocks[2]);
-        SetStartingFormation(blocks[3]);
-        SetAltWinCon(blocks[4]);
-        SetAltWinConSpecifics(blocks[5]);
+        SetTime(blocks[3]);
+        SetStartingFormation(blocks[4]);
+        SetAltWinCon(blocks[5]);
+        SetAltWinConSpecifics(blocks[6]);
     }
 
     public override void NewGame()
@@ -190,6 +196,8 @@ public class BattleState : SavedState
         allData += String.Join(delimiterTwo, enemyBattleModifiers);
         allData += delimiter;
         allData += weather;
+        allData += delimiter;
+        allData += time;
         allData += delimiter;
         allData += allySpawnPattern;
         allData += delimiter;
@@ -246,18 +254,19 @@ public class BattleState : SavedState
                 SetWeather(stat);
                 break;
             case 7:
-                SetAllySpawnPattern(stat);
+                SetTime(stat);
                 break;
             case 8:
-                SetEnemySpawnPattern(stat);
+                SetAllySpawnPattern(stat);
                 break;
             case 9:
-                SetAltWinCon(stat);
+                SetEnemySpawnPattern(stat);
                 break;
             case 10:
-                SetAltWinConSpecifics(stat);
+                SetAltWinCon(stat);
                 break;
             case 11:
+                SetAltWinConSpecifics(stat);
                 break;
             case 12:
                 break;
@@ -270,14 +279,6 @@ public class BattleState : SavedState
             case 16:
                 break;
             case 17:
-                break;
-            case 18:
-                break;
-            case 19:
-                break;
-            case 20:
-                break;
-            default:
                 break;
         }
     }

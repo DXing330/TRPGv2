@@ -95,9 +95,13 @@ public class MainCampaignState : SavedData
     public string GetRequestBattleDetails(){return requestBattleDetails;}
     public void SetRequestBattleDetails(string newInfo){requestBattleDetails = newInfo;}
 
-    public void NextChapter()
+    public void NextChapter(PartyDataManager partyData)
     {
         previousChapters.Add(currentChapter);
+        if (currentChapter > 0)
+        {
+            partyData.guildCard.GainGuildRank();
+        }
         NewChapter();
     }
 

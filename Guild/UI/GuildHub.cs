@@ -14,10 +14,10 @@ public class GuildHub : MonoBehaviour
     public void Start()
     {
         RemoveDungeonData();
-        partyData.Save();
-        guildRank.text = partyData.guildCard.GetGuildRankName();
         NextStory();
         UpdateStory();
+        partyData.Save();
+        guildRank.text = partyData.guildCard.GetGuildRankName();
     }
 
     // Don't let them keep the chests if they don't complete the dungeon.
@@ -65,9 +65,19 @@ public class GuildHub : MonoBehaviour
             storyOverObject.SetActive(true);
             return;
         }
-        mainStory.NextChapter();
+        mainStory.NextChapter(partyData);
         storyDay.NewQuest();
         ShowNextChapter();
+    }
+
+    public void SubmitQuest()
+    {
+        if (mainStory.GetCurrentChapter() == 1 && !mainStory.CompletedStory())
+        {
+            mainStory.NextChapter(partyData);
+            storyDay.NewQuest();
+            ShowNextChapter();
+        }
     }
 
     public void NextStory()
@@ -88,7 +98,7 @@ public class GuildHub : MonoBehaviour
         // Continue the story.
         if (storyDay.DeadlineReached(mainStory.GetCurrentDeadline()))
         {
-            mainStory.NextChapter();
+            mainStory.NextChapter(partyData);
             storyDay.NewQuest();
             ShowNextChapter();
             return;

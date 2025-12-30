@@ -957,7 +957,7 @@ public class Dungeon : ScriptableObject
         // If the quest specifies a boss then that takes priority.
         List<string> bossGroupEnemies = new List<string>();
         string[] questBattleData = questBattleInfo.Split(bossQuestBattleDelimiter);
-        // Enemies,Terrain,Weather,Starting Formation,Alt Win Con,Alt Win Con Specifics
+        // Enemies,Terrain,Weather,Time,Starting Formation,Alt Win Con,Alt Win Con Specifics
         if (questBattleData.Length > 3)
         {
             string[] qBlocks = questBattleData[0].Split("&");
