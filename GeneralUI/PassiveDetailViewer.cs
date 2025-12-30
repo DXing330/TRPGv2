@@ -548,6 +548,10 @@ public class PassiveDetailViewer : MonoBehaviour
             case "ElementalReflectDamage":
                 string[] eRD = specifics.Split("=");
                 return " deal " + eRD[1] + " " + eRD[0] + " damage";
+            case "Sleep":
+                return "put " + target + " to sleep for " + specifics + "turns";
+            case "Silence":
+                return " disable actives of " + target + " for " + specifics + "turns";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

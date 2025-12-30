@@ -519,8 +519,9 @@ public class ActorStats : ActorPassives
             currentDmgResists[indexOf] += amount;
         }
     }
-    public int TakeDamage(int damage, string type = "Physical")
+    public virtual int TakeDamage(int damage, string type = "Physical")
     {
+        WakeUp();
         int resistance = ReturnDamageResistanceOfType(type);
         if (resistance != 0)
         {
@@ -586,6 +587,7 @@ public class ActorStats : ActorPassives
             currentSpeed = 0;
         }
     }
+    // Stats that are not stored in the stat string.
     public void InitializeStats()
     {
         baseHitChance = initialHitChance;
@@ -602,6 +604,10 @@ public class ActorStats : ActorPassives
         bonusDmgTypes.Clear();
         baseDmgBonuses.Clear();
         currentDmgBonuses.Clear();
+        silenced = false;
+        silenceDuration = 0;
+        sleeping = false;
+        sleepDuration = 0;
         ResetStats();
         EndTurnResetStats();
     }
@@ -957,6 +963,8 @@ public class ActorStats : ActorPassives
                 statusDurations.RemoveAt(i);
             }
         }
+        CheckSilence();
+        CheckSleeping();
     }
     public string curseStatName;
     public void AddCurse(string newInfo)
@@ -996,5 +1004,60 @@ public class ActorStats : ActorPassives
             if (i < curses.Count - 1) { curseString += ","; }
         }
         return curseString;
+    }
+    // Unique Statuses
+    public bool silenced = false;
+    public bool GetSilenced(){return silenced;}
+    public int silenceDuration;
+    public void CheckSilence()
+    {
+        if (silenceDuration > 0)
+        {
+            silenceDuration--;
+        }
+        if (silenceDuration <= 0)
+        {
+            silenced = false;
+        }
+    }
+    public void Silence(int duration)
+    {
+        silenced = true;
+        if (silenceDuration < duration)
+        {
+            silenceDuration = duration;
+        }
+    }
+    public void Unsilence()
+    {
+        silenced = false;
+        silenceDuration = 0;
+    }
+    public bool sleeping = false;
+    public bool GetSleeping(){return sleeping;}
+    public int sleepDuration;
+    public void CheckSleeping()
+    {
+        if (sleepDuration > 0)
+        {
+            sleepDuration--;
+        }
+        if (sleepDuration <= 0)
+        {
+            sleeping = false;
+        }
+    }
+    public void Sleep(int duration)
+    {
+        sleeping = true;
+        if (sleepDuration < duration)
+        {
+            sleepDuration = duration;
+        }
+    }
+    public void WakeUp()
+    {
+        sleeping = false;
+        sleepDuration = 0;
     }
 }

@@ -71,6 +71,12 @@ public class ActiveSelectList : SelectList
             ResetState();
             return;
         }
+        else if (battle.GetTurnActor().GetSilenced())
+        {
+            ErrorMessage("Can't use actives while silenced.");
+            ResetState();
+            return;
+        }
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
         activeManager.ResetTargetedTiles();
         activeManager.CheckIfSingleTargetableTile();
@@ -87,6 +93,12 @@ public class ActiveSelectList : SelectList
         {
             // Show an error message instead of just returning?
             ErrorMessage("Not enough resources to cast this spell.");
+            ResetState();
+            return;
+        }
+        else if (battle.GetTurnActor().GetSilenced())
+        {
+            ErrorMessage("Can't use spells while silenced.");
             ResetState();
             return;
         }

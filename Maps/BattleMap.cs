@@ -64,6 +64,15 @@ public class BattleMap : MapManager
         }
         return "";
     }
+    public string ReturnTerrainEndPassive(TacticActor actor)
+    {
+        string terrainType = mapInfo[actor.GetLocation()];
+        if (terrainPassives.TerrainPassivesExist(terrainType))
+        {
+            return terrainPassives.ReturnEndPassive(terrainType);
+        }
+        return "";
+    }
     public void ApplyTileStartEffect(TacticActor actor)
     {
         string terrainType = mapInfo[actor.GetLocation()];
@@ -73,15 +82,6 @@ public class BattleMap : MapManager
         {
             passiveEffect.AffectActor(actor, data[4], data[5]);
         }
-    }
-    public string ReturnTerrainEndPassive(TacticActor actor)
-    {
-        string terrainType = mapInfo[actor.GetLocation()];
-        if (terrainPassives.TerrainPassivesExist(terrainType))
-        {
-            return terrainPassives.ReturnEndPassive(terrainType);
-        }
-        return "";
     }
     public void ApplyTileEndEffect(TacticActor actor)
     {
@@ -186,7 +186,6 @@ public class BattleMap : MapManager
             // Deal with escaped actors differently at the end of battle.
             escapedActors.Add(actor);
             // Just play dead and leave the battle?
-            actor.SetCurrentHealth(0);
         }
     }
     public bool ActorEscaped(string spriteName, string actorName = "")
@@ -334,22 +333,20 @@ public class BattleMap : MapManager
         int originalTurnNumber = turnNumber;
         for (int i = battlingActors.Count - 1; i >= 0; i--)
         {
+            if (ActorEscaped(battlingActors[i].GetSpriteName()))
+            {
+                combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " escaped from the battle.");
+                battlingActors.RemoveAt(i);
+                // If someone whose turn already passed escapes, then the turn count needs to be decremented to avoid skipping someones turn.
+                if (i <= originalTurnNumber) { turnNumber--; }
+            }
             if (battlingActors[i].GetHealth() <= 0)
             {
-                // Check if they escaped here.
-                if (ActorEscaped(battlingActors[i].GetSpriteName()))
-                {
-                    combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " escaped from the battle.");
-                    battlingActors.RemoveAt(i);
-                }
-                else
-                {
-                    // Apply the death passives here.
-                    combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " is defeated.");
-                    battleManager.ActiveDeathPassives(battlingActors[i]);
-                    defeatedActors.Add(battlingActors[i]);
-                    battlingActors.RemoveAt(i);
-                }
+                // Apply the death passives here.
+                combatLog.UpdateNewestLog(battlingActors[i].GetPersonalName() + " is defeated.");
+                battleManager.ActiveDeathPassives(battlingActors[i]);
+                defeatedActors.Add(battlingActors[i]);
+                battlingActors.RemoveAt(i);
                 // If someone whose turn already passed dies, then the turn count needs to be decremented to avoid skipping someones turn.
                 if (i <= originalTurnNumber) { turnNumber--; }
             }
@@ -780,6 +777,15 @@ public class BattleMap : MapManager
         for (int i = 0; i < interactables.Count; i++)
         {
             interactables[i].AttackTrigger(this, attacker);
+        }
+    }
+    public void EndTurnOnInteractable(TacticActor actor)
+    {
+        List<Interactable> interactables = GetInteractablesOnTile(actor.GetLocation());
+        if (interactables.Count <= 0){return;}
+        for (int i = 0; i < interactables.Count; i++)
+        {
+            interactables[i].EndTrigger(this, actor);
         }
     }
     public bool InteractableOnTile(int tileNumber)
@@ -1357,13 +1363,31 @@ public class BattleMap : MapManager
         return all;
     }
 
+    public void MoveActor(TacticActor actor, string effect, string specifics)
+    {
+        int tile = -1;
+        int start = actor.GetLocation();
+        switch (effect)
+        {
+            default:
+            break;
+            case "DirMove":
+            tile = mapUtility.PointInDirection(start, int.Parse(specifics), mapSize);
+            if (tile == start || tile < 0){return;}
+            if (GetActorOnTile(tile) != null){return;}
+            actor.SetLocation(tile);
+            ApplyMovingTileEffect(actor, tile);
+            break;
+        }
+        UpdateMap();
+    }
+
     public bool ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainMovingEffect(actor, tileNumber);
         ApplyInteractableEffect(actor, tileNumber);
         return false;
-        //return ApplyTrapEffect(actor, tileNumber);
     }
 
     protected void ApplyTileMovingEffect(TacticActor actor, int tileNumber)

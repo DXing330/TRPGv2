@@ -306,6 +306,12 @@ public class SkillEffect : ScriptableObject
                 string[] scalingVig = effectSpecifics.Split("=");
                 target.IncreaseMaxVigor(GetScalingInt(target, scalingVig[0], scalingVig[1], scalingVig[2]));
                 break;
+            case "Silence":
+                target.Silence(int.Parse(effectSpecifics));
+                break;
+            case "Sleep":
+                target.Sleep(int.Parse(effectSpecifics));
+                break;
         }
     }
 

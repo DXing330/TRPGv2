@@ -724,8 +724,8 @@ public class BattleManager : MonoBehaviour
                 activeManager.SetSkillFromName(skill);
             }
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
-            // If you can't find a target or cast the skill then just do a regular action.
-            if (targetedTile == -1 || !activeManager.CheckSkillCost())
+            // If you can't find a target or cast the skill or are silenced then just do a regular action.
+            if (targetedTile == -1 || !activeManager.CheckSkillCost() || turnActor.GetSilenced())
             {
                 StartCoroutine(StandardNPCAction(actionsLeft));
                 yield break;

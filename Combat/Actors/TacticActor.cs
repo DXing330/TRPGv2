@@ -91,11 +91,17 @@ public class TacticActor : ActorStats
     public void NewTurn()
     {
         // Default is two actions.
-        actions = Mathf.Max(actions, baseActions);
         movement = 0;
         counterAttacks = 0;
         ResetStats();
-        
+        if (sleeping)
+        {
+            actions = 0;
+        }
+        else
+        {
+            actions = Mathf.Max(actions, baseActions);
+        }
     }
     public int GetMoveRangeBasedOnActions(int actionCount)
     {

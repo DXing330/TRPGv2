@@ -139,6 +139,24 @@ public class Interactable : MonoBehaviour
         }
         return allStats;
     }
+    public void EndTrigger(BattleMap map, TacticActor triggerer)
+    {
+        if (trigger != "End"){return;}
+        for (int i = 0; i < targetLocations.Count; i++)
+        {
+            // Check the conditions to activate.
+            if (CheckCondition(map, triggerer, i))
+            {
+                // If so then activate.
+                Activate(map, i);
+            }
+        }
+        if (activated)
+        {
+            map.combatLog.UpdateNewestLog(triggerer.GetPersonalName() + " triggered a " + GetSpriteName() + "!");
+            UpdateAfterActivation(map);
+        }
+    }
     public void MoveTrigger(BattleMap map, TacticActor triggerer)
     {
         if (trigger != "Move"){return;}
@@ -228,6 +246,9 @@ public class Interactable : MonoBehaviour
             return;
             case "Actor":
             map.passiveEffect.AffectActor(map.GetActorOnTile(targetLocations[index]), effects[state%effects.Count], effectSpecifics[state%effectSpecifics.Count], 1, map.combatLog);
+            return;
+            case "MoveActor":
+            map.MoveActor(map.GetActorOnTile(targetLocations[index]), effects[state%effects.Count], effectSpecifics[state%effectSpecifics.Count]);
             return;
         }
     }

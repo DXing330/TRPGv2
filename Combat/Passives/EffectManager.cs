@@ -40,6 +40,7 @@ public class EffectManager : MonoBehaviour
     {
         map.ApplyWeatherEndEffect(actor);
         map.ApplyTileEndEffect(actor);
+        map.EndTurnOnInteractable(actor);
         passive.ApplyPassives(actor, passiveData, "End", map);
         status.ApplyBuffEffects(actor, statusData, "End");
         status.ApplyEffects(actor, statusData, "End");

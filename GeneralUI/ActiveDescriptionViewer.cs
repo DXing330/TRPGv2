@@ -168,8 +168,12 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Give a(n) " + ASD(s) + " command.";
             case "Escape":
                 return "Escape from the battle if on a border tile without any enemies nearby.";
+            case "Sleep":
+                return "Put the target(s) to sleep for " + s + " turns.";
+            case "Silence":
+                return "Disable target(s) skills for " + s + " turns.";
         }
-        return "The target(s) gain "+ASD(s)+" "+e+".";
+        return "The target(s) gain " + ASD(s) + " " + e + ".";
     }
 
     // ActiveSpecificsDescription

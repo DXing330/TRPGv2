@@ -51,6 +51,7 @@ public class BattleState : SavedState
     public List<string> terrainTypes;
     public virtual void ForceTerrainType(string newInfo)
     {
+        if (newInfo == ""){return;}
         terrainType = newInfo;
         battleMapFeatures.SetTerrainType(terrainType);
     }
@@ -155,10 +156,12 @@ public class BattleState : SavedState
         string newInfo = dState.dungeon.GetQuestBattleInfo();
         Debug.Log(newInfo);
         string[] blocks = newInfo.Split(dState.dungeon.bossQuestBattleDelimiter);
-        if (blocks.Length <= 3){return;}
-        SetStartingFormation(blocks[1]);
-        SetAltWinCon(blocks[2]);
-        SetAltWinConSpecifics(blocks[3]);
+        if (blocks.Length <= 5){return;}
+        ForceTerrainType(blocks[1]);
+        SetWeather(blocks[2]);
+        SetStartingFormation(blocks[3]);
+        SetAltWinCon(blocks[4]);
+        SetAltWinConSpecifics(blocks[5]);
     }
 
     public override void NewGame()
