@@ -162,6 +162,7 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         finalDamageCalculation += baseDamage;
+        // Flat damage is always physical type.
         defender.TakeDamage(baseDamage);
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
@@ -199,7 +200,6 @@ public class AttackManager : ScriptableObject
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
         baseDamage = defender.TakeDamage(baseDamage, "True");
-
     }
     protected void UpdateBattleStats(TacticActor attacker, TacticActor defender)
     {

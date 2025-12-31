@@ -71,12 +71,6 @@ public class ActiveSelectList : SelectList
             ResetState();
             return;
         }
-        else if (battle.GetTurnActor().GetSilenced())
-        {
-            ErrorMessage("Can't use actives while silenced.");
-            ResetState();
-            return;
-        }
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder);
         activeManager.ResetTargetedTiles();
         activeManager.CheckIfSingleTargetableTile();

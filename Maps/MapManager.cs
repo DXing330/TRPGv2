@@ -84,7 +84,7 @@ public class MapManager : MonoBehaviour
             mapTiles[i].SetElevation(mapElevations[i]);
             if (showElevationSprite)
             {
-                mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary(mapTiles[i].GetElevation().ToString()));
+                mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary("E"+mapTiles[i].GetElevation().ToString()));
             }
         }
     }
@@ -291,7 +291,7 @@ public class MapManager : MonoBehaviour
     {
         for (int i = 0; i < mapTiles.Count; i++)
         {
-            mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary(mapTiles[i].GetElevation().ToString()));
+            mapTiles[i].UpdateElevationSprite(elevationSprites.SpriteDictionary("E"+mapTiles[i].GetElevation().ToString()));
         }
     }
 

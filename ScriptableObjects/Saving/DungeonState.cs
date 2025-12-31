@@ -8,9 +8,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "DungeonState", menuName = "ScriptableObjects/DataContainers/SavedData/DungeonState", order = 1)]
 public class DungeonState : SavedState
 {
-    public OverworldState overworldState;
     public Dungeon dungeon;
-    public string dungeonName;
 
     public override void NewGame()
     {
@@ -21,7 +19,9 @@ public class DungeonState : SavedState
     {
         dataPath = Application.persistentDataPath + "/" + filename;
         // Basic info, dungeon type/size/tiles.
-        allData = previousScene + delimiter + dungeon.GetDungeonName() + delimiter + dungeon.GetDungeonSize() + delimiter;
+        allData = previousScene + delimiter;
+        allData += dungeon.GetDungeonName() + delimiter;
+        allData += dungeon.GetDungeonSize() + delimiter;
         allData += String.Join(delimiterTwo, dungeon.GetCurrentFloorTiles()) + delimiter;
         // Locations of party/stairs/treasures.
         allData += dungeon.GetPartyLocation() + delimiter + dungeon.GetStairsDown() + delimiter;
@@ -58,6 +58,8 @@ public class DungeonState : SavedState
         allData += dungeon.GetMerchantPrices() + delimiter;
         // Quest battle.
         allData += dungeon.GetQuestBattleInfo() + delimiter;
+        allData += dungeon.GetCustomWeathers() + delimiter;
+        allData += dungeon.GetCustomTerrains() + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -176,6 +178,12 @@ public class DungeonState : SavedState
                 break;
             case 31:
                 dungeon.SetQuestBattleInfo(stat);
+                break;
+            case 32:
+                dungeon.SetCustomWeathers(stat);
+                break;
+            case 33:
+                dungeon.SetCustomTerrains(stat);
                 break;
             default:
                 break;

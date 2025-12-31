@@ -725,7 +725,7 @@ public class BattleManager : MonoBehaviour
             }
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
             // If you can't find a target or cast the skill or are silenced then just do a regular action.
-            if (targetedTile == -1 || !activeManager.CheckSkillCost() || turnActor.GetSilenced())
+            if (targetedTile == -1 || !activeManager.CheckSkillCost())
             {
                 StartCoroutine(StandardNPCAction(actionsLeft));
                 yield break;

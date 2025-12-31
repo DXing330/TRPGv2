@@ -12,7 +12,8 @@ public class DungeonSelectList : MonoBehaviour
     public int page = 0;
     public void ChangePage(bool right)
     {
-        page = utility.ChangePage(page, right, dungeonSelectObjects, currentDungeons);
+        page = utility.ChangePage(page, right, dungeonSelectObjects, allDungeons);
+        UpdateCurrentPage();
     }
     public int selected;
     public void Select(int index)

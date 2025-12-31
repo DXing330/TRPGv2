@@ -9,7 +9,7 @@ public class StSSettings : SavedData
 {
     public int difficultySetting;
     public int maxDifficulty;
-    public void SetDifficultly(int newInfo)
+    public void SetDifficulty(int newInfo)
     {
         difficultySetting = newInfo;
         Save();
@@ -76,6 +76,6 @@ public class StSSettings : SavedData
             return;
         }
         string[] blocks = allData.Split(delimiter);
-        difficultySetting = int.Parse(blocks[0]);
+        SetDifficulty(int.Parse(blocks[0]));
     }
 }

@@ -15,6 +15,13 @@ public class FactionCity : MonoBehaviour
     public string factionColor;
     public void SetColor(string fColor){factionColor = fColor;}
     public string GetColor(){return factionColor;}
+    public int capital;
+    public void SetCapital(int newInfo){capital = newInfo;}
+    public void MakeCapital(){capital = 1;}
+    public bool Capital(){return capital > 0;}
+    // Higher reputation gives you more access to city features.
+    // Increase reputation by doing favors or giving gifts.
+    public int reputation;
     public int location;
     public void SetLocation(int loc){location = loc;}
     public int GetLocation(){return location;}
@@ -31,54 +38,159 @@ public class FactionCity : MonoBehaviour
     {
         ownedTiles.Add(tileNumber);
     }
-    public int mana;
-    public int gold;
-    public int food;
-    public int materials;
-    public List<string> resources;
-    // Market, mage tower, barracks, defenses, storage silos
-    public List<string> upgrades;
-    public List<int> upgradeLevels;
-    public bool UpgradeExists(string upgrade)
+    // Need more population for higher level buildings.
+    // Higher level buildings are an abstraction for better specialists.
+    // Ie higher level forge implies more skilled smiths.
+    protected int basePopulationMax = 6;
+    protected int populationPerLevel = 6;
+    public int population; // Determines tax (gold) income.
+    protected string populationStorageString = "Housing";
+    protected void PopulationChange()
     {
-        return upgrades.Contains(upgrade);
+        // First feed the people.
+        if (population <= 0){return;}
+        // One unit of food feeds six people?
+        food -= population / 6;
+        // If stored food is negative then population decreases.
+        if (food < 0)
+        {
+            population--;
+        }
+        // If the stored food is more than population then population increases.
+        else if (food > population)
+        {
+            population++;
+        }
     }
-    public int GetLevelOfUpgrade(string upgrade)
+    protected int baseStorage = 60;
+    protected int storagePerLevel = 60;
+    public int mana; // Used for altar upgrades / equipment enchantments / buffs / etc.
+    protected string manaStorageString = "ManaStorage";
+    public int gold; // Used for everything.
+    protected string goldStorageString = "GoldStorage";
+    public int food; // Used to maintain / increase population.
+    protected string foodStorageString = "FoodStorage";
+    public int materials; // Used for building upgrades / maintenance.
+    protected string matsStorageString = "MatsStorage";
+    public List<string> treasures; // Special resources / valuable equipment / quest items
+    protected string treasureStorageString = "Vault";
+    
+    // Specialist buildings have a max level of 6.
+    // Upgrade cost is level * level * 100 of both gold and materials.
+    // Mage towers also need level * level * mana to be upgraded?
+    // Also need level * level * level of population before that level of upgrade is possible.
+
+    // Walls have no max level?
+    // Upgrade cost is level * level * 100 of both gold and materials.
+    // Fortifications have max level of 6.
+    // Upgrade cost is level * level * 100 of both gold and materials.
+    
+    // Storage buildings have no max level.
+    // Upgrade cost is level * 100 of both gold and materials.
+    // Housing increase population limit by 2.
+    // Resource silos increase resource limits by 200.
+
+    // Gameplay loop -> gather resources -> increase population -> level up specialist buildings -> more resources
+    // For the gather resources stage, you need to upgrade your resource storages in order to afford the population increases and building upgrades.
+
+    public List<string> buildingData;
+    protected void RefreshBuildingData()
     {
-        if (!UpgradeExists(upgrade)){return 0;}
-        int indexOf = upgrades.IndexOf(upgrade);
-        return upgradeLevels[indexOf];
+        buildingData.Clear();
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            buildingData.Add(buildings[i].GetBuildingString());
+        }
     }
+    protected void LoadBuildingData(List<string> newInfo)
+    {
+        buildingData = new List<string>(newInfo);
+        for (int i = 0; i < buildingData.Count; i++)
+        {
+            string[] blocks = buildingData[i].Split(buildings[0].delimiter);
+            UpdateBuilding(blocks[0], int.Parse(blocks[1]));
+        }
+    }
+    protected void UpdateBuilding(string bName, int bLevel)
+    {
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            if (buildings[i].MatchName(bName))
+            {
+                buildings[i].SetLevel(bLevel);
+                return;
+            }
+        }
+    }
+    public List<FactionCityBuilding> buildings;
+    public void ResetBuildings()
+    {
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            buildings[i].ResetLevel();
+        }
+    }
+    public int GetTotalBuildingLevels()
+    {
+        int tLevel = 0;
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            tLevel += buildings[i].GetLevel();
+        }
+        return tLevel;
+    }
+    
+    /*
+    // Used by visitors.
+    public int marketLevel;
+    public int mageTowerLevel;
+    public int trainingGroundLevel;
+    // Used for unit generation.
+    public int barracksLevel;
+    public int forgeLevel;
+    public int altarLevel;
+    // Used for dungeons/sieges.
+    public int wallLevel;
+    public int fortificationLevel;
+    // Used for resources.
+    public int housingLevel;
+    public int foodStorageLevel;
+    public int materialStorageLevel;
+    */
 
     public void ResetStats()
     {
         factionName = "";
         factionColor = "";
+        capital = 0;
+        reputation = 0;
         location = -1;
         ownedTiles.Clear();
         mana = 0;
         gold = 0;
         food = 0;
         materials = 0;
-        resources.Clear();
-        upgrades.Clear();
-        upgradeLevels.Clear();
+        treasures.Clear();
+        ResetBuildings();
     }
 
     public string GetStats()
     {
         string data = "";
-        data += factionName + delimiter;
-        data += factionColor + delimiter;
-        data += location + delimiter;
-        data += String.Join(delimiterTwo, ownedTiles) + delimiter;
-        data += mana + delimiter;
-        data += gold + delimiter;
-        data += food + delimiter;
-        data += materials + delimiter;
-        data += String.Join(delimiterTwo, resources) + delimiter;
-        data += String.Join(delimiterTwo, upgrades) + delimiter;
-        data += String.Join(delimiterTwo, upgradeLevels) + delimiter;
+        data += "FactionName=" + factionName + delimiter;
+        data += "FactionColor=" + factionColor + delimiter;
+        data += "Capital=" + capital + delimiter;
+        data += "Reputation=" + reputation + delimiter;
+        data += "Location=" + location + delimiter;
+        data += "OwnedTiles=" + String.Join(delimiterTwo, ownedTiles) + delimiter;
+        data += "Population=" + population + delimiter;
+        data += "Mana=" + mana + delimiter;
+        data += "Gold=" + gold + delimiter;
+        data += "Food=" + food + delimiter;
+        data += "Materials=" + materials + delimiter;
+        data += "Treasures=" + String.Join(delimiterTwo, treasures) + delimiter;
+        RefreshBuildingData();
+        data += "Buildings=" + String.Join(delimiterTwo, buildingData) + delimiter;
         return data;
     }
 
@@ -87,49 +199,58 @@ public class FactionCity : MonoBehaviour
         string[] blocks = data.Split(delimiter);
         for (int i = 0; i < blocks.Length; i++)
         {
-            LoadStat(blocks[i], i);
+            LoadStat(blocks[i]);
         }
     }
 
-    protected void LoadStat(string stat, int index)
+    protected void LoadStat(string stat)
     {
-        switch (index)
+        string[] statsBlocks = stat.Split("=");
+        if (statsBlocks.Length < 2){return;}
+        string value = statsBlocks[1];
+        switch (statsBlocks[0])
         {
             default:
             break;
-            case 0:
-                factionName = stat;
-                break;
-            case 1:
-                factionColor = stat;
-                break;
-            case 2:
-                location = int.Parse(stat);
-                break;
-            case 3:
-                ownedTiles = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-                break;
-            case 4:
-                mana = int.Parse(stat);
-                break;
-            case 5:
-                gold = int.Parse(stat);
-                break;
-            case 6:
-                food = int.Parse(stat);
-                break;
-            case 7:
-                materials = int.Parse(stat);
-                break;
-            case 8:
-                resources = stat.Split(delimiterTwo).ToList();
-                break;
-            case 9:
-                upgrades = stat.Split(delimiterTwo).ToList();
-                break;
-            case 10:
-                upgradeLevels = utility.ConvertStringListToIntList(stat.Split(delimiterTwo).ToList());
-                break;
+            case "FactionName":
+				factionName = value;
+				break;
+			case "FactionColor":
+				factionColor = value;
+				break;
+			case "Capital":
+				capital = int.Parse(value);
+				break;
+			case "Reputation":
+				reputation = int.Parse(value);
+				break;
+			case "Location":
+				SetLocation(int.Parse(value));
+				break;
+			case "OwnedTiles":
+				ownedTiles = utility.ConvertStringListToIntList(value.Split(delimiterTwo).ToList());
+				break;
+			case "Population":
+				population = int.Parse(value);
+				break;
+			case "Mana":
+				mana = int.Parse(value);
+				break;
+			case "Gold":
+				gold = int.Parse(value);
+				break;
+			case "Food":
+				food = int.Parse(value);
+				break;
+			case "Materials":
+				materials = int.Parse(value);
+				break;
+			case "Treasures":
+				treasures = value.Split(delimiterTwo).ToList();
+				break;
+			case "Buildings":
+				LoadBuildingData(value.Split(delimiterTwo).ToList());
+				break;
         }
     }
 }

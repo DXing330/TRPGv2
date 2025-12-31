@@ -539,6 +539,7 @@ public class BattleMap : MapManager
         if (tileNumber < 0 || tileNumber >= mapElevations.Count){return;}
         mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
         mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
+        mapTiles[tileNumber].UpdateElevationSprite(elevationSprites.SpriteDictionary("E"+mapTiles[tileNumber].GetElevation().ToString()));
         battleManager.moveManager.SetMapElevations(mapElevations);
         UpdateMap();
     }
@@ -1154,6 +1155,26 @@ public class BattleMap : MapManager
             }
         }
         return attackableEnemies;
+    }
+
+    public List<int> GetShootableTiles(TacticActor actor, int shootingRange = 2)
+    {
+        List<int> attackable = mapUtility.GetTilesInCircleShape(actor.GetLocation(), shootingRange, mapSize);
+        attackable.Remove(actor.GetLocation());
+        return attackable;
+    }
+
+    public bool ShootableEnemies(TacticActor actor, int shootingRange = 2)
+    {
+        List<TacticActor> attackableEnemies = GetActorsOnTiles(GetShootableTiles(actor, shootingRange));
+        for (int i = attackableEnemies.Count - 1; i >= 0; i--)
+        {
+            if (attackableEnemies[i].GetTeam() == actor.GetTeam())
+            {
+                attackableEnemies.RemoveAt(i);
+            }
+        }
+        return attackableEnemies.Count > 0;
     }
 
     public int GetRandomEnemyLocation(TacticActor actor, List<int> targetedTiles)

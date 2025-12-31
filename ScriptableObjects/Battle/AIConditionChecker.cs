@@ -61,6 +61,8 @@ public class AIConditionChecker : ScriptableObject
                 return map.GetAttackableEnemies(actor).Count >= int.Parse(specifics);
             case "AttackableEnemyCount<=":
                 return map.GetAttackableEnemies(actor).Count <= int.Parse(specifics);
+            case "Shootable":
+                return map.ShootableEnemies(actor, int.Parse(specifics));
             case "MaxEnergy":
                 return actor.GetEnergy() >= actor.GetBaseEnergy();
             case "Health":

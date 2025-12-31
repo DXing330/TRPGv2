@@ -13,6 +13,7 @@ public class Dungeon : ScriptableObject
     {
         return (mainStory.GetCurrentChapter() != 1 && mainStory.GetRequestLocation() == GetDungeonName());
     }
+    public bool customDungeon = false;
     public DungeonState dungeonState;
     public ActorPathfinder pathfinder;
     public DungeonGenerator dungeonGenerator;
@@ -100,21 +101,46 @@ public class Dungeon : ScriptableObject
     // List of dungeons and their stats.
     public StatDatabase dungeonData;
     public StatDatabase dungeonBosses;
+    public string customBosses;
     public StatDatabase dungeonItems;
     public StatDatabase itemRarities;
     public StatDatabase dungeonWeathers;
+    public string customWeathers;
+    public string GetCustomWeathers()
+    {
+        return customWeathers;
+    }
+    public void SetCustomWeathers(string newInfo)
+    {
+        customWeathers = newInfo;
+    }
     public StatDatabase dungeonChests;
     protected string GenerateChest()
     {
-        string[] chests = dungeonChests.ReturnValue(dungeonName).Split("|");
+        // Chests are based on dungeon difficultly.
+        string[] chests = dungeonChests.ReturnValue(GetDifficulty().ToString()).Split("|");
         string chest = chests[Random.Range(0, chests.Length)];
         return chest;
     }
     public StatDatabase dungeonTerrains;
+    public string customTerrains;
+    public string GetCustomTerrains()
+    {
+        return customTerrains;
+    }
+    public void SetCustomTerrains(string newInfo)
+    {
+        customTerrains = newInfo;
+    }
     public string GenerateTerrain()
     {
         string[] possible = dungeonTerrains.ReturnValue(dungeonName).Split("|");
         string chosen = possible[Random.Range(0, possible.Length)];
+        if (customDungeon)
+        {
+            possible = customTerrains.Split(",");
+            chosen = possible[Random.Range(0, possible.Length)];
+        }
         if (chosen == ""){return type;}
         return chosen;
     }
@@ -123,6 +149,11 @@ public class Dungeon : ScriptableObject
     {
         string[] possibleWeathers = dungeonWeathers.ReturnValue(dungeonName).Split("|");
         string chosenWeather = possibleWeathers[Random.Range(0, possibleWeathers.Length)];
+        if (customDungeon)
+        {
+            possibleWeathers = customWeathers.Split(",");
+            chosenWeather = possibleWeathers[Random.Range(0, possibleWeathers.Length)];
+        }
         return chosenWeather;
     }
     protected int maxItemRarity = 4;
@@ -263,32 +294,41 @@ public class Dungeon : ScriptableObject
     {
         SetDungeonName(newName);
     }
-    public void SetDungeonName(string newName, bool initial = true)
+    public void SetDungeonName(string newName, bool initial = true, bool custom = false)
     {
+        customDungeon = custom;
         dungeonName = newName;
         // This lets you know if the boss has been fought.
         // If you beat the final boss then you have cleared the dungeon.
         bossFought = 0;
         // If you beat the quest then good things happen?
         questFought = 0;
-        string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
         if (initial)
         {
             currentFloor = 0;
             spawnCounter = 0;
             ResetAllEnemies();
         }
+        string[] dungeonInfo = dungeonData.ReturnValue(dungeonName).Split("|");
+        if (custom || dungeonInfo.Length < 6)
+        {
+            customDungeon = true;
+            dungeonInfo = newName.Split("|");
+        }
         maxFloors = int.Parse(dungeonInfo[0]);
         type = dungeonInfo[1];
         possibleEnemies = dungeonInfo[2].Split(",").ToList();
         minEnemies = int.Parse(dungeonInfo[3]);
         maxEnemies = int.Parse(dungeonInfo[4]);
-        //treasures = dungeonInfo[5].Split(",").ToList();
-        //maxPossibleTreasureQuantities = dungeonInfo[6].Split(",").ToList();
         averageSize = int.Parse(dungeonInfo[5]);
         sizeVariance = int.Parse(dungeonInfo[6]);
         enemyModifiers = dungeonInfo[7].Split(",").ToList();
         bossEnemies = dungeonInfo[8].Split(",").ToList();
+        if (custom)
+        {
+            customWeathers = dungeonInfo[9];
+            customTerrains = dungeonInfo[10];
+        }
         partyModifiers.Clear();
         partyModifierDurations.Clear();
         currentStomach = baseMaxStomach;
@@ -297,8 +337,6 @@ public class Dungeon : ScriptableObject
         utility.RemoveEmptyListItems(bossEnemies);
     }
     public string GetDungeonName(){ return dungeonName; }
-    //public List<string> treasures;
-    //public List<string> maxPossibleTreasureQuantities;
     public int averageSize;
     public int sizeVariance;
     public List<string> possibleEnemies;
@@ -400,6 +438,10 @@ public class Dungeon : ScriptableObject
     public string type = "Forest";
     public string passableTileType = "Plains";
     public int maxFloors;
+    public int GetDifficulty()
+    {
+        return (int) Mathf.Sqrt(maxFloors);
+    }
     public int currentFloor;
     public void SetCurrentFloor(int newInfo){ currentFloor = newInfo; }
     public int GetCurrentFloor() { return currentFloor; }
@@ -1039,7 +1081,7 @@ public class Dungeon : ScriptableObject
     public void ForceSpawnEnemy(int spawnLocation)
     {
         if (spawnLocation == -1 || spawnLocation >= currentFloorTiles.Count || currentFloorTiles[spawnLocation] != passableTileType){return;}
-        int enemyCount = Random.Range(minEnemies, maxEnemies + 1);
+        int enemyCount = Random.Range(minEnemies + currentFloor / 2, maxEnemies + 1 + currentFloor);
         string enemyString = "";
         for (int i = 0; i < enemyCount; i++)
         {

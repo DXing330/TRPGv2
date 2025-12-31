@@ -34,7 +34,6 @@ public class ActorMaker : MonoBehaviour
     protected void SetActorName(TacticActor actor, string actorName)
     {
         // Currently species is useless at this rate.
-        actor.SetSpriteName((actorName));
         actor.SetStatsFromString(actorStats.ReturnValue(actorName));
     }
 
