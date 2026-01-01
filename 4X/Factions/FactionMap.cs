@@ -11,10 +11,23 @@ public class FactionMap : MapManager
     public FactionMapData mapData;
     protected override void Start()
     {
-        mapData.LoadMap(this);
+        // Load everything at the start, then save when leaving the scene or change the day.
+        Load();
         pathfinder.SetMapSize(mapSize);
         pathfinder.SetMoveCosts(moveCosts);
         UpdateMap();
+    }
+    protected void Load()
+    {
+        mapData.LoadMap(this);
+        cities.Load();
+        units.Load();
+    }
+    protected void Save()
+    {
+        mapData.SaveMap(this);
+        cities.SaveCityData();
+        units.SaveUnitData();
     }
     protected override void UpdateCurrentTiles()
     {
@@ -24,7 +37,7 @@ public class FactionMap : MapManager
     public void TestNewMap()
     {
         mapData.GenerateNewMap(this);
-        mapData.SaveMap(this);
+        Save();
         UpdateMap();
     }
     public List<int> moveCosts;
@@ -345,7 +358,7 @@ public class FactionMap : MapManager
         }
         if (save)
         {
-            mapData.SaveMap(this);
+            Save();
         }
     }
     public void RefreshAllTileOutputs()
@@ -356,7 +369,7 @@ public class FactionMap : MapManager
         {
             RefreshTileOutput(i, false);
         }
-        mapData.SaveMap(this);
+        Save();
     }
     public string ReturnTileOutput(int tileNumber)
     {
@@ -375,10 +388,9 @@ public class FactionMap : MapManager
     // Not saved, obtained from the faction manager each turn.
     public bool fastTurns;
     public CityManager cities;
-    //public UnitManager units; 
+    public FactionUnitManager units;
     public void TestNewDay()
     {
-        mapData.SaveMap(this);
         UpdateMap();
     }
 }

@@ -74,21 +74,6 @@ public class FactionCity : MonoBehaviour
     protected string matsStorageString = "MatsStorage";
     public List<string> treasures; // Special resources / valuable equipment / quest items
     protected string treasureStorageString = "Vault";
-    
-    // Specialist buildings have a max level of 6.
-    // Upgrade cost is level * level * 100 of both gold and materials.
-    // Mage towers also need level * level * mana to be upgraded?
-    // Also need level * level * level of population before that level of upgrade is possible.
-
-    // Walls have no max level?
-    // Upgrade cost is level * level * 100 of both gold and materials.
-    // Fortifications have max level of 6.
-    // Upgrade cost is level * level * 100 of both gold and materials.
-    
-    // Storage buildings have no max level.
-    // Upgrade cost is level * 100 of both gold and materials.
-    // Housing increase population limit by 2.
-    // Resource silos increase resource limits by 200.
 
     // Gameplay loop -> gather resources -> increase population -> level up specialist buildings -> more resources
     // For the gather resources stage, you need to upgrade your resource storages in order to afford the population increases and building upgrades.

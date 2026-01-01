@@ -5,29 +5,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "FactionCityData", menuName = "ScriptableObjects/4X/FactionCityData", order = 1)]
-public class FactionCityData : SavedData
+[CreateAssetMenu(fileName = "FactionUnitData", menuName = "ScriptableObjects/4X/FactionUnitData", order = 1)]
+public class FactionUnitDataManager : SavedData
 {
     public string delimiterTwo;
-    public List<string> savedCities;
-    public List<string> GetSavedCities(){return savedCities;}
+    public List<string> savedUnits;
+    public List<string> GetSavedUnits(){return savedUnits;}
 
     public override void NewGame()
     {
-        savedCities.Clear();
+        savedUnits.Clear();
         Save();
     }
 
-    public void Save(List<FactionCity> cities)
+    public void Save(List<FactionUnit> units)
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
-        savedCities.Clear();
-        for (int i = 0; i < cities.Count; i++)
+        savedUnits.Clear();
+        for (int i = 0; i < units.Count; i++)
         {
-            savedCities.Add(cities[i].GetStats());
+            savedUnits.Add(units[i].GetStats());
         }
-        allData += String.Join(delimiter, savedCities);
+        allData += String.Join(delimiter, savedUnits);
         File.WriteAllText(dataPath, allData);
     }
 
@@ -40,6 +40,6 @@ public class FactionCityData : SavedData
             NewGame();
             return;
         }
-        savedCities = allData.Split(delimiter).ToList();
+        savedUnits = allData.Split(delimiter).ToList();
     }
 }

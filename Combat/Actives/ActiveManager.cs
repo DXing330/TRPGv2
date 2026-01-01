@@ -565,7 +565,7 @@ public class ActiveManager : MonoBehaviour
 
     public bool CheckSkillCost()
     {
-        return (CheckActionCost() && CheckEnergyCost());
+        return active.Activatable(skillUser);
     }
 
     public bool CheckSpellCost()
@@ -575,15 +575,5 @@ public class ActiveManager : MonoBehaviour
         // bool mana = ???
         bool vigor = skillUser.GetVigor() >= magicSpell.ReturnManaCost();
         return (actions && vigor);
-    }
-
-    public bool CheckActionCost()
-    {
-        return (skillUser.GetActions() >= active.GetActionCost());
-    }
-
-    public bool CheckEnergyCost()
-    {
-        return (skillUser.GetEnergy() >= active.GetEnergyCost());
     }
 }

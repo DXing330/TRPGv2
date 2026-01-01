@@ -592,6 +592,9 @@ public class BattleManager : MonoBehaviour
             case "Skill":
                 StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));
                 yield break;
+            case "Summon Skill":
+                StartCoroutine(NPCSkillAction(actionsLeft, actorAI.ReturnSkillWithEffect(turnActor, "Summon")));
+                yield break;
             case "One Time Skill":
                 turnActor.IncrementCounter();
                 StartCoroutine(NPCSkillAction(actionsLeft, turnDetails[1]));

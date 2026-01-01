@@ -170,7 +170,38 @@ public class MapManager : MonoBehaviour
     }
     public int gridSize;
     public int centerTile;
-    public void UpdateCenterTile(int newInfo)
+    // Make hex to up-down-left-right
+    // This is for pointy top only currently.
+    public void RectangularMoveCenterTile(int direction)
+    {
+        int prevCenter = centerTile;
+        // UP
+        if (direction == 0 || direction == 5)
+        {
+            centerTile -= mapSize * 2;
+        }
+        // DOWN
+        else if (direction == 2 || direction == 3)
+        {
+            centerTile += mapSize * 2;
+        }
+        // LEFT
+        else if (direction == 1)
+        {
+            centerTile += 1;
+        }
+        // RIGHT
+        else if (direction == 4)
+        {
+            centerTile -= 1;
+        }
+        if (centerTile < 0 || centerTile >= mapSize * mapSize)
+        {
+            centerTile = prevCenter;
+            return;
+        }
+    }
+    public void UpdateCenterTile(int newInfo, bool up = false)
     {
         centerTile = newInfo;
         // Can't move left or right by 1, have to move left/right by 2.
@@ -181,7 +212,14 @@ public class MapManager : MonoBehaviour
         // Can't move up or down by 1, have to move up or down by 2.
         else if (!mapUtility.flatTop && mapUtility.GetRow(centerTile, mapSize) % 2 != 1)
         {
-            centerTile += mapSize;
+            if (up)
+            {
+                centerTile -= mapSize;
+            }
+            else
+            {
+                centerTile += mapSize;
+            }
         }
     }
 
@@ -251,15 +289,10 @@ public class MapManager : MonoBehaviour
     }
 
     // Probably never use this. Moving the map should happen automatically as the player icon moves.
+    // This is used to move the map up/down/left/right.
     public void MoveMap(int direction)
     {
-        int prevCenter = centerTile;
-        centerTile = mapUtility.PointInDirection(centerTile, direction, mapSize);
-        if (centerTile < 0)
-        {
-            centerTile = prevCenter;
-        }
-        UpdateCenterTile(centerTile);
+        RectangularMoveCenterTile(direction);
         UpdateMap();
     }
 

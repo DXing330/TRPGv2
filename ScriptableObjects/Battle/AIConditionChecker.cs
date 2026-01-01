@@ -21,6 +21,23 @@ public class AIConditionChecker : ScriptableObject
         return true;
     }
 
+    public ActiveSkill active;
+    public StatDatabase activeData;
+
+    public string GetAvailableSkillWithEffect(TacticActor actor, string skillEffect)
+    {
+        List<string> actorActives = actor.GetActiveSkills();
+        for (int i = 0; i < actorActives.Count; i++)
+        {
+            active.LoadSkillFromString(activeData.ReturnValue(actorActives[i]));
+            if (active.GetEffect() == skillEffect && active.Activatable(actor))
+            {
+                return actorActives[i];
+            }
+        }
+        return "";
+    }
+
     protected bool CheckCondition(string condition, string specifics, TacticActor actor, BattleMap map)
     {
         switch (condition)
@@ -129,6 +146,8 @@ public class AIConditionChecker : ScriptableObject
                 return map.DistanceBetweenActors(actor, actor.GetTarget()) <= ReturnDistanceCheck(actor, specifics);
             case "TargetFacingOff":
                 return map.TargetFacingActor(actor);
+            case "SkillEffect":
+                return GetAvailableSkillWithEffect(actor, specifics) != "";
         }
         return true;
     }

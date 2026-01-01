@@ -100,6 +100,10 @@ public class ActiveSkill : SkillEffect
     {
         return utility.SafeParseInt(actionCost);
     }
+    public bool Activatable(TacticActor actor)
+    {
+        return (actor.GetActions() >= GetActionCost() && actor.GetEnergy() >= GetEnergyCost());
+    }
     // Get all the tiles that are being targeted.
     public string range;
     public void SetRange(string newInfo)

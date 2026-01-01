@@ -90,6 +90,11 @@ public class ActorAI : ScriptableObject
         return skillName;
     }
 
+    public string ReturnSkillWithEffect(TacticActor actor, string skillEffect)
+    {
+        return conditionChecker.GetAvailableSkillWithEffect(actor, skillEffect);
+    }
+
     public List<int> FindPathAwayFromTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
     {
         int originalLocation = currentActor.GetLocation();

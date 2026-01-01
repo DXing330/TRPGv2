@@ -66,8 +66,7 @@ public class ActiveSelectList : SelectList
         if (!activeManager.CheckSkillCost())
         {
             // Show an error message instead of just returning?
-            if (!activeManager.CheckActionCost()) { ErrorMessage(errorMessages[0]); }
-            else { ErrorMessage(errorMessages[1]); }
+            ErrorMessage("Not enough resources to use this skill.");
             ResetState();
             return;
         }
