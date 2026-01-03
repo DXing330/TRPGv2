@@ -48,7 +48,7 @@ public class MoveCostManager : MonoBehaviour
             {
                 currentMoveCosts.Add(int.Parse(value));
             }
-            currentMoveCosts[i] += mapElevations[i] / 2;
+            currentMoveCosts[i] += Mathf.Abs(mapElevations[i]) / 2;
         }
         List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();
@@ -126,11 +126,6 @@ public class MoveCostManager : MonoBehaviour
     {
         List<int> tiles = actorPathfinder.FindTilesInAttackRange(actor, currentMoveCosts, current);
         return tiles;
-    }
-
-    public bool TileInAttackRange(TacticActor actor, int tileIndex)
-    {
-        return actor.GetAttackRange() >= actorPathfinder.mapUtility.DistanceBetweenTiles(actor.GetLocation(), tileIndex, actorPathfinder.mapSize);
     }
 
     public bool TileInAttackableRange(TacticActor actor, int tileIndex)

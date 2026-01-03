@@ -32,6 +32,8 @@ public class MapManager : MonoBehaviour
     public StatDatabase tileElevationMappings;
     public SpriteContainer elevationSprites;
     public List<int> mapElevations;
+    // If the elevation difference is too large then basic melee attacks don't work.
+    protected int maxElevationDifference = 2;
     public int ReturnElevation(int tileNumber)
     {
         if (tileNumber < 0 || tileNumber >= mapElevations.Count)
@@ -40,39 +42,35 @@ public class MapManager : MonoBehaviour
         }
         return mapElevations[tileNumber];
     }
+    public int ReturnElevationDifference(int tileOne, int tileTwo)
+    {
+        return Mathf.Abs(mapTiles[tileOne].GetElevation() - mapTiles[tileTwo].GetElevation());
+    }
+    public int ReturnClosestTileWithinElevationDifference(int start, int end)
+    {
+        List<int> adjacentTiles = mapUtility.AdjacentTiles(end, mapSize);
+        int target = end;
+        int dist = mapSize * mapSize;
+        for (int i = 0; i < adjacentTiles.Count; i++)
+        {
+            if (ReturnElevationDifference(adjacentTiles[i], end) > maxElevationDifference)
+            {
+                continue;
+            }
+            if (mapUtility.DistanceBetweenTiles(adjacentTiles[i], start, mapSize) < dist)
+            {
+                dist = mapUtility.DistanceBetweenTiles(adjacentTiles[i], start, mapSize);
+                target = adjacentTiles[i];
+            }
+        }
+        return target;
+    }
     public List<int> possibleElevation;
-    public List<int> elevationWeights;
     public int RandomElevation(string tileType)
     {
         List<string> possibleElevations = tileElevationMappings.ReturnValue(tileType).Split("|").ToList();
-        int rng = Random.Range(0, GetTotalElevationWeights());
-        int elevation = 0;
-        for (int i = 0; i < possibleElevation.Count; i++)
-        {
-            if (rng < elevationWeights[i])
-            {
-                elevation = possibleElevation[i];
-                break;
-            }
-            else
-            {
-                rng -= elevationWeights[i];
-            }
-        }
-        if (possibleElevations.Contains(elevation.ToString()))
-        {
-            return elevation;
-        }
-        return RandomElevation(tileType);
-    }
-    public int GetTotalElevationWeights()
-    {
-        int weight = 0;
-        for (int i = 0; i < elevationWeights.Count; i++)
-        {
-            weight += elevationWeights[i];
-        }
-        return weight;
+        if (possibleElevations.Count < 2){return 0;}
+        return int.Parse(possibleElevations[Random.Range(0, possibleElevations.Count)]);
     }
     public void InitializeElevations()
     {

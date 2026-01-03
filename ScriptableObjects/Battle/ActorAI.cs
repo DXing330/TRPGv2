@@ -152,10 +152,16 @@ public class ActorAI : ScriptableObject
         {
             currentActor.SetTarget(GetClosestEnemy(map.battlingActors, currentActor, moveManager));
         }
-        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, currentActor.GetTarget().GetLocation());
+        // Try to move to the closest tile with an elevation difference less than 3.
+        int target = currentActor.GetTarget().GetLocation();
+        if (currentActor.GetAttackRange() <= 1)
+        {
+            target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target);
+        }
+        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, target);
         List<int> path = new List<int>();
         int pathCost = 0;
-        if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), moveManager)) { return path; }
+        if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), map)) { return path; }
         for (int i = fullPath.Count - 1; i >= 0; i--)
         {
             path.Insert(0, fullPath[i]);
@@ -167,7 +173,7 @@ public class ActorAI : ScriptableObject
                 pathCost -= moveManager.MoveCostOfTile(fullPath[i]);
                 break;
             }
-            if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), moveManager))
+            if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), map))
             {
                 break;
             }
@@ -230,11 +236,11 @@ public class ActorAI : ScriptableObject
         return moveManager.TileInAttackableRange(currentActor, target.GetLocation());
     }
 
-    public bool EnemyInAttackRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
+    public bool EnemyInAttackRange(TacticActor currentActor, TacticActor target, BattleMap map)
     {
         if (target == null) { return false; }
         if (target.GetHealth() <= 0) { return false; }
-        return moveManager.TileInAttackRange(currentActor, target.GetLocation());
+        return map.TileInAttackRange(currentActor, target.GetLocation());
     }
 
     public int ChooseSkillTargetLocation(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)

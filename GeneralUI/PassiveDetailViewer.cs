@@ -218,6 +218,8 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if you are on ground level";
                     case "2":
                         return " if you are on high ground";
+                    case "3":
+                        return " if you are on high ground";
                 }
                 break;
             case "Elevation<>":
@@ -228,6 +230,8 @@ public class PassiveDetailViewer : MonoBehaviour
                     case "1":
                         return " if not on ground level";
                     case "2":
+                        return " if not on high ground";
+                    case "3":
                         return " if not on high ground";
                 }
                 break;
@@ -240,6 +244,8 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if not on ground level";
                     case "2":
                         return " if not on high ground";
+                    case "3":
+                        return " if not on high ground";
                 }
                 break;
             case "Elevation<>D":
@@ -250,6 +256,8 @@ public class PassiveDetailViewer : MonoBehaviour
                     case "1":
                         return " if not on ground level";
                     case "2":
+                        return " if not on high ground";
+                    case "3":
                         return " if not on high ground";
                 }
                 break;
@@ -262,6 +270,8 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if on ground level";
                     case "2":
                         return " if on high ground";
+                    case "3":
+                        return " if on high ground";
                 }
                 break;
             case "ElevationD":
@@ -272,6 +282,8 @@ public class PassiveDetailViewer : MonoBehaviour
                     case "1":
                         return " if on ground level";
                     case "2":
+                        return " if on high ground";
+                    case "3":
                         return " if on high ground";
                 }
                 break;
@@ -408,6 +420,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the attacker is " + specifics;
             case "Species<>A":
                 return " if the attacker is not " + specifics;
+            case "TargetD:":
+                return " if the target is targeting the attacker";
+            case "TargetD<>":
+                return " if the target is not targeting the attacker";
         }
         return "";
     }
@@ -571,7 +587,7 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " expend "+specifics+" less movement";
             }
             return "";
-            case "BaseDamage":
+            case "AttackValue":
             switch (effect)
             {
                 case "Increase%":
@@ -582,6 +598,15 @@ public class PassiveDetailViewer : MonoBehaviour
             return " "+effect+" damage dealt by "+specifics;
             case "Damage%":
             return " "+effect+" damage multipler by "+specifics+"%";
+            case "DefenseValue":
+            switch (effect)
+            {
+                case "Increase%":
+                return " increase defense by "+specifics+"%";
+                case "Decrease%":
+                return " ignore "+specifics+"% of defense";
+            }
+            return " " + effect + " defense value by " + specifics;
         }
         return " "+effect+" "+target+" by "+specifics;
     }

@@ -1137,10 +1137,31 @@ public class BattleMap : MapManager
         return GetActorsOnTiles(mapUtility.AdjacentTiles(tileNumber, mapSize));
     }
 
+    public bool TileInAttackRange(TacticActor actor, int tileIndex)
+    {
+        List<int> attackable = GetAttackableTiles(actor);
+        return attackable.Contains(tileIndex);
+    }
+
     public List<int> GetAttackableTiles(TacticActor actor)
     {
-        List<int> attackable = mapUtility.GetTilesInCircleShape(actor.GetLocation(), actor.GetAttackRange(), mapSize);
-        attackable.Remove(actor.GetLocation());
+        int range = actor.GetAttackRange();
+        int startTile = actor.GetLocation();
+        List<int> attackable = mapUtility.GetTilesInCircleShape(startTile, range, mapSize);
+        attackable.Remove(startTile);
+        // Melee attacks can't attack if the height difference is too large.
+        // Skills still work?
+        if (range <= 1)
+        {
+            for (int i = attackable.Count - 1; i >= 0; i--)
+            {
+                // Elevation difference of 3 or more means melee basic attacks are ineffective.
+                if (ReturnElevationDifference(attackable[i], startTile) > 2)
+                {
+                    attackable.RemoveAt(i);
+                }
+            }
+        }
         return attackable;
     }
 

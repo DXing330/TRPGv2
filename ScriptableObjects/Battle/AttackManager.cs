@@ -22,7 +22,9 @@ public class AttackManager : ScriptableObject
     protected int damageMultiplier;
     // Based on defender.
     protected int dodgeChance;
+    protected int defenseValue;
     // Based on attacker.
+    protected int attackValue;
     protected int hitChance;
     protected int critDamage;
     protected int critChance;
@@ -144,16 +146,17 @@ public class AttackManager : ScriptableObject
     public void FlatDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int damage)
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        UpdateBattleStats(attacker, defender);
         advantage = 0;
         damageMultiplier = baseMultiplier;
         baseDamage = damage;
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
-        finalDamageCalculation = "";UpdateBattleStats(attacker, defender);
+        finalDamageCalculation = "";
         // Only the defender gets passive bonuses(?) from tile/teffects
         CheckMapPassives(attacker, defender, map, moveManager, false, true);
-        if (!RollToHit(attacker, defender, map)){return;}
         CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
+        if (!RollToHit(attacker, defender, map)){return;}
         baseDamage = Advantage(baseDamage, advantage);
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
         baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
@@ -175,12 +178,12 @@ public class AttackManager : ScriptableObject
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
     {
         UpdateBattleStats(attacker, defender);
+        baseDamage = attackValue;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
         // True damage ignores defender/terrain passives, making it even stronger than it should be.
         CheckMapPassives(attacker, defender, map, moveManager, true, false);
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
-        baseDamage = attacker.GetAttack();
         switch (type)
         {
             case "Health":
@@ -204,6 +207,8 @@ public class AttackManager : ScriptableObject
     protected void UpdateBattleStats(TacticActor attacker, TacticActor defender)
     {
         dodgeChance = defender.GetDodgeChance();
+        defenseValue = defender.GetDefense();
+        attackValue = attacker.GetAttack();
         hitChance = attacker.GetHitChance();
         critChance = attacker.GetCritChance();
         critDamage = attacker.GetCritDamage();
@@ -216,17 +221,17 @@ public class AttackManager : ScriptableObject
         advantage = 0;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
-        baseDamage = attacker.GetAttack();
+        UpdateBattleStats(attacker, defender);
+        baseDamage = attackValue;
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
         finalDamageCalculation = "";
-        UpdateBattleStats(attacker, defender);
         CheckMapPassives(attacker, defender, map, moveManager, true, true);
-        // Determine if you miss or not.
-        if (!RollToHit(attacker, defender, map)){return;}
-        // Bonus damage can be calculated here.
+        // Bonus damage can be calculated here and triggers regardless of hit/miss.
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
         CheckPassives(defender.GetDefendingPassives(), defender, attacker, map, moveManager);
+        // Determine if you miss or not.
+        if (!RollToHit(attacker, defender, map)){return;}
         baseDamage = Advantage(baseDamage, advantage);
         // Check for stab.
         baseDamage = STAB(attacker, baseDamage, type);
@@ -235,8 +240,8 @@ public class AttackManager : ScriptableObject
         // Check for a critical hit.
         baseDamage = CritRoll(attacker, baseDamage);
         // First subtract defense.
-        finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
-        baseDamage = baseDamage - defender.GetDefense();
+        finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defenseValue + " = ";
+        baseDamage = baseDamage - defenseValue;
         if (baseDamage < 0){ baseDamage = 0; }
         finalDamageCalculation += baseDamage;
         // Then multiply by damage multiplier.
@@ -335,11 +340,17 @@ public class AttackManager : ScriptableObject
                 }
                 passiveEffectString += damageMultiplier;
                 break;
-                case "BaseDamage":
+                case "AttackValue":
                 passiveEffectString += "\n";
                 passiveEffectString += passiveName+";"+passiveStats[3]+":"+baseDamage+"->";
                 baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
                 passiveEffectString += baseDamage;
+                break;
+                case "DefenseValue":
+                passiveEffectString += "\n";
+                passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + defenseValue + "->";
+                defenseValue = passive.AffectInt(defenseValue, passiveStats[4], passiveStats[5]);
+                passiveEffectString += defenseValue;
                 break;
                 case "HitChance":
                 passiveEffectString += "\n";

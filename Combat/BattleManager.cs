@@ -802,7 +802,7 @@ public class BattleManager : MonoBehaviour
             turnActor.SetTarget(newTarget);
             // Attack them if you can.
             // You can use a random skill if possible.
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)) { NPCAttackAction(true); }
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map)) { NPCAttackAction(true); }
             // Else move towards the target.
             else
             {
@@ -875,7 +875,7 @@ public class BattleManager : MonoBehaviour
                 turnActor.SetTarget(closestEnemy);
             }
             // If they can be attacked without moving then attack.
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)) { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map)) { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
             // Otherwise move.
             else
             {
@@ -933,7 +933,7 @@ public class BattleManager : MonoBehaviour
                 turnActor.SetTarget(closestEnemy);
             }
             // If they can be attacked without moving then attack.
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)){ NPCAttackAction(); }
+            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map)){ NPCAttackAction(); }
             // Otherwise move.
             else
             {
@@ -941,7 +941,7 @@ public class BattleManager : MonoBehaviour
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
                 // If you're next to the new target then attack them.
-                if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), moveManager)){ NPCAttackAction(); }
+                if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map)){ NPCAttackAction(); }
                 else
                 {
                     List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);

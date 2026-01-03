@@ -398,6 +398,10 @@ public class PassiveSkill : SkillEffect
                 return attacker.GetSpecies() == conditionSpecifics;
             case "Species<>A":
                 return attacker.GetSpecies() != conditionSpecifics;
+            case "TargetD":
+                return target.GetTarget() == attacker;
+            case "TargetD<>":
+                return target.GetTarget() != attacker;
         }
         return true;
     }

@@ -105,6 +105,11 @@ public class SkillEffect : ScriptableObject
                 target.UpdateAttack(int.Parse(effectSpecifics) * level);
                 target.UpdateDefense(int.Parse(effectSpecifics) * level);
                 break;
+            case "AllStats%":
+                AffectActor(target, "BaseHealth%", effectSpecifics, level);
+                AffectActor(target, "BaseAttack%", effectSpecifics, level);
+                AffectActor(target, "BaseDefense%", effectSpecifics, level);
+                break;
             case "CurrentHealth%":
                 int currentHealth = target.GetHealth();
                 target.UpdateHealth(int.Parse(effectSpecifics) * currentHealth / basicDenominator);
@@ -138,6 +143,10 @@ public class SkillEffect : ScriptableObject
                 break;
             case "BaseAttack%":
                 int bAtkPChange = level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator;
+                if (int.Parse(effectSpecifics) > 0)
+                {
+                    bAtkPChange = Mathf.Max(1, bAtkPChange);
+                }
                 target.UpdateBaseAttack(bAtkPChange);
                 target.UpdateAttack(bAtkPChange);
                 break;
@@ -148,6 +157,11 @@ public class SkillEffect : ScriptableObject
                 break;
             case "BaseDefense%":
                 int bDefPChange = level * (int.Parse(effectSpecifics) * target.GetBaseDefense()) / basicDenominator;
+                // Positive boosts always increase stat by at least 1.
+                if (int.Parse(effectSpecifics) > 0)
+                {
+                    bDefChange = Mathf.Max(1, bDefPChange);
+                }
                 target.UpdateBaseDefense(bDefPChange);
                 target.UpdateDefense(bDefPChange);
                 break;
