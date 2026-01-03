@@ -128,7 +128,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetCurrentScene(dungeonSceneName);
         sceneTracker.Save();
         // Only set when first moving to the dungeon.
-        dayTracker.DayTackerNewDay();
+        dayTracker.DayTrackerNewDay();
         dungeonState.UpdatePreviousScene();
         dungeonState.Save();
         if (loadingRequired)

@@ -10,10 +10,20 @@ public class DayTracker : SavedData
 {
     // Keep track of the day obviously.
     public int day;
+    // Get paid every day?
+    public int lastPayDay;
+    public int PayDateDifference()
+    {
+        return day - lastPayDay;
+    }
+    public void CollectPay()
+    {
+        lastPayDay = day;
+    }
     // Keep track of any time limited game stuff.
     public int storyQuestStartDay;
 
-    public void DayTackerNewDay()
+    public void DayTrackerNewDay()
     {
         day++;
         Save();
@@ -38,6 +48,7 @@ public class DayTracker : SavedData
     public override void NewGame()
     {
         day = 1;
+        lastPayDay = 1;
         storyQuestStartDay = 1;
         Save();
     }
@@ -48,6 +59,7 @@ public class DayTracker : SavedData
         allData = "";
         allData += day + delimiter;
         allData += storyQuestStartDay + delimiter;
+        allData += lastPayDay + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -74,10 +86,13 @@ public class DayTracker : SavedData
             default:
             break;
             case 0:
-            day = int.Parse(stat);
+            day = utility.SafeParseInt(stat, 1);
             break;
             case 1:
-            storyQuestStartDay = int.Parse(stat);
+            storyQuestStartDay = utility.SafeParseInt(stat, 1);
+            break;
+            case 2:
+            lastPayDay = utility.SafeParseInt(stat, 1);
             break;
         }
     }

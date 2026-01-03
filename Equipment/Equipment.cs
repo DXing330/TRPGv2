@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
+    public StatDatabase weaponReach;
     public string allStats;
     public string GetStats(){ return allStats; }
     public void RefreshStats()
@@ -97,6 +98,8 @@ public class Equipment : MonoBehaviour
         {
             actor.SetWeaponType(type);
             actor.SetWeaponName(equipName);
+            actor.SetWeaponStats(allStats);
+            actor.SetWeaponReach(int.Parse(weaponReach.ReturnValue(type)));
         }
         for (int i = 0; i < passives.Count; i++)
         {

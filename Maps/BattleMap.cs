@@ -1156,7 +1156,7 @@ public class BattleMap : MapManager
             for (int i = attackable.Count - 1; i >= 0; i--)
             {
                 // Elevation difference of 3 or more means melee basic attacks are ineffective.
-                if (ReturnElevationDifference(attackable[i], startTile) > 2)
+                if (ReturnElevationDifference(attackable[i], startTile) > actor.GetWeaponReach())
                 {
                     attackable.RemoveAt(i);
                 }

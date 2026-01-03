@@ -156,7 +156,7 @@ public class ActorAI : ScriptableObject
         int target = currentActor.GetTarget().GetLocation();
         if (currentActor.GetAttackRange() <= 1)
         {
-            target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target);
+            target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target, currentActor.GetWeaponReach());
         }
         List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, target);
         List<int> path = new List<int>();

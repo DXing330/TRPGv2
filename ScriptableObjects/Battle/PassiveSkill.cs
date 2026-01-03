@@ -129,10 +129,10 @@ public class PassiveSkill : SkillEffect
                 return map.mapInfo[currentTile].Contains(specifics); // Contains, since DeepWater counts as Water
             case "Tile<>":
                 return !map.mapInfo[currentTile].Contains(specifics);
-            case "Elevation":
-                return map.ReturnElevation(currentTile) == int.Parse(specifics);
-            case "Elevation<>":
-                return map.ReturnElevation(currentTile) != int.Parse(specifics);
+            case "Elevation<":
+                return map.ReturnElevation(currentTile) <= int.Parse(specifics);
+            case "Elevation>":
+                return map.ReturnElevation(currentTile) >= int.Parse(specifics);
         }
         return true;
     }
@@ -230,8 +230,12 @@ public class PassiveSkill : SkillEffect
             return !actor.GetPassiveSkills().Contains(conditionSpecifics);
             case "Counter":
             return actor.GetCounter() >= int.Parse(conditionSpecifics);
-            case "Elevation":
-            return map.ReturnElevation(actor.GetLocation()) == int.Parse(conditionSpecifics);
+            case "CounterAttack":
+            return actor.CounterAttackAvailable();
+            case "Elevation<":
+            return map.ReturnElevation(actor.GetLocation()) <= int.Parse(conditionSpecifics);
+            case "Elevation>":
+            return map.ReturnElevation(actor.GetLocation()) >= int.Parse(conditionSpecifics);
             case "Element":
             return actor.SameElement(conditionSpecifics);
         }
@@ -368,14 +372,6 @@ public class PassiveSkill : SkillEffect
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
             case "DirectionD":
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) == int.Parse(conditionSpecifics);
-            case "Elevation<>D":
-                return map.ReturnElevation(target.GetLocation()) != int.Parse(conditionSpecifics);
-            case "Elevation<>A":
-                return map.ReturnElevation(attacker.GetLocation()) != int.Parse(conditionSpecifics);
-            case "ElevationD":
-                return map.ReturnElevation(target.GetLocation()) == int.Parse(conditionSpecifics);
-            case "ElevationA":
-                return map.ReturnElevation(attacker.GetLocation()) == int.Parse(conditionSpecifics);
             case "Elevation=":
                 return map.ReturnElevation(attacker.GetLocation()) == map.ReturnElevation(target.GetLocation());
             case "Elevation>":

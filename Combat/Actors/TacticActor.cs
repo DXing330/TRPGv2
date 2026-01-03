@@ -6,21 +6,28 @@ using UnityEngine;
 public class TacticActor : ActorStats
 {
     public string weaponType;
-    public void ResetWeaponType()
+    public void ResetWeapon()
     {
         weaponType = "";
         weaponName = "";
+        weaponStats = "";
+        weaponReach = 1;
     }
     public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
     public string GetWeaponType(){return weaponType;}
     public string weaponName;
-    public void ResetWeaponName()
-    {
-        weaponType = "";
-        weaponName = "";
-    }
     public void SetWeaponName(string newInfo){weaponName = newInfo;}
     public string GetWeaponName(){return weaponName;}
+    public string weaponStats;
+    public void SetWeaponStats(string newInfo){weaponStats = newInfo;}
+    public string GetWeaponStats(){return weaponStats;}
+    public int weaponReach = 1;
+    public int GetWeaponReach()
+    {
+        if (GetAttackRange() > 1){return 999;}
+        return weaponReach;
+    }
+    public void SetWeaponReach(int newInfo){weaponReach = newInfo;}
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
     public int team;

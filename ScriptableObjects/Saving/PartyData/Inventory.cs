@@ -11,6 +11,10 @@ public class Inventory : SavedData
     public List<string> items;
     public List<string> quantities;
     public string goldString = "Gold";
+    public void CollectPay(int days, int rank)
+    {
+        GainGold(Mathf.Max(1, days * rank));
+    }
 
     public override void NewGame()
     {

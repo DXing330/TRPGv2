@@ -20,6 +20,18 @@ public class GuildHub : MonoBehaviour
         guildRank.text = partyData.guildCard.GetGuildRankName();
     }
 
+    public void CollectPay()
+    {
+        if (storyDay.PayDateDifference() > 0)
+        {
+            int days = storyDay.PayDateDifference();
+            storyDay.CollectPay();
+            storyDay.Save();
+            partyData.inventory.CollectPay(days, partyData.guildCard.GetGuildRank());
+            partyData.Save();
+        }
+    }
+
     // Don't let them keep the chests if they don't complete the dungeon.
     protected void RemoveDungeonData()
     {

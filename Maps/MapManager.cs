@@ -33,7 +33,6 @@ public class MapManager : MonoBehaviour
     public SpriteContainer elevationSprites;
     public List<int> mapElevations;
     // If the elevation difference is too large then basic melee attacks don't work.
-    protected int maxElevationDifference = 2;
     public int ReturnElevation(int tileNumber)
     {
         if (tileNumber < 0 || tileNumber >= mapElevations.Count)
@@ -46,14 +45,14 @@ public class MapManager : MonoBehaviour
     {
         return Mathf.Abs(mapTiles[tileOne].GetElevation() - mapTiles[tileTwo].GetElevation());
     }
-    public int ReturnClosestTileWithinElevationDifference(int start, int end)
+    public int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff)
     {
         List<int> adjacentTiles = mapUtility.AdjacentTiles(end, mapSize);
         int target = end;
         int dist = mapSize * mapSize;
         for (int i = 0; i < adjacentTiles.Count; i++)
         {
-            if (ReturnElevationDifference(adjacentTiles[i], end) > maxElevationDifference)
+            if (ReturnElevationDifference(adjacentTiles[i], end) > maxElvDiff)
             {
                 continue;
             }

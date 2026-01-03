@@ -22,7 +22,7 @@ public class ActorMaker : MonoBehaviour
     {
         TacticActor newActor = Instantiate(actorPrefab, transform.position, new Quaternion(0, 0, 0, 0));
         // Need to reset somethings so that they don't carryover.
-        newActor.ResetWeaponType();
+        newActor.ResetWeapon();
         newActor.ClearStatuses();
         newActor.ResetPassives();
         newActor.InitializeStats();
