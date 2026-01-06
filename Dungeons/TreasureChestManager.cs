@@ -6,8 +6,7 @@ public class TreasureChestManager : MonoBehaviour
 {
     public GeneralUtility utility;
     public StatDatabase chestRewards;
-    public StatDatabase equipmentRarity;
-    public StatDatabase equipmentData;
+    public EquipmentGenerator equipmentGenerator;
     public PartyDataManager partyData;
     public List<string> rarityStrings;
     public List<int> rarityInts;
@@ -85,14 +84,9 @@ public class TreasureChestManager : MonoBehaviour
 
     protected string GenerateEquipment(string rarity)
     {
-        int eRarity = -1;
-        // Check the rarity.
-        int indexOf = rarityStrings.IndexOf(rarity);
-        if (indexOf < 0){eRarity = 1;}
-        else{eRarity = rarityInts[indexOf];}
-        // Get a random equip of that rarity.
-        string equipName = equipmentRarity.ReturnRandomKeyBasedOnIntValue(eRarity);
-        GainEquipment(equipName);
-        return equipmentData.ReturnValue(equipName);
+        string equipData = equipmentGenerator.GenerateEquipmentOfRarity(rarity);
+        string[] dBlocks = equipData.Split("|");
+        GainEquipment(dBlocks[0]);
+        return equipData;
     }
 }

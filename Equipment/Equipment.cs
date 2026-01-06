@@ -17,8 +17,18 @@ public class Equipment : MonoBehaviour
         allStats += type + "|";
         allStats += String.Join(",", passives) + "|";
         allStats += String.Join(",", passiveLevels) + "|";
-        allStats += maxLevel + "|";
+        allStats += maxUpgrades + "|";
         allStats += rarity + "|";
+    }
+    public void ResetStats()
+    {
+        equipName = "";
+        slot = "-1";
+        type = "-1";
+        passives.Clear();
+        passiveLevels.Clear();
+        maxUpgrades = 0;
+        rarity = "0";
     }
     public void SetAllStats(string newStats)
     {
@@ -31,19 +41,55 @@ public class Equipment : MonoBehaviour
             type = "-1";
             return;
         }
-        equipName = dataBlocks[0];
-        slot = dataBlocks[1];
-        type = dataBlocks[2];
-        passives = dataBlocks[3].Split(",").ToList();
-        passiveLevels = dataBlocks[4].Split(",").ToList();
-        maxLevel = dataBlocks[5];
-        rarity = dataBlocks[6];
+        for (int i = 0; i < dataBlocks.Length; i++)
+        {
+            SetStat(dataBlocks[i], i);
+        }
+    }
+    protected void SetStat(string stat, int index)
+    {
+        switch (index)
+        {
+            case 0:
+            SetName(stat);
+            break;
+            case 1:
+            SetSlot(stat);
+            break;
+            case 2:
+            SetType(stat);
+            break;
+            case 3:
+            SetPassives(stat.Split(",").ToList());
+            break;
+            case 4:
+            SetPassiveLevels(stat.Split(",").ToList());
+            break;
+            case 5:
+            SetMaxUpgrades(int.Parse(stat));
+            break;
+            case 6:
+            SetRarity(stat);
+            break;
+        }
     }
     public string equipName;
+    public void SetName(string newInfo)
+    {
+        equipName = newInfo;
+    }
     public string GetName(){return equipName;}
     public string slot;
+    public void SetSlot(string newInfo)
+    {
+        slot = newInfo;
+    }
     public string GetSlot(){return slot;}
     public string type;
+    public void SetType(string newInfo)
+    {
+        type = newInfo;
+    }
     public string GetEquipType(){return type;}
     public List<string> GetPassivesAndLevels()
     {
@@ -55,9 +101,46 @@ public class Equipment : MonoBehaviour
         return passivesAndLevels;
     }
     public List<string> passives;
+    public void SetPassives(List<string> newInfo)
+    {
+        passives = newInfo;
+    }
     public List<string> GetPassives()
     {
         return passives;
+    }
+    public void AddPassive(string passiveName)
+    {
+        if (passiveName.Length <= 1){return;}
+        int indexOf = passives.IndexOf(passiveName);
+        int cLevel = GetLevelOfPassive(passiveName);
+        if (cLevel > 0)
+        {
+            passiveLevels[indexOf] = (cLevel + 1).ToString();
+        }
+        else
+        {
+            passives.Add(passiveName);
+            passiveLevels.Add("1");
+        }
+    }
+    public int GetLevelOfPassive(string passiveName)
+    {
+        int indexOf = passives.IndexOf(passiveName);
+        if (indexOf >= 0)
+        {
+            return int.Parse(passiveLevels[indexOf]);
+        }
+        return 0;
+    }
+    public int GetTotalLevel()
+    {
+        int level = 0;
+        for(int i = 0; i < passiveLevels.Count; i++)
+        {
+            level += int.Parse(passiveLevels[i]);
+        }
+        return level;
     }
     public void DebugPassives()
     {
@@ -67,6 +150,10 @@ public class Equipment : MonoBehaviour
         }
     }
     public List<string> passiveLevels;
+    public void SetPassiveLevels(List<string> newInfo)
+    {
+        passiveLevels = newInfo;
+    }
     public List<string> GetPassiveLevels()
     {
         return passiveLevels;
@@ -80,12 +167,28 @@ public class Equipment : MonoBehaviour
         }
         return level;
     }
-    public string maxLevel;
-    public int GetMaxLevel()
+    public int maxUpgrades;
+    public bool UpgradesAvailable()
     {
-        return int.Parse(maxLevel);
+        return maxUpgrades > 0;
+    }
+    public void ConsumeUpgrade()
+    {
+        maxUpgrades--;
+    }
+    public void SetMaxUpgrades(int newInfo)
+    {
+        maxUpgrades = newInfo;
+    }
+    public int GetMaxUpgrades()
+    {
+        return maxUpgrades;
     }
     public string rarity;
+    public void SetRarity(string newInfo)
+    {
+        rarity = newInfo;
+    }
     public int GetRarity()
     {
         return int.Parse(rarity);
@@ -109,17 +212,13 @@ public class Equipment : MonoBehaviour
 
     public void UpgradeEquipment(string passiveUpgrade, int level = 1)
     {
-        int indexOf = passives.IndexOf(passiveUpgrade);
-        if (indexOf < 0)
+        for (int i = 0; i < level; i++)
         {
-            passives.Add(passiveUpgrade);
-            passiveLevels.Add(level.ToString());
-        }
-        else
-        {
-            passiveLevels[indexOf] = (int.Parse(passiveLevels[indexOf]) + level).ToString();
-        }    
-        RefreshStats();
+            if (!UpgradesAvailable()){return;}
+            AddPassive(passiveUpgrade);
+            ConsumeUpgrade();
+            RefreshStats();
+        }   
     }
 
     public void EquipWeapon(TacticActor actor)

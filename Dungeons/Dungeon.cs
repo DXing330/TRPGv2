@@ -1065,8 +1065,8 @@ public class Dungeon : ScriptableObject
         spawnCounter++;
         // If you're lucky enemies will never spawn.
         int spawnCheck = Random.Range(0, (dungeonSize * 6) + spawnCounter);
-        if (fastSpawn){spawnCheck = spawnCheck/10;}
-        if (RobbedMerchant()){spawnCheck = spawnCheck/dungeonSize;}
+        if (fastSpawn){spawnCheck = spawnCheck / 6;}
+        if (RobbedMerchant()){spawnCheck = spawnCheck / dungeonSize;}
         if (spawnCheck < spawnCounter)
         {
             SpawnEnemy();

@@ -1012,7 +1012,7 @@ public class ActorStats : ActorPassives
     public int silenceDuration;
     public void CheckSilence()
     {
-        silenced = utility.DecrementBoolDuration(silenced, silenceDuration);
+        (silenced, silenceDuration) = utility.DecrementBoolDuration(silenced, silenceDuration);
     }
     public void Silence(int duration)
     {
@@ -1032,7 +1032,7 @@ public class ActorStats : ActorPassives
     public int sleepDuration;
     public void CheckSleeping()
     {
-        sleeping = utility.DecrementBoolDuration(sleeping, sleepDuration);
+        (sleeping, sleepDuration) = utility.DecrementBoolDuration(sleeping, sleepDuration);
     }
     public void Sleep(int duration)
     {
@@ -1059,7 +1059,7 @@ public class ActorStats : ActorPassives
     }
     public void CheckInvisibility()
     {
-        invisible = utility.DecrementBoolDuration(invisible, invisibleDuration);
+        (invisible, invisibleDuration) = utility.DecrementBoolDuration(invisible, invisibleDuration);
     }
     public void RemoveInvisibility()
     {

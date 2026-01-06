@@ -82,9 +82,9 @@ public class GeneralUtility : ScriptableObject
         return indices;
     }
 
-    public bool DecrementBoolDuration(bool newBool, int boolDuration)
+    public (bool, int) DecrementBoolDuration(bool newBool, int boolDuration)
     {
-        if (!newBool){return newBool;}
+        if (!newBool){return (newBool, boolDuration);}
         if (boolDuration > 0)
         {
             boolDuration--;
@@ -93,7 +93,7 @@ public class GeneralUtility : ScriptableObject
         {
             newBool = false;
         }
-        return newBool;
+        return (newBool, boolDuration);
     }
 
     public void DisableGameObjects(List<GameObject> objects)

@@ -419,7 +419,7 @@ public class BattleMap : MapManager
         int team = actor.GetTeam();
         for (int i = 0; i < adjacentActors.Count; i++)
         {
-            if (adjacentActors[i].GetTeam() == team && adjacentActors[i].GetSpriteName() == specificSprite)
+            if (adjacentActors[i].GetTeam() == team && adjacentActors[i].GetSpriteName().Contains(specificSprite))
             {
                 return true;
             }
