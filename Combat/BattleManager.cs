@@ -297,23 +297,34 @@ public class BattleManager : MonoBehaviour
     {
         UI.NPCTurn();
         int actionsLeft = turnActor.GetActions();
-        if (actionsLeft <= 0) { StartCoroutine(EndTurn()); }
-        // Bosses are special?
+        if (actionsLeft <= 0 || turnActor.GetHealth() <= 0)
+        {
+            StartCoroutine(EndTurn());
+            return;
+        }
         else if (actorAI.BossTurn(turnActor))
         {
             StartCoroutine(BossTurn(actionsLeft));
         }
+        // This always calls an end turn.
         else if (!actorAI.NormalTurn(turnActor, roundNumber))
         {
             StartCoroutine(NPCSkillAction(actionsLeft));
         }
+        // This always calls an end turn.
         else
         {
             StartCoroutine(StandardNPCAction(actionsLeft));
         }
     }
+    protected bool endingTurn = false;
     IEnumerator EndTurn()
     {
+        if (endingTurn)
+        {
+            yield break;
+        }
+        endingTurn = true;
         if (!movedDuringTurn)
         {
             yield return null;
@@ -327,6 +338,7 @@ public class BattleManager : MonoBehaviour
             yield return new WaitForSeconds(shortDelayTime * 10);
         }
         NextTurn();
+        endingTurn = false;
     }
     // None, Move, Attack, SkillSelect, SkillTargeting, Viewing
     public string selectedState;
@@ -572,10 +584,10 @@ public class BattleManager : MonoBehaviour
             case "Change Form":
                 // Update base stats based on new form.
                 actorMaker.ChangeActorForm(turnActor, turnDetails[1]);
-                BossTurn(actionsLeft);
+                StartCoroutine(BossTurn(actionsLeft));
                 // This will always take all your actions.
                 //turnActor.ResetActions();
-                break;
+                yield break;
             case "Split":
                 // Change base health to be the same as current health.
                 turnActor.SetBaseHealth(turnActor.GetHealth());
@@ -707,7 +719,11 @@ public class BattleManager : MonoBehaviour
             }
             ActivateSkill(skills[i]);
             AdjustTurnNumber();
-            if (turnActor.GetActions() <= 0){break;}
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
+            {
+                StartCoroutine(EndTurn());
+                yield break;
+            }
         }
         StartCoroutine(EndTurn());
     }
@@ -750,7 +766,11 @@ public class BattleManager : MonoBehaviour
                 ActivateSkill(skill);
                 AdjustTurnNumber();
             }
-            if (turnActor.GetActions() <= 0){break;}
+            if (turnActor.GetActions() <= 0)
+            {
+                StartCoroutine(EndTurn());
+                yield break;
+            }
         }
         StartCoroutine(EndTurn());
     }
@@ -781,7 +801,11 @@ public class BattleManager : MonoBehaviour
             {
                 yield return new WaitForSeconds(shortDelayTime * 5);
             }
-            if (turnActor.GetActions() <= 0){break;}
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
+            {
+                StartCoroutine(EndTurn());
+                yield break;
+            }
         }
         StartCoroutine(EndTurn());
     }
@@ -817,7 +841,11 @@ public class BattleManager : MonoBehaviour
                     yield return new WaitForSeconds(shortDelayTime * 5);
                 }
             }
-            if (turnActor.GetActions() <= 0){break;}
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
+            {
+                StartCoroutine(EndTurn());
+                yield break;
+            }
         }
         // Reset targets after you stop raging.
         turnActor.ResetTarget();
@@ -852,7 +880,11 @@ public class BattleManager : MonoBehaviour
             {
                 yield return new WaitForSeconds(shortDelayTime * 5);
             }
-            if (turnActor.GetActions() <= 0){break;}
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
+            {
+                StartCoroutine(EndTurn());
+                yield break;
+            }
         }
         StartCoroutine(EndTurn());
     }
@@ -956,7 +988,11 @@ public class BattleManager : MonoBehaviour
                     yield return new WaitForSeconds(shortDelayTime * 5);
                 }
             }
-            if (turnActor.GetActions() <= 0){break;}
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
+            {
+                StartCoroutine(EndTurn());
+                yield break;
+            }
         }
         StartCoroutine(EndTurn());
     }

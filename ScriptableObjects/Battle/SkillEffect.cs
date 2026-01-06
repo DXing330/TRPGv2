@@ -326,6 +326,9 @@ public class SkillEffect : ScriptableObject
             case "Sleep":
                 target.Sleep(int.Parse(effectSpecifics));
                 break;
+            case "Invisible":
+                target.TurnInvisible(int.Parse(effectSpecifics));
+                break;
         }
     }
 

@@ -216,7 +216,7 @@ public class BattleEndManager : MonoBehaviour
         for (int i = 0; i < spriteNames.Count; i++)
         {
             dummyActor.SetStatsFromString(baseStats[i]);
-            dummyActor.ResetWeapon();
+            dummyActor.ResetEquipment();
             string[] equipData = equipment[i].Split("@");
             for (int j = 0; j < equipData.Length; j++)
             {

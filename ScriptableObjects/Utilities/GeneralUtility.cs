@@ -82,6 +82,20 @@ public class GeneralUtility : ScriptableObject
         return indices;
     }
 
+    public bool DecrementBoolDuration(bool newBool, int boolDuration)
+    {
+        if (!newBool){return newBool;}
+        if (boolDuration > 0)
+        {
+            boolDuration--;
+        }
+        if (boolDuration <= 0)
+        {
+            newBool = false;
+        }
+        return newBool;
+    }
+
     public void DisableGameObjects(List<GameObject> objects)
     {
         for (int i = 0; i < objects.Count; i++)

@@ -908,6 +908,9 @@ public class BattleMap : MapManager
         }
         for (int i = 0; i < battlingActors.Count; i++)
         {
+            // Just for fun make the actor not appear on the map.
+            // They can still use movement to determine the actors location so it doesn't really do anything if you're paying the slightest amount of attention.
+            if (battlingActors[i].invisible){continue;}
             actorTiles[battlingActors[i].GetLocation()] = battlingActors[i].GetSpriteName();
             actorDirections[battlingActors[i].location] = battlingActors[i].GetDirection().ToString();
         }

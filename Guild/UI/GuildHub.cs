@@ -6,8 +6,13 @@ using TMPro;
 public class GuildHub : MonoBehaviour
 {
     public PartyDataManager partyData;
+    public InventoryUI inventoryUI;
     public References references;
     public TMP_Text guildRank;
+    protected void UpdateGuildRank()
+    {
+        guildRank.text = partyData.guildCard.GetGuildRankName();
+    }
     public List<string> questItems;
     public List<string> questTempMembers;
 
@@ -17,7 +22,7 @@ public class GuildHub : MonoBehaviour
         NextStory();
         UpdateStory();
         partyData.Save();
-        guildRank.text = partyData.guildCard.GetGuildRankName();
+        UpdateGuildRank();
     }
 
     public void CollectPay()
@@ -29,6 +34,7 @@ public class GuildHub : MonoBehaviour
             storyDay.Save();
             partyData.inventory.CollectPay(days, partyData.guildCard.GetGuildRank());
             partyData.Save();
+            inventoryUI.UpdateKeyValues();
         }
     }
 
@@ -89,6 +95,7 @@ public class GuildHub : MonoBehaviour
             mainStory.NextChapter(partyData);
             storyDay.NewQuest();
             ShowNextChapter();
+            UpdateGuildRank();
         }
     }
 

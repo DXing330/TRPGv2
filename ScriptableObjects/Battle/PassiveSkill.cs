@@ -195,6 +195,8 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == actor.GetMentalState();
             case "Status":
                 return actor.StatusExists(conditionSpecifics);
+            case "Status<>":
+                return !actor.StatusExists(conditionSpecifics); 
             case "Buff":
                 return actor.BuffExists(conditionSpecifics);
             case "StatusCount>":
@@ -238,6 +240,8 @@ public class PassiveSkill : SkillEffect
             return map.ReturnElevation(actor.GetLocation()) >= int.Parse(conditionSpecifics);
             case "Element":
             return actor.SameElement(conditionSpecifics);
+            case "Element<>":
+            return !actor.SameElement(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;
@@ -372,11 +376,11 @@ public class PassiveSkill : SkillEffect
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
             case "DirectionD":
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) == int.Parse(conditionSpecifics);
-            case "Elevation=":
+            case "Elevation=A":
                 return map.ReturnElevation(attacker.GetLocation()) == map.ReturnElevation(target.GetLocation());
-            case "Elevation>":
+            case "Elevation>A":
                 return map.ReturnElevation(attacker.GetLocation()) > map.ReturnElevation(target.GetLocation());
-            case "Elevation<":
+            case "Elevation<A":
                 return map.ReturnElevation(attacker.GetLocation()) < map.ReturnElevation(target.GetLocation());
             case "ElementD":
                 return target.SameElement(conditionSpecifics);
@@ -408,6 +412,8 @@ public class PassiveSkill : SkillEffect
         int currentHealth = target.GetHealth();
         switch (conditionSpecifics)
         {
+            case "1":
+                return (currentHealth * 100) < maxHealth;
             case "<25%":
                 return (currentHealth * 4) < maxHealth;
             case "<Half":

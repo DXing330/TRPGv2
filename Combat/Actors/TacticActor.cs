@@ -5,6 +5,12 @@ using UnityEngine;
 
 public class TacticActor : ActorStats
 {
+    // EQUIPMENT STUFF.
+    public void ResetEquipment()
+    {
+        ResetWeapon();
+        ResetArmor();
+    }
     public string weaponType;
     public void ResetWeapon()
     {
@@ -12,6 +18,13 @@ public class TacticActor : ActorStats
         weaponName = "";
         weaponStats = "";
         weaponReach = 1;
+    }
+    public string Disarm()
+    {
+        // Remove weapon passives, that can be handled separately.
+        string stats = weaponStats;
+        ResetWeapon();
+        return stats;
     }
     public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
     public string GetWeaponType(){return weaponType;}
@@ -28,6 +41,17 @@ public class TacticActor : ActorStats
         return weaponReach;
     }
     public void SetWeaponReach(int newInfo){weaponReach = newInfo;}
+    public void ResetArmor()
+    {
+        armorName = "";
+        armorStats = "";
+    }
+    public string armorName;
+    public void SetArmorName(string newInfo){armorName = newInfo;}
+    public string GetArmorName(){return armorName;}
+    public string armorStats;
+    public void SetArmorStats(string newInfo){armorStats = newInfo;}
+    public string GetArmorStats(){return armorStats;}
     public GameObject actorObject;
     public void DestroyActor(){DestroyImmediate(actorObject);}
     public int team;

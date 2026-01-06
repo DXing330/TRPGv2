@@ -965,6 +965,7 @@ public class ActorStats : ActorPassives
         }
         CheckSilence();
         CheckSleeping();
+        CheckInvisibility();
     }
     public string curseStatName;
     public void AddCurse(string newInfo)
@@ -1011,14 +1012,7 @@ public class ActorStats : ActorPassives
     public int silenceDuration;
     public void CheckSilence()
     {
-        if (silenceDuration > 0)
-        {
-            silenceDuration--;
-        }
-        if (silenceDuration <= 0)
-        {
-            silenced = false;
-        }
+        silenced = utility.DecrementBoolDuration(silenced, silenceDuration);
     }
     public void Silence(int duration)
     {
@@ -1038,14 +1032,7 @@ public class ActorStats : ActorPassives
     public int sleepDuration;
     public void CheckSleeping()
     {
-        if (sleepDuration > 0)
-        {
-            sleepDuration--;
-        }
-        if (sleepDuration <= 0)
-        {
-            sleeping = false;
-        }
+        sleeping = utility.DecrementBoolDuration(sleeping, sleepDuration);
     }
     public void Sleep(int duration)
     {
@@ -1059,5 +1046,24 @@ public class ActorStats : ActorPassives
     {
         sleeping = false;
         sleepDuration = 0;
+    }
+    public bool invisible = false;
+    public int invisibleDuration;
+    public void TurnInvisible(int duration)
+    {
+        invisible = true;
+        if (invisibleDuration < duration)
+        {
+            invisibleDuration = duration;
+        }
+    }
+    public void CheckInvisibility()
+    {
+        invisible = utility.DecrementBoolDuration(invisible, invisibleDuration);
+    }
+    public void RemoveInvisibility()
+    {
+        invisible = false;
+        invisibleDuration = 0;
     }
 }

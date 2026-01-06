@@ -209,12 +209,18 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if you are facing the enemy";
                 }
                 break;
-            case "Elevation<":
+            case "Elevation<A":
                 return " if the attacker is on lower elevation";
-            case "Elevation>":
+            case "Elevation>A":
                 return " if the attacker is on higher elevation";
-            case "Elevation=":
+            case "Elevation=A":
                 return " if the attacker is on equal elevation";
+            case "Elevation<":
+                return " if tile elevation is less than " + specifics;
+            case "Elevation>":
+                return " if tile elevation is more than " + specifics;
+            case "Elevation=":
+                return " if tile elevation is equal to " + specifics;
             case "Distance":
                 return " if within " + specifics + " tile(s)";
             case "Distance>":
@@ -277,6 +283,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if " + specifics + "";
             case "Status":
                 return " if you have " + specifics + " status";
+            case "Status<>":
+                return " if you do not have " + specifics + " status";
             case "StatusA":
                 return " if you have " + specifics + " status";
             case "StatusD":
@@ -328,6 +336,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if attacking" + RelativeDirectionDescriptions(specifics);
             case "Element":
                 return " if " + specifics + " element";
+            case "Element<>":
+                return " if not " + specifics + " element";
             case "ElementD":
                 return " if the target's element is "+specifics;
             case "Element<>D":
@@ -494,6 +504,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return "put " + target + " to sleep for " + specifics + "turns";
             case "Silence":
                 return " disable actives of " + target + " for " + specifics + "turns";
+            case "Invisible":
+                return " turn invisible for " + specifics + "turns";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }
