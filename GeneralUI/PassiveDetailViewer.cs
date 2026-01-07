@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class PassiveDetailViewer : MonoBehaviour
 {
-    protected virtual void Start()
-    {
-        UpdateTextSize();
-    }
     public int textSize;
     public void UpdateTextSize()
     {
@@ -151,47 +147,67 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Killing":
                 return " if attack is greater than the sum of the target's health and defense";
             case "AllyCount<":
-                return " if there are less than "+specifics+" allies left";
+                return " if there are less than " + specifics + " allies left";
             case "AllyCount>":
                 return " if there are more than " + specifics + " allies left";
+            case "AllyCount<A":
+                return " if the attacker has less than " + specifics + " allies left";
+            case "AllyCount>A":
+                return " if the attacker has more than " + specifics + " allies left";
+            case "AllyCount<D":
+                return " if the target has less than " + specifics + " allies left";
+            case "AllyCount>D":
+                return " if the target has more than " + specifics + " allies left";
+            case "EnemyCount<":
+                return " if there are less than " + specifics + " enemies left";
+            case "EnemyCount>":
+                return " if there are more than " + specifics + " enemies left";
+            case "EnemyCount<A":
+                return " if the attacker has less than " + specifics + " enemies left";
+            case "EnemyCount>A":
+                return " if the attacker has more than " + specifics + " enemies left";
+            case "EnemyCount<D":
+                return " if the target has less than " + specifics + " enemies left";
+            case "EnemyCount>D":
+                return " if the target has more than " + specifics + " enemies left";
             case "AdjacentAllyCount>":
                 return " if there are more than " + specifics + " allies adjacent";
             case "AdjacentAllyCount<":
                 return " if there are less than " + specifics + " allies adjacent";
             case "AdjacentAllyCount>A":
-                return " if there are more than " + specifics + " allies adjacent";
+                return " if the attacker has more than " + specifics + " allies adjacent";
             case "AdjacentAllyCount<A":
-                return " if there are less than " + specifics + " allies adjacent";
+                return " if the attacker has less than " + specifics + " allies adjacent";
             case "AdjacentAllyCount>D":
-                return " if there are more than " + specifics + " allies adjacent";
+                return " if the target has more than " + specifics + " allies adjacent";
             case "AdjacentAllyCount<D":
-                return " if there are less than " + specifics + " allies adjacent";
-            case "Adjacent Ally":
+                return " if the target has less than " + specifics + " allies adjacent";
+            case "AdjacentAlly":
                 return " if another ally is adjacent";
-            case "Adjacent Ally A":
+            case "AdjacentAllyA":
                 return " if the attacker has an adjacent ally";
-            case "Adjacent Ally D":
+            case "AdjacentAllyD":
                 return " if the target has an adjacent ally";
-            case "Adjacent Ally<>":
+            case "AdjacentAlly<>":
                 return " if another ally is not adjacent";
-            case "Adjacent Ally A<>":
+            case "AdjacentAlly<>A":
                 return " if the attacker has no adjacent ally";
-            case "Adjacent Ally D<>":
+            case "AdjacentAlly<>D":
                 return " if the target has no adjacent ally";
-            case "Adjacent Ally Sprite":
+            case "AdjacentAllySprite":
                 return " if a " + specifics + " ally is adjacent";
-            case "Adjacent Ally Sprite A":
+            case "AdjacentAllySpriteA":
                 return " if a " + specifics + " ally is adjacent";
-            case "Adjacent Ally Sprite D":
+            case "AdjacentAllySpriteD":
                 return " if a " + specifics + " ally is adjacent to the target";
             case "AdjacentEnemyCount>":
                 return " if there are more than " + specifics + " enemies adjacent";
             case "AdjacentEnemyCount<":
                 return " if there are less than " + specifics + " enemies adjacent";
             case "AdjacentEnemyCount>A":
-                return " if there are more than " + specifics + " enemies adjacent";
+                return " if there are more than " + specifics + " enemies adjacent to the attacker";
             case "AdjacentEnemyCount<A":
-                return " if there are less than " + specifics + " enemies adjacent";
+                return " if there are less than " + specifics + " enemies adjacent to the attacker";
             case "AdjacentEnemyCount>D":
                 return " if there are more than " + specifics + " enemies adjacent to the target";
             case "AdjacentEnemyCount<D":
@@ -224,7 +240,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Distance":
                 return " if within " + specifics + " tile(s)";
             case "Distance>":
-                return " if at least " + specifics + " tile(s) away";
+                return " if more than " + specifics + " tile(s) away";
             //case "Type":
             //return " if the damage is "+damageTypesReturnValue(dummyPassiveconditionSpecifics)+"";
             case "Health":
@@ -237,24 +253,30 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if on a " + specifics + " tile";
             case "Tile<>":
                 return " if not on a " + specifics + " tile";
+            case "TileD":
+                return " if the target is on a " + specifics + " tile";
+            case "Tile<>D":
+                return " if the target is not on a " + specifics + " tile";
             case "TileEffect":
                 return " if on a " + specifics + " tile";
             case "TileEffect<>":
                 return " if not on a " + specifics + " tile";
             case "TileA":
-                return " if on a " + specifics + " tile";
+                return " if the attacker is on a " + specifics + " tile";
             case "Tile<>A":
-                return " if not on a " + specifics + " tile";
+                return " if the attacker is not on a " + specifics + " tile";
             case "TileEffectA":
-                return " if on a " + specifics + " tile";
+                return " if the attacker is on a " + specifics + " tile";
             case "TileEffect<>A":
-                return " if not on a " + specifics + " tile";
+                return " if the attacker is not on a " + specifics + " tile";
             case "TileEffectD":
                 return " if the target is on a " + specifics + " tile";
             case "TileEffect<>D":
                 return " if the target is not on a " + specifics + " tile";
             case "Weapon":
                 return " if a " + specifics + " is equipped";
+            case "Weapon<>":
+                return " if not weapon is equipped";
             case "Weather":
                 return " if the weather is " + specifics + "";
             case "Weather<>":
@@ -283,14 +305,18 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if " + specifics + "";
             case "Status":
                 return " if you have " + specifics + " status";
+            case "StatusCount>":
+                return " if you have more than " + specifics + " status effects";
             case "Status<>":
                 return " if you do not have " + specifics + " status";
             case "StatusA":
-                return " if you have " + specifics + " status";
+                return " if the attacks has " + specifics + " status";
             case "StatusD":
                 return " if the target has " + specifics + " status";
             case "Range>":
                 return " if attack range is greater than " + specifics;
+            case "Range<":
+                return " if attack range is less than " + specifics;
             case "RangeD>":
                 return " if the target's attack range is greater than " + specifics;
             case "RangeD<":
@@ -370,6 +396,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return "your defense value";
             case "Attack":
                 return "your attack value";
+            case "Attack/2":
+                return "half your attack value";
         }
         return specifics;
     }

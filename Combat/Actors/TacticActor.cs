@@ -28,6 +28,10 @@ public class TacticActor : ActorStats
     }
     public void SetWeaponType(string newWeapon){weaponType = newWeapon;}
     public string GetWeaponType(){return weaponType;}
+    public bool NoWeapon()
+    {
+        return weaponType == "";
+    }
     public string weaponName;
     public void SetWeaponName(string newInfo){weaponName = newInfo;}
     public string GetWeaponName(){return weaponName;}

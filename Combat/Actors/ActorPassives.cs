@@ -7,6 +7,10 @@ public class ActorPassives : MonoBehaviour
 {
     public string passiveDelimiter = "+";
     public List<string> customPassives;
+    public int CustomPassiveCount()
+    {
+        return customPassives.Count;
+    }
     public List<string> GetCustomPassives()
     {
         return customPassives;

@@ -149,6 +149,19 @@ public class GeneralUtility : ScriptableObject
         return intList;
     }
 
+    public List<string> ReturnFilteredList(List<string> oList, string fValue)
+    {
+        List<string> filtered = new List<string>();
+        for (int i = 0; i < oList.Count; i++)
+        {
+            if (oList[i].Contains(fValue))
+            {
+                filtered.Add(oList[i]);
+            }
+        }
+        return filtered;
+    }
+
     public List<string> QuickSortIntStringList(List<string> intStrings, int left, int right)
     {
         int i = left;

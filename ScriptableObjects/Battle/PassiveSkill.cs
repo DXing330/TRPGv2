@@ -14,6 +14,8 @@ public class PassiveSkill : SkillEffect
                 return actor.GetDefense().ToString();
             case "Attack":
                 return actor.GetAttack().ToString();
+            case "Attack/2":
+                return (actor.GetAttack() / 2).ToString();
         }
         return specifics;
     }
@@ -143,6 +145,8 @@ public class PassiveSkill : SkillEffect
         {
             case "Weapon":
                 return specifics == actor.GetWeaponType();
+            case "Weapon<>":
+                return actor.NoWeapon();
             case "Weather":
                 return battleState.GetWeather().Contains(specifics);
             case "Time":
@@ -191,6 +195,8 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics != actor.GetMoveType();
             case "Range>":
                 return actor.GetAttackRange() > int.Parse(conditionSpecifics);
+            case "Range<":
+                return actor.GetAttackRange() < int.Parse(conditionSpecifics);
             case "MentalState":
                 return conditionSpecifics == actor.GetMentalState();
             case "Status":
@@ -207,12 +213,12 @@ public class PassiveSkill : SkillEffect
                 return map.AllyAdjacentToActor(actor);
             case "Adjacent Ally<>":
                 return !map.AllyAdjacentToActor(actor);
+            case "AdjacentAllyCount>":
+                return map.GetAdjacentAllies(actor).Count > int.Parse(conditionSpecifics);
             case "AllyCount<":
                 return map.AllAllies(actor).Count < int.Parse(conditionSpecifics);
             case "AllyCount>":
                 return map.AllAllies(actor).Count > int.Parse(conditionSpecifics);
-            case "AdjacentAllyCount>":
-                return map.GetAdjacentAllies(actor).Count > int.Parse(conditionSpecifics);
             case "EnemyCount<":
                 return map.AllEnemies(actor).Count < int.Parse(conditionSpecifics);
             case "EnemyCount>":
@@ -242,6 +248,10 @@ public class PassiveSkill : SkillEffect
             return actor.SameElement(conditionSpecifics);
             case "Element<>":
             return !actor.SameElement(conditionSpecifics);
+            case "Weapon<>":
+            return actor.NoWeapon();
+            case "Weapon":
+            return conditionSpecifics == actor.GetWeaponType();
         }
         // Most of them have no condition.
         return true;
@@ -264,9 +274,9 @@ public class PassiveSkill : SkillEffect
     {
         switch (condition)
         {
-            case "Tile":
+            case "TileD":
                 return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
-            case "Tile<>":
+            case "Tile<>D":
                 return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
             case "TileA":
                 return map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
@@ -280,17 +290,17 @@ public class PassiveSkill : SkillEffect
                 return map.GetTileEffectOfActor(target).Contains(conditionSpecifics);
             case "TileEffect<>D":
                 return !map.GetTileEffectOfActor(target).Contains(conditionSpecifics);
-            case "Adjacent Ally A<>":
+            case "AdjacentAlly<>A":
                 return !map.AllyAdjacentToActor(attacker);
-            case "Adjacent Ally D<>":
+            case "AdjacentAlly<>D":
                 return !map.AllyAdjacentToActor(target);
-            case "Adjacent Ally A":
+            case "AdjacentAllyA":
                 return map.AllyAdjacentToActor(attacker);
-            case "Adjacent Ally D":
+            case "AdjacentAllyD":
                 return map.AllyAdjacentToActor(target);
-            case "Adjacent Ally Sprite A":
+            case "AdjacentAllySpriteA":
                 return map.AllyAdjacentWithSpriteName(attacker, conditionSpecifics);
-            case "Adjacent Ally Sprite D":
+            case "AdjacentAllySpriteD":
                 return map.AllyAdjacentWithSpriteName(target, conditionSpecifics);
             case "AdjacentAllyCount>A":
                 return map.GetAdjacentAllies(attacker).Count > int.Parse(conditionSpecifics);
@@ -315,7 +325,7 @@ public class PassiveSkill : SkillEffect
             case "Distance":
                 return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
             case "Distance>":
-                return moveManager.DistanceBetweenActors(target, attacker) >= int.Parse(conditionSpecifics);
+                return moveManager.DistanceBetweenActors(target, attacker) > int.Parse(conditionSpecifics);
             case "Sprite":
                 return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
             case "Direction":
@@ -402,6 +412,24 @@ public class PassiveSkill : SkillEffect
                 return target.GetTarget() == attacker;
             case "TargetD<>":
                 return target.GetTarget() != attacker;
+            case "CounterAttack":
+                return target.CounterAttackAvailable();
+            case "AllyCount<A":
+                return map.AllAllies(attacker).Count < int.Parse(conditionSpecifics);
+            case "AllyCount>A":
+                return map.AllAllies(attacker).Count > int.Parse(conditionSpecifics);
+            case "EnemyCount<A":
+                return map.AllEnemies(attacker).Count < int.Parse(conditionSpecifics);
+            case "EnemyCount>A":
+                return map.AllEnemies(attacker).Count > int.Parse(conditionSpecifics);
+            case "AllyCount<D":
+                return map.AllAllies(target).Count < int.Parse(conditionSpecifics);
+            case "AllyCount>D":
+                return map.AllAllies(target).Count > int.Parse(conditionSpecifics);
+            case "EnemyCount<D":
+                return map.AllEnemies(target).Count < int.Parse(conditionSpecifics);
+            case "EnemyCount>D":
+                return map.AllEnemies(target).Count > int.Parse(conditionSpecifics);
         }
         return true;
     }
@@ -413,6 +441,7 @@ public class PassiveSkill : SkillEffect
         switch (conditionSpecifics)
         {
             case "1":
+                if (target.GetHealth() == 1){return true;}
                 return (currentHealth * 100) < maxHealth;
             case "<25%":
                 return (currentHealth * 4) < maxHealth;
@@ -510,10 +539,10 @@ public class PassiveSkill : SkillEffect
                 affected -= power;
                 break;
             case "Increase%":
-                affected += power * affected / basicDenominator;
+                affected += Mathf.Max(1, power * affected / basicDenominator);
                 break;
             case "Decrease%":
-                affected -= power * affected / basicDenominator;
+                affected -= Mathf.Max(1, power * affected / basicDenominator);
                 break;
         }
         return affected;

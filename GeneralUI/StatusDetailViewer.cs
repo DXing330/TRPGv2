@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class StatusDetailViewer : PassiveDetailViewer
 {
-    protected override void Start()
-    {
-
-    }
     public StatDatabase allStatuses;
     public SelectStatTextList statusSelect;
     public PopUpMessage popUp;
