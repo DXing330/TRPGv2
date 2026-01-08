@@ -158,6 +158,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target has less than " + specifics + " allies left";
             case "AllyCount>D":
                 return " if the target has more than " + specifics + " allies left";
+            case "Ally<Enemy":
+                return " if there are less allies than enemies";
+            case "Ally>Enemy":
+                return " if there are more allies than enemies";
+            case "Ally=Enemy":
+                return " if there are equal allies and enemies";
             case "EnemyCount<":
                 return " if there are less than " + specifics + " enemies left";
             case "EnemyCount>":
@@ -248,7 +254,13 @@ public class PassiveDetailViewer : MonoBehaviour
             case "HealthD":
                 return " if the target's health is "+specifics;
             case "HealthA":
-                return " if health is "+specifics;
+                return " if the attacker's health is "+specifics;
+            case "Energy":
+                return " if energy is "+specifics;
+            case "EnergyD":
+                return " if the target's energy is "+specifics;
+            case "EnergyA":
+                return " if the attacker's energy is "+specifics;
             case "Tile":
                 return " if on a " + specifics + " tile";
             case "Tile<>":
@@ -275,6 +287,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target is not on a " + specifics + " tile";
             case "Weapon":
                 return " if a " + specifics + " is equipped";
+            case "WeaponA":
+                return " if the attacker has a " + specifics + " weapon equipped";
+            case "WeaponD":
+                return " if the target has a " + specifics + " weapon equipped";
             case "Weapon<>":
                 return " if not weapon is equipped";
             case "Weather":
@@ -290,19 +306,19 @@ public class PassiveDetailViewer : MonoBehaviour
             case "MoveType<>":
                 return " if movement type is not " + specifics;
             case "MoveType<>A":
-                return " if your movement type is not " + specifics;;
+                return " if the attacker's movement type is not " + specifics;;
             case "MoveType<>D":
                 return " if the target's movement type is not " + specifics;
             case "MoveTypeA":
-                return " if your movement type is " + specifics;
+                return " if the attacker's movement type is " + specifics;
             case "MoveTypeD":
                 return " if the target's movement type is " + specifics;
             case "MentalState":
                 return " if " + specifics + "";
             case "MentalStateA":
-                return " if " + specifics + "";
+                return " if the attacker is " + specifics + "";
             case "MentalStateD":
-                return " if " + specifics + "";
+                return " if the target is " + specifics + "";
             case "Status":
                 return " if you have " + specifics + " status";
             case "StatusCount>":
@@ -310,7 +326,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Status<>":
                 return " if you do not have " + specifics + " status";
             case "StatusA":
-                return " if the attacks has " + specifics + " status";
+                return " if the attacker has " + specifics + " status";
             case "StatusD":
                 return " if the target has " + specifics + " status";
             case "Range>":
@@ -322,9 +338,9 @@ public class PassiveDetailViewer : MonoBehaviour
             case "RangeD<":
                 return " if the target's attack range is less than " + specifics;
             case "RangeA>":
-                return " if your attack range is greater than " + specifics;
+                return " if the attacker's attack range is greater than " + specifics;
             case "RangeA<":
-                return " if your attack range is less than " + specifics;
+                return " if the attacker's attack range is less than " + specifics;
             case "Round":
                 switch (specifics)
                 {
@@ -343,9 +359,9 @@ public class PassiveDetailViewer : MonoBehaviour
             case "PassiveLevelsD<":
                 return " if the target has less than " + specifics + " passive levels";
             case "PassiveLevelsA>":
-                return " if you have more than " + specifics + " passive levels";
+                return " if the attacker's have more than " + specifics + " passive levels";
             case "PassiveLevelsA<":
-                return " if you have less than " + specifics + " passive levels";
+                return " if the attacker's have less than " + specifics + " passive levels";
             case "Counter":
                 return " if your counter is greater than " + specifics;
             case "CounterAttack":
@@ -450,7 +466,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Temporary Skill":
                 return " gain the " + specifics + " skill once";
             case "Status":
-                return " inflict " + specifics+" on "+target;
+                return " inflict " + specifics+" on " + target;
             case "Buff":
                 return " give " + specifics+" to "+target;
             case "RemoveStatus":

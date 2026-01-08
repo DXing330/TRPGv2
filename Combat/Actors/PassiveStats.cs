@@ -9,7 +9,7 @@ public class PassiveStats
     public string timing;
     public void SetTiming(string newInfo){timing = newInfo;}
     public string condition;
-    public void SetConditionAndSpecifics(string newInfo, string delimiter = "_")
+    public void SetConditionAndSpecifics(string newInfo, string delimiter = " ")
     {
         string[] data = newInfo.Split(delimiter);
         condition = data[0];
@@ -26,7 +26,7 @@ public class PassiveStats
     public string target;
     public string effect;
     public string effectSpecifics;
-    public void SetTargetEffectAndSpecifics(string newInfo, string delimiter = "_")
+    public void SetTargetEffectAndSpecifics(string newInfo, string delimiter = " ")
     {
         string[] data = newInfo.Split(delimiter);
         target = data[0];

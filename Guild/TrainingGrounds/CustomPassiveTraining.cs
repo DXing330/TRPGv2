@@ -11,21 +11,21 @@ public class CustomPassiveTraining : MonoBehaviour
     public GeneralUtility utility;
     public PassiveStats passiveStats;
     public PassiveDetailViewer detailViewer;
-    public string GetPassiveDetails()
+    public string GetPassiveDetails(string passiveDetails)
     {
-        return detailViewer.ReturnPassiveDetails(passiveStats.ReturnStats());
+        return detailViewer.ReturnPassiveDetails(passiveDetails);
     }
     void Start()
     {
         passiveStats = new PassiveStats();
         passiveStats.ResetStats();
-        ResetSelected();
+        ResetState();
     }
     public PopUpMessage errorPopUp;
     // Step 1: select which actor from the party to train.
     public PartyDataManager partyData;
     public ActorSpriteHPList allActors;
-    public void ResetSelected()
+    public void ResetState()
     {
         SetState(0);
         selectedActor = null;
@@ -35,11 +35,25 @@ public class CustomPassiveTraining : MonoBehaviour
         selectedEffect = "";
         selectedCondition = "";
     }
+    // Current Custom Passives
+    public TextList actorCCPDetails;
+    protected void UpdateCurrentCustomPassives()
+    {
+        actorCCPDetails.ResetTextList();
+        List<string> ccpDetails = new List<string>();
+        List<string> aCP = selectedActor.GetCustomPassives();
+        for (int i = 0; i < aCP.Count; i++)
+        {
+            ccpDetails.Add(GetPassiveDetails(aCP[i]));
+        }
+        actorCCPDetails.SetTextList(ccpDetails);
+    }
     public void SelectActor()
     {
         if (allActors.GetSelected() < 0){return;}
         selectedActor = partyData.ReturnActorAtIndex(allActors.GetSelected());
         SetState(1);
+        UpdateCurrentCustomPassives();
         UpdatePossibleTimings();
         selectedEffect = "";
         selectedCondition = "";
@@ -59,7 +73,6 @@ public class CustomPassiveTraining : MonoBehaviour
         selectedTiming = timingSelect.GetSelectedString();
         SetState(2);
         UpdatePossibleEffects();
-        UpdatePossibleConditions();
     }
     public string selectedTiming;
     // Step 3/4: select the effect and condition in any order.
@@ -76,10 +89,25 @@ public class CustomPassiveTraining : MonoBehaviour
     {
         if (effectSelect.GetSelected() < 0){return;}
         selectedEffect = effectSelect.GetSelectedString();
-        UpdateResults();
+        if (state < 3)
+        {
+            SetState(3);
+            UpdatePossibleConditions();
+        }
+        else
+        {
+            UpdateResults();
+        }
     }
     public SelectList effectSelect;
     public string selectedEffect; // Also tracks the target being effected and the effect specifics.
+    public string factionName; // Affects bonus conditions.
+    public void SetFactionName(string newInfo)
+    {
+        factionName = newInfo;
+    }
+    public StatDatabase factionConditions;
+    public StatDatabase factionFilters;
     public StatDatabase passiveConditionFilters;
     public GameObject conditionFilterObject;
     public SelectList conditionFilterSelect;
@@ -93,6 +121,10 @@ public class CustomPassiveTraining : MonoBehaviour
     {
         string allPossible = passiveConditionFilters.ReturnValue(selectedTiming);
         List<string> possibleList = allPossible.Split("|").ToList();
+        if (factionName != "")
+        {
+            possibleList.AddRange(factionFilters.ReturnValue(selectedTiming).Split("|").ToList());
+        }
         conditionFilterObject.SetActive(true);
         conditionFilterSelect.SetSelectables(possibleList);
     }
@@ -115,6 +147,10 @@ public class CustomPassiveTraining : MonoBehaviour
     {
         string allPossible = passiveConditions.ReturnValue(selectedTiming);
         List<string> possibleList = allPossible.Split("|").ToList();
+        if (factionName != "")
+        {
+            possibleList.AddRange(factionConditions.ReturnValue(factionName + "-" + selectedTiming).Split("|").ToList());
+        }
         if (filteredCondition != "")
         {
             possibleList = utility.ReturnFilteredList(possibleList, filteredCondition);
@@ -167,11 +203,37 @@ public class CustomPassiveTraining : MonoBehaviour
         passiveStats.SetTiming(selectedTiming);
         passiveStats.SetConditionAndSpecifics(selectedCondition);
         passiveStats.SetTargetEffectAndSpecifics(selectedEffect);
-        passiveDetailText.text = GetPassiveDetails();
+        passiveDetailText.text = GetPassiveDetails(passiveStats.ReturnStats());
         currentGold.text = partyData.inventory.ReturnGold().ToString();
-        cost.text = (selectedActor.CustomPassiveCount() * baseCost).ToString();
+        cost.text = ((selectedActor.CustomPassiveCount() + 1) * baseCost).ToString();
     }
     public TMP_Text passiveDetailText;
     public TMP_Text currentGold;
     public TMP_Text cost;
+    public PopUpMessage errorMessage;
+    public void ConfirmTraining()
+    {
+        int selectedIndex = allActors.GetSelected();
+        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
+        // Check if you already have the passive.
+        string newCP = passiveStats.ReturnStats();
+        if (selectedActor.CustomPassiveExists(newCP))
+        {
+            errorMessage.SetMessage("Already know this passive. Try training something new.");
+            return;
+        }
+        // Check if you can afford it.
+        int trainingFee = (selectedActor.CustomPassiveCount() + 1) * baseCost;
+        if (partyData.inventory.ReturnGold() < trainingFee)
+        {
+            errorMessage.SetMessage("You cannot afford this training at this time.");
+            return;
+        }
+        // Add the passive to the actor.
+        partyData.inventory.LoseGold(trainingFee);
+        selectedActor.AddCustomPassive(passiveStats.ReturnStats());
+        partyData.UpdatePartyMember(selectedActor, selectedIndex);
+        // Refresh data.
+        SelectActor();
+    }
 }

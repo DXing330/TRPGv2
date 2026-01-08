@@ -177,6 +177,8 @@ public class PassiveSkill : SkillEffect
                 return true;
             case "Health":
                 return CheckHealthConditions(conditionSpecifics, actor);
+            case "Energy":
+                return CheckEnergyConditions(conditionSpecifics, actor);
             case "Tile":
                 return map.GetTileInfoOfActor(actor).Contains(conditionSpecifics); // Contains, since DeepWater counts as Water
             case "Tile<>":
@@ -219,6 +221,12 @@ public class PassiveSkill : SkillEffect
                 return map.AllAllies(actor).Count < int.Parse(conditionSpecifics);
             case "AllyCount>":
                 return map.AllAllies(actor).Count > int.Parse(conditionSpecifics);
+            case "Ally<Enemy":
+                return map.AllAllies(actor).Count > map.AllEnemies(actor).Count;
+            case "Ally>Enemy":
+                return map.AllAllies(actor).Count < map.AllEnemies(actor).Count;
+            case "Ally=Enemy":
+                return map.AllAllies(actor).Count == map.AllEnemies(actor).Count;
             case "EnemyCount<":
                 return map.AllEnemies(actor).Count < int.Parse(conditionSpecifics);
             case "EnemyCount>":
@@ -336,6 +344,10 @@ public class PassiveSkill : SkillEffect
                 return CheckHealthConditions(conditionSpecifics, target);
             case "HealthA":
                 return CheckHealthConditions(conditionSpecifics, attacker);
+            case "EnergyA":
+                return CheckEnergyConditions(conditionSpecifics, attacker);
+            case "EnergyD":
+                return CheckEnergyConditions(conditionSpecifics, target);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics);
             case "Weather<>":
@@ -360,6 +372,10 @@ public class PassiveSkill : SkillEffect
                 return attacker.GetAttackRange() > int.Parse(conditionSpecifics);
             case "RangeA<":
                 return attacker.GetAttackRange() < int.Parse(conditionSpecifics);
+            case "WeaponA":
+                return conditionSpecifics == attacker.GetWeaponType();
+            case "WeaponD":
+                return conditionSpecifics == target.GetWeaponType();
             case "PassiveLevelsD>":
                 return target.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
             case "PassiveLevelsD<":
@@ -434,23 +450,45 @@ public class PassiveSkill : SkillEffect
         return true;
     }
 
-    public bool CheckHealthConditions(string conditionSpecifics, TacticActor target)
+    public bool CheckEnergyConditions(string specifics, TacticActor actor)
     {
-        int maxHealth = target.GetBaseHealth();
-        int currentHealth = target.GetHealth();
-        switch (conditionSpecifics)
+        int max = actor.GetBaseEnergy();
+        int current = actor.GetEnergy();
+        switch (specifics)
+        {
+            case "0":
+                return current == 0;
+            case "1":
+                return current == 1;
+            case "<25%":
+                return (current * 4) < max;
+            case "<Half":
+                return (current * 2) < max;
+            case ">Half":
+                return (current * 2) > max;
+            case "Full":
+                return current >= max;
+        }
+        return false;
+    }
+
+    public bool CheckHealthConditions(string specifics, TacticActor actor)
+    {
+        int max = actor.GetBaseHealth();
+        int current = actor.GetHealth();
+        switch (specifics)
         {
             case "1":
-                if (target.GetHealth() == 1){return true;}
-                return (currentHealth * 100) < maxHealth;
+                if (actor.GetHealth() == 1){return true;}
+                return (current * 100) < max;
             case "<25%":
-                return (currentHealth * 4) < maxHealth;
+                return (current * 4) < max;
             case "<Half":
-                return (currentHealth * 2) < maxHealth;
+                return (current * 2) < max;
             case ">Half":
-                return (currentHealth * 2) > maxHealth;
+                return (current * 2) > max;
             case "Full":
-                return currentHealth >= maxHealth;
+                return current >= max;
         }
         return false;
     }

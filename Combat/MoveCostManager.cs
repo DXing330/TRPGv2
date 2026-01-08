@@ -55,6 +55,7 @@ public class MoveCostManager : MonoBehaviour
         for (int i = 0; i < movingPassives.Count; i++)
         {
             passiveInfo = movingPassives[i].Split("|").ToList();
+            if (passiveInfo[3] != "MoveCost"){continue;}
             for (int j = 0; j < currentMoveCosts.Count; j++)
             {
                 if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], mapInfo[j]))
@@ -400,6 +401,8 @@ public class MoveCostManager : MonoBehaviour
                     {
                         passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
                     }
+                    break;
+                case "MoveCost":
                     break;
                 case "Map":
                     if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))

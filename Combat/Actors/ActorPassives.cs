@@ -29,10 +29,15 @@ public class ActorPassives : MonoBehaviour
             if (customPassives[i].Length <= 1) { customPassives.RemoveAt(i); }
         }
     }
-    public void AddCustomPassive(string newPassive)
+    public void AddCustomPassive(string newInfo)
     {
-        if (newPassive.Length < 6){return;}
-        customPassives.Add(newPassive);
+        if (newInfo.Length < 6){return;}
+        customPassives.Add(newInfo);
+    }
+    public bool CustomPassiveExists(string newInfo)
+    {
+        if (newInfo.Length < 6){return false;}
+        return customPassives.Contains(newInfo);
     }
     public void ResetPassives()
     {
@@ -133,6 +138,7 @@ public class ActorPassives : MonoBehaviour
         {
             total += int.Parse(passiveLevels[i]);
         }
+        total += customPassives.Count;
         return total;
     }
     public int GetTotalPassiveLevelsOfPassiveGroup(List<string> passiveGroup)

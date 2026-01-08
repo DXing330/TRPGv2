@@ -118,6 +118,12 @@ public class ArmoryUI : MonoBehaviour
         detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
     }
 
+    public virtual void ViewCustomPassiveDetails()
+    {
+        if (allActors.GetSelected() < 0 || selectedActor == null){return;}
+        detailViewer.ViewCustomPassives(selectedActor);
+    }
+
     public virtual void BeginSelectingEquipment()
     {
         if (allActors.GetSelected() < 0){return;}

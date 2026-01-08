@@ -85,7 +85,7 @@ public class TrainingGroundUI : MonoBehaviour
     {
         string newFeat = featSelect.GetSelectedStat();
         int selectedIndex = allActors.GetSelected();
-        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(allActors.GetSelected()));
+        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
         selectedActor.AddPassiveSkill(newFeat, "1");
         partyData.UpdatePartyMember(selectedActor, selectedIndex);
         partyData.inventory.RemoveItemQuantity(int.Parse(newFeatPrice.text));

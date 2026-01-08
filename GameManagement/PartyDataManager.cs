@@ -33,6 +33,7 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
+    [ContextMenu("Debug Load")]
     public void Load()
     {
         for (int i = 0; i < allParties.Count; i++) { allParties[i].Load(); }
