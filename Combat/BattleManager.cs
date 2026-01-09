@@ -64,7 +64,6 @@ public class BattleManager : MonoBehaviour
         if (autoWin)
         {
             combatLog.UpdateNewestLog("Automatically Ending The Battle");
-            Debug.Log("Automatically Ending The Battle");
             battleEndManager.EndBattle(winningTeam);
             return;
         }
@@ -231,9 +230,33 @@ public class BattleManager : MonoBehaviour
             return;
         }
     }
+    protected float clickNextTurnTime;
+    protected float enemyTurnMaxDurations = 3f;
+    public void ManualNextTurn()
+    {
+        if (pause)
+        {
+            return;
+        }
+        // Can't go to next turn if not all actions are spent?
+        if (turnActor.GetTeam() != 0 && turnActor.GetActions() > 0 && clickNextTurnTime < 0f)
+        {
+            clickNextTurnTime = Time.time;
+            return;
+        }
+        else if (turnActor.GetTeam() != 0 && turnActor.GetActions() > 0 && clickNextTurnTime > 0f)
+        {
+            if (Time.time > clickNextTurnTime + enemyTurnMaxDurations)
+            {
+                StartCoroutine(EndTurn());
+                return;                
+            }
+        }
+        NextTurn();
+    }
     public void NextTurn()
     {
-        if (pause){ return; }
+        clickNextTurnTime = -1f;
         int winningTeam = FindWinningTeam();
         if (winningTeam >= 0)
         {
@@ -337,8 +360,8 @@ public class BattleManager : MonoBehaviour
         {
             yield return new WaitForSeconds(shortDelayTime * 10);
         }
-        NextTurn();
         endingTurn = false;
+        NextTurn();
     }
     // None, Move, Attack, SkillSelect, SkillTargeting, Viewing
     public string selectedState;
@@ -766,7 +789,7 @@ public class BattleManager : MonoBehaviour
                 ActivateSkill(skill);
                 AdjustTurnNumber();
             }
-            if (turnActor.GetActions() <= 0)
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() < 0)
             {
                 StartCoroutine(EndTurn());
                 yield break;
@@ -1025,10 +1048,10 @@ public class BattleManager : MonoBehaviour
                     targetTile = turnActor.GetLocation();
                 }
                 activeManager.GetTargetedTiles(targetTile, moveManager.actorPathfinder);
-                ActivateSkill(attackActive);
-                AdjustTurnNumber();
                 // Turn to face the target in case the skill is not a real attack or an AOE.
                 turnActor.SetDirection(moveManager.DirectionBetweenActors(turnActor, turnActor.GetTarget()));
+                ActivateSkill(attackActive);
+                AdjustTurnNumber();
             }
             else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
         }

@@ -155,7 +155,7 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation = "";
         // Only the defender gets passive bonuses(?) from tile/teffects
         CheckMapPassives(attacker, defender, map, moveManager, false, true);
-        CheckPassives(defender.defendingPassives, defender, attacker, map, moveManager);
+        CheckPassives(defender.GetDefendingPassives(), defender, attacker, map, moveManager);
         if (!RollToHit(attacker, defender, map)){return;}
         baseDamage = Advantage(baseDamage, advantage);
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
@@ -177,6 +177,7 @@ public class AttackManager : ScriptableObject
 
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
     {
+        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
         UpdateBattleStats(attacker, defender);
         baseDamage = attackValue;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }

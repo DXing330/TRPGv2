@@ -3,13 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-// Select an actor, view their stats and passives.
-// Feats will be available all priced the same, feats you've already max leveled will no longer appear for selection.
-// Select a feat to learn.
-// Show what the feat will do for you, based on the level of the feat you will learn.
-// Confirm that you want to learn the feat and pay the price.
-// Learn the feat and save the game.
-// Update the passive listing with the new feat.
 public class TrainingGroundUI : MonoBehaviour
 {
     public GeneralUtility utility;

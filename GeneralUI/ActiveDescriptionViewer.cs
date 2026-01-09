@@ -155,11 +155,11 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Swap":
                 return "Switch " + ASD(s) + " with the targeted location.";
             case "Attack+Amnesia":
-                return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " active skill(s).";
+                return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " temporary active skill(s).";
             case "Weather":
                 return "Change the weather to " + ASD(s) + ".";
             case "Movement":
-                return "The target(s) gain movement equal to "+APD(p)+"X "+ASD(s)+".";
+                return "The target(s) gain " + ASD(s) + " movement.";
             case "AllAllies":
                 return "All allies gain " + APD(p) + " " + ASD(s) + ".";
             case "AllEnemies":

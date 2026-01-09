@@ -21,7 +21,7 @@ public class BattleEndManager : MonoBehaviour
     public StatTextList allNewAllies;
     public StatTextList allLootDrops;
     public int maxClassLevel = 6;
-    public int maxWeaponLevel = 4;
+    public int maxWeaponLevel = 6;
     public int winnerTeam = -1;
     public void SetWinnerTeam(int newInfo) { winnerTeam = newInfo; }
 

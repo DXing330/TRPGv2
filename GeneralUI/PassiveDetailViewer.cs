@@ -44,6 +44,13 @@ public class PassiveDetailViewer : MonoBehaviour
         return allInfo;
     }
 
+    public string ReturnSpecificPassiveLevelEffect(string group, int level)
+    {
+        string passiveName = passiveNameLevels.GetMultiKeyValue(group, (level).ToString());
+        return ReturnPassiveDetails(allPassives.ReturnValue(passiveName));
+    }
+
+    // Used to make the display popup and the text equal to the passive details.
     public void UpdatePassiveNames(string group, string newLevel)
     {
         SetPassiveGroupName(group);
@@ -62,6 +69,30 @@ public class PassiveDetailViewer : MonoBehaviour
         passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
         passiveGroupText.SetStatText(passiveGroupName);
         passiveGroupText.SetText(passiveLevel);
+    }
+
+    public List<string> ReturnAllPassiveDetails(TacticActor actor)
+    {
+        List<string> allDetails = new List<string>();
+        // Loop through passives and levels.
+        List<string> allAPassives = actor.GetPassiveSkills();
+        List<string> allPassiveLevels = actor.GetPassiveLevels();
+        for (int i = 0; i < allAPassives.Count; i++)
+        {
+            int level = int.Parse(allPassiveLevels[i]);
+            if (level <= 0){continue;}
+            for (int j = 1; j < level + 1; j++)
+            {
+                allDetails.Add(ReturnPassiveDetails(allPassives.ReturnValue(passiveNameLevels.GetMultiKeyValue(allAPassives[i], j.ToString()))));
+            }
+        }
+        // Loop through custom passives.
+        allAPassives = actor.GetCustomPassives();
+        for (int i = 0; i < allAPassives.Count; i++)
+        {
+            allDetails.Add(ReturnPassiveDetails(allAPassives[i]));
+        }
+        return allDetails;
     }
 
     public void ViewCustomPassives(TacticActor actor)
