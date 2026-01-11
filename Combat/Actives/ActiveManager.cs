@@ -550,6 +550,18 @@ public class ActiveManager : MonoBehaviour
                     battle.map.ChangeTile(targets[i].GetLocation(), specifics, active.GetPowerString());
                 }
                 return;
+            case "Learn":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    skillUser.LearnRandomActive(targets[i]);
+                }
+                return;
+            case "Teach":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    skillUser.TeachRandomActive(targets[i]);
+                }
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);

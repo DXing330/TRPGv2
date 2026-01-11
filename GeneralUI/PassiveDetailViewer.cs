@@ -19,6 +19,7 @@ public class PassiveDetailViewer : MonoBehaviour
     public List<string> passiveDescription;
     public MultiKeyStatDatabase passiveNameLevels;
     public StatDatabase allPassives;
+    public StatDatabase runePassives;
     public GameObject panel;
     public void DisablePanel(){panel.SetActive(false);}
     public StatTextList passiveStatTextList;
@@ -195,6 +196,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if there are more allies than enemies";
             case "Ally=Enemy":
                 return " if there are equal allies and enemies";
+            case "Ally<EnemyA":
+                return " if the attack has less allies than enemies";
+            case "Ally>EnemyA":
+                return " if the attack has more allies than enemies";
+            case "Ally=EnemyA":
+                return " if the attack has equal allies and enemies";
             case "EnemyCount<":
                 return " if there are less than " + specifics + " enemies left";
             case "EnemyCount>":

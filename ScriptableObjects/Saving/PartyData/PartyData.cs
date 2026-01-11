@@ -32,6 +32,17 @@ public class PartyData : SavedData
     {
         return partyNames[index];
     }
+    public List<string> partyIDs;
+    public int GetIDAtIndex(int index)
+    {
+        return int.Parse(partyIDs[index]);
+    }
+    public List<string> GetPartyIDs(){return partyIDs;}
+    public void SetPartyIDs(List<string> newIDs){partyIDs = newIDs;}
+    public int GetMatchingIDIndex(string ID)
+    {
+        return partyIDs.IndexOf(ID);
+    }
     public List<string> GetSpriteNames()
     {
         List<string> partySpriteNames = new List<string>();
@@ -89,6 +100,7 @@ public class PartyData : SavedData
     {
         List<string> allStats = new List<string>();
         allStats.Add(partyNames[index]);
+        allStats.Add(partyIDs[index]);
         allStats.Add(partyStats[index]);
         allStats.Add(partyEquipment[index]);
         return allStats;
@@ -96,6 +108,7 @@ public class PartyData : SavedData
     public void RemoveStatsAtIndex(int index)
     {
         partyNames.RemoveAt(index);
+        partyIDs.RemoveAt(index);
         partyStats.RemoveAt(index);
         partyEquipment.RemoveAt(index);
     }
@@ -244,13 +257,15 @@ public class PartyData : SavedData
     public override void Save()
     {
         partyNames = utility.RemoveEmptyListItems(partyNames);
+        partyIDs = utility.RemoveEmptyListItems(partyIDs);
         partyStats = utility.RemoveEmptyListItems(partyStats);
         //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
-        allData += String.Join(delimiterTwo, partyNames)+delimiter;
-        allData += String.Join(delimiterTwo, partyStats)+delimiter;
-        allData += String.Join(delimiterTwo, partyEquipment)+delimiter;
+        allData += "Names=" + String.Join(delimiterTwo, partyNames) + delimiter;
+        allData += "ID=" + String.Join(delimiterTwo, partyIDs) + delimiter;
+        allData += "Stats=" + String.Join(delimiterTwo, partyStats) + delimiter;
+        allData += "Equip=" + String.Join(delimiterTwo, partyEquipment) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public virtual void ForceNewGameData(string newInfo)
@@ -265,11 +280,11 @@ public class PartyData : SavedData
         allData = newGameData;
         if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
         else { return; }
-        partyNames = dataList[0].Split(delimiterTwo).ToList();
-        partyStats = dataList[1].Split(delimiterTwo).ToList();
-        partyEquipment = dataList[2].Split(delimiterTwo).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
         Save();
-        Load();
     }
     public override void Load()
     {
@@ -278,12 +293,36 @@ public class PartyData : SavedData
         else { allData = newGameData; }
         if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
         else { return; }
-        partyNames = dataList[0].Split(delimiterTwo).ToList();
-        partyStats = dataList[1].Split(delimiterTwo).ToList();
-        partyEquipment = dataList[2].Split(delimiterTwo).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
         partyNames = utility.RemoveEmptyListItems(partyNames);
+        partyIDs = utility.RemoveEmptyListItems(partyIDs);
         partyStats = utility.RemoveEmptyListItems(partyStats);
-        //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
+    }
+    protected void LoadStat(string stat)
+    {
+        string[] blocks = stat.Split("=");
+        if (blocks.Length < 2){return;}
+        string data = blocks[1];
+        switch (blocks[0])
+        {
+            default:
+            break;
+            case "Names":
+            partyNames = data.Split(delimiterTwo).ToList();
+            break;
+            case "ID":
+            SetPartyIDs(data.Split(delimiterTwo).ToList());
+            break;
+            case "Stats":
+            partyStats = data.Split(delimiterTwo).ToList();
+            break;
+            case "Equip":
+            partyEquipment = data.Split(delimiterTwo).ToList();
+            break;
+        }
     }
     public List<string> GetStats(string joiner = "|")
     {
@@ -368,9 +407,10 @@ public class PartyData : SavedData
         int indexOf = partyNames.IndexOf(memberName);
         return indexOf;
     }
-    public void AddMember(string stats, string personalName = "")
+    public void AddMember(string stats, string personalName, string ID)
     {
         partyStats.Add(stats);
+        partyIDs.Add(ID);
         partyNames.Add(personalName);
         partyEquipment.Add("");
     }
@@ -395,9 +435,10 @@ public class PartyData : SavedData
             }
         }
     }
-    public void AddAllStats(string personalName, string baseStats, string equipment)
+    public void AddAllStats(string personalName, string ID, string baseStats, string equipment)
     {
         partyStats.Add(baseStats);
+        partyIDs.Add(ID);
         partyNames.Add(personalName);
         // If equipment is empty this could cause an issue.
         if (partyEquipment.Count >= partyNames.Count)

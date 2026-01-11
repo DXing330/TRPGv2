@@ -83,17 +83,15 @@ public class BattleEndManager : MonoBehaviour
             PartyDefeated();
             return;
         }
-        List<string> codeNames = new List<string>();
-        List<string> spriteNames = new List<string>();
+        List<int> IDs = new List<int>();
         List<string> stats = new List<string>();
         for (int i = 0; i < actors.Count; i++)
         {
-            if (actors[i].GetTeam() != 0){continue;}
-            codeNames.Add(actors[i].GetPersonalName());
-            spriteNames.Add(actors[i].GetSpriteName());
+            if (actors[i].GetTeam() != 0 || actors[i].GetID() < 0){continue;}
+            IDs.Add(actors[i].GetID());
             stats.Add(actors[i].ReturnPersistentStats());
         }
-        partyData.UpdatePartyAfterBattle(codeNames, spriteNames, stats);
+        partyData.UpdatePartyAfterBattle(IDs, stats);
         partyData.Save();
     }
 

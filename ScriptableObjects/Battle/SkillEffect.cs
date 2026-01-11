@@ -110,6 +110,22 @@ public class SkillEffect : ScriptableObject
                 AffectActor(target, "BaseAttack%", effectSpecifics, level);
                 AffectActor(target, "BaseDefense%", effectSpecifics, level);
                 break;
+            case "RandomBaseStat":
+                // Health / Attack / Defense
+                int baseStatRoll = Random.Range(0, 3);
+                switch (baseStatRoll)
+                {
+                    case 0:
+                    AffectActor(target, "BaseHealth", effectSpecifics, level);
+                    break;
+                    case 1:
+                    AffectActor(target, "BaseAttack", effectSpecifics, level);
+                    break;
+                    case 2:
+                    AffectActor(target, "BaseDefense", effectSpecifics, level);
+                    break;
+                }
+                break;
             case "CurrentHealth%":
                 int currentHealth = target.GetHealth();
                 target.UpdateHealth(int.Parse(effectSpecifics) * currentHealth / basicDenominator);

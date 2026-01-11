@@ -89,9 +89,9 @@ public class BattleManager : MonoBehaviour
         int partySizeCap = map.MapMaxPartyCapacity();
         combatLog.AddNewLog();
         map.SetWeather(battleState.GetWeather());
-        combatLog.UpdateNewestLog("The weather is "+map.GetWeather());
+        combatLog.UpdateNewestLog("The weather is " + map.GetWeather());
         map.SetTime(battleState.GetTime());
-        combatLog.UpdateNewestLog("The time is "+map.GetTime());
+        combatLog.UpdateNewestLog("The time is " + map.GetTime());
         // Always plains default map tile.
         map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
         map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
@@ -102,11 +102,11 @@ public class BattleManager : MonoBehaviour
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(battleState.GetAllySpawnPattern(), 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment);
+        actors = actorMaker.SpawnTeamInPattern(battleState.GetAllySpawnPattern(), 0, playerParty.characters, playerParty.stats, playerParty.characterNames, playerParty.equipment, playerParty.characterIDs);
         actorMaker.ApplyBattleModifiers(actors, playerParty.GetBattleModifiers());
         for (int i = 0; i < Mathf.Min(partySizeCap, actors.Count); i++) { map.AddActorToBattle(actors[i]); }
         actors = new List<TacticActor>();
-        actors = actorMaker.SpawnTeamInPattern(battleState.GetEnemySpawnPattern(), 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment);
+        actors = actorMaker.SpawnTeamInPattern(battleState.GetEnemySpawnPattern(), 1, enemyParty.characters, enemyParty.stats, enemyParty.characterNames, enemyParty.equipment, enemyParty.characterIDs);
         actorMaker.ApplyBattleModifiers(actors, enemyParty.GetBattleModifiers());
         for (int i = 0; i < Mathf.Min(partySizeCap, actors.Count); i++) { map.AddActorToBattle(actors[i]); }
         // Apply relics/ascension/etc. battle modifier effects here.

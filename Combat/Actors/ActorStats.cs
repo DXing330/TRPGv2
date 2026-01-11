@@ -8,6 +8,10 @@ using UnityEngine;
 public class ActorStats : ActorPassives
 {
     public GeneralUtility utility;
+    public int ID = -1;
+    public void ResetID(){ID = -1;}
+    public void SetID(int newID){ID = newID;}
+    public int GetID(){return ID;}
     public string delimiter = "!";
     public string allStatNames;
     [ContextMenu("LoadStatNames")]
@@ -636,6 +640,11 @@ public class ActorStats : ActorPassives
     public int GetCritDamage(){return currentCritDamage;}
     public void UpdateCritDamage(int amount){currentCritDamage += amount;}
     public List<string> activeSkills;
+    public string ReturnRandomActiveSkill()
+    {
+        if (activeSkills.Count <= 0){return "";}
+        return activeSkills[UnityEngine.Random.Range(0, activeSkills.Count)];
+    }
     public bool SkillExists(string skillName)
     {
         for (int i = 0; i < activeSkills.Count; i++)
@@ -681,6 +690,14 @@ public class ActorStats : ActorPassives
         if (skillName.Length <= 1) { return; }
         if (activeSkills.Contains(skillName)) { return; }
         activeSkills.Add(skillName);
+    }
+    public void LearnRandomActive(ActorStats otherActor)
+    {
+        AddActiveSkill(otherActor.ReturnRandomActiveSkill());
+    }
+    public void TeachRandomActive(ActorStats otherActor)
+    {
+        otherActor.LearnRandomActive(this);
     }
     public List<string> tempActives;
     public List<string> GetTempActives(){return tempActives;}

@@ -268,18 +268,6 @@ public class BattleState : SavedState
             case 11:
                 SetAltWinConSpecifics(stat);
                 break;
-            case 12:
-                break;
-            case 13:
-                break;
-            case 14:
-                break;
-            case 15:
-                break;
-            case 16:
-                break;
-            case 17:
-                break;
         }
     }
 }

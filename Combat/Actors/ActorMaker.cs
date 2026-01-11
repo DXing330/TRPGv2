@@ -94,11 +94,12 @@ public class ActorMaker : MonoBehaviour
         return newActor;
     }
 
-    public List<TacticActor> SpawnTeamInPattern(string pattern, int team, List<string> teamNames, List<string> teamStats = null, List<string> teamPersonalNames = null, List<string> teamEquipment = null)
+    public List<TacticActor> SpawnTeamInPattern(string pattern, int team, List<string> teamNames, List<string> teamStats = null, List<string> teamPersonalNames = null, List<string> teamEquipment = null, List<string> teamIDs = null)
     {
         if (teamStats == null) { teamStats = new List<string>(); }
         if (teamPersonalNames == null) { teamPersonalNames = new List<string>(); }
         if (teamEquipment == null) { teamEquipment = new List<string>(); }
+        if (teamIDs == null) { teamIDs = new List<string>(); }
         List<TacticActor> actors = new List<TacticActor>();
         // Randomize the team name order to randomize their spawn locations?
         List<int> patternLocations = mapPatterns.ReturnTilesOfPattern(pattern, teamNames.Count, mapSize);
@@ -122,6 +123,14 @@ public class ActorMaker : MonoBehaviour
                     equipmentPrefab.SetAllStats(equipData[j]);
                     equipmentPrefab.EquipToActor(actors[i]);
                 }
+            }
+            if (i < teamIDs.Count)
+            {
+                actors[i].SetID(int.Parse(teamIDs[i]));
+            }
+            else
+            {
+                actors[i].ResetID();
             }
             // Add the elemental passives at the end.
             AddElementPassives(actors[i]);

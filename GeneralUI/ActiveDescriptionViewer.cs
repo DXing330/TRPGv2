@@ -172,6 +172,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Put the target(s) to sleep for " + s + " turns.";
             case "Silence":
                 return "Disable target(s) skills for " + s + " turns.";
+            case "Learn":
+                return "Learn a random skill from the target(s).";
+            case "Teach":
+                return "Teach a random skill to the target(s).";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

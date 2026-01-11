@@ -1081,6 +1081,7 @@ public class Dungeon : ScriptableObject
     public void ForceSpawnEnemy(int spawnLocation)
     {
         if (spawnLocation == -1 || spawnLocation >= currentFloorTiles.Count || currentFloorTiles[spawnLocation] != passableTileType){return;}
+        if (pathfinder.mapUtility.DistanceBetweenTiles(spawnLocation, partyLocation, dungeonSize) < 6){return;}
         int enemyCount = Random.Range(minEnemies + currentFloor / 2, maxEnemies + 1 + currentFloor);
         string enemyString = "";
         for (int i = 0; i < enemyCount; i++)

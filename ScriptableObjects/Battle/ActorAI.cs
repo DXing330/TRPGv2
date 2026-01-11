@@ -152,7 +152,6 @@ public class ActorAI : ScriptableObject
         {
             currentActor.SetTarget(GetClosestEnemy(map.battlingActors, currentActor, moveManager));
         }
-        // Try to move to the closest tile with an elevation difference less than 3.
         int target = currentActor.GetTarget().GetLocation();
         if (currentActor.GetAttackRange() <= 1)
         {

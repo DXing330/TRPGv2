@@ -122,7 +122,8 @@ public class BattleSimulator : MonoBehaviour
             return;
         }
         string stats = actorStats.ReturnValue(selectedActorName);
-        partyOneList.AddMemberToParty(selectedActorName + " " + Random.Range(1, 999), stats, selectedActorName);
+        string ID = Random.Range(1, 999).ToString();
+        partyOneList.AddMemberToParty(selectedActorName + " " + ID, stats, selectedActorName, ID);
         partyOneSelect.RefreshData();
     }
     public void AddToPartyTwo()
@@ -132,7 +133,8 @@ public class BattleSimulator : MonoBehaviour
             return;
         }
         string stats = actorStats.ReturnValue(selectedActorName);
-        partyTwoList.AddMemberToParty(selectedActorName + " " + Random.Range(1, 999), stats, selectedActorName);
+        string ID = Random.Range(1, 999).ToString();
+        partyTwoList.AddMemberToParty(selectedActorName + " " + ID, stats, selectedActorName, ID);
         partyTwoSelect.RefreshData();
     }
     public NameRater filter; 

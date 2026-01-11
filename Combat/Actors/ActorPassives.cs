@@ -6,6 +6,17 @@ using UnityEngine;
 public class ActorPassives : MonoBehaviour
 {
     public string passiveDelimiter = "+";
+    // Only obtained from magic runes in equipment.
+    // Later can make custom runes in the mage tower.
+    public List<string> runePassives;
+    public void AddRunePassive(string newRune)
+    {
+        if (runePassives.Contains(newRune)){return;}
+        if (newRune.Length <= 1){return;}
+        runePassives.Add(newRune);
+    }
+    public List<string> GetRunePassives(){return runePassives;}
+    // Only obtained through custom training.
     public List<string> customPassives;
     public int CustomPassiveCount()
     {
@@ -41,6 +52,8 @@ public class ActorPassives : MonoBehaviour
     }
     public void ResetPassives()
     {
+        customPassives.Clear();
+        runePassives.Clear();
         passiveSkills.Clear();
         passiveLevels.Clear();
     }

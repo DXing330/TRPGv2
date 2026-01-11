@@ -260,23 +260,20 @@ public class BattleSimulatorState : BattleState
     {
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
-        allData += String.Join(delimiterThree, partyOneList.GetCharacterNames()) + delimiterTwo;
-        allData += String.Join(delimiterThree, partyOneList.GetCharacterSprites()) + delimiterTwo;
-        allData += String.Join(delimiterThree, partyOneList.GetCharacterStats()) + delimiterTwo;
-        allData += String.Join(delimiterThree, partyOneList.GetCharacterEquipment());
-        allData += delimiter;
-        allData += String.Join(delimiterThree, partyTwoList.GetCharacterNames()) + delimiterTwo;
-        allData += String.Join(delimiterThree, partyTwoList.GetCharacterSprites()) + delimiterTwo;
-        allData += String.Join(delimiterThree, partyTwoList.GetCharacterStats()) + delimiterTwo;
-        allData += String.Join(delimiterThree, partyTwoList.GetCharacterEquipment());
-        allData += delimiter;
-        allData += string.Join(delimiterThree, selectedTerrainTypes) + delimiter;
-        allData += string.Join(delimiterThree, selectedWeathers) + delimiter;
-        allData += string.Join(delimiterThree, selectedTimes) + delimiter;
-        allData += multiBattle + delimiter + multiBattleCount + delimiter + multiBattleCurrent + delimiter + prevMultiBattle + delimiter + autoBattle + delimiter + controlAI + delimiter;
-        allData += string.Join(delimiterThree, selectedP1BattleMods) + delimiter;
-        allData += string.Join(delimiterThree, selectedP2BattleMods) + delimiter;
-        allData += string.Join(delimiterThree, selectedStartingFormations) + delimiter;
+        allData += "P1=" + partyOneList.ReturnData() + delimiter;
+        allData += "P2=" + partyTwoList.ReturnData() + delimiter;
+        allData += "Terrain=" + String.Join(delimiterThree, selectedTerrainTypes) + delimiter;
+        allData += "Weather=" + String.Join(delimiterThree, selectedWeathers) + delimiter;
+        allData += "Time=" + String.Join(delimiterThree, selectedTimes) + delimiter;
+        allData += "MultiBattle=" + multiBattle + delimiter;
+        allData += "MultiBattleCount=" + multiBattleCount + delimiter;
+        allData += "MultiBattleCurrent=" + multiBattleCurrent + delimiter;
+        allData += "MultiBattlePrev=" + prevMultiBattle + delimiter;
+        allData += "Auto=" + autoBattle + delimiter;
+        allData += "ControlAI=" + controlAI + delimiter;
+        allData += "P1BattleMods=" + String.Join(delimiterThree, selectedP1BattleMods) + delimiter;
+        allData += "P2BattleMods=" + String.Join(delimiterThree, selectedP2BattleMods) + delimiter;
+        allData += "StartingFormations=" + String.Join(delimiterThree, selectedStartingFormations) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -290,30 +287,84 @@ public class BattleSimulatorState : BattleState
         {
             return;
         }
+        // ---------- defaults ----------
+        selectedTerrainTypes = new List<string>();
+        selectedWeathers = new List<string>();
+        selectedTimes = new List<string>();
+        selectedP1BattleMods = new List<string>();
+        selectedP2BattleMods = new List<string>();
+        selectedStartingFormations = new List<string>();
+        multiBattle = 0;
+        autoBattle = 0;
+        controlAI = 0;
+        multiBattleCount = 0;
+        multiBattleCurrent = 0;
+        prevMultiBattle = 0;
+        winningTeam = -1;
+        // ------------------------------
         dataList = allData.Split(delimiter).ToList();
-        List<string> dataBlocks = dataList[0].Split(delimiterTwo).ToList();
-        if (dataBlocks[1].Length < 1){ return; }
-        partyOneList.SetLists(dataBlocks[1].Split(delimiterThree).ToList(), dataBlocks[2].Split(delimiterThree).ToList(), dataBlocks[0].Split(delimiterThree).ToList(), dataBlocks[3].Split(delimiterThree).ToList());
-        dataBlocks = dataList[1].Split(delimiterTwo).ToList();
-        partyTwoList.SetLists(dataBlocks[1].Split(delimiterThree).ToList(), dataBlocks[2].Split(delimiterThree).ToList(), dataBlocks[0].Split(delimiterThree).ToList(), dataBlocks[3].Split(delimiterThree).ToList());
-        selectedTerrainTypes = dataList[2].Split(delimiterThree).ToList();
-        selectedWeathers = dataList[3].Split(delimiterThree).ToList();
-        selectedTimes = dataList[4].Split(delimiterThree).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
         utility.RemoveEmptyListItems(selectedTerrainTypes);
         utility.RemoveEmptyListItems(selectedWeathers);
         utility.RemoveEmptyListItems(selectedTimes);
-        multiBattle = int.Parse(dataList[5]);
-        multiBattleCount = int.Parse(dataList[6]);
-        multiBattleCurrent = int.Parse(dataList[7]);
-        prevMultiBattle = int.Parse(dataList[8]);
-        autoBattle = int.Parse(dataList[9]);
-        controlAI = int.Parse(dataList[10]);
-        selectedP1BattleMods = dataList[11].Split(delimiterThree).ToList();
-        selectedP2BattleMods = dataList[12].Split(delimiterThree).ToList();
-        selectedStartingFormations = dataList[13].Split(delimiterThree).ToList();
         utility.RemoveEmptyListItems(selectedP1BattleMods);
         utility.RemoveEmptyListItems(selectedP2BattleMods);
         utility.RemoveEmptyListItems(selectedStartingFormations);
-        winningTeam = -1;
+    }
+    protected void LoadStat(string data)
+    {
+        string[] blocks = data.Split("=");
+        if (blocks.Length < 2){return;}
+        string value = blocks[1];
+        switch (blocks[0])
+        {
+            default:
+            break;
+            case "P1":
+                partyOneList.LoadData(value);
+                break;
+            case "P2":
+                partyTwoList.LoadData(value);
+                break;
+            case "Terrain":
+                selectedTerrainTypes = value.Split(delimiterThree).ToList();
+                break;
+            case "Weather":
+                selectedWeathers = value.Split(delimiterThree).ToList();
+                break;
+            case "Time":
+                selectedTimes = value.Split(delimiterThree).ToList();
+                break;
+            case "MultiBattle":
+                multiBattle = int.Parse(value);
+                break;
+            case "MultiBattleCount":
+                multiBattleCount = int.Parse(value);
+                break;
+            case "MultiBattleCurrent":
+                multiBattleCurrent = int.Parse(value);
+                break;
+            case "MultiBattlePrev":
+                prevMultiBattle = int.Parse(value);
+                break;
+            case "Auto":
+                autoBattle = int.Parse(value);
+                break;
+            case "ControlAI":
+                controlAI = int.Parse(value);
+                break;
+            case "P1BattleMods":
+                selectedP1BattleMods = value.Split(delimiterThree).ToList();
+                break;
+            case "P2BattleMods":
+                selectedP2BattleMods = value.Split(delimiterThree).ToList();
+                break;
+            case "StartingFormations":
+                selectedStartingFormations = value.Split(delimiterThree).ToList();
+                break;
+        }
     }
 }

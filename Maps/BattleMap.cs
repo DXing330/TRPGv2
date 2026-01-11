@@ -1062,6 +1062,27 @@ public class BattleMap : MapManager
         return tile;
     }
 
+    // Override this to ignore tiles that have actors on them and then give the next closest tile.
+    public override int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff)
+    {
+        List<int> adjacentTiles = mapUtility.AdjacentTiles(end, mapSize);
+        int target = end;
+        int dist = mapSize * mapSize;
+        for (int i = 0; i < adjacentTiles.Count; i++)
+        {
+            if (ReturnElevationDifference(adjacentTiles[i], end) > maxElvDiff || GetActorOnTile(adjacentTiles[i]) != null)
+            {
+                continue;
+            }
+            if (mapUtility.DistanceBetweenTiles(adjacentTiles[i], start, mapSize) < dist)
+            {
+                dist = mapUtility.DistanceBetweenTiles(adjacentTiles[i], start, mapSize);
+                target = adjacentTiles[i];
+            }
+        }
+        return target;
+    }
+
     public List<string> excludedTileTypesForNonFlying;
     public bool TileExcluded(TacticActor actor, string tile)
     {

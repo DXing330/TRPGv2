@@ -6,19 +6,23 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
+    public GeneralUtility utility;
     public StatDatabase weaponReach;
+    public string delimiter = "|";
     public string allStats;
     public string GetStats(){ return allStats; }
     public void RefreshStats()
     {
         allStats = "";
-        allStats += equipName + "|";
-        allStats += slot + "|";
-        allStats += type + "|";
-        allStats += String.Join(",", passives) + "|";
-        allStats += String.Join(",", passiveLevels) + "|";
-        allStats += maxUpgrades + "|";
-        allStats += rarity + "|";
+        allStats += equipName + delimiter;
+        allStats += slot + delimiter;
+        allStats += type + delimiter;
+        allStats += String.Join(",", passives) + delimiter;
+        allStats += String.Join(",", passiveLevels) + delimiter;
+        allStats += maxUpgrades + delimiter;
+        allStats += rarity + delimiter;
+        allStats += runeSlots + delimiter;
+        allStats += String.Join(",", runes) + delimiter;
     }
     public void ResetStats()
     {
@@ -28,7 +32,9 @@ public class Equipment : MonoBehaviour
         passives.Clear();
         passiveLevels.Clear();
         maxUpgrades = 0;
-        rarity = "0";
+        rarity = "";
+        runeSlots = 0;
+        runes.Clear();
     }
     public void SetAllStats(string newStats)
     {
@@ -66,10 +72,16 @@ public class Equipment : MonoBehaviour
             SetPassiveLevels(stat.Split(",").ToList());
             break;
             case 5:
-            SetMaxUpgrades(int.Parse(stat));
+            SetMaxUpgrades(utility.SafeParseInt(stat, 0));
             break;
             case 6:
             SetRarity(stat);
+            break;
+            case 7:
+            SetRuneSlots(utility.SafeParseInt(stat, 0));
+            break;
+            case 8:
+            SetRunes(stat.Split(",").ToList());
             break;
         }
     }
@@ -184,6 +196,43 @@ public class Equipment : MonoBehaviour
     {
         return maxUpgrades;
     }
+    public void UpgradeEquipment(string passiveUpgrade, int level = 1)
+    {
+        for (int i = 0; i < level; i++)
+        {
+            if (!UpgradesAvailable()){return;}
+            AddPassive(passiveUpgrade);
+            ConsumeUpgrade();
+            RefreshStats();
+        }   
+    }
+    public int runeSlots;
+    public void SetRuneSlots(int newInfo){runeSlots = newInfo;}
+    public bool RuneSlotsAvailable()
+    {
+        return runeSlots > 0;
+    }
+    public void ConsumeRuneSlot()
+    {
+        runeSlots--;
+    }
+    public List<string> runes;
+    public void ResetRunes(){runes.Clear();}
+    public void AddRune(string newInfo)
+    {
+        if (newInfo.Length <= 1){return;}
+        runes.Add(newInfo);
+        ConsumeRuneSlot();
+    }
+    public void SetRunes(List<string> newInfo)
+    {
+        runes.Clear();
+        for (int i = 0; i < newInfo.Count; i++)
+        {
+            AddRune(newInfo[i]);
+        }
+    }
+    public List<string> GetRunes(){return runes;}
     public string rarity;
     public void SetRarity(string newInfo)
     {
@@ -193,7 +242,6 @@ public class Equipment : MonoBehaviour
     {
         return int.Parse(rarity);
     }
-
     public void EquipToActor(TacticActor actor)
     {
         if (allStats.Length < 6) { return; }
@@ -208,19 +256,11 @@ public class Equipment : MonoBehaviour
         {
             actor.AddPassiveSkill(passives[i], passiveLevels[i]);
         }
-    }
-
-    public void UpgradeEquipment(string passiveUpgrade, int level = 1)
-    {
-        for (int i = 0; i < level; i++)
+        for (int i = 0; i < runes.Count; i++)
         {
-            if (!UpgradesAvailable()){return;}
-            AddPassive(passiveUpgrade);
-            ConsumeUpgrade();
-            RefreshStats();
-        }   
+            actor.AddRunePassive(runes[i]);
+        }
     }
-
     public void EquipWeapon(TacticActor actor)
     {
         if (allStats.Length < 6){return;}

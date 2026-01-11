@@ -9,7 +9,7 @@ using UnityEngine;
 public class GuildCard : SavedData
 {
     public string delimiterTwo;
-    // Higher rank -> larger party, more equipment, harder quests
+    // Higher rank -> larger party, bigger bag size(?), more equipment, harder quests
     protected int maxRank = 12;
     public int guildRank;
     public List<string> guildRankNames;
@@ -45,6 +45,10 @@ public class GuildCard : SavedData
         }
     }
     public int GetGuildExp() { return guildExp; }
+    public int nextID;
+    public void SetNextID(int newInfo){nextID = newInfo;}
+    public int GetNextID(){return nextID;}
+    public void IncrementNextID(){nextID++;}
     public int basePartyLimit;
     public void SetPartyLimit(int newInfo){basePartyLimit = newInfo;}
     public void IncreasePartyLimit(){basePartyLimit++;}
@@ -53,6 +57,13 @@ public class GuildCard : SavedData
     // You can't fail a dungeon quest, you just keep trying til you succeed.
     // But there is a limit to how many quests you can accept at one time.
     public bool RequestLimit(){return dungeonLocations.Count >= guildRank;}
+    public void ResetDungeonData()
+    {
+        dungeonLocations.Clear();
+        dungeonQuestGoals.Clear();
+        dungeonQuestFloors.Clear();
+        dungeonQuestRewards.Clear();
+    }
     public List<string> dungeonLocations;
     public List<string> GetQuestLocations(){return dungeonLocations;}
     public int QuestsAtLocation(string locationName)
@@ -159,17 +170,21 @@ public class GuildCard : SavedData
         allData = newGameData;
         dataPath = Application.persistentDataPath + "/" + filename;
         File.WriteAllText(dataPath, allData);
+        Load();
     }
 
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = guildRank.ToString() + delimiter + guildExp.ToString() + delimiter + GetPartyLimit() + delimiter;
-        allData += String.Join(delimiterTwo, dungeonLocations) + delimiter;
-        allData += String.Join(delimiterTwo, dungeonQuestGoals) + delimiter;
-        allData += String.Join(delimiterTwo, dungeonQuestFloors) + delimiter;
-        allData += String.Join(delimiterTwo, dungeonQuestRewards) + delimiter;
-        allData += delimiter;
+        allData = "";
+        allData += "Rank=" + guildRank.ToString() + delimiter;
+        allData += "Exp=" + guildExp.ToString() + delimiter;
+        allData += "PartyLimit=" + GetPartyLimit() + delimiter;
+        allData += "NextID=" + GetNextID() + delimiter;
+        allData += "DLocations=" + String.Join(delimiterTwo, dungeonLocations) + delimiter;
+        allData += "DGoals=" + String.Join(delimiterTwo, dungeonQuestGoals) + delimiter;
+        allData += "DFloors=" + String.Join(delimiterTwo, dungeonQuestFloors) + delimiter;
+        allData += "DRewards=" + String.Join(delimiterTwo, dungeonQuestRewards) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -180,38 +195,45 @@ public class GuildCard : SavedData
         else { allData = newGameData; }
         if (allData.Length < newGameData.Length) { allData = newGameData; }
         dataList = allData.Split(delimiter).ToList();
+        ResetDungeonData();
         for (int i = 0; i < dataList.Count; i++)
         {
-            LoadStat(dataList[i], i);
+            LoadStat(dataList[i]);
         }
     }
 
-    protected void LoadStat(string stat, int index)
+    protected void LoadStat(string stat)
     {
-        switch (index)
+        string[] blocks = stat.Split("=");
+        if (blocks.Length < 2){return;}
+        string data = blocks[1];
+        switch (blocks[0])
         {
             default:
             break;
-            case 0:
-            guildRank = int.Parse(stat);
+            case "Rank":
+            guildRank = int.Parse(data);
             break;
-            case 1:
-            guildExp = int.Parse(stat);
+            case "Exp":
+            guildExp = int.Parse(data);
             break;
-            case 2:
-            SetPartyLimit(int.Parse(stat));
+            case "PartyLimit":
+            SetPartyLimit(int.Parse(data));
             break;
-            case 3:
-            SetDungeonQuestLocations(stat.Split(delimiterTwo).ToList());
+            case "NextID":
+            SetNextID(int.Parse(data));
             break;
-            case 4:
-            SetDungeonQuestGoals(stat.Split(delimiterTwo).ToList());
+            case "DLocations":
+            SetDungeonQuestLocations(data.Split(delimiterTwo).ToList());
             break;
-            case 5:
-            SetDungeonQuestFloors(stat.Split(delimiterTwo).ToList());
+            case "DGoals":
+            SetDungeonQuestGoals(data.Split(delimiterTwo).ToList());
             break;
-            case 6:
-            SetDungeonQuestRewards(stat.Split(delimiterTwo).ToList());
+            case "DFloors":
+            SetDungeonQuestFloors(data.Split(delimiterTwo).ToList());
+            break;
+            case "DRewards":
+            SetDungeonQuestRewards(data.Split(delimiterTwo).ToList());
             break;
         }
     }

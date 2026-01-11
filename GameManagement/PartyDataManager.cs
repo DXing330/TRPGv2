@@ -172,8 +172,10 @@ public class PartyDataManager : MonoBehaviour
 
     public void AddTempPartyMember(string name)
     {
+        int nextID = guildCard.GetNextID();
+        guildCard.IncrementNextID();
         // Don't need stats, just grab base stats.
-        tempPartyData.AddMember(actorStats.ReturnValue(name), name);
+        tempPartyData.AddMember(actorStats.ReturnValue(name), name, nextID.ToString());
         SetFullParty();
     }
 
@@ -205,7 +207,9 @@ public class PartyDataManager : MonoBehaviour
 
     public void HireMember(string stats, string personalName)
     {
-        mainPartyData.AddMember(stats, personalName);
+        int nextID = guildCard.GetNextID();
+        guildCard.IncrementNextID();
+        mainPartyData.AddMember(stats, personalName, nextID.ToString());
         SetFullParty();
     }
 
@@ -411,14 +415,8 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
-    public void UpdatePartyAfterBattle(List<string> codeNames, List<string> spriteNames, List<string> stats)
+    public void UpdatePartyAfterBattle(List<int> IDs, List<string> stats)
     {
-        for (int i = 0; i < codeNames.Count; i++)
-        {
-            Debug.Log("Code Name: "+codeNames[i]);
-            Debug.Log("Sprite Name: "+spriteNames[i]);
-            Debug.Log("Stats: "+stats[i]);
-        }
         for (int i = 0; i < allParties.Count; i++)
         {
             // Assume everyone dies at the end of every battle.
@@ -433,17 +431,11 @@ public class PartyDataManager : MonoBehaviour
             allIndices.Add(-1);
             allPossibleIndices.Add(i);
         }
-        // TODO: fix this in case some members have the same code name.
-        // Issue if some members have both the same sprite and code name.
-        // Need a mapping from stats to partyIndices.
-        // For every code name.
-        for (int i = 0; i < codeNames.Count; i++)
+        for (int i = 0; i < IDs.Count; i++)
         {
-            // Check if the code name and sprite name match with someone already in the party.
-            // This will naturally exclude summons, assuming the summons don't have both the same code name and sprite name as a current actor.
             for (int j = allPossibleIndices.Count - 1; j >= 0; j--)
             {
-                if (MatchCodeAndSpriteName(codeNames[i], spriteNames[i], allPossibleIndices[j]))
+                if (MatchID(IDs[i], allPossibleIndices[j]))
                 {
                     allIndices[i] = allPossibleIndices[j];
                     allPossibleIndices.RemoveAt(j);
@@ -451,8 +443,9 @@ public class PartyDataManager : MonoBehaviour
                 }
             }
         }
-        for (int i = 0; i < Mathf.Min(ReturnTotalPartyCount(), codeNames.Count); i++)
+        for (int i = 0; i < Mathf.Min(ReturnTotalPartyCount(), IDs.Count); i++)
         {
+            Debug.Log(allIndices[i]);
             UpdatePartyMemberAfterBattle(stats[i], allIndices[i]);
         }
         // Permanent Parties Members Survive With 1 HP, Main Character Power.
@@ -525,29 +518,29 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
-    protected bool MatchCodeAndSpriteName(string codeName, string spriteName, int index)
+    protected bool MatchID(int ID, int index)
     {
         if (index < 0) { return false; }
         int permanentCount = permanentPartyData.PartyCount();
         int mainCount = mainPartyData.PartyCount();
-        string testCodeName = "";
-        string testSpriteName = "";
+        int testID = -1;
         if (index < permanentCount)
         {
-            testCodeName = permanentPartyData.GetNameAtIndex(index);
-            testSpriteName = permanentPartyData.GetSpriteNameAtIndex(index);
+            testID = permanentPartyData.GetIDAtIndex(index);
         }
         else if (index < permanentCount + mainCount)
         {
-            testCodeName = mainPartyData.GetNameAtIndex(index - permanentCount);
-            testSpriteName = mainPartyData.GetSpriteNameAtIndex(index - permanentCount);
+            testID = mainPartyData.GetIDAtIndex(index - permanentCount);
         }
         else
         {
-            testCodeName = tempPartyData.GetNameAtIndex(index - permanentCount - mainCount);
-            testSpriteName = tempPartyData.GetSpriteNameAtIndex(index - permanentCount - mainCount);
+            testID = tempPartyData.GetIDAtIndex(index - permanentCount - mainCount);
         }
-        return (testCodeName == codeName && testSpriteName == spriteName);
+        Debug.Log("i:" + index);
+        Debug.Log("ID:" + ID);
+        Debug.Log("Checked ID:" + testID);
+        Debug.Log(testID == ID);
+        return (testID == ID);
     }
 
     protected void UpdatePartyMemberAfterBattle(string stats, int index)
@@ -584,8 +577,8 @@ public class PartyDataManager : MonoBehaviour
     public void SetFullParty()
     {
         fullParty.ResetCharacters();
-        fullParty.AddToParty(permanentPartyData.GetNames(), permanentPartyData.GetStats(), permanentPartyData.GetSpriteNames(), permanentPartyData.GetEquipmentStats());
-        fullParty.AddToParty(mainPartyData.GetNames(), mainPartyData.GetStats(), mainPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats());
-        fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames(), tempPartyData.GetEquipmentStats());
+        fullParty.AddToParty(permanentPartyData.GetNames(), permanentPartyData.GetStats(), permanentPartyData.GetSpriteNames(), permanentPartyData.GetEquipmentStats(), permanentPartyData.GetPartyIDs());
+        fullParty.AddToParty(mainPartyData.GetNames(), mainPartyData.GetStats(), mainPartyData.GetSpriteNames(), mainPartyData.GetEquipmentStats(), mainPartyData.GetPartyIDs());
+        fullParty.AddToParty(tempPartyData.GetNames(), tempPartyData.GetStats(), tempPartyData.GetSpriteNames(), tempPartyData.GetEquipmentStats(), tempPartyData.GetPartyIDs());
     }
 }

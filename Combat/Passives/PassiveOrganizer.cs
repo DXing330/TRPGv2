@@ -117,10 +117,24 @@ public class PassiveOrganizer : ScriptableObject
         }
     }
 
+    public StatDatabase allRunePassives;
+
+    protected void OrganizeRunePassives(TacticActor actor)
+    {
+        List<string> runePassives = actor.GetRunePassives();
+        for (int i = 0; i < runePassives.Count; i++)
+        {
+            string passiveDetails = allRunePassives.ReturnValue(runePassives[i]);
+            string[] blocks = passiveDetails.Split("|");
+            SortPassive(passiveDetails, blocks[0], true);
+        }
+    }
+
     public void OrganizeActorPassives(TacticActor actor)
     {
         OrganizePassivesList(actor.GetPassiveSkills(), actor.GetPassiveLevels());
         OrganizeCustomPassives(actor);
+        OrganizeRunePassives(actor);
         actor.SetStartBattlePassives(startBattlePassives);
         actor.SetStartTurnPassives(startTurnPassives);
         actor.SetEndTurnPassives(endTurnPassives);

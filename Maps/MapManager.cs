@@ -45,7 +45,7 @@ public class MapManager : MonoBehaviour
     {
         return Mathf.Abs(mapTiles[tileOne].GetElevation() - mapTiles[tileTwo].GetElevation());
     }
-    public int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff)
+    public virtual int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff)
     {
         List<int> adjacentTiles = mapUtility.AdjacentTiles(end, mapSize);
         int target = end;
