@@ -232,6 +232,27 @@ public class Equipment : MonoBehaviour
             AddRune(newInfo[i]);
         }
     }
+    public StatDatabase runeLetters;
+    public StatDatabase runeWords;
+    public List<string> ReturnRunePassives()
+    {
+        List<string> rPassives = new List<string>();
+        // Get the letter mapping.
+        string word = "";
+        for (int i = 0; i < runes.Count; i++)
+        {
+            word += runeLetters.ReturnValue(runes[i]);
+        }
+        string runeWord = runeWords.ReturnValue(word);
+        // Check if you have a real word.
+        if (runeWord.Length > 1)
+        {
+            rPassives.Add(runeWord);
+            return rPassives;
+        }
+        // Else just return the runes.
+        return GetRunes();
+    }
     public List<string> GetRunes(){return runes;}
     public string rarity;
     public void SetRarity(string newInfo)
@@ -256,9 +277,10 @@ public class Equipment : MonoBehaviour
         {
             actor.AddPassiveSkill(passives[i], passiveLevels[i]);
         }
-        for (int i = 0; i < runes.Count; i++)
+        List<string> rPassives = ReturnRunePassives();
+        for (int i = 0; i < rPassives.Count; i++)
         {
-            actor.AddRunePassive(runes[i]);
+            actor.AddRunePassive(rPassives[i]);
         }
     }
     public void EquipWeapon(TacticActor actor)

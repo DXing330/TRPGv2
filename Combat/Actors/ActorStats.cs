@@ -363,7 +363,12 @@ public class ActorStats : ActorPassives
     public void ChangeInitiative(int change) { initiative += change; }
     public int tempHealth;
     // You can keep a little bit of temphealth to buff temphealth as a stat.
-    public void ResetTempHealth() { tempHealth = tempHealth / 2; }
+    public void ResetTempHealth()
+    {
+        // Barricade means you don't lose temp health except by damage.
+        if (barricade){return;}
+        tempHealth = tempHealth / 2;
+    }
     public void UpdateTempHealth(int changeAmount) { tempHealth += changeAmount; }
     public int GetTempHealth() { return tempHealth; }
     public int currentHealth;
@@ -813,6 +818,23 @@ public class ActorStats : ActorPassives
             buffDurations[indexOf] = buffDurations[indexOf] + duration;
         }
     }
+    public void RemoveBuff(string buffName)
+    {
+        if (buffName == "All")
+        {
+            buffs.Clear();
+            buffDurations.Clear();
+            return;
+        }
+        for (int i = buffs.Count - 1; i >= 0; i--)
+        {
+            if (buffs[i] == buffName)
+            {
+                buffs.RemoveAt(i);
+                buffDurations.RemoveAt(i);
+            }
+        }
+    }
     public bool BuffExists(string buffName)
     {
         return buffs.Contains(buffName);
@@ -983,6 +1005,7 @@ public class ActorStats : ActorPassives
         CheckSilence();
         CheckSleeping();
         CheckInvisibility();
+        CheckBarricade();
     }
     public string curseStatName;
     public void AddCurse(string newInfo)
@@ -1082,5 +1105,24 @@ public class ActorStats : ActorPassives
     {
         invisible = false;
         invisibleDuration = 0;
+    }
+    public bool barricade = false;
+    public int barricadeDuration;
+    public void GainBarricade(int duration)
+    {
+        barricade = true;
+        if (barricadeDuration < duration)
+        {
+            barricadeDuration = duration;
+        }
+    }
+    public void CheckBarricade()
+    {
+        (barricade, barricadeDuration) = utility.DecrementBoolDuration(barricade, barricadeDuration);
+    }
+    public void RemoveBarricade()
+    {
+        barricade = false;
+        barricadeDuration = 0;
     }
 }

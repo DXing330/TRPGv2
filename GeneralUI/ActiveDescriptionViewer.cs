@@ -84,6 +84,12 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
             case "Buff":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
+            case "RemoveBuff":
+                if (s == "All")
+                {
+                return "Remove all buff effect(s) from the target(s).";
+                }
+                return "Remove " + ASD(s) + " from the target(s).";
             case "RemoveStatus":
                 if (s == "All")
                 {
@@ -176,6 +182,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Learn a random skill from the target(s).";
             case "Teach":
                 return "Teach a random skill to the target(s).";
+            case "Pain Split":
+                return "Share health equally between all targets.";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

@@ -58,6 +58,9 @@ public class SkillEffect : ScriptableObject
             case "Buff":
                 target.AddBuff(effectSpecifics, level);
                 break;
+            case "RemoveBuff":
+                target.RemoveBuff(effectSpecifics);
+                break;
             case "RemoveStatus":
                 target.RemoveStatus(effectSpecifics);
                 break;
@@ -150,7 +153,13 @@ public class SkillEffect : ScriptableObject
                 target.UpdateEnergy(int.Parse(effectSpecifics) * level);
                 break;
             case "BaseEnergy%":
-                target.UpdateBaseEnergy(int.Parse(effectSpecifics) * level * target.GetBaseEnergy() / basicDenominator);
+                int bEnergyChange = int.Parse(effectSpecifics) * level * target.GetBaseEnergy() / basicDenominator;
+                if (bEnergyChange < 1 && int.Parse(effectSpecifics) > 0)
+                {
+                    bEnergyChange = 1;
+                }
+                target.UpdateBaseEnergy(bEnergyChange);
+                target.UpdateEnergy(bEnergyChange);
                 break;
             case "BaseAttack":
                 int bAtkChange = int.Parse(effectSpecifics) * level;
@@ -220,7 +229,7 @@ public class SkillEffect : ScriptableObject
                 // Add an active skill.
                 target.AddActiveSkill(effectSpecifics);
                 break;
-            case "Temporary Skill":
+            case "TemporarySkill":
                 target.AddTempActive(effectSpecifics);
                 break;
             case "Speed":

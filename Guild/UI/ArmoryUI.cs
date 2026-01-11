@@ -49,6 +49,14 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.UpdateTextSize();
         selectEquipment.UpdateTextSize();
     }
+    public GameObject runeGridObject;
+    public EquipmentRunesUI runeGrid;
+    public void ViewRunes()
+    {
+        if (allActors.GetSelected() < 0 || selectedActor == null){return;}
+        runeGridObject.SetActive(true);
+        runeGrid.UpdateRuneGrid(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+    }
     public GameObject selectEquipObject;
     public SelectStatTextList selectEquipment;
     public ActorSpriteHPList allActors;

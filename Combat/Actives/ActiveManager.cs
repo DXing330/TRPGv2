@@ -562,6 +562,21 @@ public class ActiveManager : MonoBehaviour
                     skillUser.TeachRandomActive(targets[i]);
                 }
                 return;
+            case "Pain Split":
+                int hpPool = skillUser.GetHealth();
+                int poolSize = 1;
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    hpPool += targets[i].GetHealth();
+                    poolSize++;
+                }
+                int finalHealth = Mathf.Max(1, hpPool / poolSize);
+                skillUser.SetCurrentHealth(finalHealth);
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    targets[i].SetCurrentHealth(finalHealth);
+                }
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);

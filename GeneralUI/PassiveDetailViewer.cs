@@ -20,6 +20,21 @@ public class PassiveDetailViewer : MonoBehaviour
     public MultiKeyStatDatabase passiveNameLevels;
     public StatDatabase allPassives;
     public StatDatabase runePassives;
+    public void ViewRunePassive(string runeName)
+    {
+        SetPassiveGroupName(runeName);
+        SetPassiveLevel("1");
+        panel.SetActive(true);
+        passiveNames.Clear();
+        passiveInfo.Clear();
+        passiveDescription.Clear();
+        passiveNames.Add(runeName);
+        passiveInfo.Add(runePassives.ReturnValue(passiveNames[0]));
+        passiveDescription.Add(ReturnPassiveDetails(passiveInfo[0]));
+        passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
+        passiveGroupText.SetStatText(passiveGroupName);
+        passiveGroupText.SetText(passiveLevel);
+    }
     public GameObject panel;
     public void DisablePanel(){panel.SetActive(false);}
     public StatTextList passiveStatTextList;
@@ -127,6 +142,10 @@ public class PassiveDetailViewer : MonoBehaviour
         for (int i = 0; i < effects.Length; i++)
         {
             description += PassiveEffect(effects[i], effectSpecifics[i], dataBlocks[3]);
+            if (i < effects.Length - 1)
+            {
+                description += " and";
+            }
         }
         string[] conditions = dataBlocks[1].Split(",");
         string[] specifics = dataBlocks[2].Split(",");
@@ -438,6 +457,18 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target is targeting the attacker";
             case "TargetD<>":
                 return " if the target is not targeting the attacker";
+            case "AverageHP>":
+                return " if your health is greater than the average health of the battle";
+            case "AverageHP<":
+                return " if your health is less than the average health of the battle";
+            case "AverageHP>A":
+                return " if the attacker's health is greater than the average health of the battle";
+            case "AverageHP<A":
+                return " if the attacker's health is less than the average health of the battle";
+            case "AverageHP>D":
+                return " if the target's health is greater than the average health of the battle";
+            case "AverageHP<D":
+                return " if the target's health is less than the average health of the battle";
         }
         return "";
     }
@@ -468,6 +499,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " spread " + specifics;
             case "ChainSpread":
                 return " greatly spread " + specifics;
+            case "RandomTileSwap":
+                return " switch your tile for a random adjacent tile";
         }
         return "";
     }
@@ -495,13 +528,15 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " increase maximum health of " + target + " by " + specifics + "%";
             case "MaxHealth%":
                 return " change maximum health of " + target + " by " + specifics + "%";
+            case "CurrentHealth%":
+                return " decrease current health by " + specifics + "%";
             case "BaseEnergy%":
                 return " change base energy of " + target + " by " + specifics + "%";
             case "Movement":
                 return " " + target + " gain " + specifics + " movement";
             case "Skill":
                 return " gain the " + specifics + " skill";
-            case "Temporary Skill":
+            case "TemporarySkill":
                 return " gain the " + specifics + " skill once";
             case "Status":
                 return " inflict " + specifics+" on " + target;
@@ -583,11 +618,15 @@ public class PassiveDetailViewer : MonoBehaviour
                 string[] eRD = specifics.Split("=");
                 return " deal " + eRD[1] + " " + eRD[0] + " damage";
             case "Sleep":
-                return "put " + target + " to sleep for " + specifics + "turns";
+                return "put " + target + " to sleep for " + specifics + " turns";
             case "Silence":
-                return " disable actives of " + target + " for " + specifics + "turns";
+                return " disable actives of " + target + " for " + specifics + " turns";
             case "Invisible":
-                return " turn invisible for " + specifics + "turns";
+                return " turn invisible for " + specifics + " turns";
+            case "MoveForwardRandom":
+                return " move to a random forward tile";
+            case "MoveBackwardRandom":
+                return " move to a random backward tile";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

@@ -257,15 +257,15 @@ public class PartyDataManager : MonoBehaviour
         int mainCount = mainPartyData.PartyCount();
         if (selected < permanentCount)
         {
-            return permanentPartyData.partyEquipment[selected];
+            return permanentPartyData.GetEquipmentAtIndex(selected);
         }
         else if (selected < permanentCount + mainCount)
         {
-            return mainPartyData.partyEquipment[selected - permanentCount];
+            return mainPartyData.GetEquipmentAtIndex(selected - permanentCount);
         }
         else
         {
-            return tempPartyData.partyEquipment[selected - permanentCount - mainCount];
+            return tempPartyData.GetEquipmentAtIndex(selected - permanentCount - mainCount);
         }
     }
 

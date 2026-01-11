@@ -86,10 +86,14 @@ public class PassiveSkill : SkillEffect
             {
                 switch (passiveData[3])
                 {
+                    // Move based on wording (effect) and distance (specifics).
+                    case "MoveSelf":
+                        map.MoveActorPassive(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                        break;
                     case "Self":
                         AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
                         break;
-                    case "Adjacent Allies":
+                    case "AdjacentAllies":
                         AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
                         targets = map.GetAdjacentAllies(actor);
                         for (int j = 0; j < targets.Count; j++)
@@ -97,14 +101,16 @@ public class PassiveSkill : SkillEffect
                             AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
                         }
                         break;
-                    case "Adjacent Enemies":
+                    case "AdjacentEnemies":
                         targets = map.GetAdjacentEnemies(actor);
                         for (int j = 0; j < targets.Count; j++)
                         {
                             AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
                         }
                         break;
-                    case "Back Allies":
+                    case "AdjacentActors":
+                        break;
+                    case "BackAllies":
                         tiles.Add(map.ReturnTileInRelativeDirection(actor, 2));
                         tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
                         tiles.Add(map.ReturnTileInRelativeDirection(actor, 4));
@@ -114,7 +120,7 @@ public class PassiveSkill : SkillEffect
                             AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
                         }
                         break;
-                    case "Back Ally":
+                    case "BackAlly":
                         tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
                         targets = map.ReturnAlliesInTiles(actor,tiles);
                         for (int j = 0; j < targets.Count; j++)
@@ -157,6 +163,8 @@ public class PassiveSkill : SkillEffect
                 return actor.NoWeapon();
             case "Weather":
                 return battleState.GetWeather().Contains(specifics);
+            case "Weather<>":
+                return !battleState.GetWeather().Contains(specifics);
             case "Time":
                 return specifics == battleState.GetTime();
         }
@@ -197,6 +205,8 @@ public class PassiveSkill : SkillEffect
                 return !map.GetTileEffectOfActor(actor).Contains(conditionSpecifics);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics); // Contains, since we will add more weather tiers later.
+            case "Weather<>":
+                return !map.GetWeather().Contains(conditionSpecifics);
             case "Time":
                 return conditionSpecifics == map.GetTime();
             case "MoveType":
@@ -268,6 +278,13 @@ public class PassiveSkill : SkillEffect
             return actor.NoWeapon();
             case "Weapon":
             return conditionSpecifics == actor.GetWeaponType();
+            case "AverageHP>":
+            return actor.GetHealth() > map.AverageActorHealth();
+            case "AverageHP<":
+            return actor.GetHealth() < map.AverageActorHealth();
+            // Too hard to activate, this should be a win battle condition or something.
+            /*case "AverageHP=":
+            return actor.GetHealth() == map.AverageActorHealth();*/
         }
         // Most of them have no condition.
         return true;
@@ -460,6 +477,14 @@ public class PassiveSkill : SkillEffect
                 return map.AllEnemies(target).Count < int.Parse(conditionSpecifics);
             case "EnemyCount>D":
                 return map.AllEnemies(target).Count > int.Parse(conditionSpecifics);
+            case "AverageHP>A":
+                return attacker.GetHealth() > map.AverageActorHealth();
+            case "AverageHP<A":
+                return attacker.GetHealth() < map.AverageActorHealth();
+            case "AverageHP>D":
+                return target.GetHealth() > map.AverageActorHealth();
+            case "AverageHP<D":
+                return target.GetHealth() < map.AverageActorHealth();
         }
         return true;
     }

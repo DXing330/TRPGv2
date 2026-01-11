@@ -145,6 +145,16 @@ public class BattleMap : MapManager
         }
         return false;
     }
+    public int AverageActorHealth()
+    {
+        int health = 0;
+        int count = battlingActors.Count;
+        for (int i = 0; i < count; i++)
+        {
+            health += battlingActors[i].GetHealth();
+        }
+        return health / count;
+    }
     public List<TacticActor> defeatedActors;
     public List<TacticActor> capturedActors;
     public void CaptureActor(TacticActor actor)
@@ -224,6 +234,30 @@ public class BattleMap : MapManager
     {
         battlingActors.Add(actor);
         UpdateMap();
+    }
+    public void MoveActorPassive(TacticActor actor, string effect, string specifics)
+    {
+        int direction = actor.GetDirection();
+        switch (effect)
+        {
+            default:
+            break;
+            case "MoveForwardRandom":
+            // Get the direction, either + (5, 0, 1) from your current direction;
+            direction = (direction + UnityEngine.Random.Range(-1, 2) + 6) % 6;
+            break;
+            case "MoveBackwardRandom":
+            // Get the direction, either + (2, 3, 4) from your current direction;
+            direction = (direction + UnityEngine.Random.Range(2, 5)) % 6;
+            break;
+        }
+        int rTile = mapUtility.PointInDirection(actor.GetLocation(), direction, mapSize);
+        if (GetActorOnTile(rTile) == null)
+        {
+            actor.SetLocation(rTile);
+            ApplyMovingTileEffect(actor, rTile);
+            UpdateMap();
+        }
     }
     public void SwitchActorLocations(TacticActor actor1, TacticActor actor2)
     {
@@ -530,6 +564,13 @@ public class BattleMap : MapManager
                 {
                     ChangeTerrain(tileNumber, between[0], true);
                 }
+                break;
+            case "RandomTileSwap":
+                // Switch tiles with a random adjacent tile.
+                List<int> adjacent = mapUtility.AdjacentTiles(tileNumber, mapSize);
+                if (adjacent.Count <= 1){return;}
+                int random = adjacent[UnityEngine.Random.Range(0, adjacent.Count)];
+                SwitchTile(tileNumber, random);
                 break;
         }
         UpdateMap();
