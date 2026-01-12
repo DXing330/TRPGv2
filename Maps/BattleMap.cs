@@ -46,10 +46,12 @@ public class BattleMap : MapManager
     public string GetWeather() { return weather; }
     public string time;
     public DayNightFilter timeFilter;
+    public WeatherFilter timeDisplay;
     public void SetTime(string newInfo)
     { 
         time = newInfo;
         timeFilter.SetTime(time);
+        timeDisplay.UpdateFilter(time);
     }
     public string GetTime(){ return time; }
     public CombatLog combatLog;

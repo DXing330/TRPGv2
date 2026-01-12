@@ -19,10 +19,6 @@ public class CombatLog : MonoBehaviour
     {
         ResetLists();
     }
-    void Start()
-    {
-        ResetLists();
-    }
     public BattleManager battleManager;
     public GeneralUtility utility;
     // Change rounds.
@@ -101,7 +97,7 @@ public class CombatLog : MonoBehaviour
     }
     public void AddDetailedLogs(string newDetail)
     {
-        string key = GetLatestRound()+"|"+GetLatestTurn()+"|"+GetLatestLogCount();
+        string key = GetLatestRound() + "|" + GetLatestTurn() + "|" + GetLatestLogCount();
         int indexOf = detailKeys.IndexOf(key);
         if (indexOf == -1)
         {
@@ -110,6 +106,7 @@ public class CombatLog : MonoBehaviour
         }
         else
         {
+            if (newDetail == ""){return;}
             detailedLogs[indexOf] += "\n"+newDetail;
         }
     }
@@ -145,6 +142,10 @@ public class CombatLog : MonoBehaviour
         UpdateLog(false);
         //if (round == battleManager.GetRoundNumber() && turn == battleManager.GetTurnIndex()){UpdateLog(false);}
     }
+    public string GetLatestLog()
+    {
+        return allLogs[allLogs.Count - 1];
+    }
     public int GetLatestLogCount()
     {
         return (allLogs[allLogs.Count - 1].Split("|").Length - 1);
@@ -177,7 +178,7 @@ public class CombatLog : MonoBehaviour
         string details = ReturnDetailedLog(round,turn,eventLogs.GetSelected());
         if (details.Length <= 1){return;}
         detailLogObject.SetActive(true);
-        eventLog.text = ReturnDetailedLog(round,turn,eventLogs.GetSelected());
+        eventLog.text = details;
     }
     public void ClickOnDetails()
     {

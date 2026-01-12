@@ -12,6 +12,14 @@ public class MapManager : MonoBehaviour
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
     public List<MapTile> mapTiles;
+    [ContextMenu("Reset Tile Numbers")]
+    public void ResetTileNumbers()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].SetTileNumber(i);
+        }
+    }
     [ContextMenu("Reset Text")]
     public void ResetText()
     {

@@ -19,6 +19,7 @@ public class PassiveDetailViewer : MonoBehaviour
     public string MapTEffectPassives(BattleMap map, int tileNumber)
     {
         string tileDetails = map.terrainEffectTiles[tileNumber];
+        if (tileDetails == ""){return "";}
         string[] tilePassives = map.terrainEffectData.ReturnValue(tileDetails).Split("!");
         for (int i = 0; i < tilePassives.Length; i++)
         {
@@ -44,6 +45,22 @@ public class PassiveDetailViewer : MonoBehaviour
     public MultiKeyStatDatabase passiveNameLevels;
     public StatDatabase allPassives;
     public StatDatabase runePassives;
+    public void ViewRunePassives(TacticActor actor)
+    {
+        List<string> rPassives = actor.GetRunePassives();
+        panel.SetActive(true);
+        passiveNames.Clear();
+        passiveInfo.Clear();
+        passiveDescription.Clear();
+        passiveGroupText.SetStatText("Rune Passives");
+        passiveGroupText.SetText("");
+        for (int i = 0; i < rPassives.Count; i++)
+        {
+            passiveNames.Add(rPassives[i]);
+            passiveDescription.Add(ReturnPassiveDetails(runePassives.ReturnValue(rPassives[i])));
+        }
+        passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
+    }
     public void ViewRunePassive(string runeName)
     {
         SetPassiveGroupName(runeName);

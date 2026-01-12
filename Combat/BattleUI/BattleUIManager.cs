@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -13,6 +15,10 @@ public class BattleUIManager : MonoBehaviour
         state = Mathf.Max(0, newState);
         utility.DisableGameObjects(stateObjects);
         stateObjects[state].SetActive(true);
+        if (state == 0)
+        {
+            UpdatePinnedView();
+        }
     }
     public List<GameObject> stateObjects;
     // Prestate.
@@ -29,6 +35,25 @@ public class BattleUIManager : MonoBehaviour
         SetState(0);
     }
     // State 0 - Player Stats + Actions.
+    // Don't have to view the battle stats all the time, can also view other things.
+    public int pinnedView = 0;
+    public void ChangePinnedView(bool right = true)
+    {
+        pinnedView = utility.ChangePageV2(pinnedView, right, 1, pinnedViewObjects.Count);
+        UpdatePinnedView();
+    }
+    public void UpdatePinnedView()
+    {
+        utility.DisableGameObjects(pinnedViewObjects);
+        pinnedViewObjects[pinnedView].SetActive(true);
+        pinnedViewTitle.text = pinnedViewTitles[pinnedView];
+        pinnedUIs[pinnedView].SetActor(battleManager.GetSelectedActor());
+        pinnedUIs[pinnedView].UpdateUI();
+    }
+    public List<string> pinnedViewTitles;
+    public TMP_Text pinnedViewTitle;
+    public List<GameObject> pinnedViewObjects;
+    public List<BattleUIBaseClass> pinnedUIs;
     public BattleStats battleStats;
     public GameObject playerChoicesPanel;
     public List<GameObject> playerChoiceActions;
@@ -53,6 +78,12 @@ public class BattleUIManager : MonoBehaviour
         TacticActor viewedActor = battleManager.GetSelectedActor();
         if (viewedActor == null){return;}
         passiveViewer.ViewCustomPassives(viewedActor);
+    }
+    public void ViewActorRunePassives()
+    {
+        TacticActor viewedActor = battleManager.GetSelectedActor();
+        if (viewedActor == null){return;}
+        passiveViewer.ViewRunePassives(viewedActor);
     }
     public void NPCTurn()
     {
@@ -91,13 +122,13 @@ public class BattleUIManager : MonoBehaviour
         return mapDetailState == state;
     }
     public PopUpMessage mapPassives;
-    public StatusDetailViewer statusDetails;
     public void ViewMapPassives(BattleMap map, int tileNumber)
     {
-        string mPassives = "";
-        mPassives += statusDetails.MapTilePassives(map, tileNumber);
-        mPassives += "\n";
-        mPassives += statusDetails.MapTEffectPassives(map, tileNumber);
+        string mPassives = passiveViewer.MapTEffectPassives(map, tileNumber);
+        if (mPassives == "")
+        {
+            mPassives = passiveViewer.MapTilePassives(map, tileNumber);
+        }
         mapPassives.SetMessage(mPassives);
     }
 }

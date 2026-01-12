@@ -2,12 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleStats : MonoBehaviour
+public class BattleStats : BattleUIBaseClass
 {
     public TacticActor actor;
-    public void SetActor(TacticActor newActor)
+    public override void SetActor(TacticActor newActor)
     {
         actor = newActor;
+        UpdateBasicStats();
+        UpdateSpendableStats();
+    }
+    public override void ResetUI()
+    {
+        for (int i = 0; i < basicStats.Count; i++)
+        {
+            basicStats[i].SetText("");
+        }
+        for (int i = 0; i < spendableStats.Count; i++)
+        {
+            spendableStats[i].SetText("");
+        }
+    }
+    public override void UpdateUI()
+    {
         UpdateBasicStats();
         UpdateSpendableStats();
     }
@@ -22,6 +38,11 @@ public class BattleStats : MonoBehaviour
 
     public void UpdateBasicStats()
     {
+        if (actor == null)
+        {
+            ResetUI();
+            return;
+        }
         List<string> stats = actor.ReturnStats();
         for (int i = 0; i < Mathf.Min(stats.Count, basicStats.Count); i++)
         {
@@ -31,6 +52,11 @@ public class BattleStats : MonoBehaviour
 
     public void UpdateSpendableStats()
     {
+        if (actor == null)
+        {
+            ResetUI();
+            return;
+        }
         List<string> stats = actor.ReturnSpendableStats();
         for (int i = 0; i < Mathf.Min(stats.Count, spendableStats.Count); i++)
         {

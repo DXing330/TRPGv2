@@ -56,6 +56,23 @@ public class GeneralUtility : ScriptableObject
         return currentPage;
     }
 
+    public int ChangePageV2(int currentPage, bool right, int pageLength, int maxLength)
+    {
+        int maxPage = maxLength / pageLength;
+        if (maxLength % pageLength == 0) { maxPage--; }
+        if (right)
+        {
+            if (currentPage < maxPage) { currentPage++; }
+            else { currentPage = 0; }
+        }
+        else
+        {
+            if (currentPage > 0) { currentPage--; }
+            else { currentPage = maxPage; }
+        }
+        return currentPage;
+    }
+
     public List<string> GetCurrentPageStrings(int currentPage, List<GameObject> pageLength, List<string> dataList)
     {
         List<string> strings = new List<string>();

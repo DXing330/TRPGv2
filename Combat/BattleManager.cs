@@ -75,7 +75,6 @@ public class BattleManager : MonoBehaviour
         battleEndManager.UpdatePartyAfterBattle(map, winningTeam);
         combatLog.UpdateNewestLog("Finished updating team stats.");
         battleEndManager.EndBattle(winningTeam);
-        combatLog.UpdateNewestLog("Finished updating overworld.");
     }
     public BattleUIManager UI;
     public void ForceStart()
@@ -86,6 +85,7 @@ public class BattleManager : MonoBehaviour
     {
         // Get a new battle map.
         map.ForceStart();
+        combatLog.ForceStart();
         int partySizeCap = map.MapMaxPartyCapacity();
         combatLog.AddNewLog();
         map.SetWeather(battleState.GetWeather());
@@ -221,7 +221,7 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog(turnActor.GetPersonalName() + "'s Turn");
         // Apply Conditions/Passives.
         effectManager.StartTurn(turnActor, map);
-        UI.battleStats.SetActor(turnActor);
+        UI.UpdatePinnedView();
         UI.UpdateTurnOrder(this);
         if (turnActor.GetHealth() <= 0)
         {
@@ -425,7 +425,7 @@ public class BattleManager : MonoBehaviour
         map.ResetHighlights();
         map.UpdateMap();
         UI.ResetActiveSelectList();
-        UI.battleStats.UpdateStats();
+        UI.UpdatePinnedView();
     }
 
     public int prevStartingPosition = -1;
@@ -441,7 +441,7 @@ public class BattleManager : MonoBehaviour
         {
             prevStartingPosition = tileNumber;
             selectedActor = map.GetActorOnTile(tileNumber);
-            UI.battleStats.UpdateNonTurnActor(selectedActor);
+            UI.UpdatePinnedView();
         }
         // Move a selected actor into a new location.
         else if (prevStartingPosition >= 0)
@@ -454,6 +454,12 @@ public class BattleManager : MonoBehaviour
 
     public void ClickOnTile(int tileNumber)
     {
+        // UI takes priority over gameplay.
+        if (UI.ViewingDetails())
+        {
+            UI.ViewMapPassives(map, tileNumber);
+            return;
+        }
         if (setStartingPositions)
         {
             AdjustStartingPosition(tileNumber);
@@ -466,12 +472,6 @@ public class BattleManager : MonoBehaviour
         if (selectedTile < 0)
         {
             ResetState();
-            return;
-        }
-        // UI takes priority over actors.
-        if (UI.ViewingDetails())
-        {
-            UI.ViewMapPassives(map, selectedTile);
             return;
         }
         // Then do something depending on the state.
@@ -509,7 +509,7 @@ public class BattleManager : MonoBehaviour
             map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
         }
-        UI.battleStats.UpdateStats();
+        UI.UpdatePinnedView();
     }
 
     public void ViewActorFromTurnOrder(int index)
@@ -530,7 +530,7 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            UI.battleStats.UpdateNonTurnActor(selectedActor);
+            UI.UpdatePinnedView();
             map.UpdateMovingHighlights(selectedActor, moveManager, false);
         }
     }
@@ -573,6 +573,12 @@ public class BattleManager : MonoBehaviour
         attacker.PayAttackCost();
         attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
         AdjustTurnNumber();
+        // After you finish attacking reset the selected actor.
+        selectedActor = null;
+        if (selectedState == "Attack" && turnActor.GetActions() <= 0)
+        {
+            ResetState();
+        }
         map.UpdateMap();
         UI.UpdateTurnOrder(this);
     }
@@ -1146,5 +1152,10 @@ public class BattleManager : MonoBehaviour
     public void DEBUGAUTOWIN()
     {
         EndBattle(0, true);
+    }
+
+    public void Forfeit()
+    {
+        EndBattle(1, true);
     }
 }
