@@ -122,7 +122,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Move to the targeted tile and attack any target in " + ASD(s) + " of the the targeted tile.";
             case "Charge+Attack":
                 return "Move to the targeted tile and attack any target in " + ASD(s) + " of the the targeted tile.";
-            case "Temporary Passive":
+            case "TemporaryPassive":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turns.";
             case "Passive":
                 return "Grant the target(s) " + ASD(s) + ".";

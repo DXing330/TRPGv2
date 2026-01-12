@@ -318,8 +318,7 @@ public class MoveCostManager : MonoBehaviour
     public void MoveActorToTile(TacticActor actor, int tile, BattleMap map)
     {
         actor.SetLocation(tile);
-        map.ApplyMovingTileEffect(actor, tile);
-        ApplyMovePassiveEffects(actor, map);
+        ApplyMovePassiveEffects(actor, tile, map);
     }
 
     public void CommandMovement(TacticActor actor, BattleMap map, bool forward = true)
@@ -385,11 +384,13 @@ public class MoveCostManager : MonoBehaviour
         }
     }
 
-    public void ApplyMovePassiveEffects(TacticActor mover, BattleMap map)
+    public void ApplyMovePassiveEffects(TacticActor actor, int location, BattleMap map)
     {
-        List<string> movingPassives = mover.GetMovingPassives();
+        // Updates the combat log when moving.
+        map.ApplyMovingTileEffect(actor, location);
+        List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();
-        int location = mover.GetLocation();
+        //int location = mover.GetLocation();
         for (int i = 0; i < movingPassives.Count; i++)
         {
             passiveInfo = movingPassives[i].Split("|").ToList();
@@ -399,7 +400,7 @@ public class MoveCostManager : MonoBehaviour
                 case "Self":
                     if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
                     {
-                        passiveSkill.AffectActor(mover, passiveInfo[4], passiveInfo[5]);
+                        passiveSkill.AffectActor(actor, passiveInfo[4], passiveInfo[5]);
                     }
                     break;
                 case "MoveCost":
@@ -407,7 +408,7 @@ public class MoveCostManager : MonoBehaviour
                 case "Map":
                     if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
                     {
-                        passiveSkill.AffectMap(mover, passiveInfo[4], passiveInfo[5], map);
+                        passiveSkill.AffectMap(actor, passiveInfo[4], passiveInfo[5], map);
                     }
                     break;
             }

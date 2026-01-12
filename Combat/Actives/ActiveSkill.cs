@@ -100,7 +100,7 @@ public class ActiveSkill : SkillEffect
     {
         return utility.SafeParseInt(actionCost);
     }
-    public bool Activatable(TacticActor actor)
+    public virtual bool Activatable(TacticActor actor)
     {
         // Silence disables actives which is very strong against some enemies.
         if (actor.GetSilenced()){return false;}

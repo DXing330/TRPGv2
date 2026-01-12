@@ -4,6 +4,30 @@ using UnityEngine;
 
 public class PassiveDetailViewer : MonoBehaviour
 {
+    public string MapTilePassives(BattleMap map, int tileNumber)
+    {
+        string tileDetails = map.mapInfo[tileNumber];
+        string[] tilePassives = map.terrainPassives.ReturnValue(tileDetails).Split("!");
+        for (int i = 0; i < tilePassives.Length; i++)
+        {
+            if (tilePassives[i].Length < 6){continue;}
+            tileDetails += "\n";
+            tileDetails += ReturnPassiveDetails(tilePassives[i]);
+        }
+        return tileDetails;
+    }
+    public string MapTEffectPassives(BattleMap map, int tileNumber)
+    {
+        string tileDetails = map.terrainEffectTiles[tileNumber];
+        string[] tilePassives = map.terrainEffectData.ReturnValue(tileDetails).Split("!");
+        for (int i = 0; i < tilePassives.Length; i++)
+        {
+            if (tilePassives[i].Length < 6){continue;}
+            tileDetails += "\n";
+            tileDetails += ReturnPassiveDetails(tilePassives[i]);
+        }
+        return tileDetails;
+    }
     public int textSize;
     public void UpdateTextSize()
     {
@@ -86,6 +110,23 @@ public class PassiveDetailViewer : MonoBehaviour
         passiveGroupText.SetStatText(passiveGroupName);
         passiveGroupText.SetText(passiveLevel);
     }
+    
+    public void ViewCustomPassives(TacticActor actor)
+    {
+        List<string> customPassives = actor.GetCustomPassives();
+        panel.SetActive(true);
+        passiveNames.Clear();
+        passiveInfo.Clear();
+        passiveDescription.Clear();
+        passiveGroupText.SetStatText("Custom Passives");
+        passiveGroupText.SetText(customPassives.Count.ToString());
+        for (int i = 0; i < customPassives.Count; i++)
+        {
+            passiveNames.Add("Custom "+(i+1));
+            passiveDescription.Add(ReturnPassiveDetails(customPassives[i]));
+        }
+        passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
+    }
 
     public List<string> ReturnAllPassiveDetails(TacticActor actor)
     {
@@ -109,23 +150,6 @@ public class PassiveDetailViewer : MonoBehaviour
             allDetails.Add(ReturnPassiveDetails(allAPassives[i]));
         }
         return allDetails;
-    }
-
-    public void ViewCustomPassives(TacticActor actor)
-    {
-        List<string> customPassives = actor.GetCustomPassives();
-        panel.SetActive(true);
-        passiveNames.Clear();
-        passiveInfo.Clear();
-        passiveDescription.Clear();
-        passiveGroupText.SetStatText("Custom Passives");
-        passiveGroupText.SetText(customPassives.Count.ToString());
-        for (int i = 0; i < customPassives.Count; i++)
-        {
-            passiveNames.Add("Custom "+(i+1));
-            passiveDescription.Add(ReturnPassiveDetails(customPassives[i]));
-        }
-        passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
     }
 
     public string ReturnPassiveDetails(string newInfo)
@@ -163,7 +187,6 @@ public class PassiveDetailViewer : MonoBehaviour
         }
         return description;
     }
-
 
     protected string PassiveTiming(string data)
     {
@@ -469,6 +492,18 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target's health is greater than the average health of the battle";
             case "AverageHP<D":
                 return " if the target's health is less than the average health of the battle";
+            case "Grappling":
+                return " if you are grappling";
+            case "Grappled":
+                return " if you are grappled";
+            case "GrapplingA":
+                return " if the attacker is grappling";
+            case "GrappledA":
+                return " if the attacker is grappled";
+            case "GrapplingD":
+                return " if the target is grappling";
+            case "GrappledD":
+                return " if the target is grappled";
         }
         return "";
     }
@@ -538,6 +573,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " gain the " + specifics + " skill";
             case "TemporarySkill":
                 return " gain the " + specifics + " skill once";
+            case "Spell":
+                return " gain the " + specifics + " spell";
+            case "TemporarySpell":
+                return " gain the " + specifics + " spell once";
             case "Status":
                 return " inflict " + specifics+" on " + target;
             case "Buff":

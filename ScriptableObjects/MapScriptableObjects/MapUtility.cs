@@ -74,6 +74,13 @@ public class MapUtility : ScriptableObject
         return ReturnTileNumberFromRowCol(row, col, size);
     }
 
+    public string GetRowColumnCoordinateString(int tile, int size)
+    {
+        int row = GetRow(tile, size);
+        int col = GetColumn(tile, size);
+        return "(" + row + "," + col + ")";
+    }
+
     public int GetRow(int tile, int size)
     {
         int row = 0;

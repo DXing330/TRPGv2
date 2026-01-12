@@ -243,6 +243,7 @@ public class ActorStats : ActorPassives
         }
         stats.Add(GetAttack().ToString());
         stats.Add(GetDefense().ToString());
+        stats.Add(GetAttackRange().ToString());
         return stats;
     }
     public void HalfRestore()
@@ -433,10 +434,11 @@ public class ActorStats : ActorPassives
     public void RestoreVigor(int amount)
     {
         currentVigor += amount;
+        /* Vigor is unlimited when increasing, unlike energy.
         if (currentVigor > maxVigor)
         {
             currentVigor = maxVigor;
-        }
+        }*/
     }
     public List<string> bonusDmgTypes;
     // Deal bonus damage of type.
@@ -757,22 +759,49 @@ public class ActorStats : ActorPassives
     }
     protected string activeSkillDelimiter = "_";
     public List<string> spells;
-    public void ResetSpells() { spells.Clear(); }
+    public List<string> tempSpells;
+    public void ResetSpells()
+    {
+        spells.Clear();
+        tempSpells.Clear();
+    }
     public void LearnSpell(string newInfo)
     {
+        if (newInfo.Length < 6){return;}
         spells.Add(newInfo);
+    }
+    public void LearnTempSpell(string newInfo)
+    {
+        if (newInfo.Length < 6){return;}
+        if (spells.Contains(newInfo)){return;}
+        tempSpells.Add(newInfo);
+    }
+    public void RemoveTempSpell(string spellInfo)
+    {
+        int indexOf = tempSpells.IndexOf(spellInfo);
+        if (indexOf >= 0)
+        {
+            tempSpells.RemoveAt(indexOf);
+        }
     }
     public List<string> GetSpells()
     {
-        return spells;
+        List<string> allSpells = new List<string>(spells);
+        allSpells.AddRange(tempSpells);
+        return allSpells;
     }
     public List<string> GetSpellNames()
     {
         List<string> spellNames = new List<string>();
-        if (spells.Count <= 0) { return spellNames; }
+        if (SpellCount() <= 0) { return spellNames; }
         for (int i = 0; i < spells.Count; i++)
         {
             string[] blocks = spells[i].Split(activeSkillDelimiter);
+            spellNames.Add(blocks[0]);
+        }
+        for (int i = 0; i < tempSpells.Count; i++)
+        {
+            string[] blocks = tempSpells[i].Split(activeSkillDelimiter);
             spellNames.Add(blocks[0]);
         }
         return spellNames;
@@ -793,7 +822,7 @@ public class ActorStats : ActorPassives
     }
     public int SpellCount()
     {
-        return spells.Count;
+        return spells.Count + tempSpells.Count;
     }
     public List<string> buffs;
     public int defaultBuffDuration = 3;

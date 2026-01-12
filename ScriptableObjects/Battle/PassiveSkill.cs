@@ -285,6 +285,10 @@ public class PassiveSkill : SkillEffect
             // Too hard to activate, this should be a win battle condition or something.
             /*case "AverageHP=":
             return actor.GetHealth() == map.AverageActorHealth();*/
+            case "Grappling":
+            return actor.Grappling();
+            case "Grappled":
+            return actor.Grappled();
         }
         // Most of them have no condition.
         return true;
@@ -485,6 +489,14 @@ public class PassiveSkill : SkillEffect
                 return target.GetHealth() > map.AverageActorHealth();
             case "AverageHP<D":
                 return target.GetHealth() < map.AverageActorHealth();
+            case "GrapplingA":
+                return attacker.Grappling();
+            case "GrappledA":
+                return attacker.Grappled();
+            case "GrapplingD":
+                return target.Grappling();
+            case "GrappledD":
+                return target.Grappled();
         }
         return true;
     }

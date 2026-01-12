@@ -7,6 +7,7 @@ public class SkillEffect : ScriptableObject
 {
     public GeneralUtility utility;
     public PassiveOrganizer passiveOrganizer;
+    public StatDatabase standardSpells;
     public int basicDenominator = 100;
     public int baseStatusDuration = 3;
     public void AffectActor(TacticActor target, string effect, string effectSpecifics, int level = 1, CombatLog combatLog = null)
@@ -18,7 +19,7 @@ public class SkillEffect : ScriptableObject
             case "Passive":
                 target.AddPassiveSkill(effectSpecifics, "1");
                 break;
-            case "Temporary Passive":
+            case "TemporaryPassive":
                 if (target.AddTempPassive(effectSpecifics, level))
                 {
                     passiveOrganizer.AddSortedPassive(target, effectSpecifics);
@@ -41,7 +42,6 @@ public class SkillEffect : ScriptableObject
                         break;
                     case "Stun":
                         target.ResetActions();
-                        duration = 1;
                         break;
                 }
                 target.AddStatus(effectSpecifics, duration);
@@ -49,7 +49,7 @@ public class SkillEffect : ScriptableObject
             case "Statuses":
                 int durations = level;
                 if (level <= baseStatusDuration && level >= 0) { durations = baseStatusDuration; }
-                string[] statuses = effectSpecifics.Split(",");
+                string[] statuses = effectSpecifics.Split("&");
                 for (int i = 0; i < statuses.Length; i++)
                 {
                     AffectActor(target, "Status", statuses[i], durations);
@@ -65,7 +65,7 @@ public class SkillEffect : ScriptableObject
                 target.RemoveStatus(effectSpecifics);
                 break;
             case "RemoveStatuses":
-                string[] removedStatuses = effectSpecifics.Split(",");
+                string[] removedStatuses = effectSpecifics.Split("&");
                 for (int i = 0; i < removedStatuses.Length; i++)
                 {
                     target.RemoveStatus(removedStatuses[i]);
@@ -232,6 +232,12 @@ public class SkillEffect : ScriptableObject
             case "TemporarySkill":
                 target.AddTempActive(effectSpecifics);
                 break;
+            case "Spell":
+                target.LearnSpell(standardSpells.ReturnValue(effectSpecifics));
+                break;
+            case "TemporarySpell":
+                target.LearnTempSpell(standardSpells.ReturnValue(effectSpecifics));
+                break;
             case "Speed":
                 target.UpdateSpeed(int.Parse(effectSpecifics) * level);
                 break;
@@ -353,6 +359,10 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Invisible":
                 target.TurnInvisible(int.Parse(effectSpecifics));
+                break;
+            case "Disarm":
+                string disarmedWeapon = target.Disarm();
+                // TODO: Try to remove any passives that the weapon granted and refresh the target's passives.
                 break;
         }
     }

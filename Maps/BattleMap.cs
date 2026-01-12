@@ -1489,8 +1489,10 @@ public class BattleMap : MapManager
         UpdateMap();
     }
 
+    // All moving must pass through here, thus update the combat log here.
     public bool ApplyMovingTileEffect(TacticActor actor, int tileNumber)
     {
+        combatLog.UpdateNewestLog(actor.GetPersonalName() + " moves to " + mapUtility.GetRowColumnCoordinateString(tileNumber, mapSize));
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainMovingEffect(actor, tileNumber);
         ApplyInteractableEffect(actor, tileNumber);

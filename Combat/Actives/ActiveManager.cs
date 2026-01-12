@@ -12,7 +12,7 @@ public class ActiveManager : MonoBehaviour
     }
     public void ActivateSpell(BattleManager battle)
     {
-        skillUser.SpendEnergy(magicSpell.GetEnergyCost());
+        skillUser.UseVigor(magicSpell.ReturnManaCost());
         skillUser.PayActionCost(magicSpell.GetActionCost());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         List<string> effects = magicSpell.GetAllEffects();
@@ -597,10 +597,6 @@ public class ActiveManager : MonoBehaviour
 
     public bool CheckSpellCost()
     {
-        // Need to check mana in addition to energy and actions.
-        bool actions = skillUser.GetActions() >= magicSpell.GetActionCost();
-        // bool mana = ???
-        bool vigor = skillUser.GetVigor() >= magicSpell.ReturnManaCost();
-        return (actions && vigor);
+        return magicSpell.Activatable(skillUser);
     }
 }

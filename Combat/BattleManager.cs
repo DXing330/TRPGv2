@@ -468,6 +468,12 @@ public class BattleManager : MonoBehaviour
             ResetState();
             return;
         }
+        // UI takes priority over actors.
+        if (UI.ViewingDetails())
+        {
+            UI.ViewMapPassives(map, selectedTile);
+            return;
+        }
         // Then do something depending on the state.
         switch (selectedState)
         {
@@ -1061,9 +1067,7 @@ public class BattleManager : MonoBehaviour
     protected void DragGrappledActor(TacticActor grappled, int tile)
     {
         int prevLoc = grappled.GetLocation();
-        grappled.SetLocation(tile);
-        moveManager.ApplyMovePassiveEffects(grappled, map);
-        map.ApplyMovingTileEffect(grappled, tile);
+        moveManager.MoveActorToTile(grappled, tile, map);
         if (grappled.Grappling())
         {
             DragGrappledActor(grappled.GetGrappledActor(), prevLoc);
@@ -1077,15 +1081,13 @@ public class BattleManager : MonoBehaviour
         {
             int prevLoc = actor.GetLocation();
             actor.SetDirection(moveManager.DirectionBetweenLocations(prevLoc, path[i]));
-            actor.SetLocation(path[i]);
+            moveManager.MoveActorToTile(actor, path[i], map);
             // Drag whoever you're grappling along.
             if (actor.Grappling())
             {
                 DragGrappledActor(actor.GetGrappledActor(), prevLoc);
             }
-            moveManager.ApplyMovePassiveEffects(actor, map);
             map.UpdateActors();
-            if (map.ApplyMovingTileEffect(actor, path[i])){break;}
             if (longDelays)
             {
                 yield return new WaitForSeconds(longDelayTime);
@@ -1123,6 +1125,7 @@ public class BattleManager : MonoBehaviour
     {
         ResetState();
         if (actor == null) { actor = turnActor; }
+        //turnActor.RemoveTempSpell(skillName);
         combatLog.UpdateNewestLog(actor.GetPersonalName()+" casts a spell.");
     }
 

@@ -37,6 +37,7 @@ public class ActiveSelectList : SelectList
             }
         }
     }
+    public GameObject mainPanel;
     public List<GameObject> statePanels;
     protected void ResetPanels()
     {
@@ -62,11 +63,9 @@ public class ActiveSelectList : SelectList
         ShowSelected();
         activeManager.SetSkillFromName(selected);
         activeDescription.text = descriptionViewer.ReturnActiveDescription(activeManager.active);
-        // Check cost here.
-        if (!activeManager.CheckSkillCost())
+        if (battle.GetTurnActor().GetSilenced())
         {
-            // Show an error message instead of just returning?
-            ErrorMessage("Not enough resources to use this skill.");
+            ErrorMessage("Can't use skills while silenced.");
             ResetState();
             return;
         }
@@ -76,20 +75,18 @@ public class ActiveSelectList : SelectList
         battle.map.UpdateHighlights(activeManager.ReturnTargetableTiles());
     }
 
+    public string selectedSpell;
+    public void SetSelectedSpell(string newInfo){selectedSpell = newInfo;}
+    public string GetSelectedSpell(){return selectedSpell;}
+
     protected void SelectSpell()
     {
         IncrementState();
         // Show the spell by name.
+        SetSelectedSpell(battle.GetTurnActor().GetSpells()[selectedIndex]);
         activeManager.SetSpell(battle.GetTurnActor().GetSpells()[selectedIndex]);
         UpdateSelectedText(activeManager.magicSpell.GetSkillType());
-        if (!activeManager.CheckSpellCost())
-        {
-            // Show an error message instead of just returning?
-            ErrorMessage("Not enough resources to cast this spell.");
-            ResetState();
-            return;
-        }
-        else if (battle.GetTurnActor().GetSilenced())
+        if (battle.GetTurnActor().GetSilenced())
         {
             ErrorMessage("Can't use spells while silenced.");
             ResetState();
@@ -174,6 +171,14 @@ public class ActiveSelectList : SelectList
 
     public void ActivateSkill()
     {
+        // Check cost here.
+        if (!activeManager.CheckSkillCost())
+        {
+            // Show an error message instead of just returning?
+            ErrorMessage("Not enough resources to use this skill.");
+            ResetState();
+            return;
+        }
         // Don't do anything unless a target has been selected.
         if (!activeManager.ExistTargetedTiles())
         {
@@ -197,12 +202,21 @@ public class ActiveSelectList : SelectList
             inventory.RemoveItemQuantity(1, selected);
         }
         ResetState();
+        mainPanel.SetActive(false);
     }
 
     public void ActivateSpell()
     {
-        inventory.RemoveItemQuantity(activeManager.magicSpell.ReturnManaCost(), "Mana");
+        if (!activeManager.CheckSpellCost())
+        {
+            // Show an error message instead of just returning?
+            ErrorMessage("Not enough resources to cast this spell.");
+            ResetState();
+            return;
+        }
         battle.ActivateSpell();
         activeManager.ActivateSpell(battle);
+        ResetState();
+        mainPanel.SetActive(false);
     }
 }

@@ -324,6 +324,7 @@ public class TacticActor : ActorStats
         stats.Add(GetActions().ToString());
         stats.Add(GetEnergy().ToString());
         stats.Add(GetMovement().ToString());
+        stats.Add(GetVigor().ToString());
         return stats;
     }
 

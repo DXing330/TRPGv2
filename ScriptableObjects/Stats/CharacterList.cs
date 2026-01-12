@@ -33,7 +33,6 @@ public class CharacterList : ScriptableObject
         utility.RemoveEmptyListItems(characterNames);
         utility.RemoveEmptyListItems(characters);
         utility.RemoveEmptyListItems(stats);
-        utility.RemoveEmptyListItems(equipment);
         utility.RemoveEmptyListItems(characterIDs);
     }
     protected void LoadStat(string data)

@@ -8,6 +8,11 @@ using UnityEngine;
 public class MagicSpell : ActiveSkill
 {
     public MapUtility mapUtility;
+    public override bool Activatable(TacticActor actor)
+    {
+        if (actor.GetSilenced()){return false;}
+        return (actor.GetActions() >= GetActionCost() && actor.GetVigor() >= ReturnManaCost());
+    }
     public int ReturnManaCost()
     {
         int tilesInRange = mapUtility.CountTilesByShapeSpan(GetRangeShape(), GetRange());

@@ -6,13 +6,33 @@ public class BattleUIManager : MonoBehaviour
 {
     public bool debug = false;
     public GeneralUtility utility;
-    public BattleStats battleStats;
-    public DisplayTurnOrder turnOrder;
-    public GameObject playerChoicesPanel;
+    public BattleManager battleManager;
+    public int state;
+    public void SetState(int newState)
+    {
+        state = Mathf.Max(0, newState);
+        utility.DisableGameObjects(stateObjects);
+        stateObjects[state].SetActive(true);
+    }
+    public List<GameObject> stateObjects;
+    // Prestate.
     public GameObject adjustStartingPositionsPanel;
+    public void AdjustStartingPositions()
+    {
+        adjustStartingPositionsPanel.SetActive(true);
+        utility.DisableGameObjects(playerChoiceActions);
+    }
+    public void FinishSettingStartingPositions()
+    {
+        adjustStartingPositionsPanel.SetActive(false);
+        utility.EnableGameObjects(playerChoiceActions);
+        SetState(0);
+    }
+    // State 0 - Player Stats + Actions.
+    public BattleStats battleStats;
+    public GameObject playerChoicesPanel;
     public List<GameObject> playerChoiceActions;
     public ActiveSelectList activeSelectList;
-    public BattleManager battleManager;
     public SelectStatTextList statusSelect;
     public void ViewActorStatuses()
     {
@@ -34,7 +54,6 @@ public class BattleUIManager : MonoBehaviour
         if (viewedActor == null){return;}
         passiveViewer.ViewCustomPassives(viewedActor);
     }
-
     public void NPCTurn()
     {
         if (debug)
@@ -43,37 +62,42 @@ public class BattleUIManager : MonoBehaviour
         }
         utility.DisableGameObjects(playerChoiceActions);
     }
-
-    public void AdjustStartingPositions()
-    {
-        adjustStartingPositionsPanel.SetActive(true);
-        utility.DisableGameObjects(playerChoiceActions);
-    }
-
-    public void FinishSettingStartingPositions()
-    {
-        adjustStartingPositionsPanel.SetActive(false);
-        utility.EnableGameObjects(playerChoiceActions);
-    }
-
     public void PlayerTurn()
     {
         playerChoicesPanel.SetActive(true);
         utility.EnableGameObjects(playerChoiceActions);
     }
-
+    public void ResetActiveSelectList()
+    {
+        activeSelectList.ResetState();
+    }
     public void UpdateStatSheet(TacticActor actor)
     {
 
     }
+    // State 1 - UI Choices
+    // State 2 - Battle Log
+    // State 3 - Turn Order
+    public DisplayTurnOrder turnOrder;
 
     public void UpdateTurnOrder(BattleManager manager)
     {
         turnOrder.UpdateTurnOrder(manager.map.battlingActors, manager.GetTurnIndex());
     }
-
-    public void ResetActiveSelectList()
+    // State 4 - Map Details.
+    public int mapDetailState = 4;
+    public bool ViewingDetails()
     {
-        activeSelectList.ResetState();
+        return mapDetailState == state;
+    }
+    public PopUpMessage mapPassives;
+    public StatusDetailViewer statusDetails;
+    public void ViewMapPassives(BattleMap map, int tileNumber)
+    {
+        string mPassives = "";
+        mPassives += statusDetails.MapTilePassives(map, tileNumber);
+        mPassives += "\n";
+        mPassives += statusDetails.MapTEffectPassives(map, tileNumber);
+        mapPassives.SetMessage(mPassives);
     }
 }

@@ -5,20 +5,11 @@ using UnityEngine.UI;
 
 public class WeatherFilter : MonoBehaviour
 {
-    void Start()
-    {
-        if (!subGame)
-        {
-            UpdateFilter(overworldState.GetWeather());
-        }
-    }
     public bool subGame = false;
     public string currentWeather;
-    public OverworldState overworldState;
     public SpriteContainer sprites;
     public GameObject filterObject;
     public Image filter;
-    public StatDatabase weatherData;
     public StatusDetailViewer weatherDetailViewer;
     public PopUpMessage weatherDetails;
     public void UpdateFilter(string weather)
@@ -31,7 +22,6 @@ public class WeatherFilter : MonoBehaviour
     protected void SetImage(Sprite newSprite) { filter.sprite = newSprite; }
     public void ShowWeatherDetails()
     {
-        // TODO: SHOW ALL WEATHER EFFECTS
-        //weatherDetails.SetMessage(weatherDetailViewer.ReturnStatusDetails(weatherData.ReturnValue(currentWeather)));
+        weatherDetails.SetMessage(weatherDetailViewer.ReturnWeatherDetails(currentWeather));
     }
 }
