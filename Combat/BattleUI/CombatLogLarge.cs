@@ -74,7 +74,7 @@ public class CombatLogLarge : MonoBehaviour
         {
             if (startIndex + i >= fullLogs.Count){return;}
             logDisplayObjects[i].SetActive(true);
-            logDisplay[i].UpdateLog(fullRoundTracker[i + startIndex].ToString(), fullTurnTracker[i + startIndex].ToString(), fullLogs[i]);
+            logDisplay[i].UpdateLog(fullRoundTracker[i + startIndex].ToString(), fullTurnTracker[i + startIndex].ToString(), fullLogs[i + startIndex]);
         }
     }
     public void ClickOnLog(int index)

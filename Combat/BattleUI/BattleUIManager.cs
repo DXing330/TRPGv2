@@ -100,7 +100,7 @@ public class BattleUIManager : MonoBehaviour
     }
     public void ResetActiveSelectList()
     {
-        activeSelectList.ResetState();
+        activeSelectList.SetState(0);
     }
     public void UpdateStatSheet(TacticActor actor)
     {
@@ -108,12 +108,11 @@ public class BattleUIManager : MonoBehaviour
     }
     // State 1 - UI Choices
     // State 2 - Battle Log
-    // State 3 - Turn Order
     public DisplayTurnOrder turnOrder;
 
-    public void UpdateTurnOrder(BattleManager manager)
+    public void UpdateTurnOrder()
     {
-        turnOrder.UpdateTurnOrder(manager.map.battlingActors, manager.GetTurnIndex());
+        turnOrder.UpdateTurnOrder(battleManager.map.battlingActors, battleManager.GetTurnIndex());
     }
     // State 4 - Map Details.
     public int mapDetailState = 4;

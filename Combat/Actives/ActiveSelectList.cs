@@ -108,18 +108,19 @@ public class ActiveSelectList : SelectList
 
     protected void DecrementState()
     {
-        int newState = state - 1;
+        int newState = Mathf.Max(0, state - 1);
         SetState(newState);
     }
 
     protected void IncrementState()
     {
-        int newState = state + 1;
+        int newState = Mathf.Min(statePanels.Count, state + 1);
         SetState(newState);
     }
 
     public void ResetState()
     {
+        battle.ResetState();
         SetState(0);
     }
 
@@ -128,10 +129,10 @@ public class ActiveSelectList : SelectList
         if (battle.GetTurnActor().ActiveSkillCount() <= 0)
         {
             errorMsgPanel.SetMessage("You currently don't have any skills that can be used.");
+            ResetSelectables();
             return;
         }
         else if (battle.GetTurnActor().GetActions() <= 0) { return; }
-        IncrementState();
         SetSelectables(battle.GetTurnActor().GetActiveSkills());
         activeManager.SetSkillUser(battle.GetTurnActor());
         activeManager.ResetTargetedTiles();
@@ -144,10 +145,10 @@ public class ActiveSelectList : SelectList
         if (useableItems.Count <= 0)
         {
             errorMsgPanel.SetMessage("You currently don't have any items that can be used.");
+            ResetSelectables();
             return;
         }
         else if (battle.GetTurnActor().GetActions() <= 0) { return; }
-        IncrementState();
         SetSelectables(useableItems);
         activeManager.SetSkillUser(battle.GetTurnActor());
         activeManager.ResetTargetedTiles();
@@ -159,10 +160,10 @@ public class ActiveSelectList : SelectList
         if (battle.GetTurnActor().SpellCount() <= 0)
         {
             errorMsgPanel.SetMessage("You currently don't know any spells that can be used.");
+            ResetSelectables();
             return;
         }
         else if (battle.GetTurnActor().GetActions() <= 0) { return; }
-        IncrementState();
         SetSelectables(battle.GetTurnActor().GetSpellNames());
         activeManager.SetSkillUser(battle.GetTurnActor());
         activeManager.ResetTargetedTiles();

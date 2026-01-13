@@ -27,10 +27,14 @@ public class GuildCard : SavedData
             IncreaseGuildRank();
         }
     }
+    public DungeonBag partyBag;
     public void IncreaseGuildRank()
     {
         guildRank++;
         IncreasePartyLimit();
+        // Increase bag limit.
+        partyBag.AddCapacity();
+        // Increase storage limit.
     }
     public int GetGuildRank() { return guildRank; }
     // Gain exp = difficulty of quest squared?

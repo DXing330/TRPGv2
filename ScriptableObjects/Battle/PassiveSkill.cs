@@ -365,8 +365,6 @@ public class PassiveSkill : SkillEffect
                 return moveManager.DistanceBetweenActors(target, attacker) > int.Parse(conditionSpecifics);
             case "Sprite":
                 return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
-            case "Direction":
-                return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
             case "Health":
                 return CheckHealthConditions(conditionSpecifics, target);
             case "HealthD":
@@ -427,6 +425,10 @@ public class PassiveSkill : SkillEffect
                     return attacker.GetTeam() == target.GetTeam();
                 }
                 return attacker.GetTeam() != target.GetTeam();
+            case "Direction":
+                return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
+            case "Direction<>":
+                return !CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
             case "Direction<>D":
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
             case "DirectionD":
@@ -581,10 +583,18 @@ public class PassiveSkill : SkillEffect
         return "None";
     }
 
+    // Side Conditions Have Been Tested In MISCTESTER
     public bool CheckDirectionSpecifics(string conditionSpecifics, string specifics)
     {
         if (conditionSpecifics == "Back" && specifics == "Same") { return true; }
         else if (conditionSpecifics == "Front" && specifics == "Opposite") { return true; }
+        else if (conditionSpecifics == "Side")
+        {
+            if (specifics != "Opposite" && specifics != "Same")
+            {
+                return true;
+            }
+        }
         return (conditionSpecifics == specifics);
     }
 

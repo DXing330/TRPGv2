@@ -59,7 +59,9 @@ public class HiringManager : MonoBehaviour
         if (index == -1){return;}
         string className = currentHirelingClasses[index];
         string price = GetPrice();
-        dummyActor.SetStats(actorData.ReturnStats(className));
+        dummyActor.ResetStatsBeforeLoading();
+        // Changing the delimiter introduces bugs, we should try to resolve this somehow.
+        dummyActor.SetStats(actorData.ReturnValue(className).Split("!").ToList());
         List<string> stats = new List<string>();
         List<string> data = new List<string>();
         stats.Add("Price");

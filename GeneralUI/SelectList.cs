@@ -22,6 +22,11 @@ public class SelectList : MonoBehaviour
     }
     public List<string> errorMessages;
     public List<string> selectable;
+    public void ResetSelectables()
+    {
+        selectable.Clear();
+        StartingPage();
+    }
     public int selectedIndex = -1;
     public virtual void ResetSelected()
     {

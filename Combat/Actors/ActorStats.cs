@@ -71,6 +71,13 @@ public class ActorStats : ActorPassives
     {
         SetStats(newStats.Split(delimiter).ToList());
     }
+    public void ResetStatsBeforeLoading()
+    {
+        for (int i = 0; i < statNames.Count; i++)
+        {
+            SetStat("", statNames[i]);
+        }
+    }
     public void SetStats(List<string> newStats, List<string> newStatNames = null)
     {
         if (newStatNames == null)
@@ -958,6 +965,10 @@ public class ActorStats : ActorPassives
     public bool StatusExists(string statusName)
     {
         return statuses.Contains(statusName);
+    }
+    public int StatusStacks(string statusName)
+    {
+        return utility.CountStringsInList(statuses, statusName);
     }
     public void ClearStatuses(string specifics = "*")
     {

@@ -140,16 +140,21 @@ public class TacticActor : ActorStats
     }
     public int GetMoveRangeBasedOnActions(int actionCount)
     {
-        return (movement + (GetSpeed()*actionCount));
+        return (movement + (GetSpeed() * actionCount));
+    }
+    public int GetMaxMoveRange()
+    {
+        // Max of current / base speed and base / current actions.
+        return Mathf.Max(GetSpeed(), GetMoveSpeed()) * Mathf.Max(2, actions) + Mathf.Max(0, GetMovement());
     }
     public int GetMoveRange(bool current = true)
     {
         if (current)
         {
-            return (movement + (GetSpeed()*actions));
+            return (movement + (GetSpeed() * actions));
         }
         // Default is two actions.
-        return GetMoveSpeed()*2;
+        return GetMoveSpeed() * 2;
     }
     public int GetMoveRangeWhileAttacking(bool current = true)
     {

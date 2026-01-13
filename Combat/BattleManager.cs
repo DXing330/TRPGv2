@@ -77,6 +77,11 @@ public class BattleManager : MonoBehaviour
         battleEndManager.EndBattle(winningTeam);
     }
     public BattleUIManager UI;
+    public void RefreshUI()
+    {
+        UI.UpdatePinnedView();
+        UI.UpdateTurnOrder();
+    }
     public void ForceStart()
     {
         Start();
@@ -198,6 +203,7 @@ public class BattleManager : MonoBehaviour
             return;
         }
         turnNumber = 0;
+        selectedActor = null;
         roundNumber++;
         map.SetRound(roundNumber);
         // Get initiative order.
@@ -221,8 +227,7 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog(turnActor.GetPersonalName() + "'s Turn");
         // Apply Conditions/Passives.
         effectManager.StartTurn(turnActor, map);
-        UI.UpdatePinnedView();
-        UI.UpdateTurnOrder(this);
+        RefreshUI();
         if (turnActor.GetHealth() <= 0)
         {
             ActiveDeathPassives(turnActor);
@@ -425,7 +430,8 @@ public class BattleManager : MonoBehaviour
         map.ResetHighlights();
         map.UpdateMap();
         UI.ResetActiveSelectList();
-        UI.UpdatePinnedView();
+        ResetConfirmPanels();
+        RefreshUI();
     }
 
     public int prevStartingPosition = -1;
@@ -449,6 +455,30 @@ public class BattleManager : MonoBehaviour
             // Move the actor.
             map.ChangeActorsLocation(prevStartingPosition, tileNumber);
             prevStartingPosition = -1;
+        }
+    }
+
+    public void ResetConfirmPanels()
+    {
+        confirmMovePanel.SetActive(false);
+        confirmAttackPanel.SetActive(false);
+    }
+    public GameObject confirmMovePanel;
+    public GameObject confirmAttackPanel;
+    public void ConfirmMovementToTile()
+    {
+        if (selectedState != "Move"){return;}
+        if (selectedTile < 0){return;}
+        MoveToTile(selectedTile);
+    }
+    public void ConfirmAttack()
+    {
+        if (selectedState != "Attack"){return;}
+        if (selectedTile < 0){return;}
+        AttackTile(selectedTile);
+        if (selectedState == "Attack")
+        {
+            StartAttacking();
         }
     }
 
@@ -478,11 +508,15 @@ public class BattleManager : MonoBehaviour
         switch (selectedState)
         {
             case "Move":
-            MoveToTile(selectedTile);
+            // Confirm movement through a menu first, this will eliminate misclicks.
+            int indexOf = moveManager.reachableTiles.IndexOf(selectedTile);
+            if (indexOf < 0){return;}
+            map.UpdateMovingPath(turnActor, moveManager, selectedTile);
             break;
             case "Attack":
             if (!turnActor.ActionsLeft()){break;}
-            AttackTile(selectedTile);
+            // Highlight the selected tile.
+            map.UpdateSelectedAttackTile(turnActor, selectedTile);
             break;
             case "":
             ViewActorOnTile(selectedTile);
@@ -509,12 +543,19 @@ public class BattleManager : MonoBehaviour
             map.UpdateHighlights(activeManager.targetedTiles, "Attack", 4);
             break;
         }
-        UI.UpdatePinnedView();
+        RefreshUI();
     }
 
     public void ViewActorFromTurnOrder(int index)
     {
         selectedActor = map.GetActorByIndex(index + turnNumber);
+        if (selectedActor == null){return;}
+        ViewActorOnTile(selectedActor.GetLocation());
+    }
+
+    public void ViewTargetedActorFromTurnOrder(int index)
+    {
+        selectedActor = map.GetActorByIndex(index + turnNumber).GetTarget();
         if (selectedActor == null){return;}
         ViewActorOnTile(selectedActor.GetLocation());
     }
@@ -530,7 +571,7 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            UI.UpdatePinnedView();
+            RefreshUI();
             map.UpdateMovingHighlights(selectedActor, moveManager, false);
         }
     }
@@ -538,13 +579,14 @@ public class BattleManager : MonoBehaviour
     protected void StartAttacking()
     {
         map.ResetHighlights();
-        map.UpdateHighlights(map.GetAttackableTiles(turnActor), "Attack");
+        map.UpdateSelectedAttackTile(turnActor, selectedTile);
     }
 
     protected void AttackTile(int tileNumber)
     {
         List<int> attackableTiles = map.GetAttackableTiles(turnActor);
         int indexOf = attackableTiles.IndexOf(tileNumber);
+        // Don't pay if you didn't select a tile.
         if (indexOf < 0)
         {
             ResetState();
@@ -553,7 +595,6 @@ public class BattleManager : MonoBehaviour
         selectedActor = map.GetActorOnTile(tileNumber);
         if (selectedActor == null && map.InteractableOnTile(tileNumber))
         {
-            turnActor.PayAttackCost();
             map.AttackInteractable(tileNumber, turnActor);
             AdjustTurnNumber();
             map.UpdateMap();
@@ -561,6 +602,8 @@ public class BattleManager : MonoBehaviour
         }
         else if (selectedActor == null && !map.InteractableOnTile(tileNumber))
         {
+            // Pay the cost even if nothing is there, since you have to confirm the attack tile.
+            turnActor.PayAttackCost();
             ResetState();
             return;
         }
@@ -575,12 +618,12 @@ public class BattleManager : MonoBehaviour
         AdjustTurnNumber();
         // After you finish attacking reset the selected actor.
         selectedActor = null;
-        if (selectedState == "Attack" && turnActor.GetActions() <= 0)
+        if (selectedState == "Attack" && turnActor.GetActions() <= 0 && turnActor.GetTeam() == 0)
         {
             ResetState();
         }
         map.UpdateMap();
-        UI.UpdateTurnOrder(this);
+        RefreshUI();
     }
     
     protected void StartMoving()
@@ -601,12 +644,12 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            List<int> path = moveManager.GetPrecomputedPath(turnActor.GetLocation(), tileNumber);
+            List<int> movePath = moveManager.GetPrecomputedPath(turnActor.GetLocation(), tileNumber);
             // Need to get the move cost and pay for it.
             turnActor.PayMoveCost(moveManager.moveCost);
             // Need to change the character's direction.
             interactable = false;
-            StartCoroutine(MoveAlongPath(turnActor, path));
+            StartCoroutine(MoveAlongPath(turnActor, movePath));
         }
     }
 

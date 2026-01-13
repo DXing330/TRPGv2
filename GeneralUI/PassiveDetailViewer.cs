@@ -319,13 +319,26 @@ public class PassiveDetailViewer : MonoBehaviour
                 switch (specifics)
                 {
                     case "Front":
-                        return " if you are facing the front side of the enemy";
+                        return " if the attacker is facing the front side of the target";
                     case "Back":
-                        return " if you are facing the back side of the enemy";
+                        return " if the attacker is facing the back side of the target";
                     case "Same":
-                        return " if you are facing the back as the enemy";
+                        return " if the attacker is facing the back as the target";
                     case "Opposite":
-                        return " if you are facing the enemy";
+                        return " if the attacker is facing the target";
+                }
+                break;
+            case "Direction<>":
+                switch (specifics)
+                {
+                    case "Front":
+                        return " if the attacker is not facing the front side of the target";
+                    case "Back":
+                        return " if the attacker is not facing the back side of the target";
+                    case "Same":
+                        return " if the attacker is not facing the back as the target";
+                    case "Opposite":
+                        return " if the attacker is not facing the target";
                 }
                 break;
             case "Elevation<A":

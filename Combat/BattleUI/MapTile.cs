@@ -154,13 +154,6 @@ public class MapTile : MonoBehaviour
 
     public void ClickTile()
     {
-        try
-        {
-            cMap.ClickOnTile(tileNumber);
-        }
-        catch
-        {
-            Debug.Log(tileNumber);
-        }
+        cMap.ClickOnTile(tileNumber);
     }
 }

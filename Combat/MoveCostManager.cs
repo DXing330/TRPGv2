@@ -27,7 +27,6 @@ public class MoveCostManager : MonoBehaviour
     {
         teamInfo = newInfo;
     }
-    public List<MoveCosts> moveCosts;
     public StatDatabase allMoveCosts; // Refactor how move costs are determined.
     public List<int> currentMoveCosts;
     public void UpdateCurrentMoveCosts(TacticActor actor, List<TacticActor> actors)
@@ -68,12 +67,20 @@ public class MoveCostManager : MonoBehaviour
         {
             currentMoveCosts[actors[i].GetLocation()] = bigInt;
         }
+        // If every a single tile costs more than your max possible movement, then treat it as a big int instead of a regular high cost tile.
+        int maxMovement = actor.GetMaxMoveRange();
+        for (int i = 0; i < currentMoveCosts.Count; i++)
+        {
+            if (currentMoveCosts[i] > maxMovement)
+            {
+                currentMoveCosts[i] = bigInt;
+            }
+        }
     }
     public List<string> moveTypeTiles;
     public List<int> moveTypeCosts;
     public int moveCost;
     public int GetMoveCost(){ return moveCost; }
-    public List<int> mapMoveCosts;
     public List<int> pathCosts;
     public List<int> reachableTiles;
     public ActorPathfinder actorPathfinder;

@@ -993,7 +993,14 @@ public class BattleMap : MapManager
         {
             UpdateHighlightsWithoutReseting(moveManager.GetReachableTilesBasedOnActions(selectedActor, battlingActors, i), colorDictionary.keys[i + 1]);
         }
-        //UpdateHighlights(moveManager.GetAllReachableTiles(selectedActor, battlingActors, current));
+    }
+
+    public void UpdateMovingPath(TacticActor actor, MoveCostManager moveManager, int selectedTile)
+    {
+        List<string> originalHighlightedTiles = new List<string>(highlightedTiles);
+        List<int> path = moveManager.GetPrecomputedPath(actor.GetLocation(), selectedTile);
+        UpdateHighlightsWithoutReseting(path, "Red");
+        highlightedTiles = new List<string>(originalHighlightedTiles);
     }
 
     protected void UpdateHighlightsWithoutReseting(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)
@@ -1230,6 +1237,16 @@ public class BattleMap : MapManager
             }
         }
         return attackable;
+    }
+
+    public void UpdateSelectedAttackTile(TacticActor actor, int selectedTile)
+    {
+        List<int> attackable = GetAttackableTiles(actor);
+        UpdateHighlights(attackable, "Attack");
+        if (!attackable.Contains(selectedTile)){return;}
+        List<int> selected = new List<int>();
+        selected.Add(selectedTile);
+        UpdateHighlightsWithoutReseting(selected, "Green");
     }
 
     public List<TacticActor> GetAttackableEnemies(TacticActor actor)
