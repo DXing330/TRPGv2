@@ -93,6 +93,7 @@ public class BattleManager : MonoBehaviour
         combatLog.ForceStart();
         int partySizeCap = map.MapMaxPartyCapacity();
         combatLog.AddNewLog();
+        UI.UpdateWinConString();
         map.SetWeather(battleState.GetWeather());
         combatLog.UpdateNewestLog("The weather is " + map.GetWeather());
         map.SetTime(battleState.GetTime());

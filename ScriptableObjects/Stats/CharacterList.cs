@@ -13,11 +13,12 @@ public class CharacterList : ScriptableObject
     public string delimiterTwo = "^";
     public string ReturnData()
     {
-        // Can't use "=", since this is inside of another save function.
         string data = "";
         data += "Names~" + String.Join(delimiterTwo, GetCharacterNames()) + delimiter;
         data += "Sprites~" + String.Join(delimiterTwo, GetCharacterSprites()) + delimiter;
+        // Stats use "+", "!", ","
         data += "Stats~" + String.Join(delimiterTwo, GetCharacterStats()) + delimiter;
+        // Equipment uses "|" and ","
         data += "Equip~" + String.Join(delimiterTwo, GetCharacterEquipment()) + delimiter;
         data += "ID~" + String.Join(delimiterTwo, GetCharacterIDs()) + delimiter;
         return data;

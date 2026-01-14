@@ -50,10 +50,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
     // ActiveEffectDescription
     public string AED(string e, string s, string p)
     {
-        if (e.Contains("AllSprites="))
+        if (e.Contains("AllSprites>>"))
         {
-            string[] eBlocks = e.Split("=");
-            return "All "+eBlocks[1]+"s gain "+p+" "+ASD(s)+".";
+            string[] eBlocks = e.Split(">>");
+            return "All " + eBlocks[1] + "s gain " + p + " " + ASD(s) + ".";
         }
         switch (e)
         {
@@ -81,6 +81,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Teleport+Attack":
                 return "Try to move " + ASD(s) + " the target and attack with " + APD(p) + "% damage.";
             case "Status":
+                return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
+            case "Statuses":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
             case "Buff":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
@@ -178,6 +180,14 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Put the target(s) to sleep for " + s + " turns.";
             case "Silence":
                 return "Disable target(s) skills for " + s + " turns.";
+            case "Barricade":
+                return "Prevent temporary health from decaying for " + s + " turns.";
+            case "Guard":
+                return "Protect adjacent allies from attacks for " + s + " turns.";
+            case "GuardRange":
+                return "Increase the distance from which you can protected allies from attacks to up to " + s + " tiles.";
+            case "Disarm":
+                return "Remove the target(s) weapon.";
             case "Learn":
                 return "Learn a random skill from the target(s).";
             case "Teach":

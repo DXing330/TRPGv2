@@ -660,31 +660,31 @@ public class PassiveDetailViewer : MonoBehaviour
             case "BreakGrapple":
                 return " break from any grapples";
             case "BaseDamageResistance":
-                string[] bDRes = specifics.Split("=");
+                string[] bDRes = specifics.Split(">>");
                 return " increase base " + bDRes[0] + " resistance by " + bDRes[1];
             case "CurrentDamageResistance":
-                string[] cDRes = specifics.Split("=");
+                string[] cDRes = specifics.Split(">>");
                 return " increase " + cDRes[0] + " resistance by " + cDRes[1];
             case "BaseElementalBonus":
-                string[] bDBonus = specifics.Split("=");
+                string[] bDBonus = specifics.Split(">>");
                 return " increase base " + bDBonus[0] + " damage by " + bDBonus[1];
             case "ElementalDamageBonus":
-                string[] cDBonus = specifics.Split("=");
+                string[] cDBonus = specifics.Split(">>");
                 return " increase " + cDBonus[0] + " damage by " + cDBonus[1];
             case "ScalingElementalBonus":
-                string[] sEB = specifics.Split("=");
+                string[] sEB = specifics.Split(">>");
                 return " increase base " + sEB[0] + " damage by " + sEB[3] + "% for each level of this passive";
             case "ScalingElementalResist":
-                string[] sER = specifics.Split("=");
+                string[] sER = specifics.Split(">>");
                 return " increase base " + sER[0] + " resistance by " + sER[3] + "% for each level of this passive";
             case "ScalingVigor":
-                string[] scalingVig = specifics.Split("=");
+                string[] scalingVig = specifics.Split(">>");
                 return " increase vigor by " + scalingVig[2] + " for each level of this passive";
             case "ElementalBonusDamage":
-                string[] eBD = specifics.Split("=");
+                string[] eBD = specifics.Split(">>");
                 return " deal " + eBD[1] + " " + eBD[0] + " damage";
             case "ElementalReflectDamage":
-                string[] eRD = specifics.Split("=");
+                string[] eRD = specifics.Split(">>");
                 return " deal " + eRD[1] + " " + eRD[0] + " damage";
             case "Sleep":
                 return "put " + target + " to sleep for " + specifics + " turns";
@@ -692,6 +692,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " disable actives of " + target + " for " + specifics + " turns";
             case "Invisible":
                 return " turn invisible for " + specifics + " turns";
+            case "Barricade":
+                return " prevent temporary health from decaying for " + specifics + " turns";
+            case "Guard":
+                return " protect adjacent allies from attacks for " + specifics + " turns";
+            case "GuardRange":
+                return "Increase the distance from which you can protected allies from attacks to up to " + specifics + " tiles.";
             case "MoveForwardRandom":
                 return " move to a random forward tile";
             case "MoveBackwardRandom":

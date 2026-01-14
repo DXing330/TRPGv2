@@ -34,6 +34,11 @@ public class BattleUIManager : MonoBehaviour
         utility.EnableGameObjects(playerChoiceActions);
         SetState(0);
     }
+    public TMP_Text winConText;
+    public void UpdateWinConString()
+    {
+        winConText.text = battleManager.battleState.AltWinConString();
+    }
     // State 0 - Player Stats + Actions.
     // Don't have to view the battle stats all the time, can also view other things.
     public int pinnedView = 0;

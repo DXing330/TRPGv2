@@ -78,7 +78,7 @@ public class MapUtility : ScriptableObject
     {
         int row = GetRow(tile, size);
         int col = GetColumn(tile, size);
-        return "(" + row + "," + col + ")";
+        return "(" + (row + 1) + "," + (col + 1) + ")";
     }
 
     public int GetRow(int tile, int size)

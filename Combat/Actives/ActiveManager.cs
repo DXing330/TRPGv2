@@ -127,9 +127,9 @@ public class ActiveManager : MonoBehaviour
     {
         int targetTile = -1;
         // There are some effects that naturally target a specific group of actors.
-        if (effect.Contains("AllSprites="))
+        if (effect.Contains("AllSprites>>"))
         {
-            string[] allSpriteDetails = effect.Split("=");
+            string[] allSpriteDetails = effect.Split(">>");
             string specificSprite = allSpriteDetails[1];
             targets = battle.map.AllActorsBySprite(specificSprite);
             active.AffectActors(targets, specifics, active.GetPowerString(), 1);
@@ -509,7 +509,7 @@ public class ActiveManager : MonoBehaviour
                         string commandSkill = targets[i].ReturnSkillContainingName(active.GetPowerString());
                         if (activeData.KeyExists(commandSkill))
                         {
-                            string[] commandSkillDetails = activeData.ReturnValue(commandSkill).Split("_");
+                            string[] commandSkillDetails = activeData.ReturnValue(commandSkill).Split(active.activeSkillDelimiter);
                             active.AffectActor(targets[i], commandSkillDetails[7], commandSkillDetails[8]);
                         }
                         break;

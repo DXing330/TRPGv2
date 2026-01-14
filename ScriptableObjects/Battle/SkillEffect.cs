@@ -49,7 +49,7 @@ public class SkillEffect : ScriptableObject
             case "Statuses":
                 int durations = level;
                 if (level <= baseStatusDuration && level >= 0) { durations = baseStatusDuration; }
-                string[] statuses = effectSpecifics.Split("&");
+                string[] statuses = effectSpecifics.Split(",");
                 for (int i = 0; i < statuses.Length; i++)
                 {
                     AffectActor(target, "Status", statuses[i], durations);
@@ -65,7 +65,7 @@ public class SkillEffect : ScriptableObject
                 target.RemoveStatus(effectSpecifics);
                 break;
             case "RemoveStatuses":
-                string[] removedStatuses = effectSpecifics.Split("&");
+                string[] removedStatuses = effectSpecifics.Split(",");
                 for (int i = 0; i < removedStatuses.Length; i++)
                 {
                     target.RemoveStatus(removedStatuses[i]);
@@ -318,38 +318,34 @@ public class SkillEffect : ScriptableObject
                 target.BreakGrapple();
                 break;
             case "BaseDamageResistance":
-                string[] baseResist = effectSpecifics.Split("=");
+                string[] baseResist = effectSpecifics.Split(">>");
                 target.UpdateBaseDamageResist(baseResist[0], SafeParseInt(baseResist[1]));
                 break;
             case "CurrentDamageResistance":
-                string[] cResist = effectSpecifics.Split("=");
+                string[] cResist = effectSpecifics.Split(">>");
                 target.UpdateCurrentDamageResist(cResist[0], SafeParseInt(cResist[1]));
                 break;
             case "BaseElementalBonus":
-                string[] baseBonus = effectSpecifics.Split("=");
+                string[] baseBonus = effectSpecifics.Split(">>");
                 target.UpdateElementalDamageBonus(baseBonus[0], SafeParseInt(baseBonus[1]));
                 break;
             case "ElementalDamageBonus":
-                string[] cBonus = effectSpecifics.Split("=");
+                string[] cBonus = effectSpecifics.Split(">>");
                 target.UpdateCurrentElementalDamageBonus(cBonus[0], SafeParseInt(cBonus[1]));
                 break;
             case "ScalingElementalBonus":
-                string[] scalingEB = effectSpecifics.Split("=");
+                string[] scalingEB = effectSpecifics.Split(">>");
                 target.UpdateElementalDamageBonus(scalingEB[0], GetScalingInt(target, scalingEB[1], scalingEB[2], scalingEB[3]));
                 break;
             case "ScalingElementalResist":
-                string[] scalingER = effectSpecifics.Split("=");
+                string[] scalingER = effectSpecifics.Split(">>");
                 target.UpdateBaseDamageResist(scalingER[0], GetScalingInt(target, scalingER[1], scalingER[2], scalingER[3]));
                 break;
-            case "MaxVigor":
-                target.IncreaseMaxVigor(int.Parse(effectSpecifics));
+            case "VigorEfficiency":
+                target.IncreaseVigorScaling(int.Parse(effectSpecifics));
                 break;
             case "Vigor":
                 target.RestoreVigor(int.Parse(effectSpecifics));
-                break;
-            case "ScalingVigor":
-                string[] scalingVig = effectSpecifics.Split("=");
-                target.IncreaseMaxVigor(GetScalingInt(target, scalingVig[0], scalingVig[1], scalingVig[2]));
                 break;
             case "Silence":
                 target.Silence(int.Parse(effectSpecifics));
@@ -359,6 +355,15 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Invisible":
                 target.TurnInvisible(int.Parse(effectSpecifics));
+                break;
+            case "Barricade":
+                target.GainBarricade(int.Parse(effectSpecifics));
+                break;
+            case "Guard":
+                target.GainGuard(int.Parse(effectSpecifics));
+                break;
+            case "GuardRange":
+                target.SetGuardRange(int.Parse(effectSpecifics));
                 break;
             case "Disarm":
                 string disarmedWeapon = target.Disarm();

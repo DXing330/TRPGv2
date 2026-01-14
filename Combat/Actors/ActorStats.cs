@@ -24,8 +24,9 @@ public class ActorStats : ActorPassives
     public List<string> stats;
     public void ReloadPassives()
     {
-        stats[9] = String.Join(",", GetPassiveSkills());
-        stats[10] = String.Join(",", GetPassiveLevels());
+        SetStat("Passives", String.Join(passiveDelimiter, GetPassiveSkills()));
+        SetStat("PassiveLevels", String.Join(passiveDelimiter, GetPassiveSkills()));
+        GetStats();
     }
     public string GetStats()
     {
@@ -77,6 +78,11 @@ public class ActorStats : ActorPassives
         {
             SetStat("", statNames[i]);
         }
+        // TempAtk/Crit/Dodge/Etc.
+        ResetStats();
+        EndTurnResetStats();
+        // Silence/Invis/Guard/Etc.
+        ResetUniqueEffects();
     }
     public void SetStats(List<string> newStats, List<string> newStatNames = null)
     {
@@ -426,11 +432,12 @@ public class ActorStats : ActorPassives
         TakeDamage(damage, type);
         return damage;
     }
-    public int maxVigor;
-    public void IncreaseMaxVigor(int amount)
+    // How much bonus vigor you get from consuming 1 mana.
+    // Can be negative.
+    protected int vigorScaling;
+    public void IncreaseVigorScaling(int amount)
     {
-        maxVigor += amount;
-        currentVigor += amount;
+        vigorScaling += amount;
     }
     public int currentVigor;
     public int GetVigor(){return currentVigor;}
@@ -440,12 +447,7 @@ public class ActorStats : ActorPassives
     }
     public void RestoreVigor(int amount)
     {
-        currentVigor += amount;
-        /* Vigor is unlimited when increasing, unlike energy.
-        if (currentVigor > maxVigor)
-        {
-            currentVigor = maxVigor;
-        }*/
+        currentVigor += Mathf.Max(0, amount + vigorScaling);
     }
     public List<string> bonusDmgTypes;
     // Deal bonus damage of type.
@@ -606,16 +608,17 @@ public class ActorStats : ActorPassives
         }
     }
     // Stats that are not stored in the stat string.
+    // Call this before making an actor to ensure that the actor has a fresh start.
     public void InitializeStats()
     {
         baseHitChance = initialHitChance;
         baseDodge = initialDodge;
         baseCrit = initialCrit;
         baseCritDamage = initialCritDamage;
-        maxVigor = 0;
+        vigorScaling = 0;
         currentVigor = 0;
-        buffs.Clear();
-        buffDurations.Clear();
+        ClearStatuses();
+        ClearBuffs();
         resistDmgTypes.Clear();
         baseDmgResists.Clear();
         currentDmgResists.Clear();
@@ -628,6 +631,7 @@ public class ActorStats : ActorPassives
         sleepDuration = 0;
         ResetStats();
         EndTurnResetStats();
+        ResetUniqueEffects();
     }
     protected int initialHitChance = 99;
     public int baseHitChance;
@@ -854,6 +858,16 @@ public class ActorStats : ActorPassives
             buffDurations[indexOf] = buffDurations[indexOf] + duration;
         }
     }
+    public void ClearBuffs(string specifics = "*")
+    {
+        if (specifics == "*")
+        {
+            buffs.Clear();
+            buffDurations.Clear();
+            return;
+        }
+        RemoveBuff(specifics);
+    }
     public void RemoveBuff(string buffName)
     {
         if (buffName == "All")
@@ -1042,10 +1056,7 @@ public class ActorStats : ActorPassives
                 statusDurations.RemoveAt(i);
             }
         }
-        CheckSilence();
-        CheckSleeping();
-        CheckInvisibility();
-        CheckBarricade();
+        CheckUniqueEffects();
     }
     public string curseStatName;
     public void AddCurse(string newInfo)
@@ -1087,6 +1098,22 @@ public class ActorStats : ActorPassives
         return curseString;
     }
     // Unique Statuses
+    public void ResetUniqueEffects()
+    {
+        Unsilence();
+        WakeUp();
+        RemoveInvisibility();
+        RemoveBarricade();
+        RemoveGuard();
+    }
+    public void CheckUniqueEffects()
+    {
+        CheckSilence();
+        CheckSleeping();
+        CheckInvisibility();
+        CheckBarricade();
+        CheckGuard();
+    }
     public bool silenced = false;
     public bool GetSilenced(){return silenced;}
     public int silenceDuration;
@@ -1147,6 +1174,7 @@ public class ActorStats : ActorPassives
         invisibleDuration = 0;
     }
     public bool barricade = false;
+    public bool GetBarricade(){return barricade;}
     public int barricadeDuration;
     public void GainBarricade(int duration)
     {
@@ -1164,5 +1192,40 @@ public class ActorStats : ActorPassives
     {
         barricade = false;
         barricadeDuration = 0;
+    }
+    public bool guarding = false;
+    public bool Guarding(){return guarding;}
+    public int guardRange;
+    public void SetGuardRange(int newInfo)
+    {
+        guardRange = Mathf.Max(newInfo, guardRange);
+    }
+    public int GetGuardRange(){return guardRange;}
+    public int guardDuration;
+    public void GainGuard(int duration, int range = 1)
+    {
+        guarding = true;
+        if (guardDuration == 0 || guardRange < range)
+        {
+            guardRange = range;
+        }
+        if (guardDuration < duration)
+        {
+            guardDuration = duration;
+        }
+    }
+    public void CheckGuard()
+    {
+        (guarding, guardDuration) = utility.DecrementBoolDuration(guarding, guardDuration);
+        if (!guarding)
+        {
+            guardRange = 0;
+        }
+    }
+    public void RemoveGuard()
+    {
+        guarding = false;
+        guardDuration = 0;
+        guardRange = 0;
     }
 }

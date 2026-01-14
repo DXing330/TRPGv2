@@ -288,7 +288,7 @@ public class DungeonEffectManager : MonoBehaviour
 
     protected void AffectInventory(string effect, string specifics)
     {
-        string[] details = specifics.Split("=");
+        string[] details = specifics.Split(">>");
         switch (effect)
         {
             default:

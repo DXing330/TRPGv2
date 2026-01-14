@@ -15,6 +15,7 @@ public class Dungeon : ScriptableObject
     }
     public bool customDungeon = false;
     public DungeonState dungeonState;
+    public BattleState battleState;
     public ActorPathfinder pathfinder;
     public DungeonGenerator dungeonGenerator;
     // Apply battle modifiers before going into battle.
@@ -963,6 +964,8 @@ public class Dungeon : ScriptableObject
         SetEnemyParty(allEnemyParties[indexOf].Split("|").ToList());
         // Remove the enemy on that location.
         RemoveEnemyAtIndex(indexOf);
+        // Set the formation to surrounding, since you have initative vs the enemies.
+        //battleState.
     }
     public int questFought = 0;
     public void SetQuestFought(int newInfo)
@@ -1050,6 +1053,7 @@ public class Dungeon : ScriptableObject
                 RemoveEnemyAtIndex(i);
             }
         }
+        // Set the formation to surrounded, since the enemies have initiative.
     }
     public bool TilePassable(int tileNumber)
     {

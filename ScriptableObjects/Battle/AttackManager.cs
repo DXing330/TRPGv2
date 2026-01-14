@@ -29,6 +29,18 @@ public class AttackManager : ScriptableObject
     protected int critDamage;
     protected int critChance;
 
+    public bool GuardActive(TacticActor defender, BattleMap map)
+    {
+        return map.GetAdjacentGuardingAlly(defender) != null;
+    }
+
+    public TacticActor GetGuard(TacticActor defender, BattleMap map)
+    {
+        TacticActor guard = map.GetAdjacentGuardingAlly(defender);
+        if (guard == null){return defender;}
+        return guard;
+    }
+
     public bool RollToHit(TacticActor attacker, TacticActor defender, BattleMap map, bool showLog = true)
     {
         int hitRoll = Random.Range(0, 100);
@@ -174,7 +186,6 @@ public class AttackManager : ScriptableObject
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
     }
-
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Attack")
     {
         attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
@@ -215,24 +226,33 @@ public class AttackManager : ScriptableObject
         critDamage = attacker.GetCritDamage();
     }
     // Basic attack damage calculation
-    public void ActorAttacksActor(TacticActor attacker, TacticActor defender, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Physical")
+    public void ActorAttacksActor(TacticActor attacker, TacticActor target, BattleMap map, MoveCostManager moveManager, int attackMultiplier = -1, string type = "Physical")
     {
-        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, defender));
+        bool guard = GuardActive(target, map);
+        attacker.SetDirection(moveManager.DirectionBetweenActors(attacker, target));
         attacker.UpdateTempInitiative(-1);
+        TacticActor attackTarget = target;
+        // Check if there is a guard.
+        if (guard)
+        {
+            attackTarget = GetGuard(target, map);
+            map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " defends " + target.GetPersonalName() + " from the attack.");
+            // Switch the actor locations?
+        }
         advantage = 0;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
-        UpdateBattleStats(attacker, defender);
+        UpdateBattleStats(attacker, attackTarget);
         baseDamage = attackValue;
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
         finalDamageCalculation = "";
-        CheckMapPassives(attacker, defender, map, moveManager, true, true);
+        CheckMapPassives(attacker, attackTarget, map, moveManager, true, true);
         // Bonus damage can be calculated here and triggers regardless of hit/miss.
-        CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map, moveManager);
-        CheckPassives(defender.GetDefendingPassives(), defender, attacker, map, moveManager);
+        CheckPassives(attacker.GetAttackingPassives(), attackTarget, attacker, map, moveManager);
+        CheckPassives(attackTarget.GetDefendingPassives(), attackTarget, attacker, map, moveManager);
         // Determine if you miss or not.
-        if (!RollToHit(attacker, defender, map)){return;}
+        if (!RollToHit(attacker, attackTarget, map)){return;}
         baseDamage = Advantage(baseDamage, advantage);
         // Check for stab.
         baseDamage = STAB(attacker, baseDamage, type);
@@ -250,23 +270,23 @@ public class AttackManager : ScriptableObject
         finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         // Check if the passive affects damage.
-        baseDamage = CheckTakeDamagePassives(defender.GetTakeDamagePassives(), baseDamage, type);
+        baseDamage = CheckTakeDamagePassives(attackTarget.GetTakeDamagePassives(), baseDamage, type);
         finalDamageCalculation += baseDamage;
         // Show the resistance calculation.
-        ElementalResistance(defender, baseDamage, type);
-        baseDamage = defender.TakeDamage(baseDamage, type);
-        defender.SetTarget(attacker);
-        map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
-        map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
+        ElementalResistance(attackTarget, baseDamage, type);
+        baseDamage = attackTarget.TakeDamage(baseDamage, type);
+        attackTarget.SetTarget(attacker);
+        map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " takes " + baseDamage + " damage.");
+        map.damageTracker.UpdateDamageStat(attacker, attackTarget, baseDamage);
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
         // Check if the defender is alive, has counter attacks available and is in range.
-        if (defender.GetHealth() > 0 && defender.CounterAttackAvailable() && moveManager.DistanceBetweenActors(defender, attacker) <= defender.GetAttackRange())
+        if (attackTarget.GetHealth() > 0 && attackTarget.CounterAttackAvailable() && moveManager.DistanceBetweenActors(attackTarget, attacker) <= attackTarget.GetAttackRange())
         {
-            defender.UseCounterAttack();
-            map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " counter attacks " + attacker.GetPersonalName());
-            ActorAttacksActor(defender, attacker, map, moveManager);
+            attackTarget.UseCounterAttack();
+            map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " counter attacks " + attacker.GetPersonalName());
+            ActorAttacksActor(attackTarget, attacker, map, moveManager);
         }
     }
 
@@ -387,11 +407,11 @@ public class AttackManager : ScriptableObject
                 map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
                 break;
                 case "ElementalBonusDamage":
-                string[] eBD = passiveStats[5].Split("=");
+                string[] eBD = passiveStats[5].Split(">>");
                 ElementalBonusDamage(attacker, target, int.Parse(eBD[1]), eBD[0], map);
                 break;
                 case "ElementalReflectDamage":
-                string[] eRD = passiveStats[5].Split("=");
+                string[] eRD = passiveStats[5].Split(">>");
                 ElementalBonusDamage(target, attacker, int.Parse(eRD[1]), eRD[0], map);
                 break;
             }

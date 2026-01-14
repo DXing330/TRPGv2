@@ -102,6 +102,14 @@ public class BattleState : SavedState
     }
     public List<string> allStartingFormations;
     public string spawnPattern;
+    public void SetSurroundedFormation()
+    {
+        SetStartingFormation("Surrounded");
+    }
+    public void SetSurroundingFormation()
+    {
+        SetStartingFormation("Surrounding");
+    }
     public void SetStartingFormation(string newInfo)
     {
         spawnPattern = newInfo;
@@ -146,6 +154,26 @@ public class BattleState : SavedState
     }
     public string GetAltWinCon(){return alternateWinCondition;}
     public string GetAltWinConSpecifics(){return alternateWinConditionSpecifics;}
+    public string AltWinConString()
+    {
+        string winCon = "Goal:\n";
+        switch (alternateWinCondition)
+        {
+            default:
+            winCon += "Defeat all enemies";
+            break;
+            case "Escape":
+            winCon += "Allow " + alternateWinConditionSpecifics + " to escape";
+            break;
+            case "Defeat":
+            winCon += "Defeat " + alternateWinConditionSpecifics;
+            break;
+            case "Capture":
+            winCon += "Capture " + alternateWinConditionSpecifics;
+            break;
+        }
+        return winCon;
+    }
 
     public void ResetStats()
     {
@@ -159,7 +187,6 @@ public class BattleState : SavedState
         SetWeather(dState.dungeon.GetWeather());
         ForceTerrainType(dState.dungeon.GenerateTerrain());
         string newInfo = dState.dungeon.GetQuestBattleInfo();
-        Debug.Log(newInfo);
         string[] blocks = newInfo.Split(dState.dungeon.bossQuestBattleDelimiter);
         if (blocks.Length <= 5){return;}
         ForceTerrainType(blocks[1]);
@@ -182,30 +209,29 @@ public class BattleState : SavedState
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = previousScene+delimiter;
-        allData += String.Join(delimiterTwo, enemies);
+        allData = "PrevScene=" + previousScene+delimiter;
+        allData += "Enemies=" + String.Join(delimiterTwo, enemies);
         allData += delimiter;
-        allData += terrainType;
+        allData += "Terrain=" + terrainType;
         allData += delimiter;
-        allData += winningTeam;
+        allData += "WinningTeam=" + winningTeam;
         allData += delimiter;
-        // Whenever moving to a battle scene, the battle modifiers should already be determined.
         UpdateBattleModifiers();
-        allData += String.Join(delimiterTwo, allyBattleModifiers);
+        allData += "AllyBM=" + String.Join(delimiterTwo, allyBattleModifiers);
         allData += delimiter;
-        allData += String.Join(delimiterTwo, enemyBattleModifiers);
+        allData += "EnemyBM=" + String.Join(delimiterTwo, enemyBattleModifiers);
         allData += delimiter;
-        allData += weather;
+        allData += "Weather=" + weather;
         allData += delimiter;
-        allData += time;
+        allData += "Time=" + time;
         allData += delimiter;
-        allData += allySpawnPattern;
+        allData += "AllySP=" + allySpawnPattern;
         allData += delimiter;
-        allData += enemySpawnPattern;
+        allData += "EnemySP=" + enemySpawnPattern;
         allData += delimiter;
-        allData += alternateWinCondition;
+        allData += "AltWinCon=" + alternateWinCondition;
         allData += delimiter;
-        allData += alternateWinConditionSpecifics;
+        allData += "AltWinConSpecs=" + alternateWinConditionSpecifics;
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
@@ -217,7 +243,7 @@ public class BattleState : SavedState
         dataList = allData.Split(delimiter).ToList();
         for (int i = 0; i < dataList.Count; i++)
         {
-            LoadStat(dataList[i], i);
+            LoadStat(dataList[i]);
         }
         sceneTracker.SetPreviousScene(previousScene);
         enemyList.ResetLists();
@@ -225,48 +251,53 @@ public class BattleState : SavedState
         battleMapFeatures.SetTerrainType(terrainType);
     }
 
-    protected void LoadStat(string stat, int index)
+    protected virtual void LoadStat(string data)
     {
-        switch (index)
+        string[] blocks = data.Split("=");
+        if (blocks.Length < 2){return;}
+        string value = blocks[1];
+        switch (blocks[0])
         {
-            case 0:
-                previousScene = stat;
+            default:
                 break;
-            case 1:
-                enemies = stat.Split(delimiterTwo).ToList();
+            case "PrevScene":
+                previousScene = value;
                 break;
-            case 2:
-                terrainType = stat;
+            case "Enemies":
+                enemies = value.Split(delimiterTwo).ToList();
                 break;
-            case 3:
-                winningTeam = utility.SafeParseInt(stat, -1);
+            case "Terrain":
+                terrainType = value;
                 break;
-            case 4:
-                allyBattleModifiers = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+            case "WinningTeam":
+                winningTeam = utility.SafeParseInt(value, -1);
+                break;
+            case "AllyBM":
+                allyBattleModifiers = utility.RemoveEmptyListItems(value.Split(delimiterTwo).ToList());
                 utility.RemoveEmptyListItems(allyBattleModifiers);
                 partyList.SetBattleModifiers(allyBattleModifiers);
                 break;
-            case 5:
-                enemyBattleModifiers = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
+            case "EnemyBM":
+                enemyBattleModifiers = utility.RemoveEmptyListItems(value.Split(delimiterTwo).ToList());
                 enemyList.SetBattleModifiers(enemyBattleModifiers);
                 break;
-            case 6:
-                SetWeather(stat);
+            case "Weather":
+                SetWeather(value);
                 break;
-            case 7:
-                SetTime(stat);
+            case "Time":
+                SetTime(value);
                 break;
-            case 8:
-                SetAllySpawnPattern(stat);
+            case "AllySP":
+                SetAllySpawnPattern(value);
                 break;
-            case 9:
-                SetEnemySpawnPattern(stat);
+            case "EnemySP":
+                SetEnemySpawnPattern(value);
                 break;
-            case 10:
-                SetAltWinCon(stat);
+            case "AltWinCon":
+                SetAltWinCon(value);
                 break;
-            case 11:
-                SetAltWinConSpecifics(stat);
+            case "AltWinConSpecs":
+                SetAltWinConSpecifics(value);
                 break;
         }
     }

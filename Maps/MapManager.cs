@@ -253,7 +253,7 @@ public class MapManager : MonoBehaviour
         mapInfo = mapMaker.MakeBasicMap(mapSize, baseTileType);
         for (int i = 0; i < featuresAndPatterns.Count; i++)
         {
-            string[] fPSplit = featuresAndPatterns[i].Split("=");
+            string[] fPSplit = featuresAndPatterns[i].Split(">>");
             if (fPSplit.Length < 2){continue;}
             mapInfo = mapMaker.AddFeature(mapInfo, fPSplit[0], fPSplit[1]);
         }

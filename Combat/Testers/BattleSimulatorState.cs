@@ -314,7 +314,7 @@ public class BattleSimulatorState : BattleState
         utility.RemoveEmptyListItems(selectedP2BattleMods);
         utility.RemoveEmptyListItems(selectedStartingFormations);
     }
-    protected void LoadStat(string data)
+    protected override void LoadStat(string data)
     {
         string[] blocks = data.Split("=");
         if (blocks.Length < 2){return;}

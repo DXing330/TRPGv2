@@ -556,7 +556,7 @@ public class BattleMap : MapManager
                 ChainReplaceTEffects(tileNumber, specifics);
                 break;
             case "SwitchBetween":
-                string[] between = specifics.Split("=");
+                string[] between = specifics.Split(">>");
                 if (between.Length < 2){return;}
                 if (mapInfo[tileNumber] == between[0])
                 {
@@ -625,7 +625,7 @@ public class BattleMap : MapManager
         terrainEffectTiles = new List<string>(emptyList);
         for (int i = 0; i < featuresAndPatterns.Count; i++)
         {
-            string[] fPSplit = featuresAndPatterns[i].Split("=");
+            string[] fPSplit = featuresAndPatterns[i].Split(">>");
             if (fPSplit.Length < 2){continue;}
             terrainEffectTiles = mapMaker.AddFeature(terrainEffectTiles, fPSplit[0], fPSplit[1]);
         }
@@ -653,14 +653,13 @@ public class BattleMap : MapManager
             }
             else if (newValue.Contains("ChainReplace"))
             {
-                string[] cRS = newValue.Split("=");
+                string[] cRS = newValue.Split(">>");
                 if (cRS.Length < 2)
                 {
                     ChainReplaceTEffects(tileNumber, newEffect);
                 }
                 else
                 {
-                    Debug.Log(cRS[1]);
                     ChainReplaceTEffects(tileNumber, cRS[1]);
                 }
                 return;
@@ -1476,6 +1475,47 @@ public class BattleMap : MapManager
             if (all[i].GetTeam() != actor.GetTeam()) { all.RemoveAt(i); }
         }
         return all;
+    }
+
+    // The tankiest adjacent guarding ally will take the hit for you.
+    public TacticActor GetAdjacentGuardingAlly(TacticActor actor)
+    {
+        List<TacticActor> adjAllies = GetAdjacentAllies(actor);
+        int defenseValue = -1;
+        int index = -1;
+        for (int i = 0; i < adjAllies.Count; i++)
+        {
+            if (adjAllies[i].Guarding() && adjAllies[i].GetDefense() > defenseValue && adjAllies[i].GetHealth() > 0)
+            {
+                index = i;
+                defenseValue = adjAllies[i].GetDefense();
+            }
+        }
+        if (index < 0)
+        {
+            return GetGuardingAllyInRange(actor);
+        }
+        return adjAllies[index];
+    }
+    // Any guard that is in guard range, only if there are no adjacent guards.
+    protected TacticActor GetGuardingAllyInRange(TacticActor actor)
+    {
+        List<TacticActor> allies = AllAllies(actor);
+        int index = -1;
+        int defense = -1;
+        for (int i = 0; i < allies.Count; i++)
+        {
+            if (allies[i].Guarding() && DistanceBetweenActors(actor, allies[i]) <= allies[i].GetGuardRange())
+            {
+                if (allies[i].GetHealth() > 0 && allies[i].GetDefense() > defense)
+                {
+                    index = i;
+                    defense = allies[i].GetDefense();
+                }
+            }
+        }
+        if (index < 0){return null;}
+        return allies[index];
     }
 
     public List<TacticActor> GetAdjacentEnemies(TacticActor actor)

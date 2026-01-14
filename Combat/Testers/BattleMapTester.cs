@@ -57,7 +57,7 @@ public class BattleMapTester : MonoBehaviour
             }
             else if (result.Contains("ChainReplace"))
             {
-                string[] cRS = result.Split("=");
+                string[] cRS = result.Split(">>");
                 if (cRS.Length < 2 && actualResult != t_t[1])
                 {
                     Debug.Log(possibleChanges[i] + " failed.");
