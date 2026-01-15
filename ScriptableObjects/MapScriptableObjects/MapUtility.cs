@@ -608,6 +608,7 @@ public class MapUtility : ScriptableObject
         return ReturnTileNumberFromRowCol(size / 2, size / 2, size);
     }
 
+    // This is bugged for auras if the direction is required but the target is facing an edge of the map.
     public List<int> GetTilesByShapeSpan(int selected, string shape, int span, int size, int start = -1)
     {
         List<int> tiles = new List<int>();

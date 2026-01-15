@@ -169,6 +169,14 @@ public class PassiveDetailViewer : MonoBehaviour
         return allDetails;
     }
 
+    public string ReturnAuraDetails(AuraEffect aura)
+    {
+        string description = aura.GetAuraName() + ":";
+        description += PassiveEffect(aura.effect, aura.effectSpecifics, aura.target);
+        description += PassiveConditionText(aura.condition, aura.conditionSpecifics);
+        return description;
+    }
+
     public string ReturnPassiveDetails(string newInfo)
     {
         if (!newInfo.Contains("|"))

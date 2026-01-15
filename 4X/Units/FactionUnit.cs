@@ -7,7 +7,7 @@ using UnityEngine;
 [System.Serializable]
 public class FactionUnit
 {
-    // Stores actors and equipment which already use "|" and "," delimiters.
+    // Stores actors and equipment which already use "|", "+" and "," delimiters.
     protected string delimiter = "#";
     protected string delimiterTwo = "&";
     public int location;

@@ -577,6 +577,9 @@ public class ActiveManager : MonoBehaviour
                     targets[i].SetCurrentHealth(finalHealth);
                 }
                 return;
+            case "Aura":
+                battle.map.AddAura(skillUser, power, specifics);
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);

@@ -60,16 +60,6 @@ public class OverworldGenerator : ScriptableObject
     public string ReturnOverworld()
     {
         string overworld = "";
-        overworld += utility.ConvertListToString(allTiles, "#")+"@";
-        overworld += utility.ConvertListToString(cityLayer, "#")+"@";
-        overworld += utility.ConvertListToString(luxuryLayer, "#")+"@";
-        overworld += cityLocation+"@";
-        overworld += utility.ConvertListToString(allLuxuries, "#")+"@";
-        overworld += utility.ConvertListToString(allLuxuryTiles, "#")+"@";
-        /*overworld += utility.ConvertListToString(cityLayer, "#")+"@";
-        overworld += utility.ConvertListToString(luxuryLayer, "#")+"@";
-        overworld += utility.ConvertListToString(allBiomes, "#")+"@";
-        overworld += utility.ConvertListToString(allBiomeTiles, "#")+"@";*/
         return overworld;
     }
 

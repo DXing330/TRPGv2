@@ -194,6 +194,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Teach a random skill to the target(s).";
             case "Pain Split":
                 return "Share health equally between all targets.";
+            case "Aura":
+                return "Gain the " + s + " aura for " + p + " turns.";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

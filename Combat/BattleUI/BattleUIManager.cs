@@ -32,7 +32,7 @@ public class BattleUIManager : MonoBehaviour
     {
         adjustStartingPositionsPanel.SetActive(false);
         utility.EnableGameObjects(playerChoiceActions);
-        SetState(0);
+        //SetState(0);
     }
     public TMP_Text winConText;
     public void UpdateWinConString()

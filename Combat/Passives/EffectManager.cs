@@ -23,6 +23,7 @@ public class EffectManager : MonoBehaviour
         map.ApplyWeatherStartEffect(actor);
         map.ApplyTileStartEffect(actor);
         map.ApplyTerrainStartEffect(actor);
+        map.ApplyAuraEffects();
         passive.ApplyPassives(actor, passiveData, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
         status.ApplyBuffEffects(actor, statusData, "Start");
@@ -41,6 +42,7 @@ public class EffectManager : MonoBehaviour
         map.ApplyWeatherEndEffect(actor);
         map.ApplyTileEndEffect(actor);
         map.EndTurnOnInteractable(actor);
+        map.ApplyAuraEffects();
         passive.ApplyPassives(actor, passiveData, "End", map);
         status.ApplyBuffEffects(actor, statusData, "End");
         status.ApplyEffects(actor, statusData, "End");

@@ -220,10 +220,22 @@ public class SkillEffect : ScriptableObject
                 target.UpdateAttack(level * (int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
                 break;
             case "TempDefense%":
-                target.UpdateTempDefense((int.Parse(effectSpecifics) * target.GetBaseAttack()) / basicDenominator);
+                int tDefPChange = level * (int.Parse(effectSpecifics) * target.GetBaseDefense()) / basicDenominator;
+                // Positive boosts always increase stat by at least 1.
+                if (int.Parse(effectSpecifics) > 0)
+                {
+                    tDefPChange = Mathf.Max(1, tDefPChange);
+                }
+                target.UpdateTempDefense(tDefPChange);
                 break;
             case "Defense%":
-                target.UpdateDefense(level * int.Parse(effectSpecifics) * target.GetBaseDefense() / basicDenominator);
+                int defPChange = level * (int.Parse(effectSpecifics) * target.GetBaseDefense()) / basicDenominator;
+                // Positive boosts always increase stat by at least 1.
+                if (int.Parse(effectSpecifics) > 0)
+                {
+                    defPChange = Mathf.Max(1, defPChange);
+                }
+                target.UpdateDefense(defPChange);
                 break;
             case "Skill":
                 // Add an active skill.

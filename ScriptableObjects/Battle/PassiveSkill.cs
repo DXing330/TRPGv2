@@ -294,20 +294,20 @@ public class PassiveSkill : SkillEffect
         return true;
     }
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.
-    public bool CheckBattleConditions(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    public bool CheckBattleConditions(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map)
     {
         string[] conditions = condition.Split(",");
         string[] specifics = conditionSpecifics.Split(",");
         for (int i = 0; i < conditions.Length; i++)
         {
-            if (!CheckBattleCondition(conditions[i], specifics[i], target, attacker, map, moveManager))
+            if (!CheckBattleCondition(conditions[i], specifics[i], target, attacker, map))
             {
                 return false;
             }
         }
         return true;
     }
-    public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map, MoveCostManager moveManager)
+    public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map)
     {
         switch (condition)
         {
@@ -360,9 +360,9 @@ public class PassiveSkill : SkillEffect
             case "Killing":
                 return attacker.GetAttack() >= target.GetDefense() + target.GetHealth();
             case "Distance":
-                return moveManager.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
+                return map.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
             case "Distance>":
-                return moveManager.DistanceBetweenActors(target, attacker) > int.Parse(conditionSpecifics);
+                return map.DistanceBetweenActors(target, attacker) > int.Parse(conditionSpecifics);
             case "Sprite":
                 return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
             case "Health":
@@ -645,5 +645,44 @@ public class PassiveSkill : SkillEffect
                 break;
         }
         return affected;
+    }
+    // Other passive-like things can borrow the passive to apply their effects
+    // For example an aura can borrow this so all the passive conditions are in 1 place.
+    protected bool CheckAuraCondition(AuraEffect aura, TacticActor actor, BattleMap map)
+    {
+        // Check if already triggered.
+        if (aura.AlreadyTriggered(actor)){return false;}
+        // Check if the aura team.
+        if (!aura.TeamCheck(actor)){return false;}
+        // Check the aura tiles.
+        if (!aura.ActorInAura(actor, map)){return false;}
+        // Check the aura conditions.
+        if (!CheckStartEndCondition(aura.condition, aura.conditionSpecifics, actor, map)){return false;}
+        return true;
+    }
+    protected void TriggerAuraEffect(AuraEffect aura, TacticActor actor, BattleMap map)
+    {
+        if (!aura.TriggerAura()){return;}
+        if (CheckAuraCondition(aura, actor, map))
+        {
+            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " is affected by " + aura.GetAuraName() + ".");
+            map.combatLog.AddDetailedLogs(map.detailViewer.ReturnAuraDetails(aura));
+            AffectActor(actor, aura.effect, aura.effectSpecifics);
+            aura.ActorTriggersAura(actor);
+        }
+    }
+    protected void TriggerAuraEffects(List<AuraEffect> allAura, TacticActor actor, BattleMap map)
+    {
+        for (int i = 0; i < allAura.Count; i++)
+        {
+            TriggerAuraEffect(allAura[i], actor, map);
+        }
+    }
+    public void TriggerAllAuraEffects(List<AuraEffect> allAura, List<TacticActor> actors, BattleMap map)
+    {
+        for (int i = 0; i < actors.Count; i++)
+        {
+            TriggerAuraEffects(allAura, actors[i], map);
+        }
     }
 }

@@ -8,6 +8,7 @@ using UnityEngine;
 public class BattleMap : MapManager
 {
     public MapPatternLocations mapPatterns;
+    public StatusDetailViewer detailViewer;
     public string weather;
     public TerrainPassivesList weatherPassives;
     public void ApplyWeatherStartEffect(TacticActor actor)
@@ -842,6 +843,39 @@ public class BattleMap : MapManager
         }
         return false;
     }
+    public StatDatabase auraData;
+    public List<AuraEffect> auras;
+    public void RemoveAura(AuraEffect aura)
+    {
+        auras.Remove(aura);
+        aura = null;
+    }
+    public void UpdateAuraLocations()
+    {
+        for (int i = auras.Count - 1; i >= 0; i--)
+        {
+            auras[i].UpdateLocation();
+        }
+    }
+    // Later we can deal with adding custom auras.
+    public void AddAura(TacticActor auraUser, int duration, string auraName)
+    {
+        AuraEffect newAura = new AuraEffect();
+        newAura.InitializeAura(auraUser, duration, auraData.ReturnValue(auraName));
+        auras.Add(newAura);
+    }
+    public void AuraNextRound()
+    {
+        for (int i = auras.Count - 1; i >= 0; i--)
+        {
+            auras[i].NextRound(this);
+        }
+    }
+    public void ApplyAuraEffects()
+    {
+        UpdateAuraLocations();
+        passiveEffect.TriggerAllAuraEffects(auras, battlingActors, this);
+    }
     public StatDatabase delayedEffectData;
     public List<string> delayedEffects;
     public List<int> delayedEffectTiles;
@@ -1555,6 +1589,15 @@ public class BattleMap : MapManager
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainMovingEffect(actor, tileNumber);
         ApplyInteractableEffect(actor, tileNumber);
+        // Check if the actor moved into any auras.
+        // Check if the actor's aura moved into any actors.
+        ApplyAuraEffects();
+        // You can die while moving now, due to auras dealing damage.
+        if (actor.GetHealth() <= 0)
+        {
+            actor.ResetActions();
+            actor.movement = 0;
+        }
         return false;
     }
 
@@ -1676,6 +1719,7 @@ public class BattleMap : MapManager
             ChangeTEffect(removedEffects[i], "");
         }
         IncrementDelayedEffects();
+        AuraNextRound();
         UpdateMap();
     }
 }

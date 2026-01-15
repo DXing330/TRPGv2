@@ -208,6 +208,8 @@ public class SceneMover : MonoBehaviour
 
     public void ReturnFromBattle(int victory = 0)
     {
+        // Reset the spawn patterns after battle, not before.
+        battleState.ResetSpawnPatterns();
         // If you die during the roguelike, then reset.
         if (victory != 0 && rogueLike)
         {

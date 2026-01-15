@@ -114,6 +114,7 @@ public class BattleState : SavedState
     {
         spawnPattern = newInfo;
         int indexOf = allStartingFormations.IndexOf(spawnPattern);
+        Debug.Log(indexOf);
         if (indexOf < 0)
         {
             ResetSpawnPatterns();
@@ -123,6 +124,9 @@ public class BattleState : SavedState
             SetAllySpawnPattern(p1StartingFormations[indexOf]);
             SetEnemySpawnPattern(p2StartingFormations[indexOf]);
         }
+        Save();
+        Debug.Log(spawnPattern);
+        Debug.Log(allySpawnPattern);
     }
     public List<string> p1StartingFormations;
     public List<string> p2StartingFormations;
@@ -178,7 +182,6 @@ public class BattleState : SavedState
     public void ResetStats()
     {
         ResetWeather();
-        ResetSpawnPatterns();
         SetNewAlternateWinCondition();
     }
 
