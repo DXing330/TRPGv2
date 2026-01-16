@@ -20,6 +20,7 @@ public class MoveCostManager : MonoBehaviour
     public void SetMapElevations(List<int> newInfo)
     {
         mapElevations = new List<int>(newInfo);
+        actorPathfinder.SetElevations(mapElevations);
     }
     // You can move through teammates but not enemies?
     public List<string> teamInfo;
@@ -27,7 +28,8 @@ public class MoveCostManager : MonoBehaviour
     {
         teamInfo = newInfo;
     }
-    public StatDatabase allMoveCosts; // Refactor how move costs are determined.
+    public StatDatabase allMoveCosts;
+    // Current move cost should only be used to initialize actor pathfinder move costs, after that always rely on actorpathfinder for distances.
     public List<int> currentMoveCosts;
     public void UpdateCurrentMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
@@ -47,7 +49,6 @@ public class MoveCostManager : MonoBehaviour
             {
                 currentMoveCosts.Add(int.Parse(value));
             }
-            currentMoveCosts[i] += Mathf.Abs(mapElevations[i]) / 2;
         }
         List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();
@@ -92,16 +93,27 @@ public class MoveCostManager : MonoBehaviour
 
     public int MoveCostOfTile(int tileIndex)
     {
-        return currentMoveCosts[tileIndex];
+        return actorPathfinder.GetCurrentMoveCosts()[tileIndex];
     }
 
-    public List<int> GetPrecomputedPath(int startIndex, int endIndex)
+    protected int ClosestAdjacentTile(int tile)
+    {
+        return actorPathfinder.ClosestAdjacentTile(tile);
+    }
+
+    public List<int> GetPrecomputedPath(int startIndex, int endIndex, bool AI = false)
     {
         moveCost = 0;
+        // If AI then the AI might bug out if you path directly to the tile, since there might not be a path to the actor instead path to adjacent tile with the smallest distance.
+        if (AI && actorPathfinder.GetPreviousTile(endIndex) < 0)
+        {
+            endIndex = ClosestAdjacentTile(endIndex);
+        }
         List<int> path = actorPathfinder.GetPrecomputedPath(startIndex, endIndex);
+        List<int> mvCst = actorPathfinder.GetCurrentMoveCosts();
         for (int i = 0; i < path.Count; i++)
         {
-            moveCost += currentMoveCosts[path[i]];
+            moveCost += mvCst[path[i]];
         }
         return path;
     }
@@ -109,9 +121,10 @@ public class MoveCostManager : MonoBehaviour
     public int MoveCostOfPath(List<int> path)
     {
         moveCost = 0;
+        List<int> mvCst = actorPathfinder.GetCurrentMoveCosts();
         for (int i = 0; i < path.Count; i++)
         {
-            moveCost += currentMoveCosts[path[i]];
+            moveCost += mvCst[path[i]];
         }
         return moveCost;
     }
@@ -394,7 +407,7 @@ public class MoveCostManager : MonoBehaviour
     public void ApplyMovePassiveEffects(TacticActor actor, int location, BattleMap map)
     {
         // Updates the combat log when moving.
-        map.ApplyMovingTileEffect(actor, location);
+        map.ApplyMovingTileEffect(actor, location, this);
         List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();
         //int location = mover.GetLocation();

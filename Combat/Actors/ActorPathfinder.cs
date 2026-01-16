@@ -12,7 +12,7 @@ public class ActorPathfinder : MapPathfinder
         ResetDistances(startIndex);
         for (int i = 0; i < moveCosts.Count-1; i++)
         {
-            DeepCheckClosestTile(moveCosts);
+            DeepCheckClosestTile(moveCosts, true);
         }
         return new List<int>(distances);
     }
@@ -25,6 +25,7 @@ public class ActorPathfinder : MapPathfinder
         int nextTile = -1;
         for (int i = 0; i < distances.Count; i++)
         {
+            // previousTiles[path[i]] is -1 sometimes.
             nextTile = previousTiles[path[i]];
             if (nextTile == startIndex){break;}
             path.Add(nextTile);
@@ -32,7 +33,7 @@ public class ActorPathfinder : MapPathfinder
         return path;
     }
 
-    protected int DeepCheckClosestTile(List<int> moveCosts)
+    protected int DeepCheckClosestTile(List<int> moveCosts, bool elevations = false)
     {
         int closestTile = heap.Pull();
         if (closestTile < 0){return -1;}
@@ -40,10 +41,16 @@ public class ActorPathfinder : MapPathfinder
         int moveCost = 1;
         for (int i = 0; i < adjacentTiles.Count; i++)
         {
+            // Deal with elevation costs here.
             moveCost = moveCosts[adjacentTiles[i]];
-            if (distances[closestTile]+moveCost < distances[adjacentTiles[i]])
+            if (elevations)
             {
-                distances[adjacentTiles[i]] = distances[closestTile]+moveCost;
+                moveCost += GetElevationDifference(closestTile, adjacentTiles[i]) / 2;
+            }
+            if (distances[closestTile] + moveCost < distances[adjacentTiles[i]])
+            {
+                distances[adjacentTiles[i]] = distances[closestTile] + moveCost;
+                currentMoveCosts[adjacentTiles[i]] = moveCost;
                 previousTiles[adjacentTiles[i]] = closestTile;
                 heap.AddNodeWeight(adjacentTiles[i], distances[adjacentTiles[i]]);
             }
@@ -60,7 +67,7 @@ public class ActorPathfinder : MapPathfinder
         {
             distance = heap.PeekWeight();
             if (distance > moveRange){break;}
-            tiles.Add(DeepCheckClosestTile(moveCosts));
+            tiles.Add(DeepCheckClosestTile(moveCosts, true));
         }
         tiles.RemoveAt(0);
         tiles.Sort();
@@ -82,6 +89,7 @@ public class ActorPathfinder : MapPathfinder
         {
             distance = heap.PeekWeight();
             if (distance > moveRange){break;}
+            // Attacking ignores elevation move costs, but has its own elevation calculation separately.
             tiles.Add(DeepCheckClosestTile(moveCosts));
         }
         // Check what tiles you can attack based on the tiles you can move to.

@@ -122,6 +122,7 @@ public class ActorAI : ScriptableObject
         return path;
     }
 
+    // This doesn't path to a actor, it paths to a tile.
     public List<int> FindPathToTile(TacticActor actor, BattleMap map, MoveCostManager moveManager, int tile)
     {
         int originalLocation = actor.GetLocation();
@@ -152,12 +153,13 @@ public class ActorAI : ScriptableObject
         {
             currentActor.SetTarget(GetClosestEnemy(map.battlingActors, currentActor, moveManager));
         }
+        // Should not path to the target, instead path to the closest tile adjacent to the target.
         int target = currentActor.GetTarget().GetLocation();
         if (currentActor.GetAttackRange() <= 1)
         {
             target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target, currentActor.GetWeaponReach());
         }
-        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, target);
+        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, target, true);
         List<int> path = new List<int>();
         int pathCost = 0;
         if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), map)) { return path; }
@@ -213,7 +215,7 @@ public class ActorAI : ScriptableObject
         List<int> possibleIndices = new List<int>();
         for (int i = 0; i < enemies.Count; i++)
         {
-            moveManager.GetPrecomputedPath(currentActor.GetLocation(), enemies[i].GetLocation());
+            moveManager.GetPrecomputedPath(currentActor.GetLocation(), enemies[i].GetLocation(), true);
             if (moveManager.moveCost < distance)
             {
                 distance = moveManager.moveCost;

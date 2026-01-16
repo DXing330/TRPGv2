@@ -149,6 +149,8 @@ public class PassiveSkill : SkillEffect
                 return map.ReturnElevation(currentTile) <= int.Parse(specifics);
             case "Elevation>":
                 return map.ReturnElevation(currentTile) >= int.Parse(specifics);
+            case "Elevation":
+                return map.ReturnElevation(currentTile) == int.Parse(specifics);
         }
         return true;
     }
@@ -227,11 +229,11 @@ public class PassiveSkill : SkillEffect
                 return actor.BuffExists(conditionSpecifics);
             case "StatusCount>":
                 return actor.GetStatuses().Count > int.Parse(conditionSpecifics);
-            case "Adjacent Ally Sprite":
+            case "AdjacentAllySprite":
                 return map.AllyAdjacentWithSpriteName(actor, conditionSpecifics);
-            case "Adjacent Ally":
+            case "AdjacentAlly":
                 return map.AllyAdjacentToActor(actor);
-            case "Adjacent Ally<>":
+            case "AdjacentAlly<>":
                 return !map.AllyAdjacentToActor(actor);
             case "AdjacentAllyCount>":
                 return map.GetAdjacentAllies(actor).Count > int.Parse(conditionSpecifics);
@@ -243,7 +245,7 @@ public class PassiveSkill : SkillEffect
                 return map.AllAllies(actor).Count < map.AllEnemies(actor).Count;
             case "Ally>Enemy":
                 return map.AllAllies(actor).Count > map.AllEnemies(actor).Count;
-            case "Ally=Enemy":
+            case "AllyEqualsEnemy":
                 return map.AllAllies(actor).Count == map.AllEnemies(actor).Count;
             case "EnemyCount<":
                 return map.AllEnemies(actor).Count < int.Parse(conditionSpecifics);
@@ -283,7 +285,7 @@ public class PassiveSkill : SkillEffect
             case "AverageHP<":
             return actor.GetHealth() < map.AverageActorHealth();
             // Too hard to activate, this should be a win battle condition or something.
-            /*case "AverageHP=":
+            /*case "AverageHP":
             return actor.GetHealth() == map.AverageActorHealth();*/
             case "Grappling":
             return actor.Grappling();
@@ -433,7 +435,7 @@ public class PassiveSkill : SkillEffect
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
             case "DirectionD":
                 return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) == int.Parse(conditionSpecifics);
-            case "Elevation=A":
+            case "ElevationEqualsA":
                 return map.ReturnElevation(attacker.GetLocation()) == map.ReturnElevation(target.GetLocation());
             case "Elevation>A":
                 return map.ReturnElevation(attacker.GetLocation()) > map.ReturnElevation(target.GetLocation());
@@ -469,7 +471,7 @@ public class PassiveSkill : SkillEffect
                 return map.AllAllies(attacker).Count < map.AllEnemies(attacker).Count;
             case "Ally>EnemyA":
                 return map.AllAllies(attacker).Count > map.AllEnemies(attacker).Count;
-            case "Ally=EnemyA":
+            case "AllyEqualsEnemyA":
                 return map.AllAllies(attacker).Count == map.AllEnemies(attacker).Count;
             case "EnemyCount<A":
                 return map.AllEnemies(attacker).Count < int.Parse(conditionSpecifics);

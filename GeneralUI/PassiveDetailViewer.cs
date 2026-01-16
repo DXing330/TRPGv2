@@ -261,14 +261,14 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if there are less allies than enemies";
             case "Ally>Enemy":
                 return " if there are more allies than enemies";
-            case "Ally=Enemy":
+            case "AllyEqualsEnemy":
                 return " if there are equal allies and enemies";
             case "Ally<EnemyA":
-                return " if the attack has less allies than enemies";
+                return " if the attacker has less allies than enemies";
             case "Ally>EnemyA":
-                return " if the attack has more allies than enemies";
-            case "Ally=EnemyA":
-                return " if the attack has equal allies and enemies";
+                return " if the attacker has more allies than enemies";
+            case "AllyEqualsEnemyA":
+                return " if the attacker has equal allies and enemies";
             case "EnemyCount<":
                 return " if there are less than " + specifics + " enemies left";
             case "EnemyCount>":
@@ -353,13 +353,13 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the attacker is on lower elevation";
             case "Elevation>A":
                 return " if the attacker is on higher elevation";
-            case "Elevation=A":
+            case "ElevationSameA":
                 return " if the attacker is on equal elevation";
             case "Elevation<":
                 return " if tile elevation is less than " + specifics;
             case "Elevation>":
                 return " if tile elevation is more than " + specifics;
-            case "Elevation=":
+            case "Elevation":
                 return " if tile elevation is equal to " + specifics;
             case "Distance":
                 return " if within " + specifics + " tile(s)";

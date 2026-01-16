@@ -330,27 +330,27 @@ public class SkillEffect : ScriptableObject
                 target.BreakGrapple();
                 break;
             case "BaseDamageResistance":
-                string[] baseResist = effectSpecifics.Split(">>");
+                string[] baseResist = effectSpecifics.Split("Equals");
                 target.UpdateBaseDamageResist(baseResist[0], SafeParseInt(baseResist[1]));
                 break;
             case "CurrentDamageResistance":
-                string[] cResist = effectSpecifics.Split(">>");
+                string[] cResist = effectSpecifics.Split("Equals");
                 target.UpdateCurrentDamageResist(cResist[0], SafeParseInt(cResist[1]));
                 break;
             case "BaseElementalBonus":
-                string[] baseBonus = effectSpecifics.Split(">>");
+                string[] baseBonus = effectSpecifics.Split("Equals");
                 target.UpdateElementalDamageBonus(baseBonus[0], SafeParseInt(baseBonus[1]));
                 break;
             case "ElementalDamageBonus":
-                string[] cBonus = effectSpecifics.Split(">>");
+                string[] cBonus = effectSpecifics.Split("Equals");
                 target.UpdateCurrentElementalDamageBonus(cBonus[0], SafeParseInt(cBonus[1]));
                 break;
             case "ScalingElementalBonus":
-                string[] scalingEB = effectSpecifics.Split(">>");
+                string[] scalingEB = effectSpecifics.Split("Equals");
                 target.UpdateElementalDamageBonus(scalingEB[0], GetScalingInt(target, scalingEB[1], scalingEB[2], scalingEB[3]));
                 break;
             case "ScalingElementalResist":
-                string[] scalingER = effectSpecifics.Split(">>");
+                string[] scalingER = effectSpecifics.Split("Equals");
                 target.UpdateBaseDamageResist(scalingER[0], GetScalingInt(target, scalingER[1], scalingER[2], scalingER[3]));
                 break;
             case "VigorEfficiency":

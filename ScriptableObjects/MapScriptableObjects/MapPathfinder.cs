@@ -8,6 +8,22 @@ public class MapPathfinder : ScriptableObject
 {
     public Heap heap;
     public MapUtility mapUtility;
+    public int ClosestAdjacentTile(int tile)
+    {
+        List<int> adjacent = mapUtility.AdjacentTiles(tile, mapSize);
+        int dist = heap.bigInt;
+        int cTile = -1;
+        for (int i = 0; i < adjacent.Count; i++)
+        {
+            int nDist = currentMoveCosts[adjacent[i]];
+            if (nDist < dist)
+            {
+                dist = nDist;
+                cTile = adjacent[i];
+            }
+        }
+        return cTile;
+    }
     public int mapSize;
     public void SetMapSize(int newSize)
     {
@@ -15,8 +31,35 @@ public class MapPathfinder : ScriptableObject
         ResetMoveCosts();
     }
     public int GetMapSize(){return mapSize;}
+    // Keep track of the elevation of each tile for additional move cost calculations.
+    public List<int> elevations;
+    protected void ResetElevations()
+    {
+        elevations.Clear();
+    }
+    public void DebugElevations()
+    {
+        for (int i = 0; i < elevations.Count; i++)
+        {
+            Debug.Log(i + " : " + elevations[i]);
+        }
+    }
+    protected int GetElevation(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= elevations.Count){return 0;}
+        return elevations[tileNumber];
+    }
+    public void SetElevations(List<int> newElevations)
+    {
+        elevations = new List<int>(newElevations);
+    }
+    protected int GetElevationDifference(int tile1, int tile2)
+    {
+        return Mathf.Abs(GetElevation(tile1) - GetElevation(tile2));
+    }
     // Keep track of the movecost of each tile.
     public List<int> moveCosts;
+    // Later we can also track borders?
     protected void ResetMoveCosts()
     {
         moveCosts.Clear();
@@ -39,8 +82,15 @@ public class MapPathfinder : ScriptableObject
     }
     // Keep track of the distances to each tile.
     public List<int> distances;
+    public List<int> currentMoveCosts;
+    public List<int> GetCurrentMoveCosts(){return currentMoveCosts;}
     // Keep track of the tile that leads into each tile.
     public List<int> previousTiles;
+    public int GetPreviousTile(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= previousTiles.Count){return -1;}
+        return previousTiles[tileNumber];
+    }
 
     public List<int> StraightPathToTile(int start, int end)
     {
@@ -91,16 +141,19 @@ public class MapPathfinder : ScriptableObject
         ResetHeap();
         previousTiles.Clear();
         distances.Clear();
+        currentMoveCosts.Clear();
         for (int i = 0; i < mapSize*mapSize; i++)
         {
             previousTiles.Add(-1);
             if (i == startTile)
             {
                 distances.Add(0);
+                currentMoveCosts.Add(0);
                 heap.AddNodeWeight(startTile, 0);
                 continue;
             }
             distances.Add(heap.bigInt);
+            currentMoveCosts.Add(heap.bigInt);
         }
     }
 

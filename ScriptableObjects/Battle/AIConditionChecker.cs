@@ -52,10 +52,10 @@ public class AIConditionChecker : ScriptableObject
                 return !actor.tempPassives.Contains(specifics);
             case "SkillExists":
                 return actor.SkillExists(specifics);
-            case "TempActiveCount>=":
-                return actor.GetTempActives().Count >= int.Parse(specifics);
-            case "TempActiveCount<=":
-                return actor.GetTempActives().Count <= int.Parse(specifics);
+            case "TempActiveCount>":
+                return actor.GetTempActives().Count > int.Parse(specifics);
+            case "TempActiveCount<":
+                return actor.GetTempActives().Count < int.Parse(specifics);
             case "AdjacentActorCount<":
                 return map.GetAdjacentActors(actor.GetLocation()).Count < int.Parse(specifics);
             case "AdjacentActorCount>":
@@ -70,14 +70,10 @@ public class AIConditionChecker : ScriptableObject
                 return map.GetAdjacentEnemies(actor).Count < int.Parse(specifics);
             case "AdjacentEnemyCount":
                 return map.GetAdjacentEnemies(actor).Count == int.Parse(specifics);
-            case "AdjacentEnemyCount>=":
-                return map.GetAdjacentEnemies(actor).Count >= int.Parse(specifics);
-            case "AdjacentEnemyCount<=":
-                return map.GetAdjacentEnemies(actor).Count <= int.Parse(specifics);
-            case "AttackableEnemyCount>=":
-                return map.GetAttackableEnemies(actor).Count >= int.Parse(specifics);
-            case "AttackableEnemyCount<=":
-                return map.GetAttackableEnemies(actor).Count <= int.Parse(specifics);
+            case "AttackableEnemyCount>":
+                return map.GetAttackableEnemies(actor).Count > int.Parse(specifics);
+            case "AttackableEnemyCount<":
+                return map.GetAttackableEnemies(actor).Count < int.Parse(specifics);
             case "Shootable":
                 return map.ShootableEnemies(actor, int.Parse(specifics));
             case "MaxEnergy":
@@ -99,8 +95,8 @@ public class AIConditionChecker : ScriptableObject
                 return specifics == map.GetTime();
             case "Time<>":
                 return specifics != map.GetTime();
-            case "Energy<=":
-                return actor.GetEnergy() <= int.Parse(specifics);
+            case "Energy<":
+                return actor.GetEnergy() < int.Parse(specifics);
             case "Round":
                 switch (specifics)
                 {

@@ -565,11 +565,6 @@ public class BattleManager : MonoBehaviour
     {
         selectedActor = map.GetActorOnTile(tileNumber);
         if (selectedActor == null){return;}
-        if (selectedActor == turnActor)
-        {
-            SetState("Move");
-            return;
-        }
         else
         {
             RefreshUI();
@@ -972,10 +967,10 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = 0; i < actionsLeft; i++)
         {
+            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
             // Find a new target if needed.
             if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0)
             {
-                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
                 if (closestEnemy == null)
                 {
@@ -990,6 +985,7 @@ public class BattleManager : MonoBehaviour
             // Otherwise move.
             else
             {
+                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
                 StartCoroutine(MoveAlongPath(turnActor, path));
                 if (longDelays)
@@ -1029,11 +1025,11 @@ public class BattleManager : MonoBehaviour
     {
         for (int i = 0; i < actionsLeft; i++)
         {
+            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
             // Find a new target if needed.
             // Don't hit your allies even if they hit you.
             if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0 || turnActor.GetTarget().GetTeam() == turnActor.GetTeam())
             {
-                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
                 if (closestEnemy == null)
                 {
