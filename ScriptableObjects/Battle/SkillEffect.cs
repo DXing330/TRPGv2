@@ -379,7 +379,7 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Disarm":
                 string disarmedWeapon = target.Disarm();
-                // TODO: Try to remove any passives that the weapon granted and refresh the target's passives.
+                // TODO Try to remove any passives that the weapon granted and refresh the target's passives.
                 break;
         }
     }

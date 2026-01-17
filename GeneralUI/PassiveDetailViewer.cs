@@ -171,7 +171,7 @@ public class PassiveDetailViewer : MonoBehaviour
 
     public string ReturnAuraDetails(AuraEffect aura)
     {
-        string description = aura.GetAuraName() + ":";
+        string description = aura.GetAuraName() + " (" + aura.GetTeamTarget() + ") :\n";
         description += PassiveEffect(aura.effect, aura.effectSpecifics, aura.target);
         description += PassiveConditionText(aura.condition, aura.conditionSpecifics);
         return description;

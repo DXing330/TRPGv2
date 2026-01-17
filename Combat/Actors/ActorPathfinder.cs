@@ -7,12 +7,12 @@ using UnityEngine;
 public class ActorPathfinder : MapPathfinder
 {
     public List<int> path;
-    public List<int> FindPaths(int startIndex, List<int> moveCosts)
+    public List<int> FindPaths(int startIndex, List<int> moveCosts, bool elevations = true)
     {
         ResetDistances(startIndex);
         for (int i = 0; i < moveCosts.Count-1; i++)
         {
-            DeepCheckClosestTile(moveCosts, true);
+            DeepCheckClosestTile(moveCosts, elevations);
         }
         return new List<int>(distances);
     }
@@ -25,6 +25,11 @@ public class ActorPathfinder : MapPathfinder
         int nextTile = -1;
         for (int i = 0; i < distances.Count; i++)
         {
+            if (previousTiles[path[i]] < 0)
+            {
+                path.Clear();
+                break;
+            }
             // previousTiles[path[i]] is -1 sometimes.
             nextTile = previousTiles[path[i]];
             if (nextTile == startIndex){break;}

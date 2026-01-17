@@ -150,6 +150,7 @@ public class AttackManager : ScriptableObject
     }
     protected void CheckMapPassives(TacticActor attacker, TacticActor defender, BattleMap map, bool forAttacker = true, bool forDefender = true)
     {
+        CheckAuraEffects(defender, attacker, map);
         CheckTerrainPassives(defender, attacker, map, forAttacker, forDefender);
         CheckTEffectPassives(defender, attacker, map, forAttacker, forDefender);
         CheckWeatherPassives(defender, attacker, map, forAttacker, forDefender);
@@ -337,84 +338,98 @@ public class AttackManager : ScriptableObject
         }
     }
 
+    protected void ActivatePassiveEffect(string passiveName, List<string> passiveStats, TacticActor target, TacticActor attacker, BattleMap map)
+    {
+        switch (passiveStats[3])
+        {
+            case "Advantage":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + advantage+"->";
+            advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
+            passiveEffectString += advantage;
+            break;
+            case "Damage%":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + damageMultiplier+"->";
+            damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
+            if (damageMultiplier < 0)
+            {
+                damageMultiplier = 0;
+            }
+            passiveEffectString += damageMultiplier;
+            break;
+            case "AttackValue":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + baseDamage+"->";
+            baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
+            passiveEffectString += baseDamage;
+            break;
+            case "DefenseValue":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + defenseValue + "->";
+            defenseValue = passive.AffectInt(defenseValue, passiveStats[4], passiveStats[5]);
+            passiveEffectString += defenseValue;
+            break;
+            case "HitChance":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + hitChance+"->";
+            hitChance = passive.AffectInt(hitChance, passiveStats[4], passiveStats[5]);
+            passiveEffectString += hitChance;
+            break;
+            case "Dodge":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + dodgeChance+"->";
+            dodgeChance = passive.AffectInt(dodgeChance, passiveStats[4], passiveStats[5]);
+            passiveEffectString += dodgeChance;
+            break;
+            case "CritChance":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + critChance+"->";
+            critChance = passive.AffectInt(critChance, passiveStats[4], passiveStats[5]);
+            passiveEffectString += critChance;
+            break;
+            case "CritDamage":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + critDamage+"->";
+            critDamage = passive.AffectInt(critDamage, passiveStats[4], passiveStats[5]);
+            passiveEffectString += critDamage;
+            break;
+            case "Target":
+            passive.AffectActor(target, passiveStats[4], passiveStats[5]);
+            break;
+            case "Attacker":
+            passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
+            break;
+            case "Map":
+            map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
+            break;
+            case "ElementalBonusDamage":
+            string[] eBD = passiveStats[5].Split(">>");
+            ElementalBonusDamage(attacker, target, int.Parse(eBD[1]), eBD[0], map);
+            break;
+            case "ElementalReflectDamage":
+            string[] eRD = passiveStats[5].Split(">>");
+            ElementalBonusDamage(target, attacker, int.Parse(eRD[1]), eRD[0], map);
+            break;
+        }
+    }
+
     protected void ApplyPassiveEffect(string pData, TacticActor target, TacticActor attacker, BattleMap map)
     {
-        List<string> passiveStats = pData.Split("|").ToList();
+        List<string> pStats = pData.Split("|").ToList();
         string passiveName = passiveData.ReturnKeyFromValue(pData);
-        if (passive.CheckBattleConditions(passiveStats[1], passiveStats[2], target, attacker, map))
+        if (passive.CheckBattleConditions(pStats[1], pStats[2], target, attacker, map))
         {
-            switch (passiveStats[3])
-            {
-                case "Advantage":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+advantage+"->";
-                advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
-                passiveEffectString += advantage;
-                break;
-                case "Damage%":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+damageMultiplier+"->";
-                damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
-                if (damageMultiplier < 0)
-                {
-                    damageMultiplier = 0;
-                }
-                passiveEffectString += damageMultiplier;
-                break;
-                case "AttackValue":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+baseDamage+"->";
-                baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
-                passiveEffectString += baseDamage;
-                break;
-                case "DefenseValue":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName + ";" + passiveStats[3] + ":" + defenseValue + "->";
-                defenseValue = passive.AffectInt(defenseValue, passiveStats[4], passiveStats[5]);
-                passiveEffectString += defenseValue;
-                break;
-                case "HitChance":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+hitChance+"->";
-                hitChance = passive.AffectInt(hitChance, passiveStats[4], passiveStats[5]);
-                passiveEffectString += hitChance;
-                break;
-                case "Dodge":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+dodgeChance+"->";
-                dodgeChance = passive.AffectInt(dodgeChance, passiveStats[4], passiveStats[5]);
-                passiveEffectString += dodgeChance;
-                break;
-                case "CritChance":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+critChance+"->";
-                critChance = passive.AffectInt(critChance, passiveStats[4], passiveStats[5]);
-                passiveEffectString += critChance;
-                break;
-                case "CritDamage":
-                passiveEffectString += "\n";
-                passiveEffectString += passiveName+";"+passiveStats[3]+":"+critDamage+"->";
-                critDamage = passive.AffectInt(critDamage, passiveStats[4], passiveStats[5]);
-                passiveEffectString += critDamage;
-                break;
-                case "Target":
-                passive.AffectActor(target, passiveStats[4], passiveStats[5]);
-                break;
-                case "Attacker":
-                passive.AffectActor(attacker, passiveStats[4], passiveStats[5]);
-                break;
-                case "Map":
-                map.ChangeTile(target.GetLocation(), passiveStats[4], passiveStats[5]);
-                break;
-                case "ElementalBonusDamage":
-                string[] eBD = passiveStats[5].Split(">>");
-                ElementalBonusDamage(attacker, target, int.Parse(eBD[1]), eBD[0], map);
-                break;
-                case "ElementalReflectDamage":
-                string[] eRD = passiveStats[5].Split(">>");
-                ElementalBonusDamage(target, attacker, int.Parse(eRD[1]), eRD[0], map);
-                break;
-            }
+            ActivatePassiveEffect(passiveName, pStats, target, attacker, map);
+        }
+    }
+
+    protected void ApplyAuraEffect(AuraEffect aura, TacticActor target, TacticActor attacker, BattleMap map)
+    {
+        List<string> pStats = aura.ReturnPassiveStats();
+        if (passive.CheckBattleConditions(pStats[1], pStats[2], target, attacker, map))
+        {
+            ActivatePassiveEffect(pStats[0], pStats, target, attacker, map);
         }
     }
 
@@ -476,6 +491,19 @@ public class AttackManager : ScriptableObject
         if (attackingPassive.Length > 1 && forAttacker)
         {
             ApplyPassiveEffect(attackingPassive, target, attacker, map);
+        }
+    }
+
+    // Always check for both.
+    protected void CheckAuraEffects(TacticActor target, TacticActor attacker, BattleMap map)
+    {
+        // Iterate through the auras.
+        for (int i = 0; i < map.auras.Count; i++)
+        {
+            if (map.auras[i].BattleTeamCheck(target, attacker, map))
+            {
+                ApplyAuraEffect(map.auras[i], target, attacker, map);
+            }
         }
     }
 }

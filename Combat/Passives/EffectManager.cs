@@ -43,6 +43,7 @@ public class EffectManager : MonoBehaviour
         map.ApplyTileEndEffect(actor);
         map.EndTurnOnInteractable(actor);
         map.ApplyAuraEffects();
+        map.AuraActorEndsTurn(actor);
         passive.ApplyPassives(actor, passiveData, "End", map);
         status.ApplyBuffEffects(actor, statusData, "End");
         status.ApplyEffects(actor, statusData, "End");

@@ -936,10 +936,6 @@ public class Dungeon : ScriptableObject
         partyLocations[partyLocation] = "";
         partyLocation = newLocation;
         partyLocations[partyLocation] = partySprite;
-        if (GoalTile(partyLocation))
-        {
-            // TODO: Pick up item/add party member.
-        }
         MoveEnemies();
         TryToSpawnEnemy();
         if (partyLocation == stairsDown){MoveFloors();}
@@ -1109,7 +1105,7 @@ public class Dungeon : ScriptableObject
     protected void MoveEnemies()
     {
         if (allEnemySprites.Count <= 0){return;}
-        pathfinder.FindPaths(partyLocation, moveCosts);
+        pathfinder.FindPaths(partyLocation, moveCosts, false);
         List<int> enemyPath = new List<int>();
         int currentEnemyLocation = -1;
         for (int i = allEnemySprites.Count-1; i >= 0; i--)

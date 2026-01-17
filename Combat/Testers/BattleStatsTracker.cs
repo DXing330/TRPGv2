@@ -13,9 +13,11 @@ public class BattleStatsTracker : MonoBehaviour
     {
         savedTracker.Load();
         savedTracker.AddToTracker(this);
+        savedTracker.Save();
     }
     public void LoadFromSavedTracker()
     {
+        savedTracker.Load();
         savedTracker.LoadToTracker(this);
     }
     // TRACKING STUFF
@@ -105,6 +107,7 @@ public class BattleStatsTracker : MonoBehaviour
                 return;
             }
         }
+        LoadFromSavedTracker();
         damageStatDisplay.InitializeDisplay(this);
     }
 }

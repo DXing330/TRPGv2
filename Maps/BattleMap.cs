@@ -845,6 +845,18 @@ public class BattleMap : MapManager
     }
     public StatDatabase auraData;
     public List<AuraEffect> auras;
+    public List<AuraEffect> ReturnActorAuras(TacticActor actor)
+    {
+        List<AuraEffect> actorAuras = new List<AuraEffect>();
+        for (int i = 0; i < auras.Count; i++)
+        {
+            if (auras[i].AuraOwner(actor))
+            {
+                actorAuras.Add(auras[i]);
+            }
+        }
+        return actorAuras;
+    }
     public void RemoveAura(AuraEffect aura)
     {
         auras.Remove(aura);
@@ -871,10 +883,40 @@ public class BattleMap : MapManager
             auras[i].NextRound(this);
         }
     }
+    public void AuraActorEndsTurn(TacticActor actor)
+    {
+        for (int i = auras.Count - 1; i >= 0; i--)
+        {
+            auras[i].ActorEndsTurn(this, actor);
+        }
+    }
     public void ApplyAuraEffects()
     {
         UpdateAuraLocations();
         passiveEffect.TriggerAllAuraEffects(auras, battlingActors, this);
+    }
+    [ContextMenu("Test Aura Highlights")]
+    public void HighlightSelectedActorAuras()
+    {
+        HighlightActorAuras(battleManager.GetSelectedActor());
+    }
+    public void HighlightAura(AuraEffect aura)
+    {
+        UpdateHighlights(aura.GetAuraTiles(this));
+    }
+    // TODO The UI should grab the list of all auras belonging to the acotr, and show them one by one, with the tiles highlighted and the effects listed for each aura.
+    public void HighlightActorAuras(TacticActor actor)
+    {
+        List<int> auraTiles = new List<int>();
+        // Highlight all auras tiles of the actor.
+        for (int i = 0; i < auras.Count; i++)
+        {
+            // Only do auras owned by the actor.
+            if (!auras[i].AuraOwner(actor)){continue;}
+            auraTiles.AddRange(auras[i].GetAuraTiles(this));
+        }
+        // Display.
+        UpdateHighlights(auraTiles);
     }
     public StatDatabase delayedEffectData;
     public List<string> delayedEffects;

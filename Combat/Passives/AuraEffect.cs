@@ -70,6 +70,10 @@ public class AuraEffect
         return actorAura > 0;
     }
     public TacticActor actor;
+    public bool AuraOwner(TacticActor nActor)
+    {
+        return actor == nActor;
+    }
     public int team;
     public int location;
     public void UpdateLocation()
@@ -81,11 +85,22 @@ public class AuraEffect
     }
     // Auras last for some amount of rounds/turns.
     public int duration;
+    public void ActorEndsTurn(BattleMap map, TacticActor eActor)
+    {
+        if (actor == null || actor.GetHealth() <= 0)
+        {
+            map.RemoveAura(this);
+        }
+        if (eActor == actor && duration <= 0)
+        {
+            map.RemoveAura(this);
+        }
+    }
     public void NextRound(BattleMap map)
     {
         triggeredActors.Clear();
         duration--;
-        if (duration < 0 || actor == null || actor.GetHealth() <= 0)
+        if (actor == null || actor.GetHealth() <= 0)
         {
             map.RemoveAura(this);
         }
@@ -95,16 +110,50 @@ public class AuraEffect
     public string GetAuraName(){return auraName;}
     // Ally -> same team, Enemy -> !same team
     public string teamTarget;
+    public string GetTeamTarget()
+    {
+        // A/D is always for attacker / defender
+        if (teamTarget.EndsWith("A"))
+        {
+            return teamTarget + "ttacker";
+        }
+        if (teamTarget.EndsWith("D"))
+        {
+            return teamTarget + "efender";
+        }
+        return teamTarget;
+    }
     public bool TeamCheck(TacticActor target)
     {
         switch (teamTarget)
         {
+            case "All":
+            return true;
             case "Enemy":
             return target.GetTeam() != team;
             case "Ally":
             return target.GetTeam() == team;
         }
         return false;
+    }
+    public bool BattleTeamCheck(TacticActor target, TacticActor attacker, BattleMap map)
+    {
+        bool attackerInside = ActorInAura(attacker, map);
+        bool targetInside = ActorInAura(target, map);
+        if (!targetInside && !attackerInside){return false;}
+        switch (teamTarget)
+        {
+            default:
+            return false;
+            case "EnemyA":
+            return attacker.GetTeam() != team && attackerInside;
+            case "EnemyD":
+            return target.GetTeam() != team && targetInside;
+            case "AllyA":
+            return attacker.GetTeam() == team && attackerInside;
+            case "AllyD":
+            return target.GetTeam() == team && targetInside;
+        }
     }
     // Circle, Cone, ELine
     public string shape;
@@ -118,8 +167,13 @@ public class AuraEffect
     public List<int> GetAuraTiles(BattleMap map)
     {
         int start = map.mapUtility.PointInDirection(location, actor.GetDirection(), map.mapSize);
-        List<int> tiles = map.mapUtility.GetTilesByShapeSpan(location, shape, span, map.mapSize);
-        return tiles;
+        switch (shape)
+        {
+            default:
+            return map.mapUtility.GetTilesByShapeSpan(location, shape, span, map.mapSize, start);
+            case "Cone":
+            return map.mapUtility.GetTilesByShapeSpan(start, shape, span, map.mapSize, location);
+        }
     }
     // Trigger auras apply whenever someone moves into them for the first time each round and meets the conditions, ex. Spirit Guardians.
     // Non trigger aura apply extra passive effects during battle if the actors meets the conditions, ex. Bernhardt.
@@ -150,4 +204,15 @@ public class AuraEffect
     public string target;
     public string effect;
     public string effectSpecifics;
+    public List<string> ReturnPassiveStats()
+    {
+        List<string> stats = new List<string>();
+        stats.Add(GetAuraName());
+        stats.Add(condition);
+        stats.Add(conditionSpecifics);
+        stats.Add(target);
+        stats.Add(effect);
+        stats.Add(effectSpecifics);
+        return stats;
+    }
 }

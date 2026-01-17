@@ -159,10 +159,10 @@ public class ActorAI : ScriptableObject
         {
             target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target, currentActor.GetWeaponReach());
         }
-        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, target, true);
         List<int> path = new List<int>();
         int pathCost = 0;
         if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), map)) { return path; }
+        List<int> fullPath = moveManager.GetPrecomputedPath(originalLocation, target, true);
         for (int i = fullPath.Count - 1; i >= 0; i--)
         {
             path.Insert(0, fullPath[i]);
@@ -215,7 +215,10 @@ public class ActorAI : ScriptableObject
         List<int> possibleIndices = new List<int>();
         for (int i = 0; i < enemies.Count; i++)
         {
-            moveManager.GetPrecomputedPath(currentActor.GetLocation(), enemies[i].GetLocation(), true);
+            moveManager.GetAllMoveCosts(currentActor, battlingActors);
+            List<int> path = moveManager.GetPrecomputedPath(currentActor.GetLocation(), enemies[i].GetLocation(), true);
+            // Unable to find a path means skip.
+            if (path.Count <= 0){continue;}
             if (moveManager.moveCost < distance)
             {
                 distance = moveManager.moveCost;

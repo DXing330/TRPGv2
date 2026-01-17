@@ -44,7 +44,7 @@ public class BattleUIManager : MonoBehaviour
     public int pinnedView = 0;
     public void ChangePinnedView(bool right = true)
     {
-        pinnedView = utility.ChangePageV2(pinnedView, right, 1, pinnedViewObjects.Count);
+        pinnedView = utility.ChangeIndex(pinnedView, right, pinnedViewObjects.Count - 1, 0);
         UpdatePinnedView();
     }
     public void UpdatePinnedView()

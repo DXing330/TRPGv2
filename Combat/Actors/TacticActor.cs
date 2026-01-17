@@ -203,11 +203,11 @@ public class TacticActor : ActorStats
             return;
         }
         // Immunity blocks one negative change.
-            if (mentalState == immuneMentalState)
-            {
-                mentalState = "";
-                return;
-            }
+        if (mentalState == immuneMentalState)
+        {
+            mentalState = "";
+            return;
+        }
         mentalState = newInfo;
     }
     public string GetMentalState(){ return mentalState; }

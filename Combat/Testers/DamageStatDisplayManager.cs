@@ -24,11 +24,14 @@ public class DamageStatDisplayManager : MonoBehaviour
     public List<DamageStatDisplay> actorDisplays;
     public TMP_Text winRateText;
     public GameObject winRatioBar;
+    public float winRatio;
+    public int leftSideWins;
+    public int totalWins;
     public void SetWinningTeam(List<int> winners)
     {
         // Change the ratio based on how much team 0 won.
-        int leftSideWins = 0;
-        int totalWins = winners.Count;
+        leftSideWins = 0;
+        totalWins = winners.Count;
         for (int i = 0; i < winners.Count; i++)
         {
             if (winners[i] == 0)
@@ -36,7 +39,7 @@ public class DamageStatDisplayManager : MonoBehaviour
                 leftSideWins++;
             }
         }
-        float winRatio = (float)leftSideWins / (float)totalWins;
+        winRatio = (float) leftSideWins / (float) totalWins;
         if (winRatio <= 0f)
         {
             winRateText.text = "0%";
@@ -47,7 +50,7 @@ public class DamageStatDisplayManager : MonoBehaviour
         }
         else
         {
-            winRateText.text = (winRatio*100).ToString().Substring(0, 2)+"%";
+            winRateText.text = (winRatio * 100).ToString().Substring(0, 2)+"%";
         }
         winRatioBar.transform.localScale = new Vector3(winRatio, 1f, 0f);
     }
