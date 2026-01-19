@@ -22,6 +22,28 @@ public class MoveCostManager : MonoBehaviour
         mapElevations = new List<int>(newInfo);
         actorPathfinder.SetElevations(mapElevations);
     }
+    public List<string> borders;
+    public StatDatabase borderMoveCosts;
+    public void SetBorders(List<string> newInfo)
+    {
+        borders = new List<string>(newInfo);
+        List<string> borderCosts = new List<string>();
+        for (int i = 0; i < borders.Count; i++)
+        {
+            string cost = "";
+            string[] borderDetails = borders[i].Split("|");
+            for (int j = 0; j < borderDetails.Length; j++)
+            {
+                cost += borderMoveCosts.ReturnValue(borderDetails[j]);
+                if (j < borderDetails.Length - 1)
+                {
+                    cost += "|";
+                }
+            }
+            borderCosts.Add(cost);
+        }
+        actorPathfinder.SetBorders(borderCosts);
+    }
     // You can move through teammates but not enemies?
     public List<string> teamInfo;
     public void SetTeamInfo(List<string> newInfo)
@@ -31,6 +53,26 @@ public class MoveCostManager : MonoBehaviour
     public StatDatabase allMoveCosts;
     // Current move cost should only be used to initialize actor pathfinder move costs, after that always rely on actorpathfinder for distances.
     public List<int> currentMoveCosts;
+    public string defaultMoveType = "Walking";
+    public void UpdateDefaultMoveCosts()
+    {
+        currentMoveCosts.Clear();
+        string combined = "";
+        string value = "";
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            combined = mapInfo[i] + "-" + defaultMoveType;
+            value = allMoveCosts.ReturnValue(combined);
+            if (value == "")
+            {
+                currentMoveCosts.Add(1);
+            }
+            else
+            {
+                currentMoveCosts.Add(int.Parse(value));
+            }
+        }
+    }
     public void UpdateCurrentMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
         string moveType = actor.GetMoveType();
@@ -85,6 +127,11 @@ public class MoveCostManager : MonoBehaviour
     public List<int> pathCosts;
     public List<int> reachableTiles;
     public ActorPathfinder actorPathfinder;
+    public void ClickOnStartTile(int tileNumber)
+    {
+        UpdateDefaultMoveCosts();
+        pathCosts = actorPathfinder.FindPaths(tileNumber, currentMoveCosts);
+    }
     public void GetAllMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
         UpdateCurrentMoveCosts(actor, actors);

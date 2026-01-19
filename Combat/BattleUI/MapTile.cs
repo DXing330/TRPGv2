@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,8 +49,45 @@ public class MapTile : MonoBehaviour
             borderDetails.Add("");
         }
     }
+    [ContextMenu("Show Borders")]
+    public void ShowBorders()
+    {
+        for (int i = 0; i < borderObjects.Count; i++)
+        {
+            borderObjects[i].SetActive(true);
+        }
+    }
+    public void AddBorder(int direction)
+    {
+        borderDetails[direction] = "Border";
+        borderObjects[direction].SetActive(true);
+    }
+    public string ReturnBorderString()
+    {
+        return String.Join("|", borderDetails);
+    }
+    public void SetBorders(List<string> newInfo)
+    {
+        borderDetails = new List<string>(newInfo);
+        for (int i = 0; i < borderObjects.Count; i++)
+        {
+            if (borderDetails[i] != "")
+            {
+                borderObjects[i].SetActive(true);
+            }
+        }
+    }
     public List<GameObject> borderObjects;
     public List<Image> borderImages;
+    public bool BorderInDirection(int direction)
+    {
+        if (direction < 0 || direction >= borderDetails.Count)
+        {
+            return false;
+        }
+        // Anything besides blank is a border.
+        return borderDetails[direction] != "";
+    }
     public TMP_Text tileText;
     public GameObject textObject;
 

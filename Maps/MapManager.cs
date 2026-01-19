@@ -93,6 +93,40 @@ public class MapManager : MonoBehaviour
             }
         }
     }
+    public List<string> borderDetails;
+    public void InitializeBorders()
+    {
+        borderDetails = new List<string>();
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            // For now just reset borders, we need to deal with making borders later.
+            mapTiles[i].ResetBorders();
+            borderDetails.Add(mapTiles[i].ReturnBorderString());
+        }
+    }
+    public void UpdateBorders()
+    {
+        borderDetails = new List<string>();
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            // For now just reset borders, we need to deal with making borders later.
+            borderDetails.Add(mapTiles[i].ReturnBorderString());
+        }
+    }
+    public int bordersPerTile = 2;
+    [ContextMenu("Randomize Borders")]
+    public void RandomizeBorders()
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].ResetBorders();
+            for (int j = 0; j < bordersPerTile; j++)
+            {
+                mapTiles[i].AddBorder(Random.Range(0, 6));
+            }
+        }
+        UpdateBorders();
+    }
     protected virtual void ResetAllLayers()
     {
         for (int i = 0; i < mapTiles.Count; i++)

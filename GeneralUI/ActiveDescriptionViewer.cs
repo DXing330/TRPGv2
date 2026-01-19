@@ -196,6 +196,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Share health equally between all targets.";
             case "Aura":
                 return "Gain the " + s + " aura for " + p + " turns.";
+            case "Kill":
+                return "Kill the target(s) if their health is less than " + s + ".";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

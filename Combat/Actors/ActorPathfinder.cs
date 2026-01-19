@@ -7,12 +7,12 @@ using UnityEngine;
 public class ActorPathfinder : MapPathfinder
 {
     public List<int> path;
-    public List<int> FindPaths(int startIndex, List<int> moveCosts, bool elevations = true)
+    public List<int> FindPaths(int startIndex, List<int> moveCosts, bool extraCosts = true)
     {
         ResetDistances(startIndex);
-        for (int i = 0; i < moveCosts.Count-1; i++)
+        for (int i = 0; i < moveCosts.Count - 1; i++)
         {
-            DeepCheckClosestTile(moveCosts, elevations);
+            DeepCheckClosestTile(moveCosts, extraCosts);
         }
         return new List<int>(distances);
     }
@@ -25,7 +25,7 @@ public class ActorPathfinder : MapPathfinder
         int nextTile = -1;
         for (int i = 0; i < distances.Count; i++)
         {
-            if (previousTiles[path[i]] < 0)
+            if (path[i] < 0 || previousTiles[path[i]] < 0)
             {
                 path.Clear();
                 break;
@@ -38,7 +38,7 @@ public class ActorPathfinder : MapPathfinder
         return path;
     }
 
-    protected int DeepCheckClosestTile(List<int> moveCosts, bool elevations = false)
+    protected int DeepCheckClosestTile(List<int> moveCosts, bool extraCosts = false)
     {
         int closestTile = heap.Pull();
         if (closestTile < 0){return -1;}
@@ -46,11 +46,18 @@ public class ActorPathfinder : MapPathfinder
         int moveCost = 1;
         for (int i = 0; i < adjacentTiles.Count; i++)
         {
-            // Deal with elevation costs here.
+            // Deal with elevation/border costs here.
             moveCost = moveCosts[adjacentTiles[i]];
-            if (elevations)
+            if (extraCosts)
             {
                 moveCost += GetElevationDifference(closestTile, adjacentTiles[i]) / 2;
+                int borderCost = GetBorderCost(closestTile, adjacentTiles[i]);
+                if (borderCost > 0)
+                {
+                    //Debug.Log("Border Cost from: " + closestTile + " -> " + adjacentTiles[i] + " = " + borderCost);
+                    // + ", Direction = " + mapUtility.DirectionBetweenLocations(adjacentTiles[i], closestTile, mapSize));
+                }
+                moveCost += borderCost;
             }
             if (distances[closestTile] + moveCost < distances[adjacentTiles[i]])
             {

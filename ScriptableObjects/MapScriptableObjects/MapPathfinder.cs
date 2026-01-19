@@ -31,6 +31,26 @@ public class MapPathfinder : ScriptableObject
         ResetMoveCosts();
     }
     public int GetMapSize(){return mapSize;}
+    public List<string> borders;
+    protected void ResetBorders()
+    {
+        borders.Clear();
+    }
+    public void SetBorders(List<string> newInfo)
+    {
+        borders = new List<string>(newInfo);
+    }
+    public int GetBorderCost(int from, int into)
+    {
+        if (into < 0 || from < 0 || into >= borders.Count || from >= borders.Count){return 0;}
+        // Determine the direction;
+        int direction = (mapUtility.DirectionBetweenLocations(into, from, mapSize));
+        // What delimiter to use?
+        string[] bordersCosts = borders[into].Split("|");
+        if (direction < 0 || direction >= bordersCosts.Length){return 0;}
+        //direction = (direction + 3) % 6;
+        return int.Parse(bordersCosts[direction]);
+    }
     // Keep track of the elevation of each tile for additional move cost calculations.
     public List<int> elevations;
     protected void ResetElevations()

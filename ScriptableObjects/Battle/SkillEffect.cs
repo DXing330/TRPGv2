@@ -381,6 +381,13 @@ public class SkillEffect : ScriptableObject
                 string disarmedWeapon = target.Disarm();
                 // TODO Try to remove any passives that the weapon granted and refresh the target's passives.
                 break;
+            // Power word kill.
+            case "Kill":
+                if (target.GetHealth() < int.Parse(effectSpecifics))
+                {
+                    AffectActor(target, "Death", effectSpecifics, level);
+                }
+                break;
         }
     }
 
