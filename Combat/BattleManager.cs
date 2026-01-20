@@ -601,7 +601,7 @@ public class BattleManager : MonoBehaviour
     {
         combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+defender.GetPersonalName()+".");
         attacker.PayAttackCost();
-        attackManager.ActorAttacksActor(attacker, defender, map, moveManager);
+        attackManager.ActorAttacksActor(attacker, defender, map);
         if (AdjustTurnNumber())
         {
             return;

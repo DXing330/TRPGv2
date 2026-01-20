@@ -40,6 +40,8 @@ public class MapTile : MonoBehaviour
     public List<Image> layers;
     public List<GameObject> directionObjects;
     public List<string> borderDetails;
+    public List<GameObject> borderObjects;
+    public List<Image> borderImages;
     public void ResetBorders()
     {
         borderDetails.Clear();
@@ -77,8 +79,40 @@ public class MapTile : MonoBehaviour
             }
         }
     }
-    public List<GameObject> borderObjects;
-    public List<Image> borderImages;
+    public void SetAllBorders(string newBorder, Sprite borderSprite = null)
+    {
+        for (int i = 0; i < borderObjects.Count; i++)
+        {
+            SetBorder(newBorder, i ,borderSprite);
+        }
+    }
+    public void SetBorder(string newBorder, int direction, Sprite borderSprite = null)
+    {
+        borderDetails[direction] = newBorder;
+        if (newBorder == "")
+        {
+            borderObjects[direction].SetActive(false);
+            return;
+        }
+        borderObjects[direction].SetActive(true);
+        borderImages[direction].sprite = borderSprite;
+    }
+    public void UpdateBorderImage(int direction, Sprite borderSprite)
+    {
+        borderImages[direction].sprite = borderSprite;
+    }
+    public List<string> GetBorders()
+    {
+        return borderDetails;
+    }
+    public string GetBorderInDirection(int direction)
+    {
+        if (direction < 0 || direction >= borderDetails.Count)
+        {
+            return "";
+        }
+        return borderDetails[direction];
+    }
     public bool BorderInDirection(int direction)
     {
         if (direction < 0 || direction >= borderDetails.Count)

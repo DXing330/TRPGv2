@@ -16,6 +16,9 @@ public class SpriteContainer : ScriptableObject
     public SpriteContainer copiedSprites;
     public GeneralUtility utility;
     public List<Sprite> sprites;
+    public bool defaultsEnabled;
+    public string defaultKey;
+    public Sprite defaultSprite;
     public string allKeysAndValues;
     public virtual void SetAllData(string newInfo)
     {
@@ -84,19 +87,37 @@ public class SpriteContainer : ScriptableObject
                 return SpriteDictionary(blocks[0]+"E"+(elevation-1));
             }
         }
+        if (defaultsEnabled)
+        {
+            return defaultSprite;
+        }
         return null;
     }
 
     public Sprite SpriteByIndex(int index)
     {
-        if (index < 0 || index >= sprites.Count){return null;}
+        if (index < 0 || index >= sprites.Count)
+        {
+            if (defaultsEnabled)
+            {
+                return defaultSprite;
+            }
+            return null;
+        }
         return sprites[index];
     }
 
     public Sprite SpriteByKey(string nKey)
     {
         int indexOf = keys.IndexOf(nKey);
-        if (indexOf < 0){return null;}
+        if (indexOf < 0)
+        {
+            if (defaultsEnabled)
+            {
+                return SpriteDictionary(defaultKey);
+            }
+            return null;
+        }
         return SpriteDictionary(values[indexOf]);
     }
 

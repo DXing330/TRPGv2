@@ -93,6 +93,15 @@ public class MapManager : MonoBehaviour
             }
         }
     }
+    public SpriteContainer borderSprites;
+    public void UpdateTileBorderSprites(int tileNumber)
+    {
+        List<string> borders = mapTiles[tileNumber].GetBorders();
+        for (int i = 0; i < borders.Count; i++)
+        {
+            mapTiles[tileNumber].UpdateBorderImage(i, borderSprites.SpriteDictionary(borders[i]));
+        }
+    }
     public List<string> borderDetails;
     public void InitializeBorders()
     {
@@ -111,7 +120,12 @@ public class MapManager : MonoBehaviour
         {
             // For now just reset borders, we need to deal with making borders later.
             borderDetails.Add(mapTiles[i].ReturnBorderString());
+            UpdateTileBorderSprites(i);
         }
+    }
+    public string ReturnBorderFromTileDirection(int tile, int direction)
+    {
+        return mapTiles[tile].GetBorderInDirection(direction);
     }
     public int bordersPerTile = 2;
     [ContextMenu("Randomize Borders")]

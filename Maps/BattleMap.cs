@@ -116,6 +116,7 @@ public class BattleMap : MapManager
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
         interactables.Clear();
+        InitializeBorders();
     }
     protected override void Start()
     {
@@ -574,6 +575,13 @@ public class BattleMap : MapManager
                 if (adjacent.Count <= 1){return;}
                 int random = adjacent[UnityEngine.Random.Range(0, adjacent.Count)];
                 SwitchTile(tileNumber, random);
+                break;
+            case "Borders":
+                mapTiles[tileNumber].SetBorders(specifics.Split("|").ToList());
+                UpdateTileBorderSprites(tileNumber);
+                break;
+            // Direction Key?
+            case "Border":
                 break;
         }
         UpdateMap();
@@ -1372,6 +1380,11 @@ public class BattleMap : MapManager
             return -1;
         }
         return enemies[UnityEngine.Random.Range(0, enemies.Count)].GetLocation();
+    }
+
+    public int DirectionBetweenActors(TacticActor actor1, TacticActor actor2)
+    {
+        return mapUtility.DirectionBetweenLocations(actor1.GetLocation(), actor2.GetLocation(), mapSize);
     }
 
     public int DistanceBetweenActors(TacticActor actor1, TacticActor actor2)

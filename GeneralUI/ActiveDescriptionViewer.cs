@@ -50,9 +50,9 @@ public class ActiveDescriptionViewer : MonoBehaviour
     // ActiveEffectDescription
     public string AED(string e, string s, string p)
     {
-        if (e.Contains("AllSprites>>"))
+        if (e.Contains("AllSpritesEquals"))
         {
-            string[] eBlocks = e.Split(">>");
+            string[] eBlocks = e.Split("Equals");
             return "All " + eBlocks[1] + "s gain " + p + " " + ASD(s) + ".";
         }
         switch (e)

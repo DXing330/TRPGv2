@@ -331,7 +331,7 @@ public class PassiveDetailViewer : MonoBehaviour
                     case "Back":
                         return " if the attacker is facing the back side of the target";
                     case "Same":
-                        return " if the attacker is facing the back as the target";
+                        return " if the attacker is facing the back of the target";
                     case "Opposite":
                         return " if the attacker is facing the target";
                 }
@@ -344,7 +344,7 @@ public class PassiveDetailViewer : MonoBehaviour
                     case "Back":
                         return " if the attacker is not facing the back side of the target";
                     case "Same":
-                        return " if the attacker is not facing the back as the target";
+                        return " if the attacker is not facing the back of the target";
                     case "Opposite":
                         return " if the attacker is not facing the target";
                 }

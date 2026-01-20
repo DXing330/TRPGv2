@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +20,8 @@ public class AttackManagerTester : MonoBehaviour
     public int defenderDirection;
     public string defenderTile;
     public string defenderTEffect;
+    public List<string> attackerBorders;
+    public List<string> defenderBorders;
     // Actors.
     public TacticActor dummyAttacker;
     public string attackerStats;
@@ -46,10 +50,12 @@ public class AttackManagerTester : MonoBehaviour
         map.SetWeather(dummyWeather);
         map.ChangeTile(attackerLocation, "Tile", attackerTile, true);
         map.ChangeTile(attackerLocation, "TerrainEffect", attackerTEffect, true);
+        map.ChangeTile(attackerLocation, "Borders", String.Join("|", attackerBorders), true);
         map.ChangeTile(defenderLocation, "Tile", defenderTile, true);
         map.ChangeTile(defenderLocation, "TerrainEffect", defenderTEffect, true);
+        map.ChangeTile(defenderLocation, "Borders", String.Join("|", defenderBorders), true);
         // Show all the passives that are taking effect.
-        attackManager.ActorAttacksActor(dummyAttacker, dummyDefender, map, battleManager.moveManager);
+        attackManager.ActorAttacksActor(dummyAttacker, dummyDefender, map);
         map.combatLog.DebugLatestDetailsLog();
     }
 }
