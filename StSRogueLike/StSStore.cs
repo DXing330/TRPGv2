@@ -141,9 +141,9 @@ public class StSStore : Store
     {
         if (hiredActor) { return; }
         // Check the cost.
-        if (!partyData.inventory.QuantityExists(hiringCost)) { return; }
+        if (!partyData.inventory.EnoughGold(hiringCost)) { return; }
         // Generate the actor.
-        partyData.inventory.RemoveItemQuantity(hiringCost);
+        partyData.inventory.SpendGold(hiringCost);
         string randomActor = hireableActors[Random.Range(0, hireableActors.Count)];
         // Add them to the party.
         partyData.HireMember(actorStats.ReturnValue(randomActor), randomActor + " " + Random.Range(0, 999));
@@ -172,9 +172,9 @@ public class StSStore : Store
         int index = rareEquipmentDisplay.GetSelected();
         if (index < 0) { return; }
         // Check the cost.
-        if (!partyData.inventory.QuantityExists(int.Parse(availablePrices[index]))) { return; }
+        if (!partyData.inventory.EnoughGold(int.Parse(availablePrices[index]))) { return; }
         // Add the equipment to the party.
-        partyData.inventory.RemoveItemQuantity(int.Parse(availablePrices[index]));
+        partyData.inventory.SpendGold(int.Parse(availablePrices[index]));
         partyData.equipmentInventory.AddEquipmentByStats(availableEquipment[index]);
         // Remove the equipment.
         availableEquipment.RemoveAt(index);

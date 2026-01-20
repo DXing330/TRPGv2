@@ -27,6 +27,10 @@ public class DungeonSelectList : MonoBehaviour
         if (currentDungeons[selected] == mainStory.GetRequestLocation() && mainStory.GetCurrentChapter() != 1)
         {
             dungeon.SetStoryQuest();
+            if (mainStory.GetCurrentRequest() == "Escort")
+            {
+                partyData.AddTempPartyMember(mainStory.GetRequestSpecifics());
+            }
         }
         // Otherwise get quests from the guild card.
         else

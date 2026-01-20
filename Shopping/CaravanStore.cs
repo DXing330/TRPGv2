@@ -10,7 +10,7 @@ public class CaravanStore : MonoBehaviour
     public TMP_Text totalPull;
     public void UpdateCaravanStats()
     {
-        gold.text = partyData.inventory.ReturnGold().ToString();
+        gold.text = partyData.inventory.GetGold().ToString();
         totalWeight.text = partyData.caravan.GetCargoWeight()+" / "+partyData.caravan.GetMaxCarryWeight();
         totalPull.text = partyData.caravan.GetMaxPullWeight().ToString();
     }
@@ -222,8 +222,8 @@ public class CaravanStore : MonoBehaviour
 
     public bool EnoughMoney(int price)
     {
-        if (!partyData.inventory.QuantityExists(price)){return false;}
-        partyData.inventory.RemoveItemQuantity(price);
+        if (!partyData.inventory.EnoughGold(price)){return false;}
+        partyData.inventory.SpendGold(price);
         return true;
     }
 

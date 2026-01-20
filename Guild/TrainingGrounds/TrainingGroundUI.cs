@@ -27,7 +27,7 @@ public class TrainingGroundUI : MonoBehaviour
     public TMP_Text partyGold;
     public void UpdatePartyGold()
     {
-        partyGold.text = partyData.inventory.ReturnGold().ToString();
+        partyGold.text = partyData.inventory.GetGold().ToString();
     }
     public TMP_Text newFeatPrice;
     public void UpdateFeatPrice()
@@ -66,7 +66,7 @@ public class TrainingGroundUI : MonoBehaviour
     {
         if (allActors.GetSelected() < 0) { return; }
         // If not enough gold then give error message.
-        if (!partyData.inventory.QuantityExists(int.Parse(newFeatPrice.text)))
+        if (!partyData.inventory.EnoughGold(int.Parse(newFeatPrice.text)))
         {
             errorPopUp.SetMessage("Not enough gold to afford this training.");
             return;
@@ -81,7 +81,7 @@ public class TrainingGroundUI : MonoBehaviour
         selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
         selectedActor.AddPassiveSkill(newFeat, "1");
         partyData.UpdatePartyMember(selectedActor, selectedIndex);
-        partyData.inventory.RemoveItemQuantity(int.Parse(newFeatPrice.text));
+        partyData.inventory.SpendGold(int.Parse(newFeatPrice.text));
         partyData.Save();
         UpdateSelectedActor();
     }

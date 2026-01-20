@@ -14,6 +14,33 @@ public class StorageUI : MonoBehaviour
     public GeneralUtility utility;
     public PartyDataManager partyData;
     public GuildStorage storage;
+    public ItemDetailViewer itemDetailViewer;
+    public void ViewDungeonItem(bool fromBag)
+    {
+        string selectedItem = "";
+        if (fromBag)
+        {
+            selectedItem = dungeonBagSelect.GetSelectedString();
+        }
+        else
+        {
+            selectedItem = dungeonStorageSelect.GetSelectedString();
+        }
+        itemDetailViewer.ShowDungeonItemInfo(selectedItem);
+    }
+    public void ViewItem(bool fromBag)
+    {
+        string selectedItem = "";
+        if (fromBag)
+        {
+            selectedItem = bagSelect.GetSelectedString();
+        }
+        else
+        {
+            selectedItem = storageSelect.GetSelectedString();
+        }
+        itemDetailViewer.ShowInfo(selectedItem);
+    }
     public List<GameObject> panels;
     public void ActivatePanel(int index)
     {
@@ -65,6 +92,52 @@ public class StorageUI : MonoBehaviour
         storage.WithdrawDungeonItem(dungeonStorageSelect.GetSelectedString());
         UpdateDungeonStorage(true);
     }
+    public SelectList bagSelect;
+    public TMP_Text bagLimitText;
+    public SelectList storageSelect;
+    public TMP_Text storageLimitText;
+    public void UpdateInventoryStorage(bool savePage = false)
+    {
+        int bagPage = 0;
+        int storagePage = 0;
+        if (savePage)
+        {
+            bagPage = bagSelect.GetPage();
+            storagePage = storageSelect.GetPage();
+        }
+        bagSelect.SetSelectables(partyData.inventory.GetItems());
+        bagLimitText.text = partyData.inventory.ReturnBagLimitString();
+        storageSelect.SetSelectables(storage.GetStoredItems());
+        storageLimitText.text = storage.ReturnStorageLimitString();
+        bagSelect.SetPage(bagPage);
+        storageSelect.SetPage(storagePage);
+    }
+    public void StoreInventoryItem()
+    {
+        if (storage.MaxedStorage()){return;}
+        int selected = bagSelect.GetSelected();
+        if (selected < 0){return;}
+        string selectedItem = bagSelect.GetSelectedString();
+        partyData.inventory.RemoveItemAtIndex(selected);
+        storage.StoreItem(selectedItem);
+        UpdateInventoryStorage(true);
+    }
+    public void StoreAllInventoryItems()
+    {
+        if (!storage.StorageAvailable(partyData.inventory.GetItemCount())){return;}
+        storage.StoreItems(partyData.inventory.GetItems());
+        partyData.inventory.ClearItems();
+        UpdateInventoryStorage(true);
+    }
+    public void WithdrawInventoryItem()
+    {
+        if (partyData.inventory.InventoryFull()){return;}
+        int selected = storageSelect.GetSelected();
+        if (selected < 0){return;}
+        partyData.inventory.AddItemQuantity(storageSelect.GetSelectedString());
+        storage.WithdrawItem(storageSelect.GetSelectedString());
+        UpdateInventoryStorage(true);
+    }
     public TMP_Text storedGold;
     public TMP_Text withdrawnGoldText;
     public int withdrawnGold;
@@ -74,7 +147,7 @@ public class StorageUI : MonoBehaviour
     public void UpdateGoldStorage()
     {
         storedGold.text = storage.GetStoredGold().ToString();
-        bagGold.text = partyData.inventory.ReturnGold().ToString();
+        bagGold.text = partyData.inventory.GetGold().ToString();
         withdrawnGold = 0;
         depositedGold = 0;
         withdrawnGoldText.text = withdrawnGold.ToString();
@@ -89,7 +162,7 @@ public class StorageUI : MonoBehaviour
     {
         if (amount == -1)
         {
-            depositedGold = partyData.inventory.ReturnGold();
+            depositedGold = partyData.inventory.GetGold();
         }
         else if (amount == 0)
         {
@@ -97,7 +170,7 @@ public class StorageUI : MonoBehaviour
         }
         else
         {
-            int difference = partyData.inventory.ReturnGold() - depositedGold;
+            int difference = partyData.inventory.GetGold() - depositedGold;
             if (difference >= amount)
             {
                 depositedGold += amount;
@@ -127,7 +200,7 @@ public class StorageUI : MonoBehaviour
     }
     public void ConfirmDeposit()
     {
-        partyData.inventory.RemoveItemQuantity(depositedGold);
+        partyData.inventory.SpendGold(depositedGold);
         storage.StoreGold(depositedGold);
         UpdateGoldStorage();
     }

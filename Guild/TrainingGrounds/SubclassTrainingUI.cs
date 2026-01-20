@@ -33,7 +33,7 @@ public class SubclassTrainingUI : MonoBehaviour
     }
     protected void UpdateTrainingDisplay()
     {
-        partyGoldText.text = partyData.inventory.ReturnGold().ToString();
+        partyGoldText.text = partyData.inventory.GetGold().ToString();
         if (trainerSelect.GetSelected() >= 0 && traineeSelect.GetSelected() >= 0)
         {
             UpdateTrainingCostDetails();
@@ -114,7 +114,7 @@ public class SubclassTrainingUI : MonoBehaviour
         selectedActor = partyData.ReturnActorAtIndex(traineeSelect.GetSelected());
         selectedActor.AddPassiveSkill(trainedClass, "1");
         partyData.UpdatePartyMember(selectedActor, traineeSelect.GetSelected());
-        partyData.inventory.LoseGold(int.Parse(trainingCostText.text));
+        partyData.inventory.SpendGold(int.Parse(trainingCostText.text));
         // Reset after updating.
         trainerDisplay.DisableDisplay();
         traineeDisplay.DisableDisplay();

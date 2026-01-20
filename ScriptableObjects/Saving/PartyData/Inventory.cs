@@ -1,51 +1,92 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Mainly used to store battle items and gold.
 [CreateAssetMenu(fileName = "Inventory", menuName = "ScriptableObjects/DataContainers/SavedData/Inventory", order = 1)]
 public class Inventory : SavedData
 {
+    // Need to know which items can be assigned to actors.
+    public StatDatabase activeData;
     public string delimiterTwo;
-    public List<string> items;
-    public List<string> quantities;
-    public string goldString = "Gold";
+    // GOLD
+    public int gold;
+    public void SetGold(int amount)
+    {
+        gold = amount;
+    }
+    public void LoseGold(int amount = -1)
+    {
+        if (amount < 0 || amount >= gold)
+        {
+            gold = 0;
+            return;
+        }
+        gold -= amount;
+    }
+    public int GetGold(){return gold;}
+    public void GainGold(int amount)
+    {
+        gold += amount;
+    }
+    public bool EnoughGold(int amount)
+    {
+        return gold >= amount;
+    }
+    public void SpendGold(int amount)
+    {
+        gold -= amount;
+    }
     public void CollectPay(int days, int rank)
     {
         GainGold(Mathf.Max(1, days * rank));
     }
-
+    // ITEM LIMIT
+    protected int minimumItemLimit = 16;
+    public int itemLimit;
+    public void SetItemLimit(int newInfo)
+    {
+        itemLimit = newInfo;
+    }
+    public int GetItemLimit()
+    {
+        return itemLimit;
+    }
+    public void IncreaseItemLimit(int newInfo = 1)
+    {
+        itemLimit += newInfo;
+    }
+    public bool InventoryFull()
+    {
+        return items.Count >= itemLimit;
+    }
+    public string ReturnBagLimitString()
+    {
+        return items.Count + "/" + itemLimit;
+    }
+    // SAVING/LOADING
     public override void NewGame()
     {
         allData = newGameData;
         if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
         else{return;}
-        items = dataList[0].Split(delimiterTwo).ToList();
-        quantities = dataList[1].Split(delimiterTwo).ToList();
-        items = utility.RemoveEmptyListItems(items);
-        quantities = utility.RemoveEmptyListItems(quantities);
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
         Save();
     }
 
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = "";
-        string tempData = "";
-        for (int i = 0; i < items.Count; i++)
-        {
-            tempData += items[i];
-            if (i < items.Count - 1){tempData += delimiterTwo;}
-        }
-        tempData += delimiter;
-        for (int i = 0; i < quantities.Count; i++)
-        {
-            tempData += quantities[i];
-            if (i < quantities.Count - 1){tempData += delimiterTwo;}
-        }
-        tempData += delimiter;
-        allData = tempData;
+        allData = "Gold=" + GetGold() + delimiter;
+        allData += "ItemLimit=" + GetItemLimit() + delimiter;
+        allData += "Items=" + String.Join(delimiterTwo, items) + delimiter;
+        allData += "IDs=" + String.Join(delimiterTwo, assignedActorIDs) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -56,34 +97,87 @@ public class Inventory : SavedData
         else{allData = newGameData;}
         if (allData.Contains(delimiter)){dataList = allData.Split(delimiter).ToList();}
         else{return;}
-        items = dataList[0].Split(delimiterTwo).ToList();
-        quantities = dataList[1].Split(delimiterTwo).ToList();
-        items = utility.RemoveEmptyListItems(items);
-        quantities = utility.RemoveEmptyListItems(quantities);
+        gold = 0;
+        itemLimit = minimumItemLimit;
+        ClearItems();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
+        RemoveEmptyItems();
     }
 
-    public int ReturnGold()
+    protected void LoadStat(string data)
     {
-        return ReturnQuantityOfItem(goldString);
+        string[] blocks = data.Split("=");
+        if (blocks.Length < 2){return;}
+        string stat = blocks[1];
+        switch (blocks[0])
+        {
+            default:
+            break;
+            case "Gold":
+            SetGold(int.Parse(stat));
+            break;
+            case "ItemLimit":
+            SetItemLimit(int.Parse(stat));
+            break;
+            case "Items":
+            items = stat.Split(delimiterTwo).ToList();
+            break;
+            case "IDs":
+            assignedActorIDs = stat.Split(delimiterTwo).ToList();
+            break;
+        }
     }
-
+    // ITEMS
+    public List<string> items;
+    public void ClearItems()
+    {
+        items = new List<string>();
+        assignedActorIDs = new List<string>();
+    }
+    public List<string> GetItems()
+    {
+        return items;
+    }
+    public int GetItemCount(){return items.Count;}
+    public List<string> assignedActorIDs;
+    public void AssignToActor(int itemIndex, int actorID)
+    {
+        assignedActorIDs[itemIndex] = actorID.ToString();
+    }
+    public void ActorUsesItem(string itemName, int actorID)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i] == itemName && assignedActorIDs[i] == actorID.ToString())
+            {
+                RemoveItemAtIndex(i);
+                return;
+            }
+        }
+    }
     public int ReturnQuantityOfItem(string itemName)
     {
-        int indexOf = items.IndexOf(itemName);
-        if (indexOf < 0){return 0;}
-        return int.Parse(quantities[indexOf]);
+        int count = 0;
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i] == itemName)
+            {
+                count++;
+            }
+        }
+        return count;
     }
-
     public bool ItemExists(string itemName)
     {
         return ReturnQuantityOfItem(itemName) > 0;
     }
-
-    public bool QuantityExists(int quantity, string itemName = "Gold")
+    public bool QuantityExists(int quantity, string itemName)
     {
         return ReturnQuantityOfItem(itemName) >= quantity;
     }
-
     public bool MultiQuantityExists(List<string> itemNames, List<int> quantities)
     {
         for (int i = 0; i < itemNames.Count; i++)
@@ -95,15 +189,47 @@ public class Inventory : SavedData
         }
         return true;
     }
-
-    // Should only be called after confirming that the quantity exists.
-    public void RemoveItemQuantity(int quantity, string itemName = "Gold")
+    // Always add/remove items/IDs together
+    protected void GainItem(string itemName)
     {
-        int indexOf = items.IndexOf(itemName);
-        int currentQuantity = int.Parse(quantities[indexOf]);
-        quantities[indexOf] = (currentQuantity - quantity).ToString();
+        if (itemName.Length <= 1){return;}
+        items.Add(itemName);
+        assignedActorIDs.Add("");
     }
-
+    protected void RemoveEmptyItems()
+    {
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            if (items[i].Length <= 1)
+            {
+                RemoveItemAtIndex(i);
+            }
+        }
+    }
+    public void RemoveItemAtIndex(int index)
+    {
+        items.RemoveAt(index);
+        assignedActorIDs.RemoveAt(index);
+    }
+    protected void RemoveItem(string itemName)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i] == itemName)
+            {
+                RemoveItemAtIndex(i);
+                return;
+            }
+        }
+    }
+    // Should only be called after confirming that the quantity exists.
+    public void RemoveItemQuantity(int quantity, string itemName)
+    {
+        for (int i = 0; i < quantity; i++)
+        {
+            RemoveItem(itemName);
+        }
+    }
     public void RemoveMultiItems(List<string> itemNames, List<int> quantities)
     {
         for (int i = 0; i < itemNames.Count; i++)
@@ -111,33 +237,11 @@ public class Inventory : SavedData
             RemoveItemQuantity(quantities[i], itemNames[i]);
         }
     }
-
-    public void LoseGold(int amount = -1)
-    {
-        if (amount < 0)
-        {
-            RemoveItemQuantity(ReturnQuantityOfItem(goldString));
-        }
-        else { RemoveItemQuantity(amount); }
-    }
-
-    public void GainGold(int amount)
-    {
-        AddItemQuantity(goldString, amount);
-    }
-
     public void AddItemQuantity(string itemName, int quantity = 1)
     {
-        int indexOf = items.IndexOf(itemName);
-        if (indexOf < 0)
+        for (int i = 0; i < quantity; i++)
         {
-            items.Add(itemName);
-            quantities.Add(quantity.ToString());
-        }
-        else
-        {
-            int currentQuantity = int.Parse(quantities[indexOf]);
-            quantities[indexOf] = (currentQuantity + quantity).ToString();
+            GainItem(itemName);
         }
     }
 }

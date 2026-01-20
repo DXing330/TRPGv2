@@ -44,7 +44,7 @@ public class DungeonMerchant : MonoBehaviour
 
     protected void UpdateShopping()
     {
-        currentGold.text = partyData.inventory.ReturnGold().ToString();
+        currentGold.text = partyData.inventory.GetGold().ToString();
         currentInventory.text = partyData.dungeonBag.ReturnBagLimitString();
         currentBillText.text = totalBill.ToString();
     }
@@ -88,12 +88,12 @@ public class DungeonMerchant : MonoBehaviour
     public void Pay()
     {
         // If you can't pay then activate the can't pay panel.
-        if (partyData.inventory.ReturnGold() < totalBill)
+        if (partyData.inventory.GetGold() < totalBill)
         {
             cantPayPanel.SetActive(true);
             return;
         }
-        partyData.inventory.LoseGold(totalBill);
+        partyData.inventory.SpendGold(totalBill);
         totalBill = 0;
         takenItems.Clear();
         merchantPanel.SetActive(false);

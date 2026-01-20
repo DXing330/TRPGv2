@@ -10,6 +10,7 @@ using UnityEngine;
 public class GuildStorage : SavedData
 {
     public string delimiterTwo;
+    protected int minDungeonStorage = 600;
     public int maxDungeonStorage;
     public string ReturnDungeonStorageLimitString()
     {
@@ -42,18 +43,39 @@ public class GuildStorage : SavedData
         storedDungeonItems.RemoveAt(indexOf);
         storedDungeonItems.Sort();
     }
+    protected int minStorage = 600;
     public int maxStorage;
+    public string ReturnStorageLimitString()
+    {
+        return storedItems.Count + "/" + maxStorage;
+    }
+    public bool StorageAvailable(int count)
+    {
+        return storedItems.Count + count <= maxStorage;
+    }
     public bool MaxedStorage()
     {
-        int quantity = 0;
-        for (int i = 0; i < storedQuantities.Count; i++)
-        {
-            quantity += utility.SafeParseInt(storedQuantities[i], 0);
-        }
-        return quantity >= maxStorage;
+        return storedItems.Count >= maxStorage;
     }
     public List<string> storedItems;
-    public List<string> storedQuantities;
+    public List<string> GetStoredItems(){return storedItems;}
+    public void StoreItem(string newInfo)
+    {
+        storedItems.Add(newInfo);
+        storedItems.Sort();
+    }
+    public void StoreItems(List<string> newInfo)
+    {
+        storedItems.AddRange(newInfo);
+        storedItems.Sort();
+    }
+    public void WithdrawItem(string newInfo)
+    {
+        int indexOf = storedItems.IndexOf(newInfo);
+        if (indexOf < 0){return;}
+        storedItems.RemoveAt(indexOf);
+        storedItems.Sort();
+    }
     public int storedGold;
     public int GetStoredGold(){return storedGold;}
     public void StoreGold(int amount)
@@ -78,12 +100,11 @@ public class GuildStorage : SavedData
     {
         dataPath = Application.persistentDataPath+"/"+filename;
         allData = "";
-        allData += maxDungeonStorage + delimiter;
-        allData += String.Join(delimiterTwo, storedDungeonItems) + delimiter;
-        allData += maxStorage + delimiter;
-        allData += String.Join(delimiterTwo, storedItems) + delimiter;
-        allData += String.Join(delimiterTwo, storedQuantities) + delimiter;
-        allData += storedGold + delimiter;
+        allData += "Gold=" + storedGold + delimiter;
+        allData += "MaxDItems=" + maxDungeonStorage + delimiter;
+        allData += "DItems=" + String.Join(delimiterTwo, storedDungeonItems) + delimiter;
+        allData += "MaxItems=" + maxStorage + delimiter;
+        allData += "Items=" + String.Join(delimiterTwo, storedItems) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
 
@@ -97,36 +118,42 @@ public class GuildStorage : SavedData
             return;
         }
         dataList = allData.Split(delimiter).ToList();
+        storedGold = 0;
+        maxDungeonStorage = minDungeonStorage;
+        maxStorage = minStorage;
+        storedDungeonItems.Clear();
+        storedItems.Clear();
         for (int i = 0; i < dataList.Count; i++)
         {
-            LoadStat(dataList[i], i);
+            LoadStat(dataList[i]);
         }
+        utility.RemoveEmptyListItems(storedDungeonItems);
+        utility.RemoveEmptyListItems(storedItems);
     }
 
-    protected void LoadStat(string stat, int index)
+    protected void LoadStat(string data)
     {
-        switch (index)
+        string[] blocks = data.Split('=');
+        if (blocks.Length < 2) { return; }
+        string key = blocks[0];
+        string stat = blocks[1];
+        switch (key)
         {
-            default:
-            break;
-            case 0:
-            maxDungeonStorage = utility.SafeParseInt(stat, 1);
-            break;
-            case 1:
-            storedDungeonItems = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
-            break;
-            case 2:
-            maxStorage = utility.SafeParseInt(stat, 1);
-            break;
-            case 3:
-            storedItems = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
-            break;
-            case 4:
-            storedQuantities = utility.RemoveEmptyListItems(stat.Split(delimiterTwo).ToList());
-            break;
-            case 5:
-            storedGold = utility.SafeParseInt(stat);
-            break;
+            case "Gold":
+                storedGold = int.Parse(stat);
+                break;
+            case "MaxDItems":
+                maxDungeonStorage = int.Parse(stat);
+                break;
+            case "DItems":
+                storedDungeonItems = stat.Split(delimiterTwo).ToList();
+                break;
+            case "MaxItems":
+                maxStorage = int.Parse(stat);
+                break;
+            case "Items":
+                storedItems = stat.Split(delimiterTwo).ToList();
+                break;
         }
     }
 }

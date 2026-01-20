@@ -30,14 +30,15 @@ public class AttackManager : ScriptableObject
     protected int critDamage;
     protected int critChance;
 
-    public bool GuardActive(TacticActor defender, BattleMap map)
+    // TESTED IN BATTLETESTER
+    public bool GuardActive(TacticActor defender, TacticActor attacker, BattleMap map)
     {
-        return map.GetAdjacentGuardingAlly(defender) != null;
+        return map.GetGuardingAlly(defender, attacker) != null;
     }
-
-    public TacticActor GetGuard(TacticActor defender, BattleMap map)
+    // TESTED IN BATTLETESTER
+    public TacticActor GetGuard(TacticActor defender, TacticActor attacker, BattleMap map)
     {
-        TacticActor guard = map.GetAdjacentGuardingAlly(defender);
+        TacticActor guard = map.GetGuardingAlly(defender, attacker);
         if (guard == null){return defender;}
         return guard;
     }
@@ -131,6 +132,7 @@ public class AttackManager : ScriptableObject
     // Used for most spell effects.
     public void ElementalFlatDamage(TacticActor attacker, TacticActor defender, BattleMap map, int damage, string element)
     {
+        // TODO Add guarding to these as well.
         attacker.SetDirection(map.DirectionBetweenActors(attacker, defender));
         if (!RollToHit(attacker, defender, map)){return;}
         baseDamage = damage;
@@ -149,19 +151,27 @@ public class AttackManager : ScriptableObject
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
     }
-    protected void CheckMapPassives(TacticActor attacker, TacticActor defender, BattleMap map, bool forAttacker = true, bool forDefender = true)
+    protected void CheckMapPassives(TacticActor attacker, TacticActor defender, BattleMap map, int defenderTile, bool forAttacker = true, bool forDefender = true)
     {
+        // Track the defenders tile, since if even someone blocks the combat still happens on that tile.
         CheckAuraEffects(defender, attacker, map);
-        CheckTerrainPassives(defender, attacker, map, forAttacker, forDefender);
-        CheckTEffectPassives(defender, attacker, map, forAttacker, forDefender);
-        CheckBorderPassives(defender, attacker, map, forAttacker, forDefender);
+        CheckTerrainPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
+        CheckTEffectPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
+        CheckBorderPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
         CheckWeatherPassives(defender, attacker, map, forAttacker, forDefender);
     }
     // Basically used for guns/cannons other non scaling damage
-    public void FlatDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, int damage)
+    public void FlatDamageAttack(TacticActor attacker, TacticActor target, BattleMap map, int damage)
     {
-        attacker.SetDirection(map.DirectionBetweenActors(attacker, defender));
-        UpdateBattleStats(attacker, defender);
+        bool guard = GuardActive(target, attacker, map);
+        attacker.SetDirection(map.DirectionBetweenActors(attacker, target));
+        TacticActor attackTarget = target;
+        if (guard)
+        {
+            attackTarget = GetGuard(target, attacker, map);
+            map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " defends " + target.GetPersonalName() + " from the attack.");
+        }
+        UpdateBattleStats(attacker, attackTarget);
         advantage = 0;
         damageMultiplier = baseMultiplier;
         baseDamage = damage;
@@ -169,35 +179,36 @@ public class AttackManager : ScriptableObject
         passiveEffectString = "Applied Passives: ";
         finalDamageCalculation = "";
         // Only the defender gets passive bonuses(?) from tile/teffects
-        CheckMapPassives(attacker, defender, map, false, true);
-        CheckPassives(defender.GetDefendingPassives(), defender, attacker, map);
-        if (!RollToHit(attacker, defender, map)){return;}
+        CheckMapPassives(attacker, attackTarget, map, target.GetLocation(), false, true);
+        CheckPassives(attackTarget.GetDefendingPassives(), attackTarget, attacker, map);
+        if (!RollToHit(attacker, attackTarget, map)){return;}
         baseDamage = Advantage(baseDamage, advantage);
-        finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defender.GetDefense() + " = ";
-        baseDamage = Mathf.Max(0, baseDamage - defender.GetDefense());
+        finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + attackTarget.GetDefense() + " = ";
+        baseDamage = Mathf.Max(0, baseDamage - attackTarget.GetDefense());
         finalDamageCalculation += baseDamage;
         if (damageMultiplier < 0) { damageMultiplier = 0; }
         finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         finalDamageCalculation += baseDamage;
         // Flat damage is always physical type.
-        defender.TakeDamage(baseDamage);
-        defender.SetTarget(attacker);
-        map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        attackTarget.TakeDamage(baseDamage);
+        attackTarget.SetTarget(attacker);
+        map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
-        map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
+        map.damageTracker.UpdateDamageStat(attacker, attackTarget, baseDamage);
     }
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, int attackMultiplier = -1, string type = "Attack")
     {
+        // True damage ignores guarding, because it should be as OP as possible.
         attacker.SetDirection(map.DirectionBetweenActors(attacker, defender));
         UpdateBattleStats(attacker, defender);
         baseDamage = attackValue;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
         // True damage ignores defender/terrain passives, making it even stronger than it should be.
-        CheckMapPassives(attacker, defender, map, true, false);
+        CheckMapPassives(attacker, defender, map, defender.GetLocation(), true, false);
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map);
         switch (type)
         {
@@ -231,16 +242,14 @@ public class AttackManager : ScriptableObject
     // Basic attack damage calculation
     public void ActorAttacksActor(TacticActor attacker, TacticActor target, BattleMap map, int attackMultiplier = -1, string type = "Physical")
     {
-        bool guard = GuardActive(target, map);
+        bool guard = GuardActive(target, attacker, map);
         attacker.SetDirection(map.DirectionBetweenActors(attacker, target));
         attacker.UpdateTempInitiative(-1);
         TacticActor attackTarget = target;
-        // Check if there is a guard.
         if (guard)
         {
-            attackTarget = GetGuard(target, map);
+            attackTarget = GetGuard(target, attacker, map);
             map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " defends " + target.GetPersonalName() + " from the attack.");
-            // Switch the actor locations?
         }
         advantage = 0;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
@@ -250,7 +259,7 @@ public class AttackManager : ScriptableObject
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
         finalDamageCalculation = "";
-        CheckMapPassives(attacker, attackTarget, map, true, true);
+        CheckMapPassives(attacker, attackTarget, map, target.GetLocation(), true, true);
         // Bonus damage can be calculated here and triggers regardless of hit/miss.
         CheckPassives(attacker.GetAttackingPassives(), attackTarget, attacker, map);
         CheckPassives(attackTarget.GetDefendingPassives(), attackTarget, attacker, map);
@@ -465,9 +474,9 @@ public class AttackManager : ScriptableObject
         }
     }
 
-    protected void CheckTEffectPassives(TacticActor target, TacticActor attacker, BattleMap map, bool forAttacker = true, bool forTarget = true)
+    protected void CheckTEffectPassives(TacticActor target, TacticActor attacker, BattleMap map, int targetTileNumber, bool forAttacker = true, bool forTarget = true)
     {
-        string targetTile = map.terrainEffectTiles[target.GetLocation()];
+        string targetTile = map.terrainEffectTiles[targetTileNumber];
         string attackingTile = map.terrainEffectTiles[attacker.GetLocation()];
         string defendingPassive = tEffectPassives.ReturnDefendingPassive(targetTile);
         if (defendingPassive.Length > 1 && forTarget)
@@ -481,9 +490,9 @@ public class AttackManager : ScriptableObject
         }
     }
 
-    protected void CheckTerrainPassives(TacticActor target, TacticActor attacker, BattleMap map, bool forAttacker = true, bool forTarget = true)
+    protected void CheckTerrainPassives(TacticActor target, TacticActor attacker, BattleMap map, int targetTileNumber, bool forAttacker = true, bool forTarget = true)
     {
-        string targetTile = map.mapInfo[target.GetLocation()];
+        string targetTile = map.mapInfo[targetTileNumber];
         string attackingTile = map.mapInfo[attacker.GetLocation()];
         string defendingPassive = terrainPassives.ReturnDefendingPassive(targetTile);
         if (defendingPassive.Length > 1 && forTarget)
@@ -497,7 +506,7 @@ public class AttackManager : ScriptableObject
         }
     }
 
-    protected void CheckBorderPassives(TacticActor target, TacticActor attacker, BattleMap map, bool forAttacker = true, bool forTarget = true)
+    protected void CheckBorderPassives(TacticActor target, TacticActor attacker, BattleMap map, int targetTile, bool forAttacker = true, bool forTarget = true)
     {
         // Get the direction from the attacker to the direction.
         int attackerToTargetDir = map.DirectionBetweenActors(attacker, target);
@@ -512,7 +521,7 @@ public class AttackManager : ScriptableObject
         // Check if the defender has a border.
         if (forTarget)
         {
-            string targetBorder = map.ReturnBorderFromTileDirection(target.GetLocation(), targetToAttackerDir);
+            string targetBorder = map.ReturnBorderFromTileDirection(targetTile, targetToAttackerDir);
             string defendingPassive = borderPassives.ReturnDefendingPassive(targetBorder);
             ApplyPassiveEffect(defendingPassive, target, attacker, map);
         }

@@ -16,7 +16,6 @@ public class Store : MonoBehaviour
     public InventoryUI inventoryUI;
     public ItemDetailViewer itemDetailViewer;
     public StatDatabase storeData;
-    public StatDatabase dungeonItemDescriptions;
     protected virtual void LoadStore()
     {
         string[] storeStuff = storeData.ReturnValue(storeName).Split("|");
@@ -93,7 +92,7 @@ public class Store : MonoBehaviour
         ResetBuying(2);
         buyingDungeonItems = true;
         string item = dungeonItemDisplay.GetSelectedStat();
-        itemDetailViewer.SetInfo(item, dungeonItemDescriptions.ReturnValue(item));
+        itemDetailViewer.ShowDungeonItemInfo(item);
     }
     public bool buyingEquipment = false;
     public void ClickOnEquipment()
@@ -158,9 +157,9 @@ public class Store : MonoBehaviour
         if (index == -1 || index >= itemsSolds.Count){return;}
         // Check the price.
         int price = int.Parse(itemsPrices[index]);
-        if (!partyData.inventory.QuantityExists(price)){return;}
+        if (!partyData.inventory.EnoughGold(price)){return;}
         // Pay the price.
-        partyData.inventory.RemoveItemQuantity(price);
+        partyData.inventory.SpendGold(price);
         // Get the item.
         partyData.inventory.AddItemQuantity(itemsSolds[index]);
         UpdateQuantityOwned();
@@ -171,8 +170,8 @@ public class Store : MonoBehaviour
         int index = equipmentDisplay.GetSelected();
         if (index == -1 || index >= equipmentSold.Count){return;}
         int price = int.Parse(equipmentPrices[index]);
-        if (!partyData.inventory.QuantityExists(price)){return;}
-        partyData.inventory.RemoveItemQuantity(price);
+        if (!partyData.inventory.EnoughGold(price)){return;}
+        partyData.inventory.SpendGold(price);
         partyData.equipmentInventory.AddEquipmentByName(equipmentSold[index]);
         UpdateQuantityOwned();
         inventoryUI.UpdateKeyValues();
@@ -184,8 +183,8 @@ public class Store : MonoBehaviour
         int index = dungeonItemDisplay.GetSelected();
         if (index < 0){return;}
         int price = int.Parse(dungeonItemDisplay.GetSelectedData());
-        if (!partyData.inventory.QuantityExists(price)){return;}
-        partyData.inventory.RemoveItemQuantity(price);
+        if (!partyData.inventory.EnoughGold(price)){return;}
+        partyData.inventory.SpendGold(price);
         partyData.dungeonBag.GainItem(dungeonItemDisplay.GetSelectedStat());
         inventoryUI.UpdateKeyValues();
     }

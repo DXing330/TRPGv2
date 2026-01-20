@@ -43,7 +43,7 @@ public class StatTrainingUI : MonoBehaviour
     }
     protected void UpdateTrainingDisplay()
     {
-        partyGoldText.text = partyData.inventory.ReturnGold().ToString();
+        partyGoldText.text = partyData.inventory.GetGold().ToString();
         if (traineeSelect.GetSelected() >= 0 && selectedStat >= 0)
         {
             UpdateTrainingCostDetails();
@@ -76,7 +76,7 @@ public class StatTrainingUI : MonoBehaviour
         }
         else
         {
-            partyData.inventory.LoseGold(int.Parse(trainingCostText.text));
+            partyData.inventory.SpendGold(int.Parse(trainingCostText.text));
         }
         // Increase stat.
         int maxStat = maxStats[selectedStat];

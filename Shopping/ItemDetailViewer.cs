@@ -16,6 +16,7 @@ public class ItemDetailViewer : MonoBehaviour
     public StatDatabase itemData;
     public ActiveSkill active;
     public ActiveDescriptionViewer itemDescriptions;
+    public StatDatabase dungeonItemDescriptions;
     public SelectStatTextList passiveSelect;
     public PassiveDetailViewer passiveDetails;
 
@@ -44,10 +45,21 @@ public class ItemDetailViewer : MonoBehaviour
         passiveDetails.UpdatePassiveNames(equipment.GetPassives()[index], equipment.GetPassiveLevels()[index]);
     }
 
+    public void ResetInfo()
+    {
+        itemName.text = "";
+        itemInfo.text = "";
+    }
+
     public void SetInfo(string newItem, string newDescription)
     {
         itemName.text = newItem;
         itemInfo.text = newDescription;
+    }
+
+    public void ShowDungeonItemInfo(string newItem)
+    {
+        SetInfo(newItem, dungeonItemDescriptions.ReturnValue(newItem));
     }
 
     public void ShowInfo(string newItem)

@@ -60,9 +60,9 @@ public class PartyDataManager : MonoBehaviour
         int penalty = guildCard.GetFailPenalty();
         if (penalty > 0)
         {
-            if (inventory.QuantityExists(penalty))
+            if (inventory.EnoughGold(penalty))
             {
-                inventory.RemoveItemQuantity(penalty);
+                inventory.SpendGold(penalty);
             }
             else
             {

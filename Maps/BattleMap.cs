@@ -116,7 +116,7 @@ public class BattleMap : MapManager
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
         interactables.Clear();
-        InitializeBorders();
+        ResetActors();
     }
     protected override void Start()
     {
@@ -140,6 +140,15 @@ public class BattleMap : MapManager
         return endOfB;
     }
     public List<TacticActor> battlingActors;
+    public void ResetActors()
+    {
+        battlingActors.Clear();
+    }
+    public void AddActorToBattle(TacticActor actor)
+    {
+        battlingActors.Add(actor);
+        UpdateMap();
+    }
     public bool EnemyExists(string spriteName)
     {
         for (int i = 0; i < battlingActors.Count; i++)
@@ -233,11 +242,6 @@ public class BattleMap : MapManager
     public TacticActor ReturnLatestActor()
     {
         return battlingActors[battlingActors.Count - 1];
-    }
-    public void AddActorToBattle(TacticActor actor)
-    {
-        battlingActors.Add(actor);
-        UpdateMap();
     }
     public void MoveActorPassive(TacticActor actor, string effect, string specifics)
     {
@@ -1566,10 +1570,15 @@ public class BattleMap : MapManager
         return all;
     }
 
-    // The tankiest adjacent guarding ally will take the hit for you.
-    public TacticActor GetAdjacentGuardingAlly(TacticActor actor)
+    // The tankiest adjacent/closest guarding ally will take the hit for you.
+    public TacticActor GetGuardingAlly(TacticActor target, TacticActor attacker)
     {
-        List<TacticActor> adjAllies = GetAdjacentAllies(actor);
+        List<TacticActor> adjAllies = GetAdjacentAllies(target);
+        // If melee then need to be in range of both, else just be adjacent to the target.
+        if (DistanceBetweenActors(target, attacker) <= 1)
+        {
+            adjAllies = AdjustForMeleeGuardRange(adjAllies, attacker);
+        }
         int defenseValue = -1;
         int index = -1;
         for (int i = 0; i < adjAllies.Count; i++)
@@ -1582,19 +1591,35 @@ public class BattleMap : MapManager
         }
         if (index < 0)
         {
-            return GetGuardingAllyInRange(actor);
+            return GetGuardingAllyInRange(target, attacker);
         }
         return adjAllies[index];
     }
-    // Any guard that is in guard range, only if there are no adjacent guards.
-    protected TacticActor GetGuardingAllyInRange(TacticActor actor)
+    protected List<TacticActor> AdjustForMeleeGuardRange(List<TacticActor> allies, TacticActor attacker)
     {
-        List<TacticActor> allies = AllAllies(actor);
+        for (int i = allies.Count - 1; i >= 0; i--)
+        {
+            if (!allies[i].Guarding() || DistanceBetweenActors(attacker, allies[i]) > allies[i].GetGuardRange())
+            {
+                allies.RemoveAt(i);
+            }
+        }
+        return allies;
+    }
+    // Any guard that is in guard range, only if there are no adjacent guards.
+    protected TacticActor GetGuardingAllyInRange(TacticActor target, TacticActor attacker)
+    {
+        List<TacticActor> allies = AllAllies(target);
+        // If melee then need to be in range of both, else just have target in guard range.
+        if (DistanceBetweenActors(target, attacker) <= 1)
+        {
+            allies = AdjustForMeleeGuardRange(allies, attacker);
+        }
         int index = -1;
         int defense = -1;
         for (int i = 0; i < allies.Count; i++)
         {
-            if (allies[i].Guarding() && DistanceBetweenActors(actor, allies[i]) <= allies[i].GetGuardRange())
+            if (allies[i].Guarding() && DistanceBetweenActors(target, allies[i]) <= allies[i].GetGuardRange())
             {
                 if (allies[i].GetHealth() > 0 && allies[i].GetDefense() > defense)
                 {

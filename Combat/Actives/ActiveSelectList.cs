@@ -15,25 +15,15 @@ public class ActiveSelectList : SelectList
     public string spellState = "Spell";
     public Inventory inventory;
     public List<string> useableItems;
-    public List<int> useableQuantities;
+    // This needs to be updated on a per actor basis.
     public void UpdateUseableItems()
     {
         useableItems.Clear();
-        useableQuantities.Clear();
         for (int i = 0; i < inventory.items.Count; i++)
         {
             if (activeManager.activeData.KeyExists(inventory.items[i]))
             {
                 useableItems.Add(inventory.items[i]);
-                useableQuantities.Add(int.Parse(inventory.quantities[i]));
-            }
-        }
-        for (int i = useableItems.Count - 1; i >= 0; i--)
-        {
-            if (useableQuantities[i] <= 0)
-            {
-                useableItems.RemoveAt(i);
-                useableQuantities.RemoveAt(i);
             }
         }
     }

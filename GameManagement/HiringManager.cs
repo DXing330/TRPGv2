@@ -93,10 +93,10 @@ public class HiringManager : MonoBehaviour
         int selected = hirelingList.GetSelected();
         if (selected < 0){return;}
         int price = int.Parse(GetPrice());
-        if (inventory.QuantityExists(price))
+        if (inventory.EnoughGold(price))
         {
             string className = currentHirelingClasses[selected];
-            inventory.RemoveItemQuantity(price);
+            inventory.SpendGold(price);
             partyData.HireMember(actorData.ReturnValue(className), currentHirelingNames[selected]);
             currentHirelingClasses.RemoveAt(selected);
             currentHirelingNames.RemoveAt(selected);

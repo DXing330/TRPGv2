@@ -204,7 +204,7 @@ public class CustomPassiveTraining : MonoBehaviour
         passiveStats.SetConditionAndSpecifics(selectedCondition);
         passiveStats.SetTargetEffectAndSpecifics(selectedEffect);
         passiveDetailText.text = GetPassiveDetails(passiveStats.ReturnStats());
-        currentGold.text = partyData.inventory.ReturnGold().ToString();
+        currentGold.text = partyData.inventory.GetGold().ToString();
         cost.text = ((selectedActor.CustomPassiveCount() + 1) * baseCost).ToString();
     }
     public TMP_Text passiveDetailText;
@@ -224,13 +224,13 @@ public class CustomPassiveTraining : MonoBehaviour
         }
         // Check if you can afford it.
         int trainingFee = (selectedActor.CustomPassiveCount() + 1) * baseCost;
-        if (partyData.inventory.ReturnGold() < trainingFee)
+        if (partyData.inventory.GetGold() < trainingFee)
         {
             errorMessage.SetMessage("You cannot afford this training at this time.");
             return;
         }
         // Add the passive to the actor.
-        partyData.inventory.LoseGold(trainingFee);
+        partyData.inventory.SpendGold(trainingFee);
         selectedActor.AddCustomPassive(passiveStats.ReturnStats());
         partyData.UpdatePartyMember(selectedActor, selectedIndex);
         // Refresh data.

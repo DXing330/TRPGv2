@@ -119,7 +119,7 @@ public class BasicPassiveTraining : MonoBehaviour
         currentLevel.text = "";
         nextLevelDetails.text = "";
         cost.text = GetCost().ToString();
-        gold.text = partyData.inventory.ReturnGold().ToString();
+        gold.text = partyData.inventory.GetGold().ToString();
     }
     public void UpdateDetails()
     {
@@ -147,7 +147,7 @@ public class BasicPassiveTraining : MonoBehaviour
             return;
         }
         int cost = GetCost();
-        int gold = partyData.inventory.ReturnGold();
+        int gold = partyData.inventory.GetGold();
         // Check if you can afford it.
         if (cost > gold)
         {
@@ -156,7 +156,7 @@ public class BasicPassiveTraining : MonoBehaviour
             return;
         }
         // Subtract gold.
-        partyData.inventory.LoseGold(cost);
+        partyData.inventory.SpendGold(cost);
         // Gain skill.
         selectedActor.AddPassiveSkill(selectedTraining, "1");
         partyData.UpdatePartyMember(selectedActor, selectedIndex);

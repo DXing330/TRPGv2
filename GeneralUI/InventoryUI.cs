@@ -7,9 +7,12 @@ public class InventoryUI : MonoBehaviour
 {
     public Inventory inventory;
     public DungeonBag dungeonBag;
-    public List<string> keyValues;
-    public List<StatTextText> currentInventoryStuff;
-    public bool dungeon;
+    //public List<string> keyValues;
+    //public List<StatTextText> currentInventoryStuff;
+    public bool inventoryDisplay;
+    public bool dungeonDisplay;
+    public TMP_Text goldString;
+    public TMP_Text inventoryString;
     public TMP_Text dungeonBagString;
 
     void Start()
@@ -19,14 +22,12 @@ public class InventoryUI : MonoBehaviour
 
     public void UpdateKeyValues()
     {
-        for (int i = 0; i < currentInventoryStuff.Count; i++)
+        goldString.text = inventory.GetGold().ToString();
+        if (inventoryDisplay)
         {
-            currentInventoryStuff[i].Reset();
-            if (i >= keyValues.Count){break;}
-            currentInventoryStuff[i].SetStatText(keyValues[i]);
-            currentInventoryStuff[i].SetText(inventory.ReturnQuantityOfItem(keyValues[i]).ToString());
+            inventoryString.text = inventory.ReturnBagLimitString();
         }
-        if (dungeon)
+        if (dungeonDisplay)
         {
             dungeonBagString.text = dungeonBag.ReturnBagLimitString();
         }

@@ -300,7 +300,7 @@ public class DungeonEffectManager : MonoBehaviour
             partyData.dungeonBag.TransformItemsOfType(details[0], details[1]);
             break;
             case "RemoveGold":
-            partyData.inventory.LoseGold(int.Parse(specifics));
+            partyData.inventory.SpendGold(int.Parse(specifics));
             break;
             case "Clear":
             partyData.dungeonBag.DropItems();
