@@ -7,6 +7,7 @@ public class SkillEffect : ScriptableObject
 {
     public GeneralUtility utility;
     public PassiveOrganizer passiveOrganizer;
+    public StatDatabase buffsAndStatus;
     public StatDatabase standardSpells;
     public int basicDenominator = 100;
     public int baseStatusDuration = 3;
@@ -56,7 +57,15 @@ public class SkillEffect : ScriptableObject
                 }
                 break;
             case "Buff":
-                target.AddBuff(effectSpecifics, level);
+                // If it's a new buff, then immediately apply it's effects.
+                int bDuration = level;
+                if (level <= baseStatusDuration && level >= 0) { bDuration = baseStatusDuration; }
+                if (!target.BuffExists(effectSpecifics))
+                {
+                    string[] buffEffects = buffsAndStatus.ReturnValue(effectSpecifics).Split("|");
+                    AffectActor(target, buffEffects[1], buffEffects[2]);
+                }
+                target.AddBuff(effectSpecifics, bDuration);
                 break;
             case "RemoveBuff":
                 target.RemoveBuff(effectSpecifics);

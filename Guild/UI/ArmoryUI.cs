@@ -57,6 +57,15 @@ public class ArmoryUI : MonoBehaviour
         runeGridObject.SetActive(true);
         runeGrid.UpdateRuneGrid(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
     }
+    public GameObject inventoryObject;
+    public InventoryManager inventoryManager;
+    public void ViewInventory()
+    {
+        if (allActors.GetSelected() < 0 || selectedActor == null){return;}
+        inventoryObject.SetActive(true);
+        inventoryManager.SetPartyData(partyData);
+        inventoryManager.SetSelectedID(partyData.ReturnIDAtIndex(allActors.GetSelected()));
+    }
     public GameObject selectEquipObject;
     public SelectStatTextList selectEquipment;
     public ActorSpriteHPList allActors;
@@ -178,6 +187,9 @@ public class ArmoryUI : MonoBehaviour
     {
         selectEquipment.ResetSelected();
         selectEquipObject.SetActive(false);
+        // Disable other panels that might be over the equip panel as well.
+        runeGridObject.SetActive(false);
+        inventoryObject.SetActive(false);
         if (allActors.GetSelected() < 0){return;}
         selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor, true);

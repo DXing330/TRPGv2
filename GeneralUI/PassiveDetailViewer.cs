@@ -353,7 +353,7 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the attacker is on lower elevation";
             case "Elevation>A":
                 return " if the attacker is on higher elevation";
-            case "ElevationSameA":
+            case "ElevationEqualsA":
                 return " if the attacker is on equal elevation";
             case "Elevation<":
                 return " if tile elevation is less than " + specifics;
@@ -722,33 +722,33 @@ public class PassiveDetailViewer : MonoBehaviour
             switch (effect)
             {
                 case "Increase":
-                return " expend "+specifics+" more movement";
+                return " spend " + specifics + " more movement";
                 case "Decrease":
-                return " expend "+specifics+" less movement";
+                return " spend " + specifics + " less movement";
             }
             return "";
-            case "AttackValue":
+            case "AttackValue%":
             switch (effect)
             {
-                case "Increase%":
-                return " increase damage dealt by "+specifics+"%";
-                case "Decrease%":
-                return " decrease damage dealt by "+specifics+"%";
+                case "Increase":
+                return " increase attack damage by " + specifics + "%";
+                case "Decrease":
+                return " decrease attack damage by " + specifics + "%";
             }
-            return " "+effect+" damage dealt by "+specifics;
+            return " " + effect + " attack damage by " + specifics;
             case "Damage%":
-            return " "+effect+" damage multipler by "+specifics+"%";
-            case "DefenseValue":
+            return " " + effect + " damage multipler by " + specifics + "%";
+            case "DefenseValue%":
             switch (effect)
             {
-                case "Increase%":
-                return " increase defense by "+specifics+"%";
-                case "Decrease%":
-                return " ignore "+specifics+"% of defense";
+                case "Increase":
+                return " increase defense by " + specifics + "%";
+                case "Decrease":
+                return " ignore " + specifics + "% of defense";
             }
             return " " + effect + " defense value by " + specifics;
         }
-        return " "+effect+" "+target+" by "+specifics;
+        return " " + effect + " " + target + " by " + specifics;
     }
 
     protected string RelativeDirectionDescriptions(string specifics)

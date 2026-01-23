@@ -33,6 +33,12 @@ public class PartyData : SavedData
         return partyNames[index];
     }
     public List<string> partyIDs;
+    public TacticActor ReturnActorFromID(int ID)
+    {
+        int indexOf = partyIDs.IndexOf(ID.ToString());
+        if (indexOf < 0){return null;}
+        return ReturnActorAtIndex(indexOf);
+    }
     public int GetIDAtIndex(int index)
     {
         return int.Parse(partyIDs[index]);

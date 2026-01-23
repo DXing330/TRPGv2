@@ -143,9 +143,27 @@ public class Inventory : SavedData
     }
     public int GetItemCount(){return items.Count;}
     public List<string> assignedActorIDs;
+    public void UnassignItem(int itemIndex)
+    {
+        assignedActorIDs[itemIndex] = "";
+    }
     public void AssignToActor(int itemIndex, int actorID)
     {
         assignedActorIDs[itemIndex] = actorID.ToString();
+    }
+    public int AssignedToIDCount(int id)
+    {
+        string idStr = id.ToString();
+        int count = 0;
+        for (int i = 0; i < assignedActorIDs.Count; i++)
+        {
+            if (assignedActorIDs[i] == idStr){count++;}
+        }
+        return count;
+    }
+    public string GetAssignedActorIDFromIndex(int index)
+    {
+        return assignedActorIDs[index];
     }
     public void ActorUsesItem(string itemName, int actorID)
     {

@@ -847,7 +847,7 @@ public class ActorStats : ActorPassives
         {
             duration = defaultBuffDuration;
         }
-        int indexOf = statuses.IndexOf(newCondition);
+        int indexOf = buffs.IndexOf(newCondition);
         if (indexOf < 0)
         {
             buffs.Add(newCondition);

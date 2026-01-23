@@ -251,6 +251,24 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public int ReturnPartyMemberIDFromIndex(int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            return permanentPartyData.GetIDAtIndex(selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            return mainPartyData.GetIDAtIndex(selected - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.GetIDAtIndex(selected - permanentCount - mainCount);
+        }
+    }
+
     public string ReturnPartyMemberEquipFromIndex(int selected)
     {
         int permanentCount = permanentPartyData.PartyCount();
@@ -299,6 +317,38 @@ public class PartyDataManager : MonoBehaviour
         count += mainPartyData.PartyCount();
         count += tempPartyData.PartyCount();
         return count;
+    }
+
+    public TacticActor ReturnActorFromID(int id)
+    {
+        TacticActor actor = permanentPartyData.ReturnActorFromID(id);
+        if (actor == null)
+        {
+            actor = mainPartyData.ReturnActorFromID(id);
+        }
+        if (actor == null)
+        {
+            actor = tempPartyData.ReturnActorFromID(id);
+        }
+        return actor;
+    }
+
+    public int ReturnIDAtIndex(int index)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (index < permanentCount)
+        {
+            return permanentPartyData.GetIDAtIndex(index);
+        }
+        else if (index < permanentCount + mainCount)
+        {
+            return mainPartyData.GetIDAtIndex(index - permanentCount);
+        }
+        else
+        {
+            return tempPartyData.GetIDAtIndex(index - permanentCount - mainCount);
+        }
     }
 
     public TacticActor ReturnActorAtIndex(int index)
@@ -536,10 +586,6 @@ public class PartyDataManager : MonoBehaviour
         {
             testID = tempPartyData.GetIDAtIndex(index - permanentCount - mainCount);
         }
-        Debug.Log("i:" + index);
-        Debug.Log("ID:" + ID);
-        Debug.Log("Checked ID:" + testID);
-        Debug.Log(testID == ID);
         return (testID == ID);
     }
 

@@ -37,11 +37,13 @@ public class AttackManagerTester : MonoBehaviour
     public int guardRange;
     public TacticActor dummyGuard;
     public string guardStats;
+    // Active Testing.
+    public ActiveManager activeManager;
+    public string activeName;
+    public int activeTargetTile;
 
-    [ContextMenu("Test Attack")]
-    public void TestAttack()
+    protected void InitializeMap()
     {
-        // Initialize the map?
         map.ForceStart();
         map.combatLog.ForceStart();
         map.combatLog.AddNewLog();
@@ -65,29 +67,45 @@ public class AttackManagerTester : MonoBehaviour
         map.ChangeTile(defenderLocation, "Tile", defenderTile, true);
         map.ChangeTile(defenderLocation, "TerrainEffect", defenderTEffect, true);
         map.ChangeTile(defenderLocation, "Borders", String.Join("|", defenderBorders), true);
-        // Set up the guard if you want.
+        dummyGuard.SetStatsFromString(guardStats);
+        dummyGuard.InitializeStats();
+        passiveOrganizer.OrganizeActorPassives(dummyGuard);
         if (guard)
         {
-            dummyGuard.SetStatsFromString(guardStats);
-            dummyGuard.InitializeStats();
-            passiveOrganizer.OrganizeActorPassives(dummyGuard);
             dummyGuard.GainGuard(guardDuration, guardRange);
-            dummyGuard.SetLocation(guardLocation);
-            dummyGuard.SetDirection(guardDirection);
-            dummyGuard.ResetTarget();
-            map.ChangeTile(guardLocation, "Tile", guardTile, true);
-            map.ChangeTile(guardLocation, "TerrainEffect", guardTEffect, true);
-            map.ChangeTile(guardLocation, "Borders", String.Join("|", guardBorders), true);
-            // Align the teams and add them to the battle.
-            dummyAttacker.SetTeam(0);
-            dummyDefender.SetTeam(1);
-            dummyGuard.SetTeam(1);
-            map.AddActorToBattle(dummyAttacker);
-            map.AddActorToBattle(dummyDefender);
-            map.AddActorToBattle(dummyGuard);
         }
+        dummyGuard.SetLocation(guardLocation);
+        dummyGuard.SetDirection(guardDirection);
+        dummyGuard.ResetTarget();
+        map.ChangeTile(guardLocation, "Tile", guardTile, true);
+        map.ChangeTile(guardLocation, "TerrainEffect", guardTEffect, true);
+        map.ChangeTile(guardLocation, "Borders", String.Join("|", guardBorders), true);
+        dummyAttacker.SetTeam(0);
+        dummyDefender.SetTeam(1);
+        dummyGuard.SetTeam(1);
+        map.AddActorToBattle(dummyAttacker);
+        map.AddActorToBattle(dummyDefender);
+        map.AddActorToBattle(dummyGuard);
+    }
+
+    [ContextMenu("Test Attack")]
+    public void TestAttack()
+    {
+        InitializeMap();
+        // Set up the guard if you want.
         // Show all the passives that are taking effect.
         attackManager.ActorAttacksActor(dummyAttacker, dummyDefender, map);
         map.combatLog.DebugLatestDetailsLog();
+    }
+
+    [ContextMenu("Test Active")]
+    public void TestActive()
+    {
+        InitializeMap();
+        activeManager.SetSkillUser(dummyAttacker);
+        activeManager.SetSkillFromName(activeName);
+        activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder);
+        activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder);
+        battleManager.ActivateSkill(activeName, dummyAttacker);
     }
 }

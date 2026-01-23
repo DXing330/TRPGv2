@@ -21,6 +21,10 @@ public class AttackManager : ScriptableObject
     protected int advantage;
     protected int baseDamage;
     protected int damageMultiplier;
+    protected int attackDamageMultiplier;
+    protected int bonusDamage;
+    protected int defenseMultiplier;
+    protected int bonusDefense;
     // Based on defender.
     protected int dodgeChance;
     protected int defenseValue;
@@ -117,6 +121,25 @@ public class AttackManager : ScriptableObject
         }
         return damage;
     }
+    public void AttackDefenseMultipliersBonuses(bool attack = true, bool defense = true, bool showLog = true)
+    {
+        if (showLog)
+        {
+            finalDamageCalculation += "Attack Bonus: " + baseDamage + " * " + attackDamageMultiplier + "% + " + bonusDamage + " = ";
+        }
+        baseDamage = (baseDamage * attackDamageMultiplier / baseMultiplier) + bonusDamage;
+        if (showLog)
+        {
+            finalDamageCalculation += baseDamage + "\n";
+
+            finalDamageCalculation += "Defense Bonus: " + defenseValue + " * " + defenseMultiplier + "% + " + bonusDefense + " = ";
+        }
+        defenseValue = (defenseValue * defenseMultiplier / baseMultiplier) + bonusDefense;
+        if (showLog)
+        {
+            finalDamageCalculation += defenseValue + "\n";
+        }
+    }
     // Simplified since it's just bonus damage.
     protected void ElementalBonusDamage(TacticActor dealer, TacticActor receiver, int damage, string element, BattleMap map = null)
     {
@@ -205,8 +228,6 @@ public class AttackManager : ScriptableObject
         attacker.SetDirection(map.DirectionBetweenActors(attacker, defender));
         UpdateBattleStats(attacker, defender);
         baseDamage = attackValue;
-        if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
-        else { damageMultiplier = attackMultiplier; }
         // True damage ignores defender/terrain passives, making it even stronger than it should be.
         CheckMapPassives(attacker, defender, map, defender.GetLocation(), true, false);
         CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map);
@@ -219,12 +240,9 @@ public class AttackManager : ScriptableObject
                 baseDamage = attacker.GetDefense();
                 break;
         }
-        baseDamage = damageMultiplier * baseDamage / baseMultiplier;
-        int critRoll = Random.Range(0, 100);
-        if (critRoll < attacker.GetCritChance())
-        {
-            baseDamage = baseDamage * attacker.GetCritDamage() / baseMultiplier;
-        }
+        baseDamage = Advantage(baseDamage, advantage);
+        baseDamage = CritRoll(attacker, baseDamage);
+        // No damage/attack/defense multiplier, true damage can't be increased or decreased besides crit/advantage.
         defender.SetTarget(attacker);
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
@@ -238,6 +256,10 @@ public class AttackManager : ScriptableObject
         hitChance = attacker.GetHitChance();
         critChance = attacker.GetCritChance();
         critDamage = attacker.GetCritDamage();
+        attackDamageMultiplier = 100;
+        defenseMultiplier = 100;
+        bonusDamage = 0;
+        bonusDefense = 0;
     }
     // Basic attack damage calculation
     public void ActorAttacksActor(TacticActor attacker, TacticActor target, BattleMap map, int attackMultiplier = -1, string type = "Physical")
@@ -272,6 +294,8 @@ public class AttackManager : ScriptableObject
         baseDamage = ElementalMastery(attacker, baseDamage, type);
         // Check for a critical hit.
         baseDamage = CritRoll(attacker, baseDamage);
+        // Apply Attack / Defense Multipliers/Bonuses.
+        AttackDefenseMultipliersBonuses();
         // First subtract defense.
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defenseValue + " = ";
         baseDamage = baseDamage - defenseValue;
@@ -291,6 +315,7 @@ public class AttackManager : ScriptableObject
         map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, attackTarget, baseDamage);
         map.combatLog.AddDetailedLogs(passiveEffectString);
+        map.combatLog.AddDetailedLogs("Damage Calculations:");
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
         // Check if the defender is alive, has counter attacks available and is in range.
@@ -361,7 +386,7 @@ public class AttackManager : ScriptableObject
             break;
             case "Damage%":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + damageMultiplier+"->";
+            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + damageMultiplier + "->";
             damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
             if (damageMultiplier < 0)
             {
@@ -371,15 +396,27 @@ public class AttackManager : ScriptableObject
             break;
             case "AttackValue":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + baseDamage+"->";
-            baseDamage = passive.AffectInt(baseDamage, passiveStats[4], passiveStats[5]);
-            passiveEffectString += baseDamage;
+            passiveEffectString += passiveName + "; " + "Bonus Damage" + ":" + bonusDamage + "->";
+            bonusDamage = passive.AffectInt(bonusDamage, passiveStats[4], passiveStats[5]);
+            passiveEffectString += bonusDamage;
             break;
             case "DefenseValue":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + defenseValue + "->";
-            defenseValue = passive.AffectInt(defenseValue, passiveStats[4], passiveStats[5]);
-            passiveEffectString += defenseValue;
+            passiveEffectString += passiveName + "; " + "Bonus Defense" + ":" + bonusDefense + "->";
+            bonusDefense = passive.AffectInt(bonusDefense, passiveStats[4], passiveStats[5]);
+            passiveEffectString += bonusDefense;
+            break;
+            case "AttackValue%":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + "; " + "Attack Multiplier" + ":" + attackDamageMultiplier + "->";
+            attackDamageMultiplier = passive.AffectInt(attackDamageMultiplier, passiveStats[4], passiveStats[5]);
+            passiveEffectString += attackDamageMultiplier;
+            break;
+            case "DefenseValue%":
+            passiveEffectString += "\n";
+            passiveEffectString += passiveName + "; " + "Defense Multiplier" + ":" + defenseMultiplier + "->";
+            defenseMultiplier = passive.AffectInt(defenseMultiplier, passiveStats[4], passiveStats[5]);
+            passiveEffectString += defenseMultiplier;
             break;
             case "HitChance":
             passiveEffectString += "\n";
