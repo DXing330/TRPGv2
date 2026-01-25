@@ -19,9 +19,10 @@ public class ActiveSelectList : SelectList
     public void UpdateUseableItems()
     {
         useableItems.Clear();
+        string ID = battle.GetTurnActor().GetID().ToString();
         for (int i = 0; i < inventory.items.Count; i++)
         {
-            if (activeManager.activeData.KeyExists(inventory.items[i]))
+            if (inventory.GetAssignedActorIDFromIndex(i) == ID && activeManager.activeData.KeyExists(inventory.items[i]))
             {
                 useableItems.Add(inventory.items[i]);
             }
@@ -138,7 +139,8 @@ public class ActiveSelectList : SelectList
             ResetSelectables();
             return;
         }
-        else if (battle.GetTurnActor().GetActions() <= 0) { return; }
+        // Some items can be used with 0 actions. 
+        //else if (battle.GetTurnActor().GetActions() <= 0) { return; }
         SetSelectables(useableItems);
         activeManager.SetSkillUser(battle.GetTurnActor());
         activeManager.ResetTargetedTiles();
@@ -167,31 +169,26 @@ public class ActiveSelectList : SelectList
         {
             // Show an error message instead of just returning?
             ErrorMessage("Not enough resources to use this skill.");
-            ResetState();
             return;
         }
         // Don't do anything unless a target has been selected.
         if (!activeManager.ExistTargetedTiles())
         {
             ErrorMessage(errorMessages[2]);
-            ResetState();
             return;
         }
         // Its a spell then do something a little different
         if (battle.GetState() == spellState)
         {
             ActivateSpell();
-            ResetState();
             return;
         }
         battle.ActivateSkill(selected);
         battle.turnNumber = battle.map.RemoveActorsFromBattle(battle.GetTurnIndex());
         battle.UI.battleStats.UpdateStats();
+        // Deal with stealing items later.
         // Check if the skill you just used was an item.
-        if (inventory.ItemExists(selected))
-        {
-            inventory.RemoveItemQuantity(1, selected);
-        }
+        inventory.ActorUsesItem(selected, battle.GetTurnActor().GetID());
         ResetState();
         mainPanel.SetActive(false);
     }
@@ -202,7 +199,6 @@ public class ActiveSelectList : SelectList
         {
             // Show an error message instead of just returning?
             ErrorMessage("Not enough resources to cast this spell.");
-            ResetState();
             return;
         }
         battle.ActivateSpell();

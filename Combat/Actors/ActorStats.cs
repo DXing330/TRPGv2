@@ -432,6 +432,11 @@ public class ActorStats : ActorPassives
         TakeDamage(damage, type);
         return damage;
     }
+    // Luck stat for fun.
+    public int luck;
+    public void SetLuck(int newInfo){luck = newInfo;}
+    public int GetLuck(){return luck;}
+    public void ChangeLuck(int amount){luck += amount;}
     // How much bonus vigor you get from consuming 1 mana.
     // Can be negative.
     protected int vigorScaling;
@@ -615,6 +620,7 @@ public class ActorStats : ActorPassives
         baseDodge = initialDodge;
         baseCrit = initialCrit;
         baseCritDamage = initialCritDamage;
+        luck = 0;
         vigorScaling = 0;
         currentVigor = 0;
         ClearStatuses();

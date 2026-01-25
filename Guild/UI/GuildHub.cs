@@ -9,9 +9,13 @@ public class GuildHub : MonoBehaviour
     public InventoryUI inventoryUI;
     public References references;
     public TMP_Text guildRank;
-    protected void UpdateGuildRank()
+    public TMP_Text currentDay;
+    public TMP_Text lastPayDay;
+    protected void UpdateUI()
     {
         guildRank.text = partyData.guildCard.GetGuildRankName();
+        currentDay.text = storyDay.GetDay().ToString();
+        lastPayDay.text = storyDay.GetLastPayDay().ToString();
     }
     public List<string> questItems;
     public List<string> questTempMembers;
@@ -22,7 +26,7 @@ public class GuildHub : MonoBehaviour
         NextStory();
         UpdateStory();
         partyData.Save();
-        UpdateGuildRank();
+        UpdateUI();
     }
 
     public void CollectPay()
@@ -95,7 +99,7 @@ public class GuildHub : MonoBehaviour
             mainStory.NextChapter(partyData);
             storyDay.NewQuest();
             ShowNextChapter();
-            UpdateGuildRank();
+            UpdateUI();
         }
     }
 

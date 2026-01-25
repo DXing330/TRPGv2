@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class ActiveManager : MonoBehaviour
 {
+    public GeneralUtility utility;
     public MagicSpell magicSpell;
     public void SetSpell(string spellInfo)
     {
@@ -151,6 +152,18 @@ public class ActiveManager : MonoBehaviour
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
                     battle.map.ChangeTerrain(targetedTiles[i], specifics);
+                }
+                return;
+            case "Border":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeBorder(targetedTiles[i], skillUser.GetDirection(), specifics);
+                }
+                return;
+            case "AllBorders":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    battle.map.ChangeAllBorders(targetedTiles[i], specifics);
                 }
                 return;
             case "Attack+Tile":

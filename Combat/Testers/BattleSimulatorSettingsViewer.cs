@@ -66,6 +66,16 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
         }
     }
     public SelectStatTextList terrainSelect;
+    public void SelectAllTerrain()
+    {
+        simulatorState.SelectAllTerrain();
+        UpdateViewer();
+    }
+    public void SelectNoTerrain()
+    {
+        simulatorState.ResetSelectedTerrain();
+        UpdateViewer();
+    }
     public void SelectTerrain()
     {
         simulatorState.SelectTerrainType(terrainSelect.GetSelected());
@@ -91,6 +101,16 @@ public class BattleSimulatorSettingsViewer : MonoBehaviour
         terrainSelect.SetPage(page);
     }
     public SelectStatTextList weatherSelect;
+    public void SelectAllWeather()
+    {
+        simulatorState.SelectAllWeather();
+        UpdateViewer();
+    }
+    public void SelectNoWeather()
+    {
+        simulatorState.ResetSelectedWeather();
+        UpdateViewer();
+    }
     public void SelectWeather()
     {
         simulatorState.SelectWeather(weatherSelect.GetSelected());

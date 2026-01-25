@@ -71,6 +71,9 @@ public class BattleSimulator : MonoBehaviour
         }
         simulatorPanel.SetActive(false);
         simulatorState.SetTerrainType();
+        // These are copied from the state upon starting, make sure the manager is pointing to the right state.
+        battleManager.map.SetTime(simulatorState.GetTime());
+        battleManager.map.SetWeather(simulatorState.GetWeather());
         simulatorState.ApplyBattleModifiers();
         battleManagerObject.SetActive(true);
     }

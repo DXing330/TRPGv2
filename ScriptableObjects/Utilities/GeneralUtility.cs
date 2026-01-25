@@ -9,6 +9,13 @@ using TMPro;
 [CreateAssetMenu(fileName = "Utility", menuName = "ScriptableObjects/Utility/GeneralUtility", order = 1)]
 public class GeneralUtility : ScriptableObject
 {
+    public void DebugList<T>(List<T> dList)
+    {
+        for (int i = 0; i < dList.Count; i++)
+        {
+            Debug.Log(dList[i]);
+        }
+    }
     public int ChangeIndex(int currentIndex, bool right, int maxIndex, int minIndex = 0)
     {
         if (right)
@@ -410,6 +417,12 @@ public class GeneralUtility : ScriptableObject
         }
         // Not sure how to get here.
         return -1;
+    }
+
+    public int Roll(int modifier, int diceSize = 100)
+    {
+        if (diceSize <= 1){return 0;}
+        return UnityEngine.Random.Range(0, diceSize) + modifier;
     }
 
     public int RollRarity(int maxRarity, int rollBonus = 0)

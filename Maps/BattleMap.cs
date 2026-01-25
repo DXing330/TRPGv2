@@ -116,6 +116,8 @@ public class BattleMap : MapManager
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
         interactables.Clear();
+        // Reset borders.
+        InitializeBorders();
         ResetActors();
     }
     protected override void Start()
@@ -538,6 +540,20 @@ public class BattleMap : MapManager
     // List of actor directions on tiles.
     public List<string> actorDirections;
     public StatDatabase tileTileInteractions;
+    public void ChangeBorder(int tileNumber, int direction, string effect)
+    {
+        mapTiles[tileNumber].ChangeBorder(effect, direction);
+        UpdateTileBorderSprites(tileNumber);
+        UpdateBorders();
+        battleManager.moveManager.SetBorders(borderDetails);
+    }
+    public void ChangeAllBorders(int tileNumber, string effect)
+    {
+        mapTiles[tileNumber].ChangeAllBorders(effect);
+        UpdateTileBorderSprites(tileNumber);
+        UpdateBorders();
+        battleManager.moveManager.SetBorders(borderDetails);
+    }
     // Called during some battle passives.
     public void ChangeTile(int tileNumber, string effect, string specifics, bool force = false)
     {

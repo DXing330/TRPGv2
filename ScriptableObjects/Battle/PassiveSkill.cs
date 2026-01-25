@@ -25,7 +25,7 @@ public class PassiveSkill : SkillEffect
         map.ChangeTile(actor.GetLocation(), effect, specifics);
     }
 
-    public void ApplyStartBattlePassives(TacticActor actor, StatDatabase allData, BattleState battleState)
+    public void ApplyStartBattlePassives(TacticActor actor, BattleState battleState)
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
         if (startBattlePassives.Count <= 0) { return; }
@@ -57,7 +57,69 @@ public class PassiveSkill : SkillEffect
         }
     }
 
-    public void ApplyPassives(TacticActor actor, StatDatabase allData, string timing, BattleMap map)
+    public void ApplyPassive(TacticActor actor, BattleMap map, string passive)
+    {
+        List<TacticActor> targets = new List<TacticActor>();
+        List<int> tiles = new List<int>();
+        List<string> passiveData = passive.Split("|").ToList();
+        if (passiveData.Count <= 4) { return; }
+        if (!CheckStartEndConditions(actor, passiveData[1], passiveData[2], map)){return;}
+        string[] effects = passiveData[4].Split(",");
+        string[] effectSpecifics = passiveData[5].Split(",");
+        for (int i = 0; i < effects.Length; i++)
+        {
+            switch (passiveData[3])
+            {
+                // Move based on wording (effect) and distance (specifics).
+                case "MoveSelf":
+                    map.MoveActorPassive(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    break;
+                case "Self":
+                    AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    break;
+                case "AdjacentAllies":
+                    AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    targets = map.GetAdjacentAllies(actor);
+                    for (int j = 0; j < targets.Count; j++)
+                    {
+                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    }
+                    break;
+                case "AdjacentEnemies":
+                    targets = map.GetAdjacentEnemies(actor);
+                    for (int j = 0; j < targets.Count; j++)
+                    {
+                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    }
+                    break;
+                case "AdjacentActors":
+                    break;
+                case "BackAllies":
+                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 2));
+                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
+                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 4));
+                    targets = map.ReturnAlliesInTiles(actor, tiles);
+                    for (int j = 0; j < targets.Count; j++)
+                    {
+                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    }
+                    break;
+                case "BackAlly":
+                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
+                    targets = map.ReturnAlliesInTiles(actor,tiles);
+                    for (int j = 0; j < targets.Count; j++)
+                    {
+                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
+                    }
+                    break;
+                case "Map":
+                    AffectMap(actor, effects[i], effectSpecifics[i], map);
+                    break;
+            }
+        }
+    }
+
+    public void ApplyPassives(TacticActor actor, string timing, BattleMap map)
     {
         List<string> passives = new List<string>();
         if (timing == "End")
@@ -68,71 +130,9 @@ public class PassiveSkill : SkillEffect
         {
             passives = actor.GetStartTurnPassives();
         }
-        List<string> passiveData = new List<string>();
-        List<TacticActor> targets = new List<TacticActor>();
-        List<int> tiles = new List<int>();
         for (int h = passives.Count - 1; h >= 0; h--)
         {
-            targets.Clear();
-            passiveData = passives[h].Split("|").ToList();
-            if (passiveData.Count <= 4) { continue; }
-            if (!CheckStartEndConditions(actor, passiveData[1], passiveData[2], map))
-            {
-                continue;
-            }
-            string[] effects = passiveData[4].Split(",");
-            string[] effectSpecifics = passiveData[5].Split(",");
-            for (int i = 0; i < effects.Length; i++)
-            {
-                switch (passiveData[3])
-                {
-                    // Move based on wording (effect) and distance (specifics).
-                    case "MoveSelf":
-                        map.MoveActorPassive(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        break;
-                    case "Self":
-                        AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        break;
-                    case "AdjacentAllies":
-                        AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        targets = map.GetAdjacentAllies(actor);
-                        for (int j = 0; j < targets.Count; j++)
-                        {
-                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        }
-                        break;
-                    case "AdjacentEnemies":
-                        targets = map.GetAdjacentEnemies(actor);
-                        for (int j = 0; j < targets.Count; j++)
-                        {
-                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        }
-                        break;
-                    case "AdjacentActors":
-                        break;
-                    case "BackAllies":
-                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 2));
-                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
-                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 4));
-                        targets = map.ReturnAlliesInTiles(actor, tiles);
-                        for (int j = 0; j < targets.Count; j++)
-                        {
-                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        }
-                        break;
-                    case "BackAlly":
-                        tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
-                        targets = map.ReturnAlliesInTiles(actor,tiles);
-                        for (int j = 0; j < targets.Count; j++)
-                        {
-                            AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                        }
-                        break;
-                    case "Map":
-                        AffectMap(actor, effects[i], effectSpecifics[i], map);
-                        break;
-                }
-            }
+            ApplyPassive(actor, map, passives[h]);
         }
     }
 
@@ -291,6 +291,11 @@ public class PassiveSkill : SkillEffect
             return actor.Grappling();
             case "Grappled":
             return actor.Grappled();
+            case "BadRNG":
+            return utility.Roll(actor.GetLuck()) < int.Parse(conditionSpecifics);
+            // Good RNG means you want to roll lower to get the chance.
+            case "GoodRNG":
+            return utility.Roll(-actor.GetLuck()) < int.Parse(conditionSpecifics);
         }
         // Most of them have no condition.
         return true;
@@ -501,6 +506,16 @@ public class PassiveSkill : SkillEffect
                 return target.Grappling();
             case "GrappledD":
                 return target.Grappled();
+            // Bad RNG means you want to roll higher to avoid the chance.
+            case "BadRNGA":
+                return utility.Roll(attacker.GetLuck()) < int.Parse(conditionSpecifics);
+            case "BadRNGD":
+                return utility.Roll(target.GetLuck()) < int.Parse(conditionSpecifics);
+            // Good RNG means you want to roll lower to get the chance.
+            case "GoodRNGA":
+                return utility.Roll(-attacker.GetLuck()) < int.Parse(conditionSpecifics);
+            case "GoodRNGD":
+                return utility.Roll(-target.GetLuck()) < int.Parse(conditionSpecifics);
         }
         return true;
     }

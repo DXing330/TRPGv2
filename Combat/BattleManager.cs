@@ -103,9 +103,9 @@ public class BattleManager : MonoBehaviour
         map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
         interactableMaker.GetNewInteractables(map, battleMapFeatures.CurrentMapInteractables());
         map.InitializeElevations();
-        map.InitializeBorders();
         moveManager.SetMapInfo(map.mapInfo);
         moveManager.SetMapElevations(map.mapElevations);
+        moveManager.SetBorders(map.borderDetails);
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
         List<TacticActor> actors = new List<TacticActor>();
@@ -363,7 +363,8 @@ public class BattleManager : MonoBehaviour
     public void SetState(string newState)
     {
         map.UpdateMap();
-        if (newState == selectedState)
+        // Only some states reset when double clicked.
+        if (newState == selectedState && selectedState == "Move")
         {
             ResetState();
             return;
@@ -389,13 +390,8 @@ public class BattleManager : MonoBehaviour
             case "Attack":
                 StartAttacking();
                 break;
-            case "Skill":
-                map.ResetHighlights();
-                break;
-            case "Spell":
-                map.ResetHighlights();
-                break;
-            case "Item":
+            // Spells/Items/Actives are the same.
+            default:
                 map.ResetHighlights();
                 break;
         }

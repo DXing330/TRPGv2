@@ -542,6 +542,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target is grappling";
             case "GrappledD":
                 return " if the target is grappled";
+            case "BadRNG":
+                return " with ~" + specifics + "% chance";
+            case "GoodRNG":
+                return " with ~" + specifics + "% chance";
         }
         return "";
     }

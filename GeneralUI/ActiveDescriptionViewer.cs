@@ -138,6 +138,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Attack the target(s)  with " + APD(p) + "% damage, create " + ASD(s) + " on targeted tile(s).";
             case "Tile":
                 return "Try to change the targeted tile(s) to " + ASD(s) + ".";
+            case "Border":
+                return "Create " + ASD(s) + " borders on the target's tile(s) based on current direction.";
+            case "AllBorders":
+                return "Create " + ASD(s) + " borders on the target's tile(s).";
             case "True Attack":
                 return "Deal damage equal to " + APD(p) + "% of " + ASD(s) + ".";
             case "ElementalDamage":

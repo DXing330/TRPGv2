@@ -86,8 +86,9 @@ public class MapTile : MonoBehaviour
             SetBorder(newBorder, i ,borderSprite);
         }
     }
-    public void SetBorder(string newBorder, int direction, Sprite borderSprite = null)
+    public void ChangeBorder(string newBorder, int direction)
     {
+        if (direction < 0 || direction >= borderDetails.Count){return;}
         borderDetails[direction] = newBorder;
         if (newBorder == "")
         {
@@ -95,6 +96,17 @@ public class MapTile : MonoBehaviour
             return;
         }
         borderObjects[direction].SetActive(true);
+    }
+    public void ChangeAllBorders(string newBorder)
+    {
+        for (int i = 0; i < borderDetails.Count; i++)
+        {
+            ChangeBorder(newBorder, i);
+        }
+    }
+    public void SetBorder(string newBorder, int direction, Sprite borderSprite = null)
+    {
+        ChangeBorder(newBorder, direction);
         borderImages[direction].sprite = borderSprite;
     }
     public void UpdateBorderImage(int direction, Sprite borderSprite)

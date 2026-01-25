@@ -14,6 +14,14 @@ public class BattleSimulatorState : BattleState
     // Select which terrains that battle may take place one, then randomly select one of the selected.
     public List<string> allTerrainTypes;
     public List<string> selectedTerrainTypes;
+    public void ResetSelectedTerrain()
+    {
+        selectedTerrainTypes.Clear();
+    }
+    public void SelectAllTerrain()
+    {
+        selectedTerrainTypes = new List<string>(allTerrainTypes);
+    }
     public void SelectTerrainType(int index)
     {
         string newInfo = allTerrainTypes[index];
@@ -49,6 +57,14 @@ public class BattleSimulatorState : BattleState
     }
     public List<string> allWeathers;
     public List<string> selectedWeathers;
+    public void ResetSelectedWeather()
+    {
+        selectedWeathers.Clear();
+    }
+    public void SelectAllWeather()
+    {
+        selectedWeathers = new List<string>(allWeathers);
+    }
     public void SelectWeather(int index)
     {
         string newInfo = allWeathers[index];

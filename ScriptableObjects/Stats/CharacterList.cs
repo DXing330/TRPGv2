@@ -248,6 +248,12 @@ public class CharacterList : ScriptableObject
         }
     }
 
+    // Mainly for testing. Just add the sprite name.
+    public void AddCharacter(string newCharacter)
+    {
+        characters.Add(newCharacter);
+    }
+
     public void UpdateBasedOnPartyData(PartyData partyData)
     {
         ResetLists();

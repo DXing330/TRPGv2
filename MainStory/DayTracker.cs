@@ -10,8 +10,10 @@ public class DayTracker : SavedData
 {
     // Keep track of the day obviously.
     public int day;
+    public int GetDay(){return day;}
     // Get paid every day?
     public int lastPayDay;
+    public int GetLastPayDay(){return lastPayDay;}
     public int PayDateDifference()
     {
         return day - lastPayDay;

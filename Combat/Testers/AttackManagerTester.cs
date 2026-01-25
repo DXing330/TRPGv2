@@ -11,6 +11,7 @@ public class AttackManagerTester : MonoBehaviour
     public PassiveOrganizer passiveOrganizer;
     // Map Stuff 
     public BattleMap map;
+    public string dummyTime;
     public string dummyWeather;
     public int attackerLocation;
     public int attackerDirection;
@@ -60,6 +61,7 @@ public class AttackManagerTester : MonoBehaviour
         dummyDefender.SetDirection(defenderDirection);
         dummyDefender.ResetTarget();
         // Set up the attack conditions.
+        map.SetTime(dummyTime);
         map.SetWeather(dummyWeather);
         map.ChangeTile(attackerLocation, "Tile", attackerTile, true);
         map.ChangeTile(attackerLocation, "TerrainEffect", attackerTEffect, true);

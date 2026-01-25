@@ -119,8 +119,8 @@ public class BattleUIManager : MonoBehaviour
     {
         turnOrder.UpdateTurnOrder(battleManager.map.battlingActors, battleManager.GetTurnIndex());
     }
-    // State 4 - Map Details.
-    public int mapDetailState = 4;
+    // State 3 - Map Details.
+    public int mapDetailState = 3;
     public bool ViewingDetails()
     {
         return mapDetailState == state;
