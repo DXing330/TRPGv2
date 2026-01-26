@@ -138,11 +138,6 @@ public class MoveCostManager : MonoBehaviour
         pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), currentMoveCosts);
     }
 
-    public int MoveCostOfTile(int tileIndex)
-    {
-        return actorPathfinder.GetCurrentMoveCosts()[tileIndex];
-    }
-
     protected int ClosestAdjacentTile(int tile)
     {
         return actorPathfinder.ClosestAdjacentTile(tile);
@@ -174,6 +169,11 @@ public class MoveCostManager : MonoBehaviour
             moveCost += mvCst[path[i]];
         }
         return moveCost;
+    }
+
+    public int MoveCostOfTile(int tileNumber)
+    {
+        return actorPathfinder.GetCurrentMoveCosts()[tileNumber];
     }
 
     public List<int> GetAllReachableTiles(TacticActor actor, List<TacticActor> actors, bool current = true)

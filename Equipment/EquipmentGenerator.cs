@@ -75,7 +75,7 @@ public class EquipmentGenerator : MonoBehaviour
         dummyEquip.SetType(type);
         dummyEquip.SetRarity(rarity.ToString());
         dummyEquip.SetMaxUpgrades(equipmentMaxUpgrades[rarity]);
-        dummyEquip.SetRuneSlots(Random.Range(1, Mathf.Min(maxRuneSlots,rarity) + 1));
+        dummyEquip.SetRuneSlots(Random.Range(Mathf.Min(maxRuneSlots,rarity) / 2, Mathf.Min(maxRuneSlots,rarity) + 1));
         for (int i = 0; i < basePassiveLevels; i++)
         {
             GenerateRandomPassive(dummyEquip, slot);

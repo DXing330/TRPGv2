@@ -85,10 +85,10 @@ public class PassiveOrganizer : ScriptableObject
             case "End":
                 endTurnPassives.Add(passiveDetails);
                 break;
-            case "Attacking":
+            case "Attack":
                 attackingPassives.Add(passiveDetails);
                 break;
-            case "Defending":
+            case "Defend":
                 defendingPassives.Add(passiveDetails);
                 break;
             case "BS":

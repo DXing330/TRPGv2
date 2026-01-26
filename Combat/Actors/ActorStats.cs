@@ -614,7 +614,7 @@ public class ActorStats : ActorPassives
     }
     // Stats that are not stored in the stat string.
     // Call this before making an actor to ensure that the actor has a fresh start.
-    public void InitializeStats()
+    public virtual void InitializeStats()
     {
         baseHitChance = initialHitChance;
         baseDodge = initialDodge;

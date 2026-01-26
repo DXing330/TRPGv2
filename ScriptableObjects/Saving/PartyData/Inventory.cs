@@ -9,8 +9,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Inventory", menuName = "ScriptableObjects/DataContainers/SavedData/Inventory", order = 1)]
 public class Inventory : SavedData
 {
-    // Need to know which items can be assigned to actors.
-    public StatDatabase activeData;
     public string delimiterTwo;
     // GOLD
     public int gold;
@@ -45,7 +43,7 @@ public class Inventory : SavedData
         GainGold(Mathf.Max(1, days * rank));
     }
     // ITEM LIMIT
-    protected int minimumItemLimit = 16;
+    protected int minimumItemLimit = 32;
     public int itemLimit;
     public void SetItemLimit(int newInfo)
     {
@@ -210,6 +208,7 @@ public class Inventory : SavedData
     // Always add/remove items/IDs together
     protected void GainItem(string itemName)
     {
+        if (InventoryFull()){return;}
         if (itemName.Length <= 1){return;}
         items.Add(itemName);
         assignedActorIDs.Add("");
@@ -240,6 +239,10 @@ public class Inventory : SavedData
             }
         }
     }
+    public void RemoveRune(string runeName)
+    {
+        RemoveItem(runeName);
+    }
     // Should only be called after confirming that the quantity exists.
     public void RemoveItemQuantity(int quantity, string itemName)
     {
@@ -259,6 +262,7 @@ public class Inventory : SavedData
     {
         for (int i = 0; i < quantity; i++)
         {
+            if (InventoryFull()){break;}
             GainItem(itemName);
         }
     }

@@ -222,10 +222,10 @@ public class ActorPassives : MonoBehaviour
             case "End":
                 endTurnPassives.Add(passiveName);
                 break;
-            case "Attacking":
+            case "Attack":
                 attackingPassives.Add(passiveName);
                 break;
-            case "Defending":
+            case "Defend":
                 defendingPassives.Add(passiveName);
                 break;
             case "BS":
@@ -255,10 +255,10 @@ public class ActorPassives : MonoBehaviour
             case "End":
                 endTurnPassives.Remove(passiveName);
                 break;
-            case "Attacking":
+            case "Attack":
                 attackingPassives.Remove(passiveName);
                 break;
-            case "Defending":
+            case "Defend":
                 defendingPassives.Remove(passiveName);
                 break;
             case "BS":

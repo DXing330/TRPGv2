@@ -9,6 +9,8 @@ public class InventoryManager : MonoBehaviour
     {
         itemSelectList.SetSelectables(inventory.GetItems());
     }
+    // Need to know which items can be assigned to actors.
+    public StatDatabase activeData;
     public PartyDataManager partyData;
     public void SetPartyData(PartyDataManager newParty)
     {

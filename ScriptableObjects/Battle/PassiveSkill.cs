@@ -516,6 +516,22 @@ public class PassiveSkill : SkillEffect
                 return utility.Roll(-attacker.GetLuck()) < int.Parse(conditionSpecifics);
             case "GoodRNGD":
                 return utility.Roll(-target.GetLuck()) < int.Parse(conditionSpecifics);
+            case "HurtByA":
+                return attacker.WasHurtByActor(target);
+            case "HurtBy<>A":
+                return !attacker.WasHurtByActor(target);
+            case "HurtMostA":
+                return attacker.GetHurtBy() == target;
+            case "HurtLeastA":
+                return attacker.GetHurtBy(false) == target;
+            case "HurtByD":
+                return target.WasHurtByActor(attacker);
+            case "HurtBy<>D":
+                return !target.WasHurtByActor(attacker);
+            case "HurtMostD":
+                return target.GetHurtBy() == attacker;
+            case "HurtLeastD":
+                return target.GetHurtBy(false) == attacker;
         }
         return true;
     }

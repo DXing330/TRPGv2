@@ -118,7 +118,6 @@ public class ActorAI : ScriptableObject
                 break;
             }
         }
-        currentActor.PayMoveCost(pathCost);
         return path;
     }
 
@@ -141,7 +140,6 @@ public class ActorAI : ScriptableObject
                 break;
             }
         }
-        actor.PayMoveCost(pathCost);
         return path;
     }
 
@@ -166,7 +164,6 @@ public class ActorAI : ScriptableObject
         for (int i = fullPath.Count - 1; i >= 0; i--)
         {
             path.Insert(0, fullPath[i]);
-            currentActor.SetLocation(fullPath[i]);
             pathCost += moveManager.MoveCostOfTile(fullPath[i]);
             if (pathCost > currentActor.GetMoveRange())
             {
@@ -179,8 +176,6 @@ public class ActorAI : ScriptableObject
                 break;
             }
         }
-        currentActor.SetLocation(originalLocation);
-        currentActor.PayMoveCost(pathCost);
         return path;
     }
 

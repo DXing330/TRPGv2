@@ -1,6 +1,10 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EquipmentRunesUI : MonoBehaviour
 {
@@ -35,18 +39,65 @@ public class EquipmentRunesUI : MonoBehaviour
     }
 
     // Load the current actor equipment.
+    List<string> equipmentStats;
     public void UpdateRuneGrid(string allEquipment)
     {
-        string[] blocks = allEquipment.Split("@");
+        equipmentStats = allEquipment.Split("@").ToList();
         for (int i = 0; i < runeGrid.Count; i++)
         {
-            for (int j = 0; j < blocks.Length; j++)
+            for (int j = 0; j < equipmentStats.Count; j++)
             {
-                runeGrid[i].SetEquipmentStats(blocks[j]);
+                runeGrid[i].SetEquipmentStats(equipmentStats[j]);
             }
         }
     }
 
+    public InventoryRuneManager inventoryRunes;
+    public Color selectedColor;
+    public Color defaultColor;
+    public void UpdateSelectedColor()
+    {
+        for (int i = 0; i < runeGrid.Count; i++)
+        {
+            if (runeGrid[i].equipSlot == selectedEquipSlot)
+            {
+                runeGrid[i].ChangeEquipSlotColor(selectedColor);
+            }
+            else
+            {
+                runeGrid[i].ChangeEquipSlotColor(defaultColor);
+            }
+        }
+    }
+    public string selectedEquipSlot = "";
+    public void ResetEquipSlot()
+    {
+        selectedEquipSlot = "";
+        UpdateSelectedColor();
+        inventoryRunes.UpdateSlotInfo();
+    }
+    public void SelectEquipSlot(string newInfo)
+    {
+        selectedEquipSlot = newInfo;
+        UpdateSelectedColor();
+        inventoryRunes.UpdateSlotInfo();
+    }
+    public string GetSelectedEquipSlot()
+    {
+        return selectedEquipSlot;
+    }
+    public int SelectedSlotsAvailable()
+    {
+        if (selectedEquipSlot == ""){return 0;}
+        for (int i = 0; i < runeGrid.Count; i++)
+        {
+            if (runeGrid[i].equipSlot == selectedEquipSlot)
+            {
+                return Mathf.Max(0, runeGrid[i].runeSlots);
+            }
+        }
+        return 0;
+    }
     public void ViewRune(string runeName)
     {
         if (runeName.Length <= 1){return;}

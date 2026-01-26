@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +12,7 @@ public class EquipmentRunes : MonoBehaviour
     public EquipmentRunesUI runeGrid;
     public Equipment equipment;
     public string equipSlot;
+    public int runeSlots;
     public void SetEquipmentStats(string newStats)
     {
         equipment.SetAllStats(newStats);
@@ -21,20 +25,35 @@ public class EquipmentRunes : MonoBehaviour
     public List<GameObject> runeObjects;
     public SpriteContainer runeSprites;
     public List<string> runeNames;
+    public Image equipSlotImage;
+    public void ChangeEquipSlotColor(Color newColor)
+    {
+        equipSlotImage.color = newColor;
+    }
     public List<Image> runeImages;
     [ContextMenu("Update Rune Images")]
     public void UpdateRuneImages()
     {
-        for (int i = 0; i < runeNames.Count; i++)
+        utility.DisableGameObjects(runeObjects);
+        int index = 0;
+        for (int i = 0; i < Mathf.Min(runeNames.Count, runeObjects.Count); i++)
         {
             runeObjects[i].SetActive(true);
             runeImages[i].sprite = runeSprites.SpriteDictionary(runeNames[i]);
+            index++;
+        }
+        // Also need to show open rune slots.
+        if (runeSlots <= 0 || index >= runeObjects.Count){return;}
+        for (int i = index; i < Mathf.Min(index + runeSlots, runeObjects.Count); i++)
+        {
+            runeObjects[i].SetActive(true);
+            runeImages[i].sprite = runeSprites.SpriteDictionary("");
         }
     }
     protected void LoadRunes()
     {
         runeNames = new List<string>(equipment.GetRunes());
-        utility.DisableGameObjects(runeObjects);
+        runeSlots = equipment.GetRuneSlots();
         UpdateRuneImages();
     }
     // Select List Stuff.
@@ -43,6 +62,7 @@ public class EquipmentRunes : MonoBehaviour
     public void Select(int index)
     {
         selected = index;
+        runeGrid.SelectEquipSlot(equipSlot);
         runeGrid.ViewRune(GetSelectedRune());
     }
     public string selectedRune;

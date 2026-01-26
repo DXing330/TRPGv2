@@ -27,13 +27,16 @@ public class GuildCard : SavedData
             IncreaseGuildRank();
         }
     }
-    public DungeonBag partyBag;
+    public Inventory partyBag;
+    public DungeonBag partyDBag;
     public void IncreaseGuildRank()
     {
         guildRank++;
         IncreasePartyLimit();
         // Increase bag limit.
-        partyBag.AddCapacity();
+        partyBag.IncreaseItemLimit();
+        // Increase dungeon bag limit.
+        partyDBag.AddCapacity();
         // Increase storage limit.
     }
     public int GetGuildRank() { return guildRank; }

@@ -631,8 +631,6 @@ public class BattleManager : MonoBehaviour
         else
         {
             List<int> path = moveManager.GetPrecomputedPath(turnActor.GetLocation(), tileNumber);
-            // Need to get the move cost and pay for it.
-            turnActor.PayMoveCost(moveManager.moveCost);
             // Need to change the character's direction.
             MoveAlongPath(turnActor, path);
         }
@@ -1075,7 +1073,6 @@ public class BattleManager : MonoBehaviour
 
     protected bool AIPathToTarget()
     {
-        // Pay the move cost in find FindPathToTarget.
         List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
         // End turn if invalid path.
         if (path.Count <= 0)
@@ -1095,10 +1092,18 @@ public class BattleManager : MonoBehaviour
         {
             int prevLoc = actor.GetLocation();
             actor.SetDirection(moveManager.DirectionBetweenLocations(prevLoc, path[i]));
+            // Only pay the move cost here if you're moving along a path.
+            actor.PayMoveCost(moveManager.MoveCostOfTile(path[i]));
+            // This can decrease movement based on some tile passives.
             moveManager.MoveActorToTile(actor, path[i], map);
             if (actor.Grappling())
             {
                 DragGrappledActor(actor.GetGrappledActor(), prevLoc);
+            }
+            if (actor.GetMovement() < 0)
+            {
+                // Stop if you run out of movement.
+                break;
             }
         }
         map.UpdateActors();

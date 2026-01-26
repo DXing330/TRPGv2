@@ -6,8 +6,10 @@ public class TreasureChestManager : MonoBehaviour
 {
     public GeneralUtility utility;
     public StatDatabase chestRewards;
+    public StatDatabase runeNames;
     public EquipmentGenerator equipmentGenerator;
     public PartyDataManager partyData;
+    public int gold;
     public List<string> rarityStrings;
     public List<int> rarityInts;
     public List<string> equipmentFound;
@@ -27,6 +29,7 @@ public class TreasureChestManager : MonoBehaviour
     }
     public void ResetFound()
     {
+        gold = 0;
         equipmentFound.Clear();
         itemsFound.Clear();
         quantitiesFound.Clear();
@@ -64,6 +67,22 @@ public class TreasureChestManager : MonoBehaviour
         GainReward(chosenReward);
     }
 
+    [ContextMenu("Mass Generate Runes")]
+    public void MassGenerateRune()
+    {
+        string runes = "";
+        for (int i = 0; i < 99; i++)
+        {
+            runes += GenerateRune() + " ";
+        }
+        Debug.Log(runes);
+    }
+
+    public string GenerateRune()
+    {
+        return runeNames.ReturnRandomKey();
+    }
+
     protected void GainReward(string rewardAndQuantity)
     {
         string[] details = rewardAndQuantity.Split("*");
@@ -73,6 +92,20 @@ public class TreasureChestManager : MonoBehaviour
             for (int i = 0; i < quantity; i++)
             {
                 partyData.equipmentInventory.AddEquipmentByStats(GenerateEquipment(details[0]));
+            }
+        }
+        else if (details[0] == "Gold")
+        {
+            gold += quantity;
+            partyData.inventory.GainGold(quantity);
+        }
+        else if (details[0] == "Rune")
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                string rune = GenerateRune();
+                GainItem(rune, 1);
+                partyData.inventory.AddItemQuantity(rune);
             }
         }
         else

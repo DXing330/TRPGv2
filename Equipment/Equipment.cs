@@ -207,6 +207,7 @@ public class Equipment : MonoBehaviour
         }   
     }
     public int runeSlots;
+    public int GetRuneSlots(){return runeSlots;}
     public void SetRuneSlots(int newInfo){runeSlots = newInfo;}
     public bool RuneSlotsAvailable()
     {

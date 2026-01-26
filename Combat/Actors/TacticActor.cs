@@ -211,6 +211,108 @@ public class TacticActor : ActorStats
         mentalState = newInfo;
     }
     public string GetMentalState(){ return mentalState; }
+    // Keep track of who hurt you, how many times and how much.
+    public List<TacticActor> hurtByList;
+    public List<int> hurtCount;
+    public List<int> hurtAmount;
+    public void ResetHurtBy()
+    {
+        hurtByList.Clear();
+        hurtCount.Clear();
+        hurtAmount.Clear();
+    }
+    public void RemoveHurtByAtIndex(int index)
+    {
+        if (index < 0 || index >= hurtByList.Count){return;}
+        hurtByList.RemoveAt(index);
+        hurtCount.RemoveAt(index);
+        hurtAmount.RemoveAt(index);
+    }
+    public void HurtBy(TacticActor actor, int amount)
+    {
+        // Ignore those who don't deal any damage.
+        if (amount <= 0){return;}
+        int indexOf = hurtByList.IndexOf(actor);
+        if (indexOf < 0)
+        {
+            hurtByList.Add(actor);
+            hurtCount.Add(1);
+            hurtAmount.Add(amount);
+        }
+        else
+        {
+            hurtCount[indexOf]++;
+            hurtAmount[indexOf] += amount;
+        }
+    }
+    // Don't hold grudges against the dead or your teammates.
+    public void RefreshHurtBy()
+    {
+        for (int i = hurtByList.Count - 1; i >= 0; i--)
+        {
+            if (hurtByList[i].GetHealth() <= 0 || hurtByList[i].GetTeam() == GetTeam())
+            {
+                RemoveHurtByAtIndex(i);
+            }
+        }
+    }
+    public bool WasHurtByActor(TacticActor actor)
+    {
+        return hurtByList.Contains(actor);
+    }
+    // Tracking HurtBy stuff.
+    public TacticActor GetHurtBy(bool most = true)
+    {
+        RefreshHurtBy();
+        if (hurtByList.Count <= 0){return null;}
+        if (hurtByList.Count == 1){return hurtByList[0];}
+        int amount = 0;
+        if (!most)
+        {
+            amount = 999;
+        }
+        int index = 0;
+        for (int i = 0; i < hurtAmount.Count; i++)
+        {
+            if (most && hurtAmount[i] > amount)
+            {
+                amount = hurtAmount[i];
+                index = i;
+            }
+            else if (!most && hurtAmount[i] < amount)
+            {
+                amount = hurtAmount[i];
+                index = i;
+            }
+        }
+        return hurtByList[index];
+    }
+    public TacticActor GetHurtCount(bool most = true)
+    {
+        RefreshHurtBy();
+        if (hurtByList.Count <= 0){return null;}
+        if (hurtByList.Count == 1){return hurtByList[0];}
+        int amount = 0;
+        if (!most)
+        {
+            amount = 999;
+        }
+        int index = 0;
+        for (int i = 0; i < hurtCount.Count; i++)
+        {
+            if (most && hurtCount[i] > amount)
+            {
+                amount = hurtCount[i];
+                index = i;
+            }
+            else if (!most && hurtCount[i] < amount)
+            {
+                amount = hurtCount[i];
+                index = i;
+            }
+        }
+        return hurtByList[index];
+    }
     public TacticActor target;
     public void ResetTarget(){ target = null; }
     public void SetTarget(TacticActor newTarget) { target = newTarget; }
@@ -305,6 +407,14 @@ public class TacticActor : ActorStats
             return true;
         }
         return false;
+    }
+
+    // For organization purposes.
+    public override void InitializeStats()
+    {
+        base.InitializeStats();
+        ResetTarget();
+        ResetHurtBy();
     }
 
     public void EndTurn()

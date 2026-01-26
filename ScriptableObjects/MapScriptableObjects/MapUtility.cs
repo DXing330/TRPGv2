@@ -401,6 +401,20 @@ public class MapUtility : ScriptableObject
         return tiles;
     }
 
+    // No such thing as perpendicular but we can do the next best thing.
+    public List<int> GetTilesInWallShape(int startTile, int direction, int span, int size)
+    {
+        List<int> tiles = new List<int>();
+        tiles.Add(startTile);
+        for (int i = 0; i < 6; i++)
+        {
+            // Skip front and back in order to pretend to be perpendicular.
+            if (i == direction || i == (direction + 3) % 6){continue;}
+            tiles.AddRange(GetTilesInLineDirection(startTile, i, span, size));
+        }
+        return tiles;
+    }
+
     public bool DirectionCheck(int location, int direction, int size)
     {
         return (PointInDirection(location, direction, size) >= 0);
@@ -660,6 +674,8 @@ public class MapUtility : ScriptableObject
                 tiles = new List<int>(tiles.Distinct());
                 tiles.Remove(selected);
                 return tiles;
+            case "Wall":
+                return GetTilesInWallShape(selected, direction, span, size);
         }
         tiles.Add(selected);
         return tiles;
@@ -727,6 +743,8 @@ public class MapUtility : ScriptableObject
                 return span;
             case "Cone":
                 return CountTilesInConeSpan(span);
+            case "Wall":
+                return CountTilesInWallSpan(span);
         }
         return 1;
     }
@@ -751,5 +769,10 @@ public class MapUtility : ScriptableObject
     protected int CountTilesInConeSpan(int span)
     {
         return ((span + 1)*(span + 1))-1;
+    }
+
+    protected int CountTilesInWallSpan(int span)
+    {
+        return (span * 4) + 1;
     }
 }

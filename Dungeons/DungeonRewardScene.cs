@@ -17,10 +17,9 @@ public class DungeonRewardScene : MonoBehaviour
     public StatDatabase rewardData;
     public StatTextList allItemRewards;
     public StatTextList allEquipmentRewards;
-    public GameObject questRewardPanel;
-    public TMP_Text questGoldReward;
+    public TMP_Text goldReward;
     public QuestSuccessChecker questSuccessChecker;
-    public int questGold;
+    public int gold;
     public List<string> equipmentRewards;
     public TreasureChestManager treasureChestManager;
 
@@ -33,7 +32,7 @@ public class DungeonRewardScene : MonoBehaviour
     protected void CalculateRewards()
     {
         treasureChestManager.OpenAllChests();
-        // Escape orb means you don't complete any quests.
+        gold = treasureChestManager.gold;
         CalculateQuestRewards();
         if(questSuccessChecker.StoryQuestSuccessful(partyData, dungeon))
         {
@@ -44,29 +43,20 @@ public class DungeonRewardScene : MonoBehaviour
 
     protected void CalculateQuestRewards()
     {
-        questGold = 0;
-        questRewardPanel.SetActive(false);
         // Check which quests were active in the dungeon.
         List<int> indices = partyData.guildCard.GetQuestIndicesAtLocation(dungeon.GetDungeonName());
         for (int i = indices.Count - 1; i >= 0; i--)
         {
             if (questSuccessChecker.QuestSuccessful(partyData, i, dungeon))
             {
-                questRewardPanel.SetActive(true);
-                questGold += partyData.guildCard.GetQuestRewards()[i];
-                questGoldReward.text = questGold.ToString();
                 partyData.guildCard.CompleteRequest(i);
             }
-        }
-        if (questGold > 0)
-        {
-            partyData.inventory.AddItemQuantity("Gold", questGold);
-            partyData.guildCard.GainGuildExp((questGold*questGold/100));
         }
     }
 
     protected void DisplayRewards()
     {
+        goldReward.text = gold.ToString();
         allItemRewards.SetStatsAndData(treasureChestManager.GetItemsFound(), treasureChestManager.GetQuantitiesFound());
         allEquipmentRewards.SetStatsAndData(treasureChestManager.GetEquipmentFound());
     }

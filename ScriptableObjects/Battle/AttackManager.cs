@@ -169,7 +169,11 @@ public class AttackManager : ScriptableObject
         // Resistance
         ElementalResistance(defender, baseDamage, element);
         baseDamage = defender.TakeDamage(baseDamage, element);
-        defender.SetTarget(attacker);
+        defender.HurtBy(attacker, baseDamage);
+        if (defender.GetHurtBy() == attacker)
+        {
+            defender.SetTarget(attacker);
+        }
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
@@ -214,8 +218,12 @@ public class AttackManager : ScriptableObject
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
         finalDamageCalculation += baseDamage;
         // Flat damage is always physical type.
-        attackTarget.TakeDamage(baseDamage);
-        attackTarget.SetTarget(attacker);
+        baseDamage = attackTarget.TakeDamage(baseDamage);
+        attackTarget.HurtBy(attacker, baseDamage);
+        if (attackTarget.GetHurtBy() == attacker)
+        {
+            attackTarget.SetTarget(attacker);
+        }
         map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.combatLog.AddDetailedLogs(passiveEffectString);
         map.combatLog.AddDetailedLogs(damageRolls);
@@ -240,13 +248,18 @@ public class AttackManager : ScriptableObject
                 baseDamage = attacker.GetDefense();
                 break;
         }
+        if (advantage < 0){advantage = 0;}
         baseDamage = Advantage(baseDamage, advantage);
         baseDamage = CritRoll(attacker, baseDamage);
+        baseDamage = defender.TakeDamage(baseDamage, "True");
         // No damage/attack/defense multiplier, true damage can't be increased or decreased besides crit/advantage.
-        defender.SetTarget(attacker);
+        defender.HurtBy(attacker, baseDamage);
+        if (defender.GetHurtBy() == attacker)
+        {
+            defender.SetTarget(attacker);
+        }
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
-        baseDamage = defender.TakeDamage(baseDamage, "True");
     }
     protected void UpdateBattleStats(TacticActor attacker, TacticActor defender)
     {
@@ -311,7 +324,11 @@ public class AttackManager : ScriptableObject
         // Show the resistance calculation.
         ElementalResistance(attackTarget, baseDamage, type);
         baseDamage = attackTarget.TakeDamage(baseDamage, type);
-        attackTarget.SetTarget(attacker);
+        attackTarget.HurtBy(attacker, baseDamage);
+        if (attackTarget.GetHurtBy() == attacker)
+        {
+            attackTarget.SetTarget(attacker);
+        }
         map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " takes " + baseDamage + " damage.");
         map.damageTracker.UpdateDamageStat(attacker, attackTarget, baseDamage);
         map.combatLog.AddDetailedLogs(passiveEffectString);

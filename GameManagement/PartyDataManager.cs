@@ -269,6 +269,24 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public void SetPartyMemberEquipFromIndex(string equip, int selected)
+    {
+        int permanentCount = permanentPartyData.PartyCount();
+        int mainCount = mainPartyData.PartyCount();
+        if (selected < permanentCount)
+        {
+            permanentPartyData.SetEquipmentAtIndex(equip, selected);
+        }
+        else if (selected < permanentCount + mainCount)
+        {
+            mainPartyData.SetEquipmentAtIndex(equip, selected - permanentCount);
+        }
+        else
+        {
+            tempPartyData.SetEquipmentAtIndex(equip, selected - permanentCount - mainCount);
+        }
+    }
+
     public string ReturnPartyMemberEquipFromIndex(int selected)
     {
         int permanentCount = permanentPartyData.PartyCount();

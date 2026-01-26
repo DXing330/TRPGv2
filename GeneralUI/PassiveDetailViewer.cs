@@ -61,6 +61,11 @@ public class PassiveDetailViewer : MonoBehaviour
         }
         passiveStatTextList.SetStatsAndData(passiveNames, passiveDescription);
     }
+    public string GetRunePassiveString(string runeName)
+    {
+        string runePassive = runePassives.ReturnValue(runeName);
+        return ReturnPassiveDetails(runePassive);
+    }
     public void ViewRunePassive(string runeName)
     {
         SetPassiveGroupName(runeName);
@@ -223,9 +228,9 @@ public class PassiveDetailViewer : MonoBehaviour
             return "At the start of each turn,";
             case "Moving":
             return "When moving,";
-            case "Attacking":
+            case "Attack":
             return "When attacking,";
-            case "Defending":
+            case "Defend":
             return "When being attacked,";
             case "TakeDamage":
             return "When receiving damage,";
@@ -546,6 +551,22 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " with ~" + specifics + "% chance";
             case "GoodRNG":
                 return " with ~" + specifics + "% chance";
+            case "HurtByA":
+                return " if the attacker was hurt by the target";
+            case "HurtBy<>A":
+                return " if the attacker was not hurt by the target";
+            case "HurtMostA":
+                return " if the attacker was hurt the most by the target";
+            case "HurtLeastA":
+                return " if the attacker was hurt the least by the target";
+            case "HurtByD":
+                return " if the target was hurt by the attacker";
+            case "HurtBy<>D":
+                return " if the target was not hurt by the attacker";
+            case "HurtMostD":
+                return " if the target was hurt the most by the attacker";
+            case "HurtLeastD":
+                return " if the target was hurt the least by the attacker";
         }
         return "";
     }

@@ -55,6 +55,12 @@ public class BattleState : SavedState
         terrainType = newInfo;
         battleMapFeatures.SetTerrainType(terrainType);
     }
+    protected string practiceTerrainType = "Plains";
+    public void SetPracticeTerrainType()
+    {
+        terrainType = practiceTerrainType;
+        battleMapFeatures.SetTerrainType(terrainType);
+    }
     public virtual void SetTerrainType()
     {
         if (overworldState == null)

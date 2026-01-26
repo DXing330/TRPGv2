@@ -1,6 +1,11 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class ArmoryUI : MonoBehaviour
 {
@@ -55,6 +60,29 @@ public class ArmoryUI : MonoBehaviour
     {
         if (allActors.GetSelected() < 0 || selectedActor == null){return;}
         runeGridObject.SetActive(true);
+        runeGrid.UpdateRuneGrid(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
+    }
+    public void InsertRune(string rune, string equipSlot)
+    {
+        // Determine the actors equipment.
+        string actorEquip = partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected());
+        // Get the slot.
+        List<string> equipBlocks = actorEquip.Split("@").ToList();
+        for (int i = 0; i < equipBlocks.Count; i++)
+        {
+            dummyEquip.SetAllStats(equipBlocks[i]);
+            if (dummyEquip.GetSlot() == equipSlot)
+            {
+                // Insert the rune.
+                dummyEquip.AddRune(rune);
+                dummyEquip.RefreshStats();
+                equipBlocks[i] = dummyEquip.GetStats();
+                break;
+            }
+        }
+        // Roll back up.
+        actorEquip = String.Join("@", equipBlocks);
+        partyData.SetPartyMemberEquipFromIndex(actorEquip, allActors.GetSelected());
         runeGrid.UpdateRuneGrid(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
     }
     public GameObject inventoryObject;

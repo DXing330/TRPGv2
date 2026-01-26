@@ -141,6 +141,26 @@ public class SceneMover : MonoBehaviour
         }
     }
     // Needs another one from the dungeon?
+    public void MoveToPracticeBattle()
+    {
+        sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);
+        sceneTracker.SetCurrentScene(battleSceneName);
+        sceneTracker.Save();
+        battleState.UpdatePreviousScene();
+        // Make some settings specifically for the practice battle.
+        battleState.SetPracticeTerrainType();
+        battleState.ResetStats();
+        battleState.UpdateEnemyNames();
+        battleState.Save();
+        if (loadingRequired)
+        {
+            StartCoroutine(LoadingScreenMoveScene(battleSceneName));
+        }
+        else
+        {
+            StartCoroutine(LoadAsyncScene(battleSceneName));
+        }
+    }
     public void MoveToBattle()
     {
         sceneTracker.SetPreviousScene(SceneManager.GetActiveScene().name);

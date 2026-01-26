@@ -83,7 +83,13 @@ public class PartyData : SavedData
     public List<string> partyEquipment;
     public string GetEquipmentAtIndex(int index)
     {
+        if (index < 0 || index >= partyEquipment.Count){return "";}
         return partyEquipment[index];
+    }
+    public void SetEquipmentAtIndex(string equip, int index)
+    {
+        if (index < 0 || index >= partyEquipment.Count){return;}
+        partyEquipment[index] = equip;
     }
     // This is not needed, we can store everything in the stats.
     //public List<string> partyCurrentStats;
