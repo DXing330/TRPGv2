@@ -35,7 +35,7 @@ public class BarrackManager : MonoBehaviour
         mainActors.ResetSelected();
         actorStats.ResetSelected();
         actorPassives.ResetSelected();
-        selectedActor.SetStatsFromString(barracksActors.allActorData[barracksActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(barracksActors.allActorData[barracksActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, barracksData.partyEquipment[barracksActors.GetSelected()]);
     }
@@ -45,7 +45,7 @@ public class BarrackManager : MonoBehaviour
         barracksActors.ResetSelected();
         actorStats.ResetSelected();
         actorPassives.ResetSelected();
-        selectedActor.SetStatsFromString(mainActors.allActorData[mainActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(mainActors.allActorData[mainActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnMainPartyEquipment(mainActors.GetSelected()));
     }

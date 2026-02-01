@@ -85,7 +85,7 @@ public class MedicinePanel : MonoBehaviour
     public void ViewActorStats()
     {
         if (actorSelect.GetSelected() < 0) { return; }
-        dummyActor.SetStatsFromString(actorSelect.allActorData[actorSelect.GetSelected()]);
+        dummyActor.SetInitialStatsFromString(actorSelect.allActorData[actorSelect.GetSelected()]);
         actorHealthText.text = dummyActor.GetHealth() + " / " + dummyActor.GetBaseHealth();
         statusList.SetStatsAndData(dummyActor.GetUniqueStatuses(), dummyActor.GetUniqueStatusStacks());
     }

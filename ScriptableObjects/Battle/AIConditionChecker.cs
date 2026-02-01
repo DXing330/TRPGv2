@@ -144,6 +144,12 @@ public class AIConditionChecker : ScriptableObject
                 return map.TargetFacingActor(actor);
             case "SkillEffect":
                 return GetAvailableSkillWithEffect(actor, specifics) != "";
+            case "SandwichedByTarget":
+                return map.SandwichedByTarget(actor, specifics);
+            case "TileSandwiched":
+                return map.TileSandwiched(actor, specifics);
+            case "TileSandwichable":
+                return map.TileSandwichable(actor, specifics);
         }
         return true;
     }

@@ -253,6 +253,13 @@ public class SkillEffect : ScriptableObject
             case "TemporarySkill":
                 target.AddTempActive(effectSpecifics);
                 break;
+            case "SingleTempSkill":
+                // If the target has it then do nothing.
+                if (!target.TempActiveExists(effectSpecifics))
+                {
+                    target.AddTempActive(effectSpecifics);
+                }
+                break;
             case "Spell":
                 target.LearnSpell(standardSpells.ReturnValue(effectSpecifics));
                 break;
@@ -362,11 +369,11 @@ public class SkillEffect : ScriptableObject
                 string[] scalingER = effectSpecifics.Split("Equals");
                 target.UpdateBaseDamageResist(scalingER[0], GetScalingInt(target, scalingER[1], scalingER[2], scalingER[3]));
                 break;
-            case "VigorEfficiency":
-                target.IncreaseVigorScaling(int.Parse(effectSpecifics));
+            case "ManaEfficiency":
+                target.IncreaseManaEfficiency(int.Parse(effectSpecifics));
                 break;
-            case "Vigor":
-                target.RestoreVigor(int.Parse(effectSpecifics));
+            case "Mana":
+                target.RestoreMana(int.Parse(effectSpecifics));
                 break;
             case "Silence":
                 target.Silence(int.Parse(effectSpecifics));
@@ -396,6 +403,12 @@ public class SkillEffect : ScriptableObject
                 {
                     AffectActor(target, "Death", effectSpecifics, level);
                 }
+                break;
+            case "MagicPower":
+                target.GainMagicPower(int.Parse(effectSpecifics));
+                break;
+            case "MagicResist":
+                target.GainMagicResist(int.Parse(effectSpecifics));
                 break;
         }
     }

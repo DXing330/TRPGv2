@@ -137,7 +137,7 @@ public class BasicPassiveTraining : MonoBehaviour
     public void ConfirmTraining()
     {
         int selectedIndex = allActors.GetSelected();
-        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
+        selectedActor.SetInitialStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
         int cLevel = selectedActor.GetLevelFromPassive(selectedTraining);
         // Check if you're below max level.
         if (cLevel >= selectedMaxLevel)

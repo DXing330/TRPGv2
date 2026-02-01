@@ -11,7 +11,7 @@ public class MagicSpell : ActiveSkill
     public override bool Activatable(TacticActor actor)
     {
         if (actor.GetSilenced()){return false;}
-        return (actor.GetActions() >= GetActionCost() && actor.GetVigor() >= ReturnManaCost());
+        return (actor.GetActions() >= GetActionCost() && actor.GetMana() >= ReturnManaCost());
     }
     public int ReturnManaCost()
     {

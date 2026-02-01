@@ -32,8 +32,7 @@ public class ActorMaker : MonoBehaviour
 
     protected void SetActorName(TacticActor actor, string actorName)
     {
-        // Currently species is useless at this rate.
-        actor.SetStatsFromString(actorStats.ReturnValue(actorName));
+        actor.SetInitialStatsFromString(actorStats.ReturnValue(actorName));
     }
 
     protected void AddElementPassive(TacticActor actor, string element)
@@ -53,6 +52,15 @@ public class ActorMaker : MonoBehaviour
         for (int i = 0; i < passives.Length; i++)
         {
             actor.AddPassiveSkill(passives[i], levels[i]);
+        }
+    }
+
+    protected void AddAttributePassives(TacticActor actor)
+    {
+        List<string> attributes = actor.GetAttributes();
+        for (int i = 0; i < attributes.Count; i++)
+        {
+            actor.AddPassiveSkill(attributes[i], "1");
         }
     }
 
@@ -107,7 +115,7 @@ public class ActorMaker : MonoBehaviour
             actors.Add(SpawnActor(patternLocations[i], teamNames[i], team));
             if (i < teamStats.Count)
             {
-                actors[i].SetStatsFromString(teamStats[i]);
+                actors[i].SetInitialStatsFromString(teamStats[i]);
             }
             if (i < teamPersonalNames.Count)
             {
@@ -133,6 +141,7 @@ public class ActorMaker : MonoBehaviour
             }
             // Add the elemental passives at the end.
             AddElementPassives(actors[i]);
+            AddAttributePassives(actors[i]);
             AddSpeciesPassives(actors[i]);
             passiveOrganizer.OrganizeActorPassives(actors[i]);
             actors[i].ResetStats();
@@ -148,6 +157,7 @@ public class ActorMaker : MonoBehaviour
         actor.ResetElements();
         actor.ChangeForm(actorStats.ReturnStats(newForm));
         AddElementPassives(actor);
+        AddAttributePassives(actor);
         AddSpeciesPassives(actor);
         // Set the new base health equal to the current health.
         actor.SetBaseHealth(actor.GetHealth());

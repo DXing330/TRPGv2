@@ -187,7 +187,7 @@ public class ActorAI : ScriptableObject
             for (int i = 0; i < battlingActors.Count; i++)
             {
                 // Enemies is everyone on a different team? But maybe some teams can be allied in some fights?
-                if (battlingActors[i].GetTeam() != currentActor.GetTeam())
+                if (battlingActors[i].GetTeam() != currentActor.GetTeam() && !battlingActors[i].invisible)
                 {
                     enemies.Add(battlingActors[i]);
                 }
@@ -197,7 +197,8 @@ public class ActorAI : ScriptableObject
         {
             for (int i = 0; i < battlingActors.Count; i++)
             {
-                if (battlingActors[i] != currentActor)
+                // Ignore invisible enemies when selecting targets.
+                if (battlingActors[i] != currentActor && !battlingActors[i].invisible)
                 {
                     enemies.Add(battlingActors[i]);
                 }

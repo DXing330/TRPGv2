@@ -61,7 +61,7 @@ public class HiringManager : MonoBehaviour
         string price = GetPrice();
         dummyActor.ResetStatsBeforeLoading();
         // Changing the delimiter introduces bugs, we should try to resolve this somehow.
-        dummyActor.SetStats(actorData.ReturnValue(className).Split(dummyActor.delimiter).ToList());
+        dummyActor.SetInitialStats(actorData.ReturnValue(className).Split(dummyActor.delimiter).ToList());
         List<string> stats = new List<string>();
         List<string> data = new List<string>();
         stats.Add("Price");

@@ -29,7 +29,7 @@ public class ArmorySimulator : ArmoryUI
         EndSelectingEquipment();
         statsObjects.SetActive(true);
         detailViewer.DisablePanel();
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorSpriteStats.UpdateActorSpriteStats(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
@@ -44,7 +44,7 @@ public class ArmorySimulator : ArmoryUI
         selectEquipment.ResetSelected();
         selectEquipObject.SetActive(false);
         if (allActors.GetSelected() < 0) { return; }
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
@@ -76,7 +76,7 @@ public class ArmorySimulator : ArmoryUI
     {
         selectEquipment.ResetHighlights();
         selectEquipment.HighlightIndex(selectEquipment.GetSelected());
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorPassives.UpdatePotentialPassives(selectedActor, actorData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()), selectEquipment.data[selectEquipment.GetSelected()]);
     }
 

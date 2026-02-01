@@ -213,7 +213,7 @@ public class BattleEndManager : MonoBehaviour
         }
         for (int i = 0; i < spriteNames.Count; i++)
         {
-            dummyActor.SetStatsFromString(baseStats[i]);
+            dummyActor.SetInitialStatsFromString(baseStats[i]);
             dummyActor.ResetEquipment();
             string[] equipData = equipment[i].Split("@");
             for (int j = 0; j < equipData.Length; j++)
@@ -233,7 +233,7 @@ public class BattleEndManager : MonoBehaviour
                 {
                     dummyActor.SetLevelOfPassive(spriteNames[i], passiveLevel + 1);
                     dummyActor.ReloadPassives();
-                    baseStats[i] = dummyActor.GetStats();
+                    baseStats[i] = dummyActor.GetInitialStats();
                     AddSkillUp(names[i], spriteNames[i]);
                 }
             }
@@ -244,7 +244,7 @@ public class BattleEndManager : MonoBehaviour
             {
                 dummyActor.AddPassiveSkill(weaponType, "1");
                 dummyActor.ReloadPassives();
-                baseStats[i] = dummyActor.GetStats();
+                baseStats[i] = dummyActor.GetInitialStats();
                 AddSkillUp(names[i], weaponType);
             }
             else if (passiveLevel < maxWeaponLevel)
@@ -258,7 +258,7 @@ public class BattleEndManager : MonoBehaviour
                 {
                     dummyActor.SetLevelOfPassive(weaponType, passiveLevel + 1);
                     dummyActor.ReloadPassives();
-                    baseStats[i] = dummyActor.GetStats();
+                    baseStats[i] = dummyActor.GetInitialStats();
                     AddSkillUp(names[i], weaponType);
                 }
             }

@@ -20,7 +20,7 @@ public class DungeonEnemy : MonoBehaviour
         enemies.Add(enemyName);
     }
 
-    public void SetStatsFromString(string newStats)
+    public void SetInitialStatsFromString(string newStats)
     {
         string[] blocks = newStats.Split('#');
         spriteName = blocks[0];

@@ -49,12 +49,12 @@ public class AttackManagerTester : MonoBehaviour
         map.combatLog.ForceStart();
         map.combatLog.AddNewLog();
         // Set up the actors.
-        dummyAttacker.SetStatsFromString(attackerStats);
+        dummyAttacker.SetInitialStatsFromString(attackerStats);
         dummyAttacker.InitializeStats();
         passiveOrganizer.OrganizeActorPassives(dummyAttacker);
         dummyAttacker.SetLocation(attackerLocation);
         dummyAttacker.SetDirection(attackerDirection);
-        dummyDefender.SetStatsFromString(defenderStats);
+        dummyDefender.SetInitialStatsFromString(defenderStats);
         dummyDefender.InitializeStats();
         passiveOrganizer.OrganizeActorPassives(dummyDefender);
         dummyDefender.SetLocation(defenderLocation);
@@ -69,7 +69,7 @@ public class AttackManagerTester : MonoBehaviour
         map.ChangeTile(defenderLocation, "Tile", defenderTile, true);
         map.ChangeTile(defenderLocation, "TerrainEffect", defenderTEffect, true);
         map.ChangeTile(defenderLocation, "Borders", String.Join("|", defenderBorders), true);
-        dummyGuard.SetStatsFromString(guardStats);
+        dummyGuard.SetInitialStatsFromString(guardStats);
         dummyGuard.InitializeStats();
         passiveOrganizer.OrganizeActorPassives(dummyGuard);
         if (guard)

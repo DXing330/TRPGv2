@@ -50,6 +50,7 @@ public class AttackManager : ScriptableObject
     public bool RollToHit(TacticActor attacker, TacticActor defender, BattleMap map, bool showLog = true)
     {
         int hitRoll = Random.Range(0, 100);
+        hitRoll += defender.GetLuck();
         if (hitRoll >= (hitChance - dodgeChance))
         {
             if (showLog)
@@ -107,6 +108,7 @@ public class AttackManager : ScriptableObject
     public int CritRoll(TacticActor attacker, int damage, bool showLog = true)
     {
         int critRoll = Random.Range(0, 100);
+        critRoll -= attacker.GetLuck();
         if (critRoll < critChance)
         {
             if (showLog)

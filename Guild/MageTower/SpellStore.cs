@@ -68,7 +68,7 @@ public class SpellStore : MonoBehaviour
         List<string> characterNames = partyData.fullParty.GetCharacterNames();
         for (int i = 0; i < characterStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(characterStats[i]);
+            dummyActor.SetInitialStatsFromString(characterStats[i]);
             if (spellBook.ReturnActorSpellSlots(dummyActor) > 0)
             {
                 casters = true;
@@ -107,7 +107,7 @@ public class SpellStore : MonoBehaviour
     public void SelectCaster()
     {
         selectedCaster = partyCasters.GetSelected();
-        dummyActor.SetStatsFromString(partyCasters.GetSelectedData());
+        dummyActor.SetInitialStatsFromString(partyCasters.GetSelectedData());
         dummyActor.SetPersonalName(partyCasters.GetSelectedName());
         spellStoreOptionsObject.SetActive(true);
         casterSpriteAndName.ShowActorInfo(dummyActor);

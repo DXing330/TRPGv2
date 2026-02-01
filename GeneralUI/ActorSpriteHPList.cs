@@ -107,7 +107,7 @@ public class ActorSpriteHPList : MonoBehaviour
         {
             objects[i].SetActive(true);
             dummyActor.SetPersonalName(actorNames[i]);
-            dummyActor.SetStatsFromString(actorData[i]);
+            dummyActor.SetInitialStatsFromString(actorData[i]);
             actors[i].ShowActorInfo(dummyActor);
         }
         if (allActorNames.Count > objects.Count)

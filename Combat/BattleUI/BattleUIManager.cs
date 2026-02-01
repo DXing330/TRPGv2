@@ -107,6 +107,23 @@ public class BattleUIManager : MonoBehaviour
     {
         activeSelectList.SetState(0);
     }
+    // Battle Stats Preview
+    public TMP_Text attackerATKText;
+    public TMP_Text targetHPText;
+    public TMP_Text targetDEFText;
+    public void PreviewBattleStats(TacticActor attacker, TacticActor target = null)
+    {
+        attackerATKText.text = attacker.GetAttack().ToString();
+        if (target == null || target.invisible)
+        {
+            targetHPText.text = "";
+            targetDEFText.text = "";
+            return;
+        }
+        targetHPText.text = target.GetHealth().ToString();
+        targetDEFText.text = target.GetDefense().ToString();
+    }
+    // TODO
     public void UpdateStatSheet(TacticActor actor)
     {
 

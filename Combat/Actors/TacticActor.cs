@@ -439,7 +439,7 @@ public class TacticActor : ActorStats
         stats.Add(GetActions().ToString());
         stats.Add(GetEnergy().ToString());
         stats.Add(GetMovement().ToString());
-        stats.Add(GetVigor().ToString());
+        stats.Add(GetMana().ToString());
         return stats;
     }
 
@@ -447,6 +447,7 @@ public class TacticActor : ActorStats
     {
         string healthString = GetHealth().ToString();
         string curses = GetCurseString();
-        return healthString + delimiter + curses;
+        string mana = GetMana().ToString();
+        return healthString + delimiter + curses + delimiter + mana;
     }
 }

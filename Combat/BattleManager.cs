@@ -502,6 +502,8 @@ public class BattleManager : MonoBehaviour
             if (!turnActor.ActionsLeft()){break;}
             // Highlight the selected tile.
             map.UpdateSelectedAttackTile(turnActor, selectedTile);
+            // Preview the battle details.
+            UI.PreviewBattleStats(turnActor, map.GetActorOnTile(selectedTile));
             break;
             case "":
             ViewActorOnTile(selectedTile);
@@ -559,6 +561,7 @@ public class BattleManager : MonoBehaviour
     protected void StartAttacking()
     {
         map.ResetHighlights();
+        UI.PreviewBattleStats(turnActor);
         map.UpdateSelectedAttackTile(turnActor, selectedTile);
     }
 
@@ -728,7 +731,28 @@ public class BattleManager : MonoBehaviour
                     MoveAlongPath(turnActor, path);
                     if (turnActor.GetActions() > 0)
                     {
-                        StandardNPCAction(turnActor.GetActions());
+                        BossTurn(turnActor.GetActions());
+                        return;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            case "MoveToSandwichTile":
+                int sandwichedTile = map.ReturnClosestTileSandwiched(turnActor, turnDetails[1]);
+                if (sandwichedTile < 0)
+                {
+                    StandardNPCAction(actionsLeft);
+                    return;
+                }
+                else
+                {
+                    List<int> path = actorAI.FindPathToTile(turnActor, map, moveManager, sandwichedTile);
+                    MoveAlongPath(turnActor, path);
+                    if (turnActor.GetActions() > 0)
+                    {
+                        BossTurn(turnActor.GetActions());
                         return;
                     }
                     else
@@ -981,7 +1005,7 @@ public class BattleManager : MonoBehaviour
             moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
             // Find a new target if needed.
             // Don't hit your allies even if they hit you.
-            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0 || turnActor.GetTarget().GetTeam() == turnActor.GetTeam())
+            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0 || turnActor.GetTarget().invisible || turnActor.GetTarget().GetTeam() == turnActor.GetTeam())
             {
                 TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
                 if (closestEnemy == null)

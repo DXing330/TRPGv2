@@ -26,7 +26,7 @@ public class PassiveEffectTester : MonoBehaviour
         map.combatLog.ForceStart();
         map.combatLog.AddNewLog();
         // Set up the actors.
-        dummyActor.SetStatsFromString(actorStats);
+        dummyActor.SetInitialStatsFromString(actorStats);
         dummyActor.InitializeStats();
         passiveOrganizer.OrganizeActorPassives(dummyActor);
         dummyActor.SetLocation(actorLocation);

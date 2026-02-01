@@ -13,7 +13,7 @@ public class ActiveManager : MonoBehaviour
     }
     public void ActivateSpell(BattleManager battle)
     {
-        skillUser.UseVigor(magicSpell.ReturnManaCost());
+        skillUser.UseMana(magicSpell.ReturnManaCost());
         skillUser.PayActionCost(magicSpell.GetActionCost());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         List<string> effects = magicSpell.GetAllEffects();

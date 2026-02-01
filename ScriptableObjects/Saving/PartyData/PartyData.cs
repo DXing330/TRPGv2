@@ -18,7 +18,7 @@ public class PartyData : SavedData
     public int PartyCount() { return partyNames.Count; }
     public TacticActor ReturnActorAtIndex(int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         dummyActor.SetPersonalName(partyNames[index]);
         return dummyActor;
     }
@@ -54,14 +54,14 @@ public class PartyData : SavedData
         List<string> partySpriteNames = new List<string>();
         for (int i = 0; i < partyStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             partySpriteNames.Add(dummyActor.GetSpriteName());
         } 
         return partySpriteNames;
     }
     public string GetSpriteNameAtIndex(int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         return dummyActor.GetSpriteName();
     }
     public List<string> partyStats;
@@ -72,7 +72,7 @@ public class PartyData : SavedData
     }
     public int GetCurrentHealthAtIndex(int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         return dummyActor.GetHealth();
     }
     public void ChangeBaseStats(string newStats, int index)
@@ -95,11 +95,13 @@ public class PartyData : SavedData
     //public List<string> partyCurrentStats;
     public void SetCurrentStats(string newStats, int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         string[] newCurrentStats = newStats.Split("|");
         dummyActor.SetCurrentHealth(utility.SafeParseInt(newCurrentStats[0]));
         dummyActor.SetCurses(newCurrentStats[1]);
-        partyStats[index] = dummyActor.GetStats();
+        dummyActor.SetCurrentMana(utility.SafeParseInt(newCurrentStats[2]));
+        // TODO Mana should be set here..
+        partyStats[index] = dummyActor.GetInitialStats();
         UpdateDefeatedMemberTracker(index);
     }
     public void ClearAllStats()
@@ -130,21 +132,21 @@ public class PartyData : SavedData
         for (int i = 0; i < partyStats.Count; i++)
         {
             // Load the actor.
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             // Remove any statuses.
             // Reset current health.
             dummyActor.FullRestore();
             // Save back the actor.
-            partyStats[i] = dummyActor.GetStats();
+            partyStats[i] = dummyActor.GetInitialStats();
         }
     }
     public void HalfRestore()
     {
         for (int i = 0; i < partyStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             dummyActor.HalfRestore();
-            partyStats[i] = dummyActor.GetStats();
+            partyStats[i] = dummyActor.GetInitialStats();
         }
     }
     public void ReviveDefeatedMembers(bool all = false)
@@ -153,21 +155,21 @@ public class PartyData : SavedData
         {
             if (all)
             {
-                dummyActor.SetStatsFromString(partyStats[i]);
+                dummyActor.SetInitialStatsFromString(partyStats[i]);
                 // Set health to 1.
                 dummyActor.NearDeath();
                 // Save back the actor.
-                partyStats[i] = dummyActor.GetStats();
+                partyStats[i] = dummyActor.GetInitialStats();
             }
             // Don't keep track of empty members.
             else if (defeatedMemberTracker[i])
             {
                 // Load the actor.
-                dummyActor.SetStatsFromString(partyStats[i]);
+                dummyActor.SetInitialStatsFromString(partyStats[i]);
                 // Set health to 1.
                 dummyActor.NearDeath();
                 // Save back the actor.
-                partyStats[i] = dummyActor.GetStats();
+                partyStats[i] = dummyActor.GetInitialStats();
             }
         }
     }
@@ -189,7 +191,7 @@ public class PartyData : SavedData
     public bool AddInjury(int index, int maxRolls = 3)
     {
         // Generate a random injury.
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         string randomInjury = allInjuries.ReturnRandomKey();
         int maxInjuryLevel = int.Parse(allInjuries.ReturnValue(randomInjury));
         // Check if the actor already has the max level of that injury.
@@ -210,7 +212,7 @@ public class PartyData : SavedData
         else
         {
             dummyActor.AddPassiveSkill(randomInjury, "1");
-            partyStats[index] = dummyActor.GetStats();
+            partyStats[index] = dummyActor.GetInitialStats();
             return true;
         }
     }
@@ -227,9 +229,9 @@ public class PartyData : SavedData
                 }
                 else
                 {
-                    dummyActor.SetStatsFromString(partyStats[i]);
+                    dummyActor.SetInitialStatsFromString(partyStats[i]);
                     dummyActor.NearDeath();
-                    partyStats[i] = dummyActor.GetStats();
+                    partyStats[i] = dummyActor.GetInitialStats();
                 }
             }
         }
@@ -238,7 +240,7 @@ public class PartyData : SavedData
     {
         for (int i = partyStats.Count - 1; i >= 0; i--)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             if (dummyActor.GetHealth() <= 0)
             {
                 if (!AddInjury(i))
@@ -248,7 +250,7 @@ public class PartyData : SavedData
                 else
                 {
                     dummyActor.NearDeath();
-                    partyStats[i] = dummyActor.GetStats();
+                    partyStats[i] = dummyActor.GetInitialStats();
                 }
             }
         }
@@ -271,7 +273,6 @@ public class PartyData : SavedData
         partyNames = utility.RemoveEmptyListItems(partyNames);
         partyIDs = utility.RemoveEmptyListItems(partyIDs);
         partyStats = utility.RemoveEmptyListItems(partyStats);
-        //partyEquipment = utility.RemoveEmptyListItems(partyEquipment); Equipment can be empty.
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = "";
         allData += "Names=" + String.Join(delimiterTwo, partyNames) + delimiter;
@@ -402,13 +403,13 @@ public class PartyData : SavedData
     }
     public void MemberLearnsSpell(string newSpell, int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         dummyActor.LearnSpell(newSpell);
-        partyStats[index] = dummyActor.GetStats();
+        partyStats[index] = dummyActor.GetInitialStats();
     }
     public void SetMemberStats(TacticActor newDummy, int index)
     {
-        partyStats[index] = newDummy.GetStats();
+        partyStats[index] = newDummy.GetInitialStats();
     }
     public bool PartyMemberIncluded(string memberName)
     {
@@ -430,7 +431,7 @@ public class PartyData : SavedData
     {
         for (int i = 0; i < partyStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             if (dummyActor.GetSpriteName() == spriteName){return true;}
         }
         return false;
@@ -439,7 +440,7 @@ public class PartyData : SavedData
     {
         for (int i = 0; i < partyStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             if (dummyActor.GetSpriteName() == spriteName)
             {
                 RemoveStatsAtIndex(i);
@@ -464,26 +465,26 @@ public class PartyData : SavedData
     }
     public void RemoveExhaustion(int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         dummyActor.ClearStatuses(exhaustStatus);
-        partyStats[index] = dummyActor.GetStats();
+        partyStats[index] = dummyActor.GetInitialStats();
     }
     public void Rest(int index, bool eat = true)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         if (eat)
         {
             dummyActor.UpdateHealth(restHealth, false);
             dummyActor.ClearStatuses(hungerStatus);
         }
         dummyActor.ClearStatuses(exhaustStatus);
-        partyStats[index] = dummyActor.GetStats();
+        partyStats[index] = dummyActor.GetInitialStats();
     }
     public int Hunger(int index)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         dummyActor.AddStatus(hungerStatus, -1);
-        partyStats[index] = dummyActor.GetStats();
+        partyStats[index] = dummyActor.GetInitialStats();
         int count = 0;
         for (int i = 0; i < dummyActor.statuses.Count; i++)
         {
@@ -495,18 +496,18 @@ public class PartyData : SavedData
     {
         for (int i = 0; i < partyStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             if (dummyActor.AnyPassiveExists(regenPassives))
             {
                 dummyActor.UpdateHealth(1, false);
-                partyStats[i] = dummyActor.GetStats();
+                partyStats[i] = dummyActor.GetInitialStats();
             }
         }
     }
     // By hunger/etc.
     public bool HungerChipDamage(int index, bool death = false)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         dummyActor.UpdateHealth(1);
         if (dummyActor.GetHealth() <= 0)
         {
@@ -520,14 +521,14 @@ public class PartyData : SavedData
                 return true;
             }
         }
-        partyStats[index] = dummyActor.GetStats();
+        partyStats[index] = dummyActor.GetInitialStats();
         return false;
     }
     public bool StatusChipDamage(List<string> statuses, bool death = false)
     {
         for (int i = 0; i < partyStats.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyStats[i]);
+            dummyActor.SetInitialStatsFromString(partyStats[i]);
             if (dummyActor.AnyStatusExists(statuses))
             {
                 dummyActor.UpdateHealth(1);
@@ -545,13 +546,13 @@ public class PartyData : SavedData
                     }
                 }
             }
-            partyStats[i] = dummyActor.GetStats();
+            partyStats[i] = dummyActor.GetInitialStats();
         }
         return false;
     }
     public void Exhaust(int index, bool death = false)
     {
-        dummyActor.SetStatsFromString(partyStats[index]);
+        dummyActor.SetInitialStatsFromString(partyStats[index]);
         if (dummyActor.statuses.Contains(exhaustStatus))
         {
             dummyActor.UpdateHealth(exhaustDamage, true);
@@ -573,6 +574,6 @@ public class PartyData : SavedData
         {
             dummyActor.AddStatus(exhaustStatus, -1);
         }
-        partyStats[index] = dummyActor.GetStats();
+        partyStats[index] = dummyActor.GetInitialStats();
     }
 }

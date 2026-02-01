@@ -39,7 +39,7 @@ public class TrainingGroundUI : MonoBehaviour
 
     protected void UpdateActorStats()
     {
-        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(allActors.GetSelected()));
+        selectedActor.SetInitialStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(allActors.GetSelected()));
         actorStats.UpdateActorStatTexts(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor);
     }
@@ -78,7 +78,7 @@ public class TrainingGroundUI : MonoBehaviour
     {
         string newFeat = featSelect.GetSelectedStat();
         int selectedIndex = allActors.GetSelected();
-        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
+        selectedActor.SetInitialStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
         selectedActor.AddPassiveSkill(newFeat, "1");
         partyData.UpdatePartyMember(selectedActor, selectedIndex);
         partyData.inventory.SpendGold(int.Parse(newFeatPrice.text));

@@ -13,7 +13,7 @@ public class StSLikeRestScene : MonoBehaviour
         // Update stats based on chosen downtime activities.
         for (int i = 0; i < restingChoices.Count; i++)
         {
-            dummyActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(i));
+            dummyActor.SetInitialStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(i));
             switch (restingChoices[i])
             {
                 case "Rest":
@@ -96,7 +96,7 @@ public class StSLikeRestScene : MonoBehaviour
         int index = actorSelectList.GetSelected();
         if (index == -1) { return; }
         ResetRestEffects();
-        dummyActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(index));
+        dummyActor.SetInitialStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(index));
         List<string> stats = new List<string>();
         List<string> data = new List<string>();
         stats.Add("Current Health");

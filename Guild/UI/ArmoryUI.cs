@@ -54,6 +54,14 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.UpdateTextSize();
         selectEquipment.UpdateTextSize();
     }
+    public GameObject moreStatObject;
+    public StatTextList moreActorStats;
+    public void ViewMoreStats()
+    {
+        if (allActors.GetSelected() < 0 || selectedActor == null){return;}
+        moreStatObject.SetActive(true);
+        moreActorStats.SetStatsAndData(selectedActor.GetPublicStatNames(), selectedActor.GetPublicStatInfo());
+    }
     public GameObject runeGridObject;
     public EquipmentRunesUI runeGrid;
     public void ViewRunes()
@@ -114,7 +122,7 @@ public class ArmoryUI : MonoBehaviour
 
     protected void UpdateActorStats()
     {
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor, true);
         actorSpriteStats.UpdateActorSpriteStats(selectedActor);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
@@ -217,9 +225,10 @@ public class ArmoryUI : MonoBehaviour
         selectEquipObject.SetActive(false);
         // Disable other panels that might be over the equip panel as well.
         runeGridObject.SetActive(false);
+        moreStatObject.SetActive(false);
         inventoryObject.SetActive(false);
         if (allActors.GetSelected() < 0){return;}
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor, true);
         actorPassives.UpdateActorPassiveTexts(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
         actorEquipment.UpdateActorEquipmentTexts(partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()));
@@ -230,7 +239,7 @@ public class ArmoryUI : MonoBehaviour
     {
         selectEquipment.ResetHighlights();
         selectEquipment.HighlightIndex(selectEquipment.GetSelected());
-        selectedActor.SetStatsFromString(allActors.allActorData[allActors.GetSelected()]);
+        selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorPassives.UpdatePotentialPassives(selectedActor, partyData.ReturnPartyMemberEquipFromIndex(allActors.GetSelected()), selectEquipment.data[selectEquipment.GetSelected()]);
     }
 

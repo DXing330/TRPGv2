@@ -635,7 +635,9 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Skill":
                 return " gain the " + specifics + " skill";
             case "TemporarySkill":
-                return " gain the " + specifics + " skill once";
+                return " gain the " + specifics + " skill which can be used once";
+            case "SingleTemporarySkill":
+                return " gain the " + specifics + " skill which can only be used once";
             case "Spell":
                 return " gain the " + specifics + " spell";
             case "TemporarySpell":
@@ -710,9 +712,6 @@ public class PassiveDetailViewer : MonoBehaviour
             case "ScalingElementalResist":
                 string[] sER = specifics.Split(">>");
                 return " increase base " + sER[0] + " resistance by " + sER[3] + "% for each level of this passive";
-            case "ScalingVigor":
-                string[] scalingVig = specifics.Split(">>");
-                return " increase vigor by " + scalingVig[2] + " for each level of this passive";
             case "ElementalBonusDamage":
                 string[] eBD = specifics.Split(">>");
                 return " deal " + eBD[1] + " " + eBD[0] + " damage";

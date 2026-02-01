@@ -72,7 +72,7 @@ public class ActorPassives : MonoBehaviour
     }
     // Usually only get new passives based on equipment at the start of battle, before you start organizing passives.
     // Can also use to this learn new permanent passive skills.
-    public void AddPassiveSkill(string skillName, string skillLevel)
+    public void AddPassiveSkill(string skillName, string skillLevel = "1")
     {
         if (skillName == "")
         {

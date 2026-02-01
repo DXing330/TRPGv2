@@ -7,6 +7,13 @@ using UnityEngine;
 // Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map and anything that will result in a change of that visualization, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
+    // MAP CONFIG CONSTANTS
+    public int buildingLayer = 1;
+    public int actorLayer = 2;
+    public int tEffectLayer = 3;
+    public int highlightLayer = 4;
+    // UTILITIES
+    public BattleMapUtility battleMapUtility;
     public MapPatternLocations mapPatterns;
     public StatusDetailViewer detailViewer;
     public string weather;
@@ -807,7 +814,7 @@ public class BattleMap : MapManager
     }
     protected void UpdateTerrain()
     {
-        mapDisplayers[2].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
+        mapDisplayers[tEffectLayer].DisplayCurrentTiles(mapTiles, terrainEffectTiles, currentTiles);
     }
     public List<Interactable> interactables;
     public void RemoveInteractable(Interactable iAct)
@@ -1083,7 +1090,7 @@ public class BattleMap : MapManager
     public void UpdateActors()
     {
         GetActorTiles();
-        mapDisplayers[1].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles, true, actorDirections);
+        mapDisplayers[actorLayer].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles, true, actorDirections);
     }
 
     public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)
@@ -1106,7 +1113,7 @@ public class BattleMap : MapManager
         highlightedTiles = new List<string>(originalHighlightedTiles);
     }
 
-    protected void UpdateHighlightsWithoutReseting(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)
+    protected void UpdateHighlightsWithoutReseting(List<int> newTiles, string colorKey = "MoveClose", int layer = 4)
     {
         string colorName = colorDictionary.GetColorNameByKey(colorKey);
         for (int i = 0; i < newTiles.Count; i++)
@@ -1116,7 +1123,7 @@ public class BattleMap : MapManager
         mapDisplayers[layer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
 
-    protected void HighlightTileWithoutReseting(int newTile, string colorKey, int layer = 3)
+    protected void HighlightTileWithoutReseting(int newTile, string colorKey, int layer = 4)
     {
         string colorName = colorDictionary.GetColorNameByKey(colorKey);
         highlightedTiles[newTile] = colorName;
@@ -1134,7 +1141,7 @@ public class BattleMap : MapManager
         }
     }
 
-    public void UpdateHighlights(List<int> newTiles, string colorKey = "MoveClose", int layer = 3)
+    public void UpdateHighlights(List<int> newTiles, string colorKey = "MoveClose", int layer = 4)
     {
         string colorName = colorDictionary.GetColorNameByKey(colorKey);
         if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
@@ -1152,8 +1159,8 @@ public class BattleMap : MapManager
     {
         if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         highlightedTiles = new List<string>(emptyList);
-        mapDisplayers[3].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
-        mapDisplayers[4].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+        mapDisplayers[highlightLayer].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
+        mapDisplayers[highlightLayer + 1].HighlightCurrentTiles(mapTiles, highlightedTiles, currentTiles);
     }
 
     public override void ClickOnTile(int tileNumber)
@@ -1243,9 +1250,77 @@ public class BattleMap : MapManager
         return excludedTileTypesForNonFlying.Contains(tile);
     }
 
+    public bool TileSandwiched(TacticActor actor, string tileType)
+    {
+        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return false;}
+        // Already checked for alignment in earlier condition.
+        // Get the tiles inbetween you and the target.
+        List<int> tilesBetween = mapUtility.GetTileInLineBetweenPoints(actor.GetLocation(), actor.GetTarget().GetLocation(), mapSize);
+        // Check if any of the tiles are of the tile type.
+        for (int i = 0; i < tilesBetween.Count; i++)
+        {
+            if (mapInfo[tilesBetween[i]].Contains(tileType))
+            {
+                return true;
+            }
+        }
+        return false;        
+    }
+
+    public bool TileSandwichable(TacticActor actor, string tileType)
+    {
+        return ReturnClosestTileSandwiched(actor, tileType) >= 0;
+    }
+
+    public int ReturnClosestTileSandwiched(TacticActor actor, string tileType)
+    {
+        int tile = -1;
+        int distance = mapSize * mapSize;
+        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return tile;}
+        int targetLocation = actor.GetTarget().GetLocation();
+        List<int> adjacentTiles = mapUtility.AdjacentTiles(targetLocation, mapSize);
+        for (int i = 0; i < adjacentTiles.Count; i++)
+        {
+            // Check if the target is adjacent to any of the requested tile types.
+            if (mapInfo[adjacentTiles[i]].Contains(tileType))
+            {
+                // Get the direction and check if any point in a tile is valid.
+                int direction = mapUtility.DirectionBetweenLocations(targetLocation, adjacentTiles[i], mapSize);
+                List<int> lineTiles = mapUtility.GetTilesInLineDirection(adjacentTiles[i], direction, mapSize, mapSize);
+                for (int j = 0; j < lineTiles.Count; j++)
+                {
+                    if (lineTiles[j] < 0 || TileExcluded(actor, mapInfo[lineTiles[j]]) || GetActorOnTile(lineTiles[j]) != null)
+                    {
+                        continue;
+                    }
+                    int newDistance = mapUtility.DistanceBetweenTiles(lineTiles[j], actor.GetLocation(), mapSize);
+                    if (newDistance < distance)
+                    {
+                        distance = newDistance;
+                        tile = lineTiles[j];
+                        break;
+                    }
+                }
+            }
+        }
+        return tile;
+    }
+
+    public bool SandwichedByTarget(TacticActor actor, string tileType)
+    {
+        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return false;}
+        int location = actor.GetLocation();
+        int targetLoc = actor.GetTarget().GetLocation();
+        if (!mapUtility.TilesAdjacent(location, targetLoc, mapSize)){return false;}
+        int direction = mapUtility.DirectionBetweenLocations(targetLoc, location, mapSize);
+        int sandwichingPoint = mapUtility.PointInDirection(location, direction, mapSize);
+        if (sandwichingPoint < 0){return false;}
+        return mapInfo[sandwichingPoint].Contains(tileType);
+    }
+
     public bool TargetSandwiched(TacticActor actor, string tileType)
     {
-        if (actor.GetTarget() == null){return false;}
+        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return false;}
         int location = actor.GetLocation();
         int targetLoc = actor.GetTarget().GetLocation();
         if (!mapUtility.TilesAdjacent(location, targetLoc, mapSize)){return false;}
@@ -1264,7 +1339,7 @@ public class BattleMap : MapManager
     {
         int tile = -1;
         int distance = mapSize * mapSize;
-        if (actor.GetTarget() == null){return tile;}
+        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return tile;}
         int targetLocation = actor.GetTarget().GetLocation();
         List<int> adjacentTiles = mapUtility.AdjacentTiles(targetLocation, mapSize);
         for (int i = 0; i < adjacentTiles.Count; i++)

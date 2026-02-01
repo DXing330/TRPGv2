@@ -288,6 +288,16 @@ public class MapUtility : ScriptableObject
         return tiles;
     }
 
+    public List<int> GetTileInLineBetweenPoints(int loc1, int loc2, int size)
+    {
+        List<int> tiles = new List<int>();
+        if (!StraightLineBetweenPoints(loc1, loc2, size)){return tiles;}
+        int direction = DirectionBetweenLocations(loc1, loc2, size);
+        int distance = DistanceBetweenTiles(loc1, loc2, size);
+        tiles = GetTilesInLineDirection(loc1, direction, distance - 1, size);
+        return tiles;
+    }
+
     public List<int> GetTilesInLineDirection(int location, int direction, int range, int size)
     {
         List<int> tiles = new List<int>();
@@ -299,6 +309,7 @@ public class MapUtility : ScriptableObject
                 current = PointInDirection(current, direction, size);
                 tiles.Add(current);
             }
+            else{break;}
         }
         return tiles;
     }

@@ -214,7 +214,7 @@ public class CustomPassiveTraining : MonoBehaviour
     public void ConfirmTraining()
     {
         int selectedIndex = allActors.GetSelected();
-        selectedActor.SetStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
+        selectedActor.SetInitialStatsFromString(partyData.ReturnPartyMemberStatsAtIndex(selectedIndex));
         // Check if you already have the passive.
         string newCP = passiveStats.ReturnStats();
         if (selectedActor.CustomPassiveExists(newCP))
