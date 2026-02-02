@@ -11,14 +11,37 @@ public class MagicSpell : ActiveSkill
     public override bool Activatable(TacticActor actor)
     {
         if (actor.GetSilenced()){return false;}
-        return (actor.GetActions() >= GetActionCost() && actor.GetMana() >= ReturnManaCost());
+        return (actor.GetActions() >= GetActionCost() && actor.GetMana() >= ReturnManaCost(actor));
     }
-    public int ReturnManaCost()
+    public int ReturnManaCost(TacticActor actor = null)
     {
-        int tilesInRange = mapUtility.CountTilesByShapeSpan(GetRangeShape(), GetRange());
-        int tilesInEffectRange = mapUtility.CountTilesByShapeSpan(GetShape(), GetSpan());
-        int totalTiles = tilesInRange + tilesInEffectRange;
-        return ((int) Mathf.Sqrt(totalTiles))*GetEnergyCost();
+        //int tilesInRange = mapUtility.CountTilesByShapeSpan(GetRangeShape(), GetRange());
+        //int tilesInEffectRange = mapUtility.CountTilesByShapeSpan(GetShape(), GetSpan());
+        //int totalTiles = tilesInRange + tilesInEffectRange;
+        //return ((int) Mathf.Sqrt(totalTiles))*GetEnergyCost();
+        int cost = GetEnergyCost();
+        if (actor != null)
+        {
+            string[] spellName = GetSpellName().Split("-");
+            if (spellName.Length < 2){return cost;}
+            int attributeCount = actor.AttributeCount(spellName[1]);
+            return AdjustCostByAttributes(cost, attributeCount);
+        }
+        return cost;
+    }
+    protected int AdjustCostByAttributes(int baseCost, int attributeCount)
+    {
+        switch (attributeCount)
+        {
+            default:
+            return 1;
+            case 0:
+            return Mathf.Max(1, baseCost);
+            case 1:
+            return Mathf.Max(1, baseCost * 3 / 4);
+            case 2:
+            return Mathf.Max(1, baseCost / 2);
+        }
     }
     public string effectDelimiter = "?";
     public void SetSpellName(string newInfo)

@@ -17,6 +17,7 @@ public class ArmoryUI : MonoBehaviour
     public SelectStatTextList actorStatuses;
     public SelectStatTextList actorPassives;
     public SelectStatTextList actorActives;
+    public SelectStatTextList actorDivineSpells;
     public SelectStatTextList actorEquipment;
     public PopUpMessage equipmentStats;
     public List<string> equipmentSlotNames;
@@ -130,6 +131,7 @@ public class ArmoryUI : MonoBehaviour
         actorEquipment.ResetSelected();
         actorStatuses.SetStatsAndData(selectedActor.GetUniqueStatuses(), selectedActor.GetUniqueStatusStacks());
         UpdateActorActives();
+        UpdateActorDivineSpells();
     }
     
     protected void UpdateActorActives()
@@ -148,6 +150,25 @@ public class ArmoryUI : MonoBehaviour
             }
         }
         actorActives.SetStatsAndData(allActives);
+    }
+
+    protected void UpdateActorDivineSpells()
+    {
+        List<string> allSpells = selectedActor.GetSpells();
+        // Add any spells from attributes.
+        List<string> attributes = selectedActor.GetAttributes();
+        for (int i = 0; i < attributes.Count; i++)
+        {
+            if (attributes[i] == "Nil"){continue;}
+            int attributeCount = selectedActor.AttributeCount(attributes[i]);
+            allSpells.Add("Hoti-" + attributes[i]);
+            if (attributeCount >= 2)
+            {
+                allSpells.Add("Bhavati-" + attributes[i]);
+            }
+        }
+        allSpells = allSpells.Distinct().ToList();
+        actorDivineSpells.SetStatsAndData(allSpells);
     }
 
     public virtual void UpdateSelectedActor()

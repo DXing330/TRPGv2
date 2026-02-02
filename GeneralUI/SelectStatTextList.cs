@@ -138,12 +138,14 @@ public class SelectStatTextList : StatTextList
         page = 0;
         stats.Clear();
         data.Clear();
-        stats.Add("Movement Type");
-        stats.Add("Element");
         stats.Add("Species");
-        data.Add(actor.GetMoveType());
-        data.Add(actor.GetElementString());
+        stats.Add("Element");
+        stats.Add("Attributes");
+        stats.Add("Movement Type");
         data.Add(actor.GetSpecies());
+        data.Add(actor.GetElementString());
+        data.Add(actor.GetAttributeString());
+        data.Add(actor.GetMoveType());
         for (int i = 0; i < Mathf.Min(stats.Count, statTexts.Count); i++)
         {
             objects[i].SetActive(true);

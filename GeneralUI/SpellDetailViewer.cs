@@ -6,7 +6,14 @@ using TMPro;
 public class SpellDetailViewer : ActiveDescriptionViewer
 {
     public MagicSpell dummySpell;
+    public StatDatabase divineSpellData;
     public string spellData;
+    public void SelectDivineSpell()
+    {
+        if (activeSelect.GetSelected() < 0){return;}
+        dummySpell.LoadSkillFromString(divineSpellData.ReturnValue(activeSelect.GetSelectedStat()));
+        popUp.SetMessage(ReturnSpellDescription(dummySpell));
+    }
     [ContextMenu("Debug Spell Description")]
     public void ShowSpellDescription()
     {

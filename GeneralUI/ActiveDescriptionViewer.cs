@@ -15,7 +15,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
         popUp.SetMessage(ReturnActiveDescription(dummyActive));
     }
 
-    public string ReturnSpellDescription(MagicSpell spell)
+    public string ReturnSpellDescription(MagicSpell spell, TacticActor caster = null)
     {
         string fullDetails = "";
         List<string> effects = spell.GetAllEffects();
@@ -31,7 +31,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
         }
         fullDetails += "\n" + "Action Cost: " + spell.GetActionCost();
         //+"; Actions Left: " +activeSkill;
-        fullDetails += "\n" + "Mana Cost: "+spell.ReturnManaCost();
+        fullDetails += "\n" + "Mana Cost: "+spell.ReturnManaCost(caster);
         return fullDetails;
     }
     public string ReturnActiveDescriptionOnly(ActiveSkill activeSkill)
@@ -202,6 +202,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Gain the " + s + " aura for " + p + " turns.";
             case "Kill":
                 return "Kill the target(s) if their health is less than " + s + ".";
+            case "Manaize":
+                return "Convert " + ASD(s) + " into mana.";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

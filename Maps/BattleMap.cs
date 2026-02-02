@@ -656,6 +656,17 @@ public class BattleMap : MapManager
     }
     public StatDatabase terrainTerrainInteractions;
     public List<string> terrainEffectTiles;
+    public string GetTerrainEffectOnTile(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= terrainEffectTiles.Count){return "";}
+        return terrainEffectTiles[tileNumber];
+    }
+    public void RemoveTerrainEffectOnTile(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= terrainEffectTiles.Count){return;}
+        terrainEffectTiles[tileNumber] = "";
+        UpdateMap();
+    }
     public virtual void GetNewTerrainEffects(List<string> featuresAndPatterns)
     {
         terrainEffectTiles = new List<string>(emptyList);

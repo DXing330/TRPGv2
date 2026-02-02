@@ -13,7 +13,7 @@ public class ActiveManager : MonoBehaviour
     }
     public void ActivateSpell(BattleManager battle)
     {
-        skillUser.UseMana(magicSpell.ReturnManaCost());
+        skillUser.UseMana(magicSpell.ReturnManaCost(skillUser));
         skillUser.PayActionCost(magicSpell.GetActionCost());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         List<string> effects = magicSpell.GetAllEffects();
@@ -592,6 +592,18 @@ public class ActiveManager : MonoBehaviour
                 return;
             case "Aura":
                 battle.map.AddAura(skillUser, power, specifics);
+                return;
+            case "Manaize":
+                for (int i = 0; i < targetedTiles.Count; i++)
+                {
+                    // Check if the target tile is of the terrain effect.
+                    if (battle.map.GetTerrainEffectOnTile(targetedTiles[i]).Contains(specifics))
+                    {
+                        // If so absorb the terrain effect to gain mana.
+                        battle.map.RemoveTerrainEffectOnTile(targetedTiles[i]);
+                        skillUser.RestoreMana(power);
+                    }
+                }
                 return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.

@@ -83,7 +83,7 @@ public class ActiveSelectList : SelectList
             ResetState();
             return;
         }
-        activeDescription.text = descriptionViewer.ReturnSpellDescription(activeManager.magicSpell);
+        activeDescription.text = descriptionViewer.ReturnSpellDescription(activeManager.magicSpell, activeManager.skillUser);
         activeManager.GetTargetableTiles(battle.GetTurnActor().GetLocation(), battle.moveManager.actorPathfinder, true);
         activeManager.ResetTargetedTiles();
         activeManager.CheckIfSingleTargetableTile();
