@@ -204,6 +204,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Kill the target(s) if their health is less than " + s + ".";
             case "Manaize":
                 return "Convert " + ASD(s) + " into mana.";
+            case "ChainLightning":
+                return "Lightning strikes the target and bounces and the target(s) get " + p + " " + s + ".";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

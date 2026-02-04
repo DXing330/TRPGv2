@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -128,6 +130,9 @@ public class TacticActor : ActorStats
         // Default is two actions.
         movement = 0;
         counterAttacks = 0;
+        // Update all the turn trackers.
+        attacksEachRound.Add(0);
+        skillsEachRound.Add(0);
         ResetStats();
         if (sleeping)
         {
@@ -211,6 +216,37 @@ public class TacticActor : ActorStats
         mentalState = newInfo;
     }
     public string GetMentalState(){ return mentalState; }
+    // Keep track of skills/spells used and attacks.
+    public List<int> attacksEachRound;
+    public void ResetRoundAttackTracker()
+    {
+        attacksEachRound.Clear();
+    }
+    public void UpdateRoundAttackTracker()
+    {
+        if (attacksEachRound == null || attacksEachRound.Count == 0)
+        {
+            attacksEachRound.Add(1);
+        }
+        attacksEachRound[attacksEachRound.Count - 1]++;
+    }
+    public int ReturnRecentRoundAttacks()
+    {
+        return attacksEachRound[attacksEachRound.Count - 1];
+    }
+    public int ReturnTotalRoundAttacks()
+    {
+        return attacksEachRound.Sum();
+    }
+    public List<int> skillsEachRound;
+    public void ResetRoundSkillTracker()
+    {
+        skillsEachRound.Clear();
+    }
+    public void UpdateRoundSkillTracker()
+    {
+        attacksEachRound[attacksEachRound.Count - 1]++;
+    }
     // Keep track of who hurt you, how many times and how much.
     public List<TacticActor> hurtByList;
     public List<int> hurtCount;
@@ -408,15 +444,15 @@ public class TacticActor : ActorStats
         }
         return false;
     }
-
     // For organization purposes.
     public override void InitializeStats()
     {
         base.InitializeStats();
         ResetTarget();
         ResetHurtBy();
+        ResetRoundAttackTracker();
+        ResetRoundSkillTracker();
     }
-
     public void EndTurn()
     {
         movement = 0;
@@ -432,7 +468,6 @@ public class TacticActor : ActorStats
         CheckBuffDuration();
         CheckStatusDuration();
     }
-
     public List<string> ReturnSpendableStats()
     {
         List<string> stats = new List<string>();

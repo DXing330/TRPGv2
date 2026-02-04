@@ -532,6 +532,10 @@ public class PassiveSkill : SkillEffect
                 return target.GetHurtBy() == attacker;
             case "HurtLeastD":
                 return target.GetHurtBy(false) == attacker;
+            case "FirstStrikeA":
+                return attacker.ReturnTotalRoundAttacks() <= 0;
+            case "FirstStrikeD":
+                return target.ReturnTotalRoundAttacks() <= 0;
         }
         return true;
     }

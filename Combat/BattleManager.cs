@@ -1172,14 +1172,13 @@ public class BattleManager : MonoBehaviour
     public void ActiveDeathPassives(TacticActor actor)
     {
         activeManager.SetSkillUser(actor);
-        List<string> deathPassives = new List<string>(actor.GetDeathPassives());
-        for (int i = 0; i < deathPassives.Count; i++)
+        List<string> deathActives = new List<string>(actor.GetDeathActives());
+        for (int i = 0; i < deathActives.Count; i++)
         {
-            if (deathPassives[i].Length <= 0) { continue; }
-            List<string> passiveData = deathPassives[i].Split("|").ToList();
-            activeManager.SetSkillFromName(passiveData[5]);
+            if (deathActives[i].Length <= 0) { continue; }
+            activeManager.SetSkillFromName(deathActives[i]);
             activeManager.GetTargetedTiles(actor.GetLocation(), moveManager.actorPathfinder);
-            ActivateSkill(passiveData[5], actor);
+            ActivateSkill(deathActives[i], actor);
         }
     }
 

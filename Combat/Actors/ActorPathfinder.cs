@@ -52,12 +52,10 @@ public class ActorPathfinder : MapPathfinder
             {
                 moveCost += GetElevationDifference(closestTile, adjacentTiles[i]) / 2;
                 int borderCost = GetBorderCost(closestTile, adjacentTiles[i]);
-                if (borderCost > 0)
-                {
-                    //Debug.Log("Border Cost from: " + closestTile + " -> " + adjacentTiles[i] + " = " + borderCost);
-                    // + ", Direction = " + mapUtility.DirectionBetweenLocations(adjacentTiles[i], closestTile, mapSize));
-                }
                 moveCost += borderCost;
+                int buildingCost = GetBuildingMoveCost(adjacentTiles[i]);
+                moveCost += buildingCost;
+                if (moveCost < 1){moveCost = 1;}
             }
             if (distances[closestTile] + moveCost < distances[adjacentTiles[i]])
             {

@@ -90,11 +90,106 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Damage":
                 int effectDamage = int.Parse(effectSpecifics) * level;
-                int effectDamageTaken = Mathf.Max(0, effectDamage - target.GetDefense());
-                target.TakeEffectDamage(int.Parse(effectSpecifics) * level);
+                effectDamage = target.TakeEffectDamage(effectDamage);
                 if (combatLog != null)
                 {
-                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + effectDamageTaken + " damage.");
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + effectDamage + " damage.");
+                }
+                break;
+            // ALL the elemental damage types go here as well.
+            case "LightningDamage":
+                int lightningDamage = int.Parse(effectSpecifics) * level;
+                // Double Damage + Bonus Damage If Wet.
+                if (target.StatusExists("Wet"))
+                {
+                    lightningDamage *= 2;
+                    lightningDamage += target.ReturnStatusDuration("Wet");
+                }
+                lightningDamage = target.ApplyMagicResist(lightningDamage);
+                lightningDamage = target.TakeEffectDamage(lightningDamage, "Lightning");
+                if (combatLog != null && lightningDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + lightningDamage + " lightning damage.");
+                }
+                break;
+            case "FireDamage":
+                int fireDamage = int.Parse(effectSpecifics) * level;
+                fireDamage = target.ApplyMagicResist(fireDamage);
+                // Bonus Damage For Each Burn Stack, Penetrates Magic Resist.
+                fireDamage += target.StatusStacks("Burn");
+                fireDamage = target.TakeEffectDamage(fireDamage, "Fire");
+                if (combatLog != null && fireDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + fireDamage + " fire damage.");
+                }
+                break;
+            case "WaterDamage":
+                int waterDamage = int.Parse(effectSpecifics) * level;
+                waterDamage = target.ApplyMagicResist(waterDamage);
+                // Bonus Damage Based On Wet Duration, Penetrates Magic Resist.
+                waterDamage += target.ReturnStatusDuration("Wet");
+                waterDamage = target.TakeEffectDamage(waterDamage, "Water");
+                if (combatLog != null && waterDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + waterDamage + " water damage.");
+                }
+                break;
+            case "IceDamage":
+                int iceDamage = int.Parse(effectSpecifics) * level;
+                // Freeze If Wet.
+                if (target.StatusExists("Wet"))
+                {
+                    int freezeDuration = target.ReturnStatusDuration("Wet");
+                    target.RemoveStatus("Wet");
+                    target.AddStatus("Frozen", freezeDuration);
+                }
+                iceDamage = target.ApplyMagicResist(iceDamage);
+                iceDamage = target.TakeEffectDamage(iceDamage, "Ice");
+                if (combatLog != null && iceDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + iceDamage + " ice damage.");
+                }
+                break;
+            case "EarthDamage":
+                int earthDamage = int.Parse(effectSpecifics) * level;
+                // Multiplied By Weight.
+                earthDamage *= Mathf.Max(1, target.GetWeight());
+                earthDamage = target.ApplyMagicResist(earthDamage);
+                earthDamage = target.TakeEffectDamage(earthDamage, "Earth");
+                if (combatLog != null && earthDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + earthDamage + " earth damage.");
+                }
+                break;
+            case "LightDamage":
+                int lightDamage = int.Parse(effectSpecifics) * level;
+                lightDamage = target.ApplyMagicResist(lightDamage);
+                lightDamage = target.TakeEffectDamage(lightDamage, "Light");
+                if (combatLog != null && lightDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + lightDamage + " light damage.");
+                }
+                break;
+            case "DarkDamage":
+                int darkDamage = int.Parse(effectSpecifics) * level;
+                darkDamage = target.ApplyMagicResist(darkDamage);
+                // Bonus Damage For Each Unique Status, Penetrates Magic Resist.
+                darkDamage += target.GetUniqueStatuses().Count;
+                darkDamage = target.TakeEffectDamage(darkDamage, "Dark");
+                if (combatLog != null && darkDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + darkDamage + " dark damage.");
+                }
+                break;
+            case "AirDamage":
+                // Decrease weight.
+                target.UpdateWeight(-1);
+                int airDamage = int.Parse(effectSpecifics) * level;
+                airDamage = target.ApplyMagicResist(airDamage);
+                airDamage = target.TakeEffectDamage(airDamage, "Air");
+                if (combatLog != null && airDamage > 0)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + airDamage + " air damage.");
                 }
                 break;
             case "Energy":
@@ -336,8 +431,8 @@ public class SkillEffect : ScriptableObject
             case "CritDamage":
                 target.UpdateCritDamage(int.Parse(effectSpecifics));
                 break;
-            case "DisablePassives":
-                target.DisableDeathPassives();
+            case "DisableDeathActives":
+                target.DisableDeathActives();
                 break;
             case "ReleaseGrapple":
                 target.ReleaseGrapple();

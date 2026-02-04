@@ -20,10 +20,7 @@ public class EffectManager : MonoBehaviour
 
     public void StartTurn(TacticActor actor, BattleMap map)
     {
-        map.ApplyWeatherStartEffect(actor);
-        map.ApplyTileStartEffect(actor);
-        map.ApplyTerrainStartEffect(actor);
-        map.ApplyAuraEffects();
+        map.ActorStartsTurn(actor);
         passive.ApplyPassives(actor, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
         status.ApplyBuffEffects(actor, statusData, "Start");
@@ -39,10 +36,7 @@ public class EffectManager : MonoBehaviour
 
     public void EndTurn(TacticActor actor, BattleMap map)
     {
-        map.ApplyWeatherEndEffect(actor);
-        map.ApplyTileEndEffect(actor);
-        map.EndTurnOnInteractable(actor);
-        map.ApplyAuraEffects();
+        map.ActorEndsTurn(actor);
         map.AuraActorEndsTurn(actor);
         passive.ApplyPassives(actor, "End", map);
         status.ApplyBuffEffects(actor, statusData, "End");

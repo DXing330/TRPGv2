@@ -97,9 +97,6 @@ public class PassiveOrganizer : ScriptableObject
             case "TakeDamage":
                 takeDamagePassives.Add(passiveDetails);
                 break;
-            case "Death":
-                deathPassives.Add(passiveDetails);
-                break;
             case "OOC":
                 outOfCombatPassives.Add(passiveDetails);
                 break;
@@ -142,7 +139,6 @@ public class PassiveOrganizer : ScriptableObject
         actor.SetDefendingPassives(defendingPassives);
         actor.SetTakeDamagePassives(takeDamagePassives);
         actor.SetMovingPassives(movingPassives);
-        actor.SetDeathPassives(deathPassives);
         actor.SetOOCPassives(outOfCombatPassives);
     }
 }

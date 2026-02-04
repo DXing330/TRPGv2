@@ -150,6 +150,10 @@ public class AIConditionChecker : ScriptableObject
                 return map.TileSandwiched(actor, specifics);
             case "TileSandwichable":
                 return map.TileSandwichable(actor, specifics);
+            case "TargetAdjacentAllyCount>":
+                return map.GetAdjacentAllies(actor.GetTarget()).Count > int.Parse(specifics);
+            case "TargetAdjacentAllyCount<":
+                return map.GetAdjacentAllies(actor.GetTarget()).Count < int.Parse(specifics);
         }
         return true;
     }

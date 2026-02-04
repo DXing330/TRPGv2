@@ -113,7 +113,10 @@ public class ActorStats : ActorInitialStats
     }
     // CURRENT/TEMP STATS
     public int currentWeight;
-    public void UpdateWeight(int changeAmount) { currentWeight += changeAmount; }
+    public void UpdateWeight(int changeAmount)
+    {
+        currentWeight += changeAmount;
+    }
     public int GetWeight() { return currentWeight; }
     public int tempInitiative;
     public void ResetTempInitiative()
@@ -175,7 +178,10 @@ public class ActorStats : ActorInitialStats
     }
     public int TakeEffectDamage(int damage, string type = "Physical")
     {
-        damage -= GetDefense();
+        if (type == "Physical")
+        {
+            damage -= GetDefense();
+        }
         if (damage < 0)
         {
             return 0;

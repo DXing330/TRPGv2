@@ -142,6 +142,7 @@ public class CustomPassiveTraining : MonoBehaviour
         UpdatePossibleConditions();
     }
     public StatDatabase passiveConditions;
+    public StatDatabase passiveConditionMultipliers;
     public List<string> possibleConditions;
     public void UpdatePossibleConditions()
     {
@@ -202,7 +203,7 @@ public class CustomPassiveTraining : MonoBehaviour
         passiveStats.ResetStats();
         passiveStats.SetTiming(selectedTiming);
         passiveStats.SetConditionAndSpecifics(selectedCondition);
-        passiveStats.SetTargetEffectAndSpecifics(selectedEffect);
+        passiveStats.SetTargetEffectAndSpecifics(selectedEffect, " ", int.Parse(passiveConditionMultipliers.ReturnValue(selectedCondition)));
         passiveDetailText.text = GetPassiveDetails(passiveStats.ReturnStats());
         currentGold.text = partyData.inventory.GetGold().ToString();
         cost.text = ((selectedActor.CustomPassiveCount() + 1) * baseCost).ToString();

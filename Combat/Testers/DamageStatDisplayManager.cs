@@ -39,6 +39,13 @@ public class DamageStatDisplayManager : MonoBehaviour
                 leftSideWins++;
             }
         }
+        if (totalWins <= 0)
+        {
+            winRatio = 0f;
+            winRateText.text = "0%";
+            winRatioBar.transform.localScale = new Vector3(winRatio, 1f, 0f);
+            return;
+        }
         winRatio = (float) leftSideWins / (float) totalWins;
         if (winRatio <= 0f)
         {
@@ -94,8 +101,16 @@ public class DamageStatDisplayManager : MonoBehaviour
     public void UpdateCurrentPageDisplay()
     {
         utility.DisableGameObjects(actorDisplayObjects);
-        maxDamageDealt = damageDealt.Max();
-        maxDamageTaken = damageTaken.Max();
+        if (damageDealt.Count <= 0 || damageTaken.Count <= 0)
+        {
+            maxDamageDealt = 0;
+            maxDamageTaken = 0;
+        }
+        else
+        {
+            maxDamageDealt = damageDealt.Max();
+            maxDamageTaken = damageTaken.Max();
+        }
         List<int> currentIndices = utility.GetCurrentPageIndices(currentPage, actorDisplayObjects, actorNames);
         for (int i = 0; i < currentIndices.Count; i++)
         {

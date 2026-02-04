@@ -31,6 +31,25 @@ public class MapPathfinder : ScriptableObject
         ResetMoveCosts();
     }
     public int GetMapSize(){return mapSize;}
+    public StatDatabase buildingMoveCosts;
+    public List<string> buildings;
+    public List<int> buildingLocations;
+    protected void ResetBuildings()
+    {
+        buildings.Clear();
+        buildingLocations.Clear();
+    }
+    public void SetBuildings(List<string> newBuildings, List<int> newBuildingLocations)
+    {
+        buildings = new List<string>(newBuildings);
+        buildingLocations = new List<int>(newBuildingLocations);
+    }
+    public int GetBuildingMoveCost(int into)
+    {
+        int indexOf = buildingLocations.IndexOf(into);
+        if (indexOf < 0){return 0;}
+        return int.Parse(buildingMoveCosts.ReturnValue(buildings[indexOf]));
+    }
     public List<string> borders;
     protected void ResetBorders()
     {

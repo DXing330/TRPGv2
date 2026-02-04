@@ -15,11 +15,13 @@ public class AttackManagerTester : MonoBehaviour
     public string dummyWeather;
     public int attackerLocation;
     public int attackerDirection;
+    public string attackerBuilding;
     public string attackerTile;
     public string attackerTEffect;
     public List<string> attackerBorders;
     public int defenderLocation;
     public int defenderDirection;
+    public string defenderBuilding;
     public string defenderTile;
     public string defenderTEffect;
     public List<string> defenderBorders;
@@ -63,9 +65,11 @@ public class AttackManagerTester : MonoBehaviour
         // Set up the attack conditions.
         map.SetTime(dummyTime);
         map.SetWeather(dummyWeather);
+        map.AddBuilding(attackerBuilding, attackerLocation);
         map.ChangeTile(attackerLocation, "Tile", attackerTile, true);
         map.ChangeTile(attackerLocation, "TerrainEffect", attackerTEffect, true);
         map.ChangeTile(attackerLocation, "Borders", String.Join("|", attackerBorders), true);
+        map.AddBuilding(defenderBuilding, defenderLocation);
         map.ChangeTile(defenderLocation, "Tile", defenderTile, true);
         map.ChangeTile(defenderLocation, "TerrainEffect", defenderTEffect, true);
         map.ChangeTile(defenderLocation, "Borders", String.Join("|", defenderBorders), true);

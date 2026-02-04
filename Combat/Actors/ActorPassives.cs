@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -234,9 +236,6 @@ public class ActorPassives : MonoBehaviour
             case "TakeDamage":
                 takeDamagePassives.Add(passiveName);
                 break;
-            case "Death":
-                deathPassives.Add(passiveName);
-                break;
             case "OOC":
                 outOfCombatPassives.Add(passiveName);
                 break;
@@ -266,9 +265,6 @@ public class ActorPassives : MonoBehaviour
                 break;
             case "TakeDamage":
                 takeDamagePassives.Remove(passiveName);
-                break;
-            case "Death":
-                deathPassives.Remove(passiveName);
                 break;
             case "OOC":
                 outOfCombatPassives.Remove(passiveName);
@@ -362,24 +358,29 @@ public class ActorPassives : MonoBehaviour
         }
     }
     public void SetMovingPassives(List<string> passives) { movingPassives = new List<string>(passives); }
-    public List<string> deathPassives;
-    public bool deathPassivesActive = true;
-    public void DisableDeathPassives(){deathPassivesActive = false;}
-    public List<string> GetDeathPassives()
+    public List<string> deathActives;
+    public bool deathActivesActive = true;
+    public void DisableDeathActives(){deathActivesActive = false;}
+    public List<string> GetDeathActives()
     {
-        if (!deathPassivesActive){return new List<string>();}
-        return deathPassives;
+        if (!deathActivesActive){return new List<string>();}
+        return deathActives;
     }
-    public void AddDeathPassive(string passiveName) { deathPassives.Add(passiveName); }
-    public void AddDeathPassives(List<string> newSkills)
+    public string GetDeathActivesString()
     {
-        for (int i = 0; i < newSkills.Count; i++)
+        return String.Join(",", deathActives);
+    }
+    public void SetDeathActives(List<string> newInfo)
+    {
+        deathActives = new List<string>(newInfo);
+        for (int i = deathActives.Count - 1; i >= 0; i--)
         {
-            if (newSkills[i].Length <= 1) { continue; }
-            AddDeathPassive(newSkills[i]);
+            if (deathActives[i].Length < 3)
+            {
+                deathActives.RemoveAt(i);
+            }
         }
     }
-    public void SetDeathPassives(List<string> passives) { deathPassives = new List<string>(passives); }
     public List<string> outOfCombatPassives;
     public List<string> GetOOCPassives(){return outOfCombatPassives;}
     public void AddOOCPassive(string passiveName){outOfCombatPassives.Add(passiveName);}

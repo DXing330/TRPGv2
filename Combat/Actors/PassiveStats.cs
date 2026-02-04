@@ -26,7 +26,7 @@ public class PassiveStats
     public string target;
     public string effect;
     public string effectSpecifics;
-    public void SetTargetEffectAndSpecifics(string newInfo, string delimiter = " ")
+    public void SetTargetEffectAndSpecifics(string newInfo, string delimiter = " ", int multiplier = 1)
     {
         string[] data = newInfo.Split(delimiter);
         target = data[0];
@@ -45,7 +45,15 @@ public class PassiveStats
         }
         else
         {
-            effectSpecifics = data[2];
+            try
+            {
+                int multiplied = int.Parse(data[2]) * multiplier;
+                effectSpecifics = multiplied.ToString();
+            }
+            catch
+            {
+                effectSpecifics = data[2];
+            }
         }
     }
     public void ResetStats()

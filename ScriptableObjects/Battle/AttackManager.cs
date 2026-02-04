@@ -12,6 +12,7 @@ public class AttackManager : ScriptableObject
     public TerrainPassivesList tEffectPassives;
     public TerrainPassivesList weatherPassives;
     public TerrainPassivesList borderPassives;
+    public TerrainPassivesList buildingPassives;
     public int stabMultiplier = 150;
     public int baseMultiplier;
     protected string damageRolls;
@@ -187,6 +188,7 @@ public class AttackManager : ScriptableObject
         CheckTerrainPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
         CheckTEffectPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
         CheckBorderPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
+        CheckBuildingPassives(defender, attacker, map, defenderTile, forAttacker, forDefender);
         CheckWeatherPassives(defender, attacker, map, forAttacker, forDefender);
     }
     // Basically used for guns/cannons other non scaling damage
@@ -282,6 +284,7 @@ public class AttackManager : ScriptableObject
         bool guard = GuardActive(target, attacker, map);
         attacker.SetDirection(map.DirectionBetweenActors(attacker, target));
         attacker.UpdateTempInitiative(-1);
+        attacker.UpdateRoundAttackTracker();
         TacticActor attackTarget = target;
         if (guard)
         {
@@ -311,6 +314,8 @@ public class AttackManager : ScriptableObject
         baseDamage = CritRoll(attacker, baseDamage);
         // Apply Attack / Defense Multipliers/Bonuses.
         AttackDefenseMultipliersBonuses();
+        // Deal Damage To Any Buildings Supporting The Target.
+        map.DamageActorBuilding(target.GetLocation(), attacker, baseDamage);
         // First subtract defense.
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defenseValue + " = ";
         baseDamage = baseDamage - defenseValue;
@@ -579,6 +584,23 @@ public class AttackManager : ScriptableObject
         {
             string targetBorder = map.ReturnBorderFromTileDirection(targetTile, targetToAttackerDir);
             string defendingPassive = borderPassives.ReturnDefendingPassive(targetBorder);
+            ApplyPassiveEffect(defendingPassive, target, attacker, map);
+        }
+    }
+
+    protected void CheckBuildingPassives(TacticActor target, TacticActor attacker, BattleMap map, int targetTileNumber, bool forAttacker = true, bool forTarget = true)
+    {
+        // Check if any buildings are on the tiles.
+        if (forAttacker)
+        {
+            string attackerBuilding = map.GetBuildingOnLocation(attacker.GetLocation());
+            string attackingPassive = buildingPassives.ReturnAttackingPassive(attackerBuilding);
+            ApplyPassiveEffect(attackingPassive, target, attacker, map);
+        }
+        if (forTarget)
+        {
+            string defenderBuilding = map.GetBuildingOnLocation(targetTileNumber);
+            string defendingPassive = buildingPassives.ReturnDefendingPassive(defenderBuilding);
             ApplyPassiveEffect(defendingPassive, target, attacker, map);
         }
     }

@@ -22,6 +22,14 @@ public class MoveCostManager : MonoBehaviour
         mapElevations = new List<int>(newInfo);
         actorPathfinder.SetElevations(mapElevations);
     }
+    public List<string> buildings;
+    public List<int> buildingLocations;
+    public void SetBuildings(List<string> newBu, List<int> newBuLoc)
+    {
+        buildings = new List<string>(newBu);
+        buildingLocations = new List<int>(newBuLoc);
+        actorPathfinder.SetBuildings(buildings, buildingLocations);
+    }
     public List<string> borders;
     public StatDatabase borderMoveCosts;
     public void SetBorders(List<string> newInfo)

@@ -118,6 +118,8 @@ public class ActorInitialStats : ActorPassives
                 return GetBaseEnergy().ToString();
             case "Actives":
                 return GetActivesString();
+            case "DeathActives":
+                return GetDeathActivesString();
             case "Spells":
                 return GetSpellsString();
             case "MagicPower":
@@ -211,6 +213,9 @@ public class ActorInitialStats : ActorPassives
                 break;
             case "Actives":
                 SetActiveSkills(newStat.Split(",").ToList());
+                break;
+            case "DeathActives":
+                SetDeathActives(newStat.Split(",").ToList());
                 break;
             case "MagicPower":
                 SetMagicPower(utility.SafeParseInt(newStat));
@@ -408,6 +413,14 @@ public class ActorInitialStats : ActorPassives
     {
         magicResist += amount;
     }
+    // Only applies to elemental damage, which is from actives and spells.
+    public int ApplyMagicResist(int damage)
+    {
+        if (GetMagicResist() >= 100){return 0;}
+        // Magic Resist is a percentage reduction.
+        damage = damage * (100 - GetMagicPower()) / 100;
+        return damage;
+    }
     // How much bonus mana you get from consuming 1 mana.
     // Can be negative.
     public int manaEfficiency;
@@ -460,6 +473,9 @@ public class ActorInitialStats : ActorPassives
     {
         // Don't add blank statuses.
         if (newCondition.Length <= 1 || newCondition.Trim().Length <= 1) { return; }
+        // Luck gives you a chance to ignore statuses.
+        int luckRoll = UnityEngine.Random.Range(0, 100);
+        if (luckRoll < GetLuck()){return;}
         // Permanent statuses can stack up infinitely and are a win condition.
         if (duration < 0)
         {

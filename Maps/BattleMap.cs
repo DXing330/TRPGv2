@@ -7,15 +7,56 @@ using UnityEngine;
 // Add a battle manager so the map doesn't get too bloated, the map is just the visualization of the battle map and anything that will result in a change of that visualization, a lot of logic will be handled somewhere else.
 public class BattleMap : MapManager
 {
+    [ContextMenu("ForceStart")]
+    public void ForceStart()
+    {
+        InitializeEmptyList();
+        terrainEffectTiles = new List<string>(emptyList);
+        interactables.Clear();
+        // Reset borders.
+        InitializeBorders();
+        ResetBuildings();
+        ResetActors();
+    }
+    protected override void Start()
+    {
+        InitializeEmptyList();
+        // Don't start again if you already force started.
+        if (terrainEffectTiles.Count < emptyList.Count)
+        {
+            terrainEffectTiles = new List<string>(emptyList);
+            interactables.Clear();
+            InitializeBorders();
+            ResetBuildings();
+            ResetActors();
+        }
+    }
     // MAP CONFIG CONSTANTS
     public int buildingLayer = 1;
     public int actorLayer = 2;
     public int tEffectLayer = 3;
     public int highlightLayer = 4;
     // UTILITIES
+    public BattleManager battleManager;
     public BattleMapUtility battleMapUtility;
     public MapPatternLocations mapPatterns;
     public StatusDetailViewer detailViewer;
+    public void ActorStartsTurn(TacticActor actor)
+    {
+        ApplyWeatherStartEffect(actor);
+        ApplyTileStartEffect(actor);
+        ApplyBuildingStartEffect(actor);
+        ApplyTerrainStartEffect(actor);
+        ApplyAuraEffects();
+    }
+    public void ActorEndsTurn(TacticActor actor)
+    {
+        ApplyWeatherEndEffect(actor);
+        ApplyTileEndEffect(actor);
+        ApplyBuildingEndEffect(actor);
+        EndTurnOnInteractable(actor);
+        ApplyAuraEffects();
+    }
     public string weather;
     public TerrainPassivesList weatherPassives;
     public void ApplyWeatherStartEffect(TacticActor actor)
@@ -112,34 +153,141 @@ public class BattleMap : MapManager
         }
         return "";
     }
+    public TerrainPassivesList buildingEffectData;
+    public StatDatabase buildingStats;
+    public List<string> buildings;
+    public List<int> buildingLocations;
+    public void ResetBuildings()
+    {
+        buildings.Clear();
+        buildingLocations.Clear();
+        buildingHealths.Clear();
+        buildingDefenses.Clear();
+        battleManager.moveManager.SetBuildings(buildings, buildingLocations);
+    }
+    public int GetBuildingIndexFromLocation(int tileNumber)
+    {
+        return buildingLocations.IndexOf(tileNumber);
+    }
+    public string GetBuildingOnLocation(int tileNumber)
+    {
+        int indexOf = buildingLocations.IndexOf(tileNumber);
+        if (indexOf < 0){return "";}
+        return buildings[indexOf];
+    }
+    public List<int> buildingHealths;
+    public int GetBuildingHealthOnLocation(int tileNumber)
+    {
+        int indexOf = buildingLocations.IndexOf(tileNumber);
+        if (indexOf < 0){return -1;}
+        return buildingHealths[indexOf];
+    }
+    public List<int> buildingDefenses;
+    public int GetBuildingDefenseOnLocation(int tileNumber)
+    {
+        int indexOf = buildingLocations.IndexOf(tileNumber);
+        if (indexOf < 0){return -1;}
+        return buildingDefenses[indexOf];
+    }
+    public void DamageActorBuilding(int targetLocation, TacticActor attacker, int damage)
+    {
+        int index = GetBuildingIndexFromLocation(targetLocation);
+        if (index < 0){return;}
+        damage = Mathf.Max(0, damage - buildingDefenses[index]);
+        buildingHealths[index] -= damage;
+        if (buildingHealths[index] <= 0)
+        {
+            combatLog.UpdateNewestLog(attacker.GetPersonalName() + " destroys the " + buildings[index] + " while attacking.");
+            RemoveBuildingAtIndex(index);
+        }
+    }
+    protected void RemoveBuildingAtIndex(int index)
+    {
+        buildings.RemoveAt(index);
+        buildingLocations.RemoveAt(index);
+        buildingHealths.RemoveAt(index);
+        buildingDefenses.RemoveAt(index);
+    }
+    public void RemoveBuildingAtLocation(int tileNumber)
+    {
+        int indexOf = buildingLocations.IndexOf(tileNumber);
+        if (indexOf >= 0)
+        {
+            RemoveBuildingAtIndex(indexOf);
+        }
+    }
+    public void AddBuilding(string buildingName, int buildingLocation)
+    {
+        if (buildingLocations.Contains(buildingLocation)){return;}
+        string buStats = buildingStats.ReturnValue(buildingName);
+        if (buStats.Length < 3){return;}
+        string[] buHPDef = buStats.Split("|");
+        buildings.Add(buildingName);
+        buildingLocations.Add(buildingLocation);
+        buildingHealths.Add(int.Parse(buHPDef[0]));
+        buildingDefenses.Add(int.Parse(buHPDef[1]));
+        battleManager.moveManager.SetBuildings(buildings, buildingLocations);
+    }
+    protected void ApplyBuildingMovingEffect(TacticActor actor, int tileNumber)
+    {
+        string building = GetBuildingOnLocation(actor.GetLocation());
+        if (building.Length < 1) { return; }
+        string[] buildingEffect = buildingEffectData.ReturnMovingPassive(building).Split("|");
+        if (buildingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, buildingEffect[1], buildingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, buildingEffect[4], buildingEffect[5]);
+        }
+    }
+    public void ApplyBuildingStartEffect(TacticActor actor)
+    {
+        string building = GetBuildingOnLocation(actor.GetLocation());
+        if (building.Length < 1) { return; }
+        string[] buildingEffect = buildingEffectData.ReturnStartPassive(building).Split("|");
+        if (buildingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, buildingEffect[1], buildingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, buildingEffect[4], buildingEffect[5]);
+        }
+    }
+    public void ApplyBuildingEndEffect(TacticActor actor)
+    {
+        string building = GetBuildingOnLocation(actor.GetLocation());
+        if (building.Length < 1) { return; }
+        string[] buildingEffect = buildingEffectData.ReturnEndPassive(building).Split("|");
+        if (buildingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, buildingEffect[1], buildingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, buildingEffect[4], buildingEffect[5]);
+        }
+    }
     public TerrainPassivesList terrainEffectData;
+    public void ApplyTerrainStartEffect(TacticActor actor)
+    {
+        string terrainEffect = terrainEffectTiles[actor.GetLocation()];
+        if (terrainEffect.Length < 1) { return; }
+        string[] tMovingEffect = terrainEffectData.ReturnStartPassive(terrainEffect).Split("|");
+        if (tMovingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
+        }
+    }
+    public void ApplyEndTerrainEffect(TacticActor actor)
+    {
+        string terrainEffect = terrainEffectTiles[actor.GetLocation()];
+        if (terrainEffect.Length < 1) { return; }
+        string[] tMovingEffect = terrainEffectData.ReturnEndPassive(terrainEffect).Split("|");
+        if (tMovingEffect.Length < 6){return;}
+        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
+        {
+            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
+        }
+    }
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
     public StatDatabase tileWeatherInteractions;
     public PassiveSkill passiveEffect;
-    [ContextMenu("ForceStart")]
-    public void ForceStart()
-    {
-        InitializeEmptyList();
-        terrainEffectTiles = new List<string>(emptyList);
-        interactables.Clear();
-        // Reset borders.
-        InitializeBorders();
-        ResetActors();
-    }
-    protected override void Start()
-    {
-        InitializeEmptyList();
-        // Don't start again if you already force started.
-        if (terrainEffectTiles.Count < emptyList.Count)
-        {
-            terrainEffectTiles = new List<string>(emptyList);
-            interactables.Clear();
-            //trappedTiles = new List<string>(emptyList);
-        }
-        //base.Start();
-    }
-    public BattleManager battleManager;
     public List<TacticActor> ReturnEndOfBattleActors()
     {
         List<TacticActor> endOfB = new List<TacticActor>();
@@ -169,15 +317,13 @@ public class BattleMap : MapManager
     }
     public int AverageActorHealth()
     {
-        int health = 0;
-        int count = battlingActors.Count;
-        for (int i = 0; i < count; i++)
-        {
-            health += battlingActors[i].GetHealth();
-        }
-        return health / count;
+        return battleMapUtility.AverageActorHealth(this);
     }
     public List<TacticActor> defeatedActors;
+    public List<TacticActor> GetDefeatedActors()
+    {
+        return defeatedActors;
+    }
     public List<TacticActor> capturedActors;
     public void CaptureActor(TacticActor actor)
     {
@@ -1094,6 +1240,7 @@ public class BattleMap : MapManager
     public override void UpdateMap()
     {
         base.UpdateMap();
+        UpdateBuildings();
         UpdateActors();
         UpdateTerrain();
     }
@@ -1102,6 +1249,23 @@ public class BattleMap : MapManager
     {
         GetActorTiles();
         mapDisplayers[actorLayer].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles, true, actorDirections);
+    }
+
+    public List<string> buildingTiles;
+    protected void GetBuildingTiles()
+    {
+        if (emptyList == null || emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
+        buildingTiles = new List<string>(emptyList);
+        for (int i = 0; i < buildingLocations.Count; i++)
+        {
+            buildingTiles[buildingLocations[i]] = buildings[i];
+        }
+    }
+
+    public void UpdateBuildings()
+    {
+        GetBuildingTiles();
+        mapDisplayers[buildingLayer].DisplayCurrentTiles(mapTiles, buildingTiles, currentTiles);
     }
 
     public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)
@@ -1179,19 +1343,9 @@ public class BattleMap : MapManager
         battleManager.ClickOnTile(tileNumber);
     }
 
-    public TacticActor GetActorOnTile(int tileNumber)
+    public TacticActor GetActorOnTile(int tileNumber, bool includeInvisible = true)
     {
-        if (tileNumber < 0){ return null; }
-        string actorName = actorTiles[tileNumber];
-        for (int i = 0; i < battlingActors.Count; i++)
-        {
-            // Some actors are not interactable and should be returned as null. IE buildings. Also if their health is less than zero then they can't be interacted with anymore.
-            if (battlingActors[i].GetSpriteName() == actorName && battlingActors[i].GetLocation() == tileNumber && battlingActors[i].GetHealth() > 0)
-            {
-                return battlingActors[i];
-            }
-        }
-        return null;
+        return battleMapUtility.GetActorOnTile(this, tileNumber, includeInvisible);
     }
 
     public TacticActor GetActorByIndex(int index)
@@ -1212,25 +1366,7 @@ public class BattleMap : MapManager
 
     public int ReturnClosestTileOfType(TacticActor actor, string tileType)
     {
-        int tile = -1;
-        int distance = mapSize * mapSize;
-        for (int i = 0; i < mapInfo.Count; i++)
-        {
-            if (actor.GetMoveType() != "Flying" && excludedTileTypesForNonFlying.Contains(mapInfo[i]))
-            {
-                continue;
-            }
-            if (mapInfo[i].Contains(tileType) && GetActorOnTile(i) == null)
-            {
-                int newDistance = mapUtility.DistanceBetweenTiles(i, actor.GetLocation(), mapSize);
-                if (newDistance < distance)
-                {
-                    distance = newDistance;
-                    tile = i;
-                }
-            }
-        }
-        return tile;
+        return battleMapUtility.ReturnClosestTileOfType(this, actor, tileType);
     }
 
     // Override this to ignore tiles that have actors on them and then give the next closest tile.
@@ -1263,19 +1399,7 @@ public class BattleMap : MapManager
 
     public bool TileSandwiched(TacticActor actor, string tileType)
     {
-        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return false;}
-        // Already checked for alignment in earlier condition.
-        // Get the tiles inbetween you and the target.
-        List<int> tilesBetween = mapUtility.GetTileInLineBetweenPoints(actor.GetLocation(), actor.GetTarget().GetLocation(), mapSize);
-        // Check if any of the tiles are of the tile type.
-        for (int i = 0; i < tilesBetween.Count; i++)
-        {
-            if (mapInfo[tilesBetween[i]].Contains(tileType))
-            {
-                return true;
-            }
-        }
-        return false;        
+        return battleMapUtility.TileSandwiched(this, actor, tileType);
     }
 
     public bool TileSandwichable(TacticActor actor, string tileType)
@@ -1285,36 +1409,7 @@ public class BattleMap : MapManager
 
     public int ReturnClosestTileSandwiched(TacticActor actor, string tileType)
     {
-        int tile = -1;
-        int distance = mapSize * mapSize;
-        if (actor.GetTarget() == null || actor.GetTarget().GetHealth() <= 0 || actor.GetTarget().invisible){return tile;}
-        int targetLocation = actor.GetTarget().GetLocation();
-        List<int> adjacentTiles = mapUtility.AdjacentTiles(targetLocation, mapSize);
-        for (int i = 0; i < adjacentTiles.Count; i++)
-        {
-            // Check if the target is adjacent to any of the requested tile types.
-            if (mapInfo[adjacentTiles[i]].Contains(tileType))
-            {
-                // Get the direction and check if any point in a tile is valid.
-                int direction = mapUtility.DirectionBetweenLocations(targetLocation, adjacentTiles[i], mapSize);
-                List<int> lineTiles = mapUtility.GetTilesInLineDirection(adjacentTiles[i], direction, mapSize, mapSize);
-                for (int j = 0; j < lineTiles.Count; j++)
-                {
-                    if (lineTiles[j] < 0 || TileExcluded(actor, mapInfo[lineTiles[j]]) || GetActorOnTile(lineTiles[j]) != null)
-                    {
-                        continue;
-                    }
-                    int newDistance = mapUtility.DistanceBetweenTiles(lineTiles[j], actor.GetLocation(), mapSize);
-                    if (newDistance < distance)
-                    {
-                        distance = newDistance;
-                        tile = lineTiles[j];
-                        break;
-                    }
-                }
-            }
-        }
-        return tile;
+        return battleMapUtility.ReturnClosestTileSandwiched(this, actor, tileType);
     }
 
     public bool SandwichedByTarget(TacticActor actor, string tileType)
@@ -1383,16 +1478,7 @@ public class BattleMap : MapManager
 
     public List<TacticActor> GetActorsOnTiles(List<int> tiles)
     {
-        List<TacticActor> actors = new List<TacticActor>();
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            TacticActor testActor = GetActorOnTile(tiles[i]);
-            if (testActor != null)
-            {
-                actors.Add(testActor);
-            }
-        }
-        return actors;
+        return battleMapUtility.GetActorsOnTiles(this, tiles);
     }
 
     public List<TacticActor> GetAdjacentActors(int tileNumber)
@@ -1664,6 +1750,7 @@ public class BattleMap : MapManager
     public List<TacticActor> GetAdjacentAllies(TacticActor actor)
     {
         List<TacticActor> all = new List<TacticActor>();
+        if (actor == null){return all;}
         all = GetAdjacentActors(actor.GetLocation());
         for (int i = all.Count - 1; i >= 0; i--)
         {
@@ -1774,6 +1861,7 @@ public class BattleMap : MapManager
         }
         ApplyTileMovingEffect(actor, tileNumber);
         ApplyTerrainMovingEffect(actor, tileNumber);
+        ApplyBuildingMovingEffect(actor, tileNumber);
         ApplyInteractableEffect(actor, tileNumber);
         // Check if the actor moved into any auras.
         // Check if the actor's aura moved into any actors.
@@ -1797,7 +1885,6 @@ public class BattleMap : MapManager
             passiveEffect.AffectActor(actor, data[4], data[5]);
         }
     }
-
     protected void ApplyTerrainMovingEffect(TacticActor actor, int tileNumber)
     {
         // Get the terrain info.
@@ -1821,31 +1908,6 @@ public class BattleMap : MapManager
             triggered[i].MoveTrigger(this, actor);
         }
     }
-
-    public void ApplyTerrainStartEffect(TacticActor actor)
-    {
-        string terrainEffect = terrainEffectTiles[actor.GetLocation()];
-        if (terrainEffect.Length < 1) { return; }
-        string[] tMovingEffect = terrainEffectData.ReturnStartPassive(terrainEffect).Split("|");
-        if (tMovingEffect.Length < 6){return;}
-        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
-        {
-            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
-        }
-    }
-
-    public void ApplyEndTerrainEffect(TacticActor actor)
-    {
-        string terrainEffect = terrainEffectTiles[actor.GetLocation()];
-        if (terrainEffect.Length < 1) { return; }
-        string[] tMovingEffect = terrainEffectData.ReturnEndPassive(terrainEffect).Split("|");
-        if (tMovingEffect.Length < 6){return;}
-        if (passiveEffect.CheckStartEndConditions(actor, tMovingEffect[1], tMovingEffect[2], this))
-        {
-            passiveEffect.AffectActor(actor, tMovingEffect[4], tMovingEffect[5]);
-        }
-    }
-
     public void NextRound()
     {
         // Apply weather/tile to terrain effects.

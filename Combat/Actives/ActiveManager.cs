@@ -319,13 +319,6 @@ public class ActiveManager : MonoBehaviour
                     }
                 }
                 return;
-            case "ElementalAttack":
-                if (targets.Count <= 0) { return; }
-                for (int i = 0; i < targets.Count; i++)
-                {
-                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, power, specifics);
-                }
-                return;
             case "Attack+Drain":
                 if (targets.Count <= 0) { return; }
                 for (int i = 0; i < targets.Count; i++)
@@ -474,10 +467,31 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.TrueDamageAttack(skillUser, targets[i], battle.map, power, specifics);
                 }
                 return;
+            // Should go through the attack manager for stab/mastery bonuses.
+            case "ElementalAttack":
+                if (targets.Count <= 0) { return; }
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    // Do an attack with stab and stuff.
+                    battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, power, specifics);
+                    // Also apply the elemental damage effects.
+                    active.AffectActor(targets[i], specifics + "Damage", skillUser.GetMagicPower().ToString(), 1, battle.map.combatLog);
+                }
+                return;
+            // Directly does the elemental damage, doesn't need to go through the attack manager.
             case "ElementalDamage":
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    battle.attackManager.ElementalFlatDamage(skillUser, targets[i], battle.map, power, specifics);
+                    active.AffectActor(targets[i], specifics + "Damage", (power + skillUser.GetMagicPower()).ToString(), 1, battle.map.combatLog);
+                    // TODO Also applies an effect to the map.
+                    // Lightning Electrifies Water.
+                    // Ice Freezes Water.
+                    // Water Creates Water.
+                    // Fire Ignites Forests.
+                    // Earth ???
+                    // Light ???
+                    // Dark ???
+                    // Air ???
                 }
                 return;
             case "Flat Attack":
