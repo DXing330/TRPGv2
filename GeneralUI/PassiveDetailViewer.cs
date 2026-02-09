@@ -238,6 +238,8 @@ public class PassiveDetailViewer : MonoBehaviour
             return "At the end of each turn,";
             case "Death":
             return "Upon death,";
+            case "AfterAttack":
+            return "After attacking,";
         }
         return "";
     }
@@ -567,6 +569,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target was hurt the most by the attacker";
             case "HurtLeastD":
                 return " if the target was hurt the least by the attacker";
+            case "LethalAttack":
+                return " if the attack defeated the target";
         }
         return "";
     }

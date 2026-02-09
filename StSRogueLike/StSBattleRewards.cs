@@ -118,13 +118,26 @@ public class StSBattleRewards : MonoBehaviour
     {
         switch (specifics)
         {
+            case "SkillBook":
+
+                break;
+            case "Consumable":
+
+                break;
+            case "ConsumableChance":
+                // ~ 30% chance for consumable?
+                break;
+            case "Relic":
+                break;
             case "Gold":
                 goldReward += baseGoldReward + Random.Range(-goldVariance, goldVariance * 2);
+                break;
+            case "Ally":
                 break;
             case "Platinum":
                 goldReward += rareGoldReward + Random.Range(-goldVariance, goldVariance * 2);
                 break;
-            case "Basic Ally":
+            /*case "Basic Ally":
                 allyRewardRarity.Add("");
                 allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
                 break;
@@ -144,7 +157,7 @@ public class StSBattleRewards : MonoBehaviour
                 break;
             case "Boss Equipment":
                 equipmentRewards.Add(bossEquipment.ReturnRandomValue());
-                break;
+                break;*/
         }
     }
 

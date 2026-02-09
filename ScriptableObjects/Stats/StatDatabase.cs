@@ -218,6 +218,20 @@ public class StatDatabase : ScriptableObject
         }
     }
 
+    // No longer a dictionary if one key has multiple values.
+    public List<string> ReturnAllValues(string key)
+    {
+        List<string> allValuesForKey = new List<string>();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (keys[i] == key)
+            {
+                allValuesForKey.Add(values[i]);
+            }
+        }
+        return allValuesForKey;
+    }
+
     public string ReturnValueAtIndex(int index)
     {
         if (index >= 0 && index < values.Count)

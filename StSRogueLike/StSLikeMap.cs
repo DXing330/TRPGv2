@@ -121,7 +121,7 @@ public class StSLikeMap : MapManager
     public List<string> tileTypes;
     public string RandomTileType(string except = "")
     {
-        int rng = Random.Range(0, GetTotalWeight());
+        int rng = mapRNGSeed.Range(0, GetTotalWeight());
         string tileType = "";
         for (int i = 0; i < tileTypes.Count; i++)
         {
@@ -168,6 +168,7 @@ public class StSLikeMap : MapManager
     public List<string> nonRepeatableTileTypes;
     // Store and load the data as needed.
     public StSState savedState;
+    public RNGUtility mapRNGSeed;
     public StSEnemyTracker enemyTracker;
     // Also track ascension/settings separately?
     public StSSettings settings;
@@ -328,7 +329,7 @@ public class StSLikeMap : MapManager
     public int highDifficultyHeal = 20;
     public PartyDataManager partyData;
     public int testPathCount;
-
+    public ulong testSeed;
     [ContextMenu("GeneratePaths")]
     public void GeneratePaths()
     {
@@ -337,7 +338,6 @@ public class StSLikeMap : MapManager
         {
             GeneratePath();
         }
-        // Get the floor boss randomly.
         if (settings.GetDifficulty() >= highDifficultyHeal)
         {
             partyData.HealParty(false);
@@ -351,18 +351,18 @@ public class StSLikeMap : MapManager
         UpdateMap();
         UpdateDirectionalArrows();
     }
-
+    public StSMapUtility rogueLikeMapUtility;
     [ContextMenu("GeneratePath")]
     public void GeneratePath()
     {
         // Random start.
-        int startRow = Random.Range(0, mapSize);
+        int startRow = mapRNGSeed.Range(0, mapSize);
         int start = mapUtility.ReturnTileNumberFromRowCol(startRow, 0, mapSize);
-        int endRow = Random.Range(Mathf.Max(0, startRow - (mapSize / 3)), Mathf.Min(mapSize, startRow + (mapSize / 3)));
+        int endRow = mapRNGSeed.Range(Mathf.Max(0, startRow - (mapSize / 3)), Mathf.Min(mapSize, startRow + (mapSize / 3)));
         // Random end.
         int end = mapUtility.ReturnTileNumberFromRowCol(endRow, mapSize - 1, mapSize);
         // Get path.
-        List<int> pathTiles = mapMaker.CreatePath(start, end, mapSize);
+        List<int> pathTiles = rogueLikeMapUtility.CreatePath(start, end, mapSize);
         // Enable path.
         // End = Rest.
         mapInfo[pathTiles[pathTiles.Count - 1]] = "Rest";

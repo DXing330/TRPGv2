@@ -10,9 +10,12 @@ public class StSEnemyTracker : SavedData
 {
     public string delimiterTwo;
     public StSState stsState;
+    public RNGUtility enemyRNGSeed;
     public List<StatDatabase> floorEnemies;
     public List<StatDatabase> floorElites;
     public List<StatDatabase> floorBosses;
+    // TODO add seed rng for ally rewards
+    public RNGUtility rewardRNGSeed;
     public List<string> enemyPool;
     public List<string> elitePool;
     public List<string> defaultAllies;
@@ -108,14 +111,14 @@ public class StSEnemyTracker : SavedData
         previousElite = "";
         enemyPool = floorEnemies[floor - 1].GetAllKeys();
         elitePool = floorElites[floor - 1].GetAllKeys();
-        floorBoss = floorBosses[floor - 1].ReturnRandomKey();
+        floorBoss = floorBosses[floor - 1].ReturnKeyAtIndex(enemyRNGSeed.Range(0, floorBosses[floor - 1].keys.Count));
         Save();
     }
 
     public string RandomNewBoss()
     {
         int floor = stsState.GetCurrentFloor();
-        string newBoss = floorBosses[floor - 1].ReturnRandomKey();
+        string newBoss = floorBosses[floor - 1].ReturnKeyAtIndex(enemyRNGSeed.Range(0, floorBosses[floor - 1].keys.Count));
         if (newBoss != floorBoss)
         {
             return newBoss;
@@ -137,7 +140,7 @@ public class StSEnemyTracker : SavedData
 
     public string GetEliteData()
     {
-        string eliteData = elitePool[UnityEngine.Random.Range(0, elitePool.Count)];
+        string eliteData = elitePool[enemyRNGSeed.Range(0, elitePool.Count)];
         if (eliteData == previousElite)
         {
             return GetEliteData();
@@ -164,9 +167,9 @@ public class StSEnemyTracker : SavedData
         }
         else if (possibleEnemies.Count <= 0 && difficulty <= 0)
         {
-            return enemyPool[UnityEngine.Random.Range(0, enemyPool.Count)];
+            return enemyPool[enemyRNGSeed.Range(0, enemyPool.Count)];
         }
-        string enemyData = possibleEnemies[UnityEngine.Random.Range(0, possibleEnemies.Count)];
+        string enemyData = possibleEnemies[enemyRNGSeed.Range(0, possibleEnemies.Count)];
         enemyPool.Remove(enemyData);
         Save();
         return enemyData;

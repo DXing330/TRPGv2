@@ -25,7 +25,7 @@ public class NewGamePartySelect : MonoBehaviour
     }
     public void UpdateSelectedParty()
     {
-        partyData.mainPartyData.ForceNewGameData(newGameParties.ReturnValueAtIndex(newPartyIndex));
+        partyData.ForceNewGameData(newGameParties.ReturnValueAtIndex(newPartyIndex));
         partyData.SetFullParty();
         partyName.text = newGameParties.ReturnKeyAtIndex(newPartyIndex);
         newPartyActors.RefreshData();

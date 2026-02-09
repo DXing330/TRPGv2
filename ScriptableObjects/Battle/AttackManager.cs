@@ -106,7 +106,7 @@ public class AttackManager : ScriptableObject
             }
         }
     }
-    public int CritRoll(TacticActor attacker, int damage, bool showLog = true)
+    public bool CritRoll(TacticActor attacker, int damage, bool showLog = true)
     {
         int critRoll = Random.Range(0, 100);
         critRoll -= attacker.GetLuck();
@@ -116,11 +116,16 @@ public class AttackManager : ScriptableObject
             {
                 finalDamageCalculation += "CRITICAL HIT: " + damage + " * " + critDamage + "% = ";
             }
-            damage = damage * critDamage / baseMultiplier;
-            if (showLog)
-            {
-                finalDamageCalculation += damage + "\n";
-            }
+            return true;
+        }
+        return false;
+    }
+    public int CritDamage(int damage, bool showLog = true)
+    {
+        damage = damage * critDamage / baseMultiplier;
+        if (showLog)
+        {
+            finalDamageCalculation += damage + "\n";
         }
         return damage;
     }
@@ -168,7 +173,10 @@ public class AttackManager : ScriptableObject
         // Elemental Mastery
         baseDamage = ElementalMastery(attacker, baseDamage, element);
         // Crit
-        baseDamage = CritRoll(attacker, baseDamage);
+        if (CritRoll(attacker, baseDamage))
+        {
+            baseDamage = CritDamage(baseDamage);
+        }
         // Resistance
         ElementalResistance(defender, baseDamage, element);
         baseDamage = defender.TakeDamage(baseDamage, element);
@@ -254,7 +262,10 @@ public class AttackManager : ScriptableObject
         }
         if (advantage < 0){advantage = 0;}
         baseDamage = Advantage(baseDamage, advantage);
-        baseDamage = CritRoll(attacker, baseDamage);
+        if (CritRoll(attacker, baseDamage))
+        {
+            baseDamage = CritDamage(baseDamage);
+        }
         baseDamage = defender.TakeDamage(baseDamage, "True");
         // No damage/attack/defense multiplier, true damage can't be increased or decreased besides crit/advantage.
         defender.HurtBy(attacker, baseDamage);
@@ -281,6 +292,11 @@ public class AttackManager : ScriptableObject
     // Basic attack damage calculation
     public void ActorAttacksActor(TacticActor attacker, TacticActor target, BattleMap map, int attackMultiplier = -1, string type = "Physical")
     {
+        // If the target is already dead then stop.
+        if (target.GetHealth() <= 0){return;}
+        // Track some things for after attack passives.
+        bool hit = true;
+        bool critHit = false;
         bool guard = GuardActive(target, attacker, map);
         attacker.SetDirection(map.DirectionBetweenActors(attacker, target));
         attacker.UpdateTempInitiative(-1);
@@ -304,14 +320,23 @@ public class AttackManager : ScriptableObject
         CheckPassives(attacker.GetAttackingPassives(), attackTarget, attacker, map);
         CheckPassives(attackTarget.GetDefendingPassives(), attackTarget, attacker, map);
         // Determine if you miss or not.
-        if (!RollToHit(attacker, attackTarget, map)){return;}
+        if (!RollToHit(attacker, attackTarget, map))
+        {
+            hit = false;
+            passive.ApplyAfterAttackPassives(attacker, attackTarget, map, hit, critHit);
+            return;
+        }
         baseDamage = Advantage(baseDamage, advantage);
         // Check for stab.
         baseDamage = STAB(attacker, baseDamage, type);
         // Check for bonus damage.
         baseDamage = ElementalMastery(attacker, baseDamage, type);
         // Check for a critical hit.
-        baseDamage = CritRoll(attacker, baseDamage);
+        if (CritRoll(attacker, baseDamage))
+        {
+            critHit = true;
+            baseDamage = CritDamage(baseDamage);
+        }
         // Apply Attack / Defense Multipliers/Bonuses.
         AttackDefenseMultipliersBonuses();
         // Deal Damage To Any Buildings Supporting The Target.
@@ -342,6 +367,8 @@ public class AttackManager : ScriptableObject
         map.combatLog.AddDetailedLogs("Damage Calculations:");
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
+        // TODO Apply the after attack passives here.
+        passive.ApplyAfterAttackPassives(attacker, attackTarget, map, hit, critHit);
         // Check if the defender is alive, has counter attacks available and is in range.
         if (attackTarget.GetHealth() > 0 && attackTarget.CounterAttackAvailable() && map.DistanceBetweenActors(attackTarget, attacker) <= attackTarget.GetAttackRange())
         {

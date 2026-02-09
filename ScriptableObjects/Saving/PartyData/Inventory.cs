@@ -43,7 +43,7 @@ public class Inventory : SavedData
         GainGold(Mathf.Max(1, days * rank));
     }
     // ITEM LIMIT
-    protected int minimumItemLimit = 32;
+    public int minimumItemLimit = 16;
     public int itemLimit;
     public void SetItemLimit(int newInfo)
     {

@@ -10,7 +10,8 @@ public class MedicinePanel : MonoBehaviour
         UpdateItems();
     }
     // Only some items can be used while resting.
-    public List<string> usableItems;
+    public StatDatabase itemTags;
+    public string usableTags = "Medicine";
     List<string> currentUsableItems;
     public PartyDataManager partyData;
     public ActorSpriteHPList actorSelect;
@@ -22,23 +23,24 @@ public class MedicinePanel : MonoBehaviour
     {
         medicineSelect.ResetSelected();
         medicineEffectText.text = "";
-        medicineQuantityText.text = "";
     }
     public SkillEffect medicineEffect;
     public StatDatabase activeData;
     public ActiveSkill dummyActive;
     public ActiveDescriptionViewer activeDescriptionViewer;
     public TMP_Text medicineEffectText;
-    public TMP_Text medicineQuantityText;
 
     public void UpdateItems()
     {
         currentUsableItems = new List<string>();
-        for (int i = 0; i < usableItems.Count; i++)
+        // Iterate through the party inventory.
+        List<string> allItems = partyData.inventory.GetItems();
+        for (int i = 0; i < allItems.Count; i ++)
         {
-            if (partyData.inventory.ItemExists(usableItems[i]))
+            // Determine which items are usable based on tags.
+            if (usableTags.Contains(itemTags.ReturnValue(allItems[i])))
             {
-                currentUsableItems.Add(usableItems[i]);
+                currentUsableItems.Add(allItems[i]);
             }
         }
         medicineSelect.SetSelectables(currentUsableItems);
@@ -50,8 +52,7 @@ public class MedicinePanel : MonoBehaviour
         int index = medicineSelect.GetSelected();
         if (index < 0) { return; }
         dummyActive.LoadSkillFromString(activeData.ReturnValue(currentUsableItems[index]));
-        medicineEffectText.text = activeDescriptionViewer.ReturnActiveDescriptionOnly(dummyActive);
-        medicineQuantityText.text = partyData.inventory.ReturnQuantityOfItem(currentUsableItems[index]).ToString();
+        medicineEffectText.text = activeDescriptionViewer.ReturnActiveDescription(dummyActive);
     }
 
     public void UseItem()
@@ -62,14 +63,7 @@ public class MedicinePanel : MonoBehaviour
         }
         medicineEffect.AffectActor(dummyActor, dummyActive.GetEffect(), dummyActive.GetSpecifics(), dummyActive.GetPower());
         partyData.inventory.RemoveItemQuantity(1, currentUsableItems[medicineSelect.GetSelected()]);
-        if (partyData.inventory.ReturnQuantityOfItem(currentUsableItems[medicineSelect.GetSelected()]) > 0)
-        {
-            medicineQuantityText.text = (int.Parse(medicineQuantityText.text) - 1).ToString();
-        }
-        else
-        {
-            UpdateItems();
-        }
+        UpdateItems();
         // Update the party data.
         partyData.UpdatePartyMember(dummyActor, actorSelect.GetSelected());
         partyData.SetFullParty();

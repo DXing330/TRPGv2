@@ -19,7 +19,7 @@ public class PassiveOrganizer : ScriptableObject
     public List<string> defendingPassives;
     public List<string> takeDamagePassives;
     public List<string> movingPassives;
-    public List<string> deathPassives;
+    public List<string> afterAttackPassives;
     public List<string> outOfCombatPassives;
 
     protected void ClearLists()
@@ -31,7 +31,7 @@ public class PassiveOrganizer : ScriptableObject
         defendingPassives.Clear();
         takeDamagePassives.Clear();
         movingPassives.Clear();
-        deathPassives.Clear();
+        afterAttackPassives.Clear();
         outOfCombatPassives.Clear();
     }
 
@@ -97,6 +97,9 @@ public class PassiveOrganizer : ScriptableObject
             case "TakeDamage":
                 takeDamagePassives.Add(passiveDetails);
                 break;
+            case "AfterAttack":
+                afterAttackPassives.Add(passiveDetails);
+                break;
             case "OOC":
                 outOfCombatPassives.Add(passiveDetails);
                 break;
@@ -139,6 +142,7 @@ public class PassiveOrganizer : ScriptableObject
         actor.SetDefendingPassives(defendingPassives);
         actor.SetTakeDamagePassives(takeDamagePassives);
         actor.SetMovingPassives(movingPassives);
+        actor.SetAfterAttackPassives(afterAttackPassives);
         actor.SetOOCPassives(outOfCombatPassives);
     }
 }

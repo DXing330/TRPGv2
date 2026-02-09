@@ -236,6 +236,9 @@ public class ActorPassives : MonoBehaviour
             case "TakeDamage":
                 takeDamagePassives.Add(passiveName);
                 break;
+            case "AfterAttack":
+                afterAttackPassives.Add(passiveName);
+                break;
             case "OOC":
                 outOfCombatPassives.Add(passiveName);
                 break;
@@ -265,6 +268,9 @@ public class ActorPassives : MonoBehaviour
                 break;
             case "TakeDamage":
                 takeDamagePassives.Remove(passiveName);
+                break;
+            case "AfterAttack":
+                afterAttackPassives.Remove(passiveName);
                 break;
             case "OOC":
                 outOfCombatPassives.Remove(passiveName);
@@ -380,6 +386,27 @@ public class ActorPassives : MonoBehaviour
                 deathActives.RemoveAt(i);
             }
         }
+    }
+    public List<string> afterAttackPassives;
+    public List<string> GetAfterAttackPassives()
+    {
+        return afterAttackPassives;
+    }
+    public void AddAfterAttackPassive(string passiveName)
+    {
+        afterAttackPassives.Add(passiveName);
+    }
+    public void AddAfterAttackPassives(List<string> newPassives)
+    {
+        for (int i = 0; i < newPassives.Count; i++)
+        {
+            if (newPassives[i].Length <= 1) { continue; }
+            AddAfterAttackPassive(newPassives[i]);
+        }
+    }
+    public void SetAfterAttackPassives(List<string> passives)
+    {
+        afterAttackPassives = new List<string>(passives);
     }
     public List<string> outOfCombatPassives;
     public List<string> GetOOCPassives(){return outOfCombatPassives;}

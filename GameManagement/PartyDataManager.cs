@@ -205,6 +205,18 @@ public class PartyDataManager : MonoBehaviour
         return mainPartyData.PartyCount() < guildCard.GetGuildRank() + guildCard.GetPartyLimit();
     }
 
+    public void ForceNewGameData(string newData)
+    {
+        NewGame();
+        string[] blocks = newData.Split("#");
+        string[] personalNames = blocks[0].Split("|");
+        string[] spriteNames = blocks[1].Split("|");
+        for (int i = 0; i < personalNames.Length; i++)
+        {
+            HireMember(actorStats.ReturnValue(spriteNames[i]), personalNames[i]);
+        }
+    }
+
     public void HireMember(string stats, string personalName)
     {
         int nextID = guildCard.GetNextID();

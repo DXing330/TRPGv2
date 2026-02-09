@@ -268,6 +268,13 @@ public class PartyData : SavedData
             ReviveDefeatedMembers(true);
         }
     }
+    public void ResetData()
+    {
+        partyNames.Clear();
+        partyIDs.Clear();
+        partyStats.Clear();
+        partyEquipment.Clear();
+    }
     public override void Save()
     {
         partyNames = utility.RemoveEmptyListItems(partyNames);
@@ -281,15 +288,10 @@ public class PartyData : SavedData
         allData += "Equip=" + String.Join(delimiterTwo, partyEquipment) + delimiter;
         File.WriteAllText(dataPath, allData);
     }
-    public virtual void ForceNewGameData(string newInfo)
-    {
-        dataPath = Application.persistentDataPath + "/" + filename;
-        allData = newInfo;
-        File.WriteAllText(dataPath, allData);
-        Load();
-    }
     public override void NewGame()
     {
+        ResetData();
+        Save();
         allData = newGameData;
         if (allData.Contains(delimiter)) { dataList = allData.Split(delimiter).ToList(); }
         else { return; }

@@ -19,12 +19,25 @@ public class StSState : SavedState
         currentFloor = 1;
         battlesFought = 0;
         bossBattled = 0;
+        NewRandomSeed();
         Save();
         for (int i = 0; i < stsData.Count; i++)
         {
             stsData[i].NewGame();
             stsData[i].Save();
         }
+    }
+    // SEEDS
+    public RNGUtility masterSeed;
+    public RNGUtility mapGenSeed;
+    public RNGUtility enemySeed;
+    public RNGUtility rewardSeed;
+    public void NewRandomSeed()
+    {
+        masterSeed.RandomSeed();
+        mapGenSeed.SetSeed(masterSeed.GetSeed());
+        enemySeed.SetSeed(masterSeed.GetSeed());
+        rewardSeed.SetSeed(masterSeed.GetSeed());
     }
     public int newGame = 1;
     public int currentFloor = 1;
@@ -111,7 +124,13 @@ public class StSState : SavedState
     public override void Save()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
-        allData = newGame + delimiter + String.Join(delimiterTwo, mapInfo) + delimiter + String.Join(delimiterTwo, partyPathing) + delimiter + currentFloor + delimiter + battlesFought + delimiter + floorBoss + delimiter + bossBattled;
+        allData = "NG=" + newGame + delimiter;
+        allData += "Map=" + String.Join(delimiterTwo, mapInfo) + delimiter;
+        allData += "Path=" + String.Join(delimiterTwo, partyPathing) + delimiter;
+        allData += "Floor=" + currentFloor + delimiter;
+        allData += "Battles=" + battlesFought + delimiter;
+        allData += "Boss=" + floorBoss + delimiter;
+        allData += "BossBattled=" + bossBattled + delimiter;
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -119,19 +138,47 @@ public class StSState : SavedState
         dataPath = Application.persistentDataPath + "/" + filename;
         allData = File.ReadAllText(dataPath);
         dataList = allData.Split(delimiter).ToList();
-        newGame = int.Parse(dataList[0]);
-        mapInfo = dataList[1].Split(delimiterTwo).ToList();
-        if (dataList[2].Length <= 0)
+        for (int i = 0; i < dataList.Count; i++)
         {
-            partyPathing = new List<int>();
+            LoadStat(dataList[i]);
         }
-        else
+    }
+    protected void LoadStat(string stat)
+    {
+        string[] blocks = stat.Split('=');
+        if (blocks.Length < 2) { return; }
+        string key = blocks[0];
+        string value = blocks[1];
+        switch (key)
         {
-            partyPathing = utility.ConvertStringListToIntList(dataList[2].Split(delimiterTwo).ToList());
+            case "NG":
+                newGame = int.Parse(value);
+                break;
+            case "Map":
+                mapInfo = new List<string>(value.Split(delimiterTwo));
+                break;
+            case "Path":
+                if (value.Length <= 0)
+                {
+                    partyPathing = new List<int>();
+                }
+                else
+                {
+                    partyPathing = utility.ConvertStringListToIntList(value.Split(delimiterTwo).ToList());
+                }
+                break;
+            case "Floor":
+                currentFloor = int.Parse(value);
+                break;
+            case "Battles":
+                battlesFought = int.Parse(value);
+                break;
+            case "Boss":
+                floorBoss = value;
+                break;
+            case "BossBattled":
+                bossBattled = int.Parse(value);
+                break;
         }
-        currentFloor = int.Parse(dataList[3]);
-        battlesFought = int.Parse(dataList[4]);
-        floorBoss = dataList[5];
-        bossBattled = int.Parse(dataList[6]);
     }
 }

@@ -19,17 +19,23 @@ public class AttackManagerTester : MonoBehaviour
     public string attackerTile;
     public string attackerTEffect;
     public List<string> attackerBorders;
+    public List<string> testAttackerPassives;
+    public List<string> testAttackerPassiveLevels;
     public int defenderLocation;
     public int defenderDirection;
     public string defenderBuilding;
     public string defenderTile;
     public string defenderTEffect;
     public List<string> defenderBorders;
+    public List<string> testDefenderPassives;
+    public List<string> testDefenderPassiveLevels;
     public int guardLocation;
     public int guardDirection;
     public string guardTile;
     public string guardTEffect;
     public List<string> guardBorders;
+    public List<string> testGuardPassives;
+    public List<string> testGuardPassiveLevels;
     // Actors.
     public TacticActor dummyAttacker;
     public string attackerStats;
@@ -53,10 +59,18 @@ public class AttackManagerTester : MonoBehaviour
         // Set up the actors.
         dummyAttacker.SetInitialStatsFromString(attackerStats);
         dummyAttacker.InitializeStats();
+        for (int i = 0; i < testAttackerPassives.Count; i++)
+        {
+            dummyAttacker.AddPassiveSkill(testAttackerPassives[i], testAttackerPassiveLevels[i]);
+        }
         passiveOrganizer.OrganizeActorPassives(dummyAttacker);
         dummyAttacker.SetLocation(attackerLocation);
         dummyAttacker.SetDirection(attackerDirection);
         dummyDefender.SetInitialStatsFromString(defenderStats);
+        for (int i = 0; i < testDefenderPassiveLevels.Count; i++)
+        {
+            dummyAttacker.AddPassiveSkill(testDefenderPassives[i], testDefenderPassiveLevels[i]);
+        }
         dummyDefender.InitializeStats();
         passiveOrganizer.OrganizeActorPassives(dummyDefender);
         dummyDefender.SetLocation(defenderLocation);
@@ -75,6 +89,10 @@ public class AttackManagerTester : MonoBehaviour
         map.ChangeTile(defenderLocation, "Borders", String.Join("|", defenderBorders), true);
         dummyGuard.SetInitialStatsFromString(guardStats);
         dummyGuard.InitializeStats();
+        for (int i = 0; i < testGuardPassiveLevels.Count; i++)
+        {
+            dummyAttacker.AddPassiveSkill(testGuardPassives[i], testGuardPassiveLevels[i]);
+        }
         passiveOrganizer.OrganizeActorPassives(dummyGuard);
         if (guard)
         {

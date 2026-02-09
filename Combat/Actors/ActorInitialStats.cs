@@ -15,9 +15,11 @@ public class ActorInitialStats : ActorPassives
     protected void LoadStatNames()
     {
         statNames = allStatNames.Split(delimiter).ToList();
+        publicStats = allPublicStats.Split(delimiter).ToList();
     }
     public List<string> statNames;
-    public List<bool> privateStats;
+    public string allPublicStats;
+    public List<string> publicStats;
     public List<string> changeFormStatNames;
     public List<string> stats;
     public List<string> GetPublicStatNames()
@@ -25,7 +27,7 @@ public class ActorInitialStats : ActorPassives
         List<string> names = new List<string>();
         for (int i = 0; i < statNames.Count; i++)
         {
-            if (privateStats[i]){continue;}
+            if (publicStats[i] == "0"){continue;}
             names.Add(statNames[i]);
         }
         return names;
@@ -35,7 +37,7 @@ public class ActorInitialStats : ActorPassives
         List<string> pStats = new List<string>();
         for (int i = 0; i < stats.Count; i++)
         {
-            if (privateStats[i]){continue;}
+            if (publicStats[i] == "0"){continue;}
             pStats.Add(stats[i]);
         }
         return pStats;

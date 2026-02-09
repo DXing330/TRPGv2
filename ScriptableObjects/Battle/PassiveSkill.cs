@@ -25,6 +25,39 @@ public class PassiveSkill : SkillEffect
         map.ChangeTile(actor.GetLocation(), effect, specifics);
     }
 
+    public void ApplyAfterAttackPassives(TacticActor actor, TacticActor attackTarget, BattleMap map, bool hit = true, bool crit = false)
+    {
+        List<string> passives = actor.GetAfterAttackPassives();
+        if (passives.Count <= 0) { return; }
+        for (int i = 0; i < passives.Count; i++)
+        {
+            string[] passiveData = passives[i].Split("|");
+            if (passiveData.Length <= 4) { continue; }
+            string[] conditions = passiveData[1].Split(",");
+            string[] specifics = passiveData[2].Split(",");
+            bool conditionsMet = true;
+            for (int j = 0; j < conditions.Length; j++)
+            {
+                conditionsMet = CheckAfterAttackCondition(conditions[j], specifics[j], actor, attackTarget, map, hit, crit);
+                if (!conditionsMet)
+                {
+                    break;
+                }
+            }
+            if (!conditionsMet)
+            {
+                continue;
+            }
+            // For now only affect the actor, later might after other things.
+            string[] effects = passiveData[4].Split(",");
+            string[] effectSpecifics = passiveData[5].Split(",");
+            for (int h = 0; h < effects.Length; h++)
+            {
+                AffectActor(actor, effects[h], GetEffectSpecifics(actor, effectSpecifics[h]));
+            }
+        }
+    }
+
     public void ApplyStartBattlePassives(TacticActor actor, BattleState battleState)
     {
         List<string> startBattlePassives = actor.GetStartBattlePassives();
@@ -134,6 +167,20 @@ public class PassiveSkill : SkillEffect
         {
             ApplyPassive(actor, map, passives[h]);
         }
+    }
+
+    public bool CheckAfterAttackCondition(string condition, string specifics, TacticActor attacker, TacticActor target, BattleMap map, bool attackHit, bool attackCrit)
+    {
+        switch (condition)
+        {
+            case "LethalAttack":
+                return target.GetHealth() <= 0;
+            case "CriticalAttack":
+                return attackCrit;
+            case "DodgedAttack":
+                return !attackHit;
+        }
+        return true;
     }
 
     // Moving passives usually depend on the tile moved over.

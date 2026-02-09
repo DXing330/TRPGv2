@@ -287,6 +287,30 @@ public class BattleMap : MapManager
     public StatDatabase terrainWeatherInteractions;
     public StatDatabase terrainTileInteractions;
     public StatDatabase tileWeatherInteractions;
+    public StatDatabase elementalInterations;
+    public bool CheckTileConditions(int tile, string condition, string specifics)
+    {
+        switch (condition)
+        {
+            case "Tile":
+                return mapInfo[tile].Contains(specifics);
+            case "TerrainEffect":
+                return terrainEffectTiles[tile].Contains(specifics);
+        }
+        return true;
+    }
+    public void ElementalAttackOnTile(string element, int tile)
+    {
+        List<string> elementalEffects = elementalInterations.ReturnAllValues(element);
+        for (int i = 0; i < elementalEffects.Count; i++)
+        {
+            string[] eBlocks = elementalEffects[i].Split("|");
+            if (CheckTileConditions(tile, eBlocks[0], eBlocks[1]))
+            {
+                ChangeTile(tile, eBlocks[3], eBlocks[4]);
+            }
+        }
+    }
     public PassiveSkill passiveEffect;
     public List<TacticActor> ReturnEndOfBattleActors()
     {

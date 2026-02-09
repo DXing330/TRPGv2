@@ -101,6 +101,7 @@ public class HexMapAdjustor : MonoBehaviour
         float yPivot = 1f;
         for (int i = 0; i < gridSize; i++)
         {
+            xPivot = 0f;
             for (int j = 0; j < gridSize; j++)
             {
                 if (j%2 == 0)

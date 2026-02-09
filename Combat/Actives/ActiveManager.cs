@@ -476,6 +476,8 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, power, specifics);
                     // Also apply the elemental damage effects.
                     active.AffectActor(targets[i], specifics + "Damage", skillUser.GetMagicPower().ToString(), 1, battle.map.combatLog);
+                    // Also affect the map.
+                    battle.map.ElementalAttackOnTile(specifics, targets[i].GetLocation());
                 }
                 return;
             // Directly does the elemental damage, doesn't need to go through the attack manager.
@@ -483,15 +485,7 @@ public class ActiveManager : MonoBehaviour
                 for (int i = 0; i < targets.Count; i++)
                 {
                     active.AffectActor(targets[i], specifics + "Damage", (power + skillUser.GetMagicPower()).ToString(), 1, battle.map.combatLog);
-                    // TODO Also applies an effect to the map.
-                    // Lightning Electrifies Water.
-                    // Ice Freezes Water.
-                    // Water Creates Water.
-                    // Fire Ignites Forests.
-                    // Earth ???
-                    // Light ???
-                    // Dark ???
-                    // Air ???
+                    battle.map.ElementalAttackOnTile(specifics, targets[i].GetLocation());
                 }
                 return;
             case "Flat Attack":
