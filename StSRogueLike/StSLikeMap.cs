@@ -15,20 +15,60 @@ public class StSLikeMap : MapManager
             GeneratePaths();
             SaveState();
             UpdateMap();
-            UpdateDirectionalArrows();
         }
         else
         {
             LoadState();
         }
     }
+    // TODO different map states.
+    // Regular (select movement), Rewards (after battle), Event (select event choice)
+    public string state = "Moving";
+    public string stateSpecifics = "";
+    public void ResetState()
+    {
+        // TODO Special case if boss rewards, then move to next floor.
+        state = "Moving";
+        stateSpecifics = "";
+        SaveState();
+        UpdateMap();
+    }
+    public void ChangeState(string newState, string specifics)
+    {
+        state = newState;
+        stateSpecifics = specifics;
+        // Save the state whenever changing.
+        SaveState();
+        UpdateMap();
+        // Any rng that is needed should be calculated the same way when loading.
+    }
     public override void UpdateMap()
     {
-        UpdateCurrentTiles();
-        mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
-        mapDisplayers[1].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
-        bossImage.sprite = bossSprites.SpriteDictionary(floorBoss);
-        blackScreen.SetActive(false);
+        switch (state)
+        {
+            default:
+            UpdateCurrentTiles();
+            mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+            mapDisplayers[1].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
+            bossImage.sprite = bossSprites.SpriteDictionary(floorBoss);
+            blackScreen.SetActive(false);
+            UpdateDirectionalArrows();
+            break;
+            case "Event":
+            break;
+            case "Reward":
+            StartSelectingBattleRewards();
+            break;
+        }
+        
+    }
+    public GameObject battleRewardObject;
+    public StSBattleRewards battleRewards;
+    protected void StartSelectingBattleRewards()
+    {
+        battleRewardObject.SetActive(true);
+        battleRewards.GenerateRewards(stateSpecifics);
+        // TODO battleRewards
     }
     protected void UpdateDirectionalArrows()
     {
@@ -62,7 +102,9 @@ public class StSLikeMap : MapManager
             allEnemies = enemyTracker.GetEliteData();
             string[] eliteData = allEnemies.Split("-");
             battleState.ForceTerrainType(eliteData[0]);
-            enemyList.AddCharacters(eliteData[1].Split("|").ToList());
+            battleState.SetWeather(eliteData[1]);
+            battleState.SetTime(eliteData[2]);
+            enemyList.AddCharacters(eliteData[3].Split("|").ToList());
             // Add ascension stuff.
             enemyList.SetBattleModifiers(savedState.settings.ReturnEliteModifiers().Split(",").ToList());
             savedState.enemyTracker.AddToRareAllyPool(eliteData[1].Split("|").ToList());
@@ -71,7 +113,9 @@ public class StSLikeMap : MapManager
         allEnemies = enemyTracker.GetEnemyData(difficulty);
         string[] dataBlocks = allEnemies.Split("-");
         battleState.ForceTerrainType(dataBlocks[0]);
-        enemyList.AddCharacters(dataBlocks[1].Split("|").ToList());
+        battleState.SetWeather(dataBlocks[1]);
+        battleState.SetTime(dataBlocks[2]);
+        enemyList.AddCharacters(dataBlocks[3].Split("|").ToList());
         // Add ascension stuff.
         enemyList.SetBattleModifiers(savedState.settings.ReturnEnemyModifiers().Split(",").ToList());
         savedState.enemyTracker.AddToAllyPool(dataBlocks[1].Split("|").ToList());
@@ -93,11 +137,13 @@ public class StSLikeMap : MapManager
         enemyList.ResetLists();
         List<string> bossData = enemyTracker.GetBossData(additional);
         battleState.ForceTerrainType(bossData[0]);
-        enemyList.AddCharacters(bossData[1].Split("|").ToList());
+        battleState.SetWeather(bossData[1]);
+        battleState.SetTime(bossData[2]);
+        enemyList.AddCharacters(bossData[3].Split("|").ToList());
         // Add ascension stuff.
         enemyList.SetBattleModifiers(savedState.settings.ReturnBossModifiers().Split(",").ToList());
         savedState.BattleBoss();
-        SaveState();
+        ChangeState("Battle", "Boss");
         sceneMover.MoveToBattle();
     }
     public SpriteContainer bossSprites;
@@ -182,13 +228,12 @@ public class StSLikeMap : MapManager
     public void SaveState()
     {
         savedState.SetDataFromMap(this);
-        enemyTracker.Save();
+        partyData.Save();
     }
     public void LoadState()
     {
         ResetAll();
         savedState.Load();
-        enemyTracker.Load();
         if (savedState.bossBattled > 0)
         {
             if (savedState.bossBattled < savedState.GetBossFightsPerFloor())
@@ -204,6 +249,7 @@ public class StSLikeMap : MapManager
                 sceneMover.LoadScene(finalSceneName);
                 return;
             }
+            // TODO Before going to a new floor, show the boss rewards panel.
             // New floor.
             savedState.CompleteFloor();
             GeneratePaths();
@@ -214,11 +260,12 @@ public class StSLikeMap : MapManager
         mapInfo = new List<string>(savedState.mapInfo);
         partyPathing = new List<int>(savedState.partyPathing);
         floorBoss = savedState.floorBoss;
+        state = savedState.currentState;
+        stateSpecifics = savedState.currentStateSpecifics;
         if (partyPathing.Count <= 0) { partyLocation = -1; }
         else
         {
             partyLocation = partyPathing[partyPathing.Count - 1];
-            // Enter the event/rest/store.
         }
         UpdateMap();
         UpdateHighlights(partyPathing);
@@ -283,6 +330,7 @@ public class StSLikeMap : MapManager
                 // Generate enemies based on various factors.
                 GenerateEnemies(savedState.ReturnCurrentDifficulty());
                 savedState.CompleteBattle();
+                ChangeState("Battle", "Enemy");
                 sceneMover.MoveToBattle();
                 break;
             case "Treasure":
@@ -298,12 +346,12 @@ public class StSLikeMap : MapManager
             case "Elite":
                 // Elites have different rewards, need to do something about that.
                 GenerateEnemies(savedState.ReturnCurrentDifficulty(), true);
+                ChangeState("Battle", "Elite");
                 sceneMover.MoveToBattle();
                 break;
             case "Event":
+                // TODO, don't move unless needed.
                 // Start copying the STS events, you can select actors for events.
-                // Some events will select actors for you.
-                //popUp.SetMessage("Random Event");
                 sceneMover.LoadScene(eventSceneName);
                 break;
         }
@@ -349,7 +397,6 @@ public class StSLikeMap : MapManager
         enemyTracker.NewFloor();
         GenerateFloorBoss();
         UpdateMap();
-        UpdateDirectionalArrows();
     }
     public StSMapUtility rogueLikeMapUtility;
     [ContextMenu("GeneratePath")]

@@ -100,7 +100,6 @@ public class PartyData : SavedData
         dummyActor.SetCurrentHealth(utility.SafeParseInt(newCurrentStats[0]));
         dummyActor.SetCurses(newCurrentStats[1]);
         dummyActor.SetCurrentMana(utility.SafeParseInt(newCurrentStats[2]));
-        // TODO Mana should be set here..
         partyStats[index] = dummyActor.GetInitialStats();
         UpdateDefeatedMemberTracker(index);
     }

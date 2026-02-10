@@ -11,8 +11,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
     public void SelectActive()
     {
         if (activeSelect.GetSelected() < 0){return;}
-        dummyActive.LoadSkillFromString(activeData.ReturnValue(activeSelect.GetSelectedStat()));
-        popUp.SetMessage(ReturnActiveDescription(dummyActive));
+        popUp.SetMessage(ReturnActiveDescriptionFromName(activeSelect.GetSelectedStat()));
     }
 
     public string ReturnSpellDescription(MagicSpell spell, TacticActor caster = null)
@@ -38,12 +37,19 @@ public class ActiveDescriptionViewer : MonoBehaviour
     {
         return AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
     }
+    public string ReturnActiveDescriptionFromName(string activeName)
+    {
+        dummyActive.LoadSkillFromString(activeData.ReturnValue(activeName));
+        return ReturnActiveDescription(dummyActive);
+    }
     public string ReturnActiveDescription(ActiveSkill activeSkill)
     {
         string activeDescription = AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
         activeDescription += "\n" + "Action Cost: " + activeSkill.GetActionCost();
-        //+"; Actions Left: " +activeSkill;
         activeDescription += "\n" + "Energy Cost: " + activeSkill.GetEnergyCost();
+        // Shape / Span.
+        activeDescription += "\n" + "Range: " + activeSkill.GetRangeShape() + "-" + activeSkill.GetRangeString();
+        activeDescription += "\n" + "Span: " + activeSkill.GetShape() + "-" + activeSkill.GetSpan();
         return activeDescription;
     }
 
@@ -54,6 +60,11 @@ public class ActiveDescriptionViewer : MonoBehaviour
         {
             string[] eBlocks = e.Split("Equals");
             return "All " + eBlocks[1] + "s gain " + p + " " + ASD(s) + ".";
+        }
+        if (e.Contains("AllSpeciesEquals"))
+        {
+            string[] eBlocks = e.Split("Equals");
+            return "All " + eBlocks[1] + " gain " + p + " " + ASD(s) + ".";
         }
         switch (e)
         {

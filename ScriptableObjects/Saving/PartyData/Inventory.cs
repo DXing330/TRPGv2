@@ -143,7 +143,7 @@ public class Inventory : SavedData
     public List<string> assignedActorIDs;
     public void UnassignItem(int itemIndex)
     {
-        assignedActorIDs[itemIndex] = "";
+        assignedActorIDs[itemIndex] = "-1";
     }
     public void AssignToActor(int itemIndex, int actorID)
     {
@@ -211,7 +211,7 @@ public class Inventory : SavedData
         if (InventoryFull()){return;}
         if (itemName.Length <= 1){return;}
         items.Add(itemName);
-        assignedActorIDs.Add("");
+        assignedActorIDs.Add("-1");
     }
     protected void RemoveEmptyItems()
     {

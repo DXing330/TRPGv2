@@ -113,6 +113,10 @@ public class ActiveSkill : SkillEffect
         range = newInfo;
         RefreshSkillInfo();
     }
+    public string GetRangeString()
+    {
+        return range;
+    }
     public int GetRange(TacticActor skillUser = null)
     {
         if (range == "") { return 0; }

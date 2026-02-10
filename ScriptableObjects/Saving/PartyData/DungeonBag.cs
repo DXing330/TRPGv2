@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// This will store relics for the roguelike mode as well.
 [CreateAssetMenu(fileName = "DungeonBag", menuName = "ScriptableObjects/DataContainers/SavedData/DungeonBag", order = 1)]
 public class DungeonBag : SavedData
 {

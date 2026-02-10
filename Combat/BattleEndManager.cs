@@ -6,8 +6,6 @@ using TMPro;
 public class BattleEndManager : MonoBehaviour
 {
     public bool test = false;
-    public bool subGame = false;
-    public StSBattleRewards stsBattleRewardManager;
     public BattleStatsTracker battleStatsTracker;
     public PartyDataManager partyData;
     public TacticActor dummyActor;
@@ -136,42 +134,10 @@ public class BattleEndManager : MonoBehaviour
         if (winnerTeam == 0)
         {
             battleResult.text = "<color=green>Victory!</color>";
-            if (!subGame)
-            {
-                CalculateSkillUps(true);
-                CalculateSkillUps(false);
-                // We don't have any reason to gain allies or loot in the main game currently.
-                allNewAllies.Disable();
-                allLootDrops.Disable();
-            }
-            else if (subGame)
-            {
-                CalculateSkillUps(true, true);
-                CalculateSkillUps(false, true);
-                stsBattleRewardManager.GenerateRewards();
-                // Show the rewards as needed.
-                List<string> itemRewards = stsBattleRewardManager.GetEquipmentRewardNames();
-                List<string> itemRewardQuantities = new List<string>();
-                for (int i = 0; i < itemRewards.Count; i++)
-                {
-                    itemRewardQuantities.Add("1");
-                }
-                int goldReward = stsBattleRewardManager.GetGoldReward();
-                if (goldReward > 0)
-                {
-                    itemRewards.Add("Gold");
-                    itemRewardQuantities.Add(goldReward.ToString());
-                }
-                allLootDrops.SetStatsAndData(itemRewards, itemRewardQuantities);
-                if (itemRewards.Count <= 0)
-                {
-                    allLootDrops.Disable();
-                }
-                if (stsBattleRewardManager.allyRewardRarity.Count <= 0)
-                {
-                    allNewAllies.Disable();
-                }
-            }
+            CalculateSkillUps(true);
+            CalculateSkillUps(false);
+            allNewAllies.Disable();
+            allLootDrops.Disable();
         }
         else
         {

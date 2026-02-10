@@ -41,7 +41,6 @@ public class BattleState : SavedState
     }
     public CharacterList partyList;
     public CharacterList enemyList;
-    public OverworldState overworldState;
     public BattleMapFeatures battleMapFeatures;
     public List<string> enemies;
     public void AddEnemyName(string newName){enemies.Add(newName);}
@@ -63,11 +62,7 @@ public class BattleState : SavedState
     }
     public virtual void SetTerrainType()
     {
-        if (overworldState == null)
-        {
-            return;
-        }
-        terrainType = overworldState.GetLocationTerrain();
+        terrainType = practiceTerrainType;
         battleMapFeatures.SetTerrainType(terrainType);
     }
     public virtual string GetTerrainType(){return terrainType;}
@@ -80,7 +75,7 @@ public class BattleState : SavedState
     }
     public virtual string GetTime()
     {
-        if (time == "")
+        if (time == "" || !timeOfDayTypes.Contains(time))
         {
             return timeOfDayTypes[UnityEngine.Random.Range(0, timeOfDayTypes.Count)];
         }
@@ -100,11 +95,7 @@ public class BattleState : SavedState
         {
             return weather;
         }
-        if (overworldState == null)
-        {
-            return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
-        }
-        return overworldState.GetWeather();
+        return weatherTypes[UnityEngine.Random.Range(0, weatherTypes.Count)];
     }
     public List<string> allStartingFormations;
     public string spawnPattern;
@@ -131,17 +122,23 @@ public class BattleState : SavedState
             SetEnemySpawnPattern(p2StartingFormations[indexOf]);
         }
         Save();
-        Debug.Log(spawnPattern);
-        Debug.Log(allySpawnPattern);
     }
     public List<string> p1StartingFormations;
     public List<string> p2StartingFormations;
     public string allySpawnPattern;
     public void SetAllySpawnPattern(string newInfo = "Left"){allySpawnPattern = newInfo;}
-    public virtual string GetAllySpawnPattern(){return allySpawnPattern;}
+    public virtual string GetAllySpawnPattern()
+    {
+        if (allySpawnPattern.Length <= 1){return p1StartingFormations[0];}
+        return allySpawnPattern;
+    }
     public string enemySpawnPattern;
     public void SetEnemySpawnPattern(string newInfo = "Right"){enemySpawnPattern = newInfo;}
-    public virtual string GetEnemySpawnPattern(){return enemySpawnPattern;}
+    public virtual string GetEnemySpawnPattern()
+    {
+        if (enemySpawnPattern.Length <= 1){return p2StartingFormations[0];}
+        return enemySpawnPattern;
+    }
     public void ResetSpawnPatterns()
     {
         SetAllySpawnPattern();
@@ -187,7 +184,6 @@ public class BattleState : SavedState
 
     public void ResetStats()
     {
-        ResetWeather();
         SetNewAlternateWinCondition();
     }
 

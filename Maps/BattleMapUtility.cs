@@ -35,6 +35,30 @@ public class BattleMapUtility : ScriptableObject
         }
         return actors;
     }
+    public List<TacticActor> AllActorsBySprite(string spriteName, BattleMap map)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < map.battlingActors.Count; i++)
+        {
+            if (map.battlingActors[i].GetSpriteName().Contains(spriteName))
+            {
+                actors.Add(map.battlingActors[i]);
+            }
+        }
+        return actors;
+    }
+    public List<TacticActor> AllActorsBySpecies(string speciesName, BattleMap map)
+    {
+        List<TacticActor> actors = new List<TacticActor>();
+        for (int i = 0; i < map.battlingActors.Count; i++)
+        {
+            if (map.battlingActors[i].GetSpecies().Contains(speciesName))
+            {
+                actors.Add(map.battlingActors[i]);
+            }
+        }
+        return actors;
+    }
     // Calculation Utilities.
     public int AverageActorHealth(BattleMap map)
     {

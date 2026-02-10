@@ -158,7 +158,6 @@ public class ActorInitialStats : ActorPassives
             case "Elements":
                 SetElementsFromString(newStat);
                 break;
-            // TODO
             case "Attributes":
                 SetAttributesFromString(newStat);
                 break;

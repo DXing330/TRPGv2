@@ -367,7 +367,6 @@ public class AttackManager : ScriptableObject
         map.combatLog.AddDetailedLogs("Damage Calculations:");
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
-        // TODO Apply the after attack passives here.
         passive.ApplyAfterAttackPassives(attacker, attackTarget, map, hit, critHit);
         // Check if the defender is alive, has counter attacks available and is in range.
         if (attackTarget.GetHealth() > 0 && attackTarget.CounterAttackAvailable() && map.DistanceBetweenActors(attackTarget, attacker) <= attackTarget.GetAttackRange())

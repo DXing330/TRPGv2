@@ -1,10 +1,56 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Also used to store skillbooks for the roguelike.
 [CreateAssetMenu(fileName = "SpellBook", menuName = "ScriptableObjects/DataContainers/SavedData/SpellBook", order = 1)]
 public class SpellBook : SavedData
 {
+    public List<string> books;
+    public void GainBook(string bookName)
+    {
+        if (bookName.Length <= 1){return;}
+        books.Add(bookName);
+    }
+    public void LoseBook(string bookName)
+    {
+        int indexOf = books.IndexOf(bookName);
+        if (indexOf < 0){return;}
+        books.RemoveAt(indexOf);
+    }
+    public void SetBooks(List<string> newBooks)
+    {
+        books.Clear();
+        for (int i = 0; i < newBooks.Count; i++)
+        {
+            GainBook(newBooks[i]);
+        }
+    }
+    public override void NewGame()
+    {
+        books.Clear();
+        Save();
+    }
+    public override void Save()
+    {
+        dataPath = Application.persistentDataPath+"/"+filename;
+        allData = String.Join(",", books);
+        File.WriteAllText(dataPath, allData);
+    }
+    public override void Load()
+    {
+        dataPath = Application.persistentDataPath+"/"+filename;
+        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
+        else
+        {
+            NewGame();
+            return;
+        }
+        SetBooks(allData.Split(",").ToList());
+    }
     public StatDatabase spellComponents;
     public MagicSpell magicSpell;
     // Passive names that determine how many spells slots a character has.
@@ -52,10 +98,10 @@ public class SpellBook : SavedData
         string activeDelimiter = magicSpell.activeSkillDelimiter;
         string effectDelimiter = magicSpell.effectDelimiter;
         string spell = "SpellName" + activeDelimiter + "1" + activeDelimiter + "1" + activeDelimiter;
-        spell += ranges[Random.Range(0, ranges.Count)] + activeDelimiter;
-        spell += rangeShapes[Random.Range(0, rangeShapes.Count)] + activeDelimiter;
-        spell += effectShapes[Random.Range(0, effectShapes.Count)] + activeDelimiter;
-        spell += spans[Random.Range(0, spans.Count)] + activeDelimiter;
+        spell += ranges[UnityEngine.Random.Range(0, ranges.Count)] + activeDelimiter;
+        spell += rangeShapes[UnityEngine.Random.Range(0, rangeShapes.Count)] + activeDelimiter;
+        spell += effectShapes[UnityEngine.Random.Range(0, effectShapes.Count)] + activeDelimiter;
+        spell += spans[UnityEngine.Random.Range(0, spans.Count)] + activeDelimiter;
         string effects = "";
         string specifics = "";
         string newPowers = "";
@@ -66,7 +112,7 @@ public class SpellBook : SavedData
             string[] blocks = effectAndSpecifics.Split(activeDelimiter);
             effects += blocks[0];
             specifics += blocks[1];
-            newPowers += powers[Random.Range(0, powers.Count)];
+            newPowers += powers[UnityEngine.Random.Range(0, powers.Count)];
             if (i < effectCount - 1)
             {
                 effects += effectDelimiter;
@@ -83,7 +129,7 @@ public class SpellBook : SavedData
         string effectAndSpecifics = "";
         string effect = spellComponents.ReturnRandomKey();
         List<string> possibleSpecifics = spellComponents.ReturnStats(effect);
-        string specifics = possibleSpecifics[Random.Range(0, possibleSpecifics.Count)];
+        string specifics = possibleSpecifics[UnityEngine.Random.Range(0, possibleSpecifics.Count)];
         effectAndSpecifics = effect + magicSpell.activeSkillDelimiter + specifics;
         return effectAndSpecifics;
     }

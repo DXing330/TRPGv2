@@ -10,6 +10,20 @@ public class StSState : SavedState
 {
     public StSSettings settings;
     public List<SavedData> stsData;
+    public void SaveAllData()
+    {
+        for (int i = 0; i < stsData.Count; i++)
+        {
+            stsData[i].Save();
+        }
+    }
+    public void LoadAllData()
+    {
+        for (int i = 0; i < stsData.Count; i++)
+        {
+            stsData[i].Load();
+        }
+    }
     // Enemy tracker is just an extension of the state, sectioned off for convenience.
     public StSEnemyTracker enemyTracker;
     // Save the map, the floor, the party location, the store items, the random event details.
@@ -17,15 +31,15 @@ public class StSState : SavedState
     {
         newGame = 1;
         currentFloor = 1;
+        currentState = "Moving";
+        currentStateSpecifics = "";
         battlesFought = 0;
         bossBattled = 0;
-        NewRandomSeed();
-        Save();
         for (int i = 0; i < stsData.Count; i++)
         {
             stsData[i].NewGame();
-            stsData[i].Save();
         }
+        NewRandomSeed();
     }
     // SEEDS
     public RNGUtility masterSeed;
@@ -38,9 +52,22 @@ public class StSState : SavedState
         mapGenSeed.SetSeed(masterSeed.GetSeed());
         enemySeed.SetSeed(masterSeed.GetSeed());
         rewardSeed.SetSeed(masterSeed.GetSeed());
+        Save();
     }
     public int newGame = 1;
     public int currentFloor = 1;
+    // TODO track and implement states, all will change the map behavior.
+    // Moving/Event/Rewards/Shopping/Resting?
+    // Shopping and resting are stored in different scenes probably.
+    public string currentState;
+    // Determines events/rewards/etc.
+    public string currentStateSpecifics;
+    public void ReturnFromWinningBattle()
+    {
+        currentState = "Reward";
+        // The Specifics (Event/Battle/Elite/Boss) should already be stored.
+        Save();
+    }
     public StatDatabase bossFightsPerFloorData;
     public int GetBossFightsPerFloor()
     {
@@ -70,7 +97,6 @@ public class StSState : SavedState
     public void CompleteBattle()
     {
         battlesFought++;
-        Save();
     }
     public string floorBoss;
     public int bossBattled = 0;
@@ -119,6 +145,8 @@ public class StSState : SavedState
         mapInfo = new List<string>(map.mapInfo);
         partyPathing = new List<int>(map.partyPathing);
         floorBoss = map.floorBoss;
+        currentState = map.state;
+        currentStateSpecifics = map.stateSpecifics;
         Save();
     }
     public override void Save()
@@ -131,7 +159,10 @@ public class StSState : SavedState
         allData += "Battles=" + battlesFought + delimiter;
         allData += "Boss=" + floorBoss + delimiter;
         allData += "BossBattled=" + bossBattled + delimiter;
+        allData += "State=" + currentState + delimiter;
+        allData += "StateSpecifics=" + currentStateSpecifics + delimiter;
         File.WriteAllText(dataPath, allData);
+        SaveAllData();
     }
     public override void Load()
     {
@@ -142,6 +173,7 @@ public class StSState : SavedState
         {
             LoadStat(dataList[i]);
         }
+        LoadAllData();
     }
     protected void LoadStat(string stat)
     {
@@ -178,6 +210,12 @@ public class StSState : SavedState
                 break;
             case "BossBattled":
                 bossBattled = int.Parse(value);
+                break;
+            case "State":
+                currentState = value;
+                break;
+            case "StateSpecifics":
+                currentStateSpecifics = value;
                 break;
         }
     }

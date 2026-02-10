@@ -9,7 +9,7 @@ public class SceneMover : MonoBehaviour
     public bool moving = false;
     public bool rogueLike = false;
     public string mainRogueLikeScene = "StSMap";
-    public SavedData rogueLikeData;
+    public StSState rogueLikeData;
     public string mainMenuSceneName = "Start";
     public void ReturnToMainMenu()
     {
@@ -167,8 +167,7 @@ public class SceneMover : MonoBehaviour
         sceneTracker.SetCurrentScene(battleSceneName);
         sceneTracker.Save();
         battleState.UpdatePreviousScene();
-        battleState.SetTerrainType();
-        battleState.ResetStats();
+        battleState.SetNewAlternateWinCondition();
         battleState.UpdateEnemyNames();
         battleState.Save();
         if (SceneManager.GetActiveScene().name == dungeonSceneName)
@@ -240,7 +239,9 @@ public class SceneMover : MonoBehaviour
         }
         else if (victory == 0 && rogueLike)
         {
+            rogueLikeData.ReturnFromWinningBattle();
             LoadScene(mainRogueLikeScene);
+            // TODO Enter reward select.
             return;
         }
         // Fail any quest in the dungeon.

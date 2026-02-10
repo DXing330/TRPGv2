@@ -14,8 +14,6 @@ public class StSEnemyTracker : SavedData
     public List<StatDatabase> floorEnemies;
     public List<StatDatabase> floorElites;
     public List<StatDatabase> floorBosses;
-    // TODO add seed rng for ally rewards
-    public RNGUtility rewardRNGSeed;
     public List<string> enemyPool;
     public List<string> elitePool;
     public List<string> defaultAllies;
@@ -156,7 +154,7 @@ public class StSEnemyTracker : SavedData
         List<string> possibleEnemies = new List<string>();
         for (int i = 0; i < enemyPool.Count; i++)
         {
-            if (int.Parse(floorEnemies[floor - 1].ReturnValue(enemyPool[i])) == difficulty)
+            if (int.Parse(floorEnemies[floor - 1].ReturnValue(enemyPool[i])) <= difficulty)
             {
                 possibleEnemies.Add(enemyPool[i]);
             }

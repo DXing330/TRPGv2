@@ -610,17 +610,13 @@ public class BattleMap : MapManager
         }
         return actors;
     }
+    public List<TacticActor> AllActorsBySpecies(string speciesName)
+    {
+        return battleMapUtility.AllActorsBySpecies(speciesName, this);
+    }
     public List<TacticActor> AllActorsBySprite(string spriteName)
     {
-        List<TacticActor> actors = new List<TacticActor>();
-        for (int i = 0; i < battlingActors.Count; i++)
-        {
-            if (battlingActors[i].GetSpriteName().Contains(spriteName))
-            {
-                actors.Add(battlingActors[i]);
-            }
-        }
-        return actors;
+        return battleMapUtility.AllActorsBySprite(spriteName, this);
     }
     public bool AllyAdjacentToActor(TacticActor actor)
     {
@@ -1120,7 +1116,6 @@ public class BattleMap : MapManager
     {
         UpdateHighlights(aura.GetAuraTiles(this));
     }
-    // TODO The UI should grab the list of all auras belonging to the acotr, and show them one by one, with the tiles highlighted and the effects listed for each aura.
     public void HighlightActorAuras(TacticActor actor)
     {
         List<int> auraTiles = new List<int>();

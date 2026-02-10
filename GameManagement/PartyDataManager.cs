@@ -217,6 +217,11 @@ public class PartyDataManager : MonoBehaviour
         }
     }
 
+    public void HireMemberBySpriteName(string spriteName)
+    {
+        HireMember(actorStats.ReturnValue(spriteName), spriteName);
+    }
+
     public void HireMember(string stats, string personalName)
     {
         int nextID = guildCard.GetNextID();

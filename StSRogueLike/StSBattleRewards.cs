@@ -6,88 +6,96 @@ using TMPro;
 public class StSBattleRewards : MonoBehaviour
 {
     public PartyDataManager partyData;
-    public NewAllySelect allySelect;
     public StSState mapState;
+    public RNGUtility rewardRNGSeed;
     public StatDatabase stsRewardData;
-    public StSEnemyTracker enemyTracker;
-    public StatDatabase actorStats;
-    public StatDatabase allEquipmentRewards;
-    public StatDatabase bossEquipment;
-    public Equipment dummyEquip;
-    public List<string> allyRewardRarity;
-    public List<TMP_Text> allyRewardTexts;
-    public void UpdateAllyRewardTexts()
-    {
-        for (int i = 0; i < allyRewards.Count; i++)
-        {
-            allyRewardTexts[i].text = allyRewards[i];
-        }
-    }
-    public List<GameObject> allySelectButtons;
-    public void BeginSelectingAlly(int index)
-    {
-        if (allyRewardRarity[index] == "")
-        {
-            allySelect.GetChoices();
-        }
-        else
-        {
-            allySelect.GetChoices(true);
-        }
-        allySelectButtons[index].SetActive(false);
-    }
-    public List<GameObject> equipmentSelectButtons;
-    public int baseRarity = 2;
-    public int rareRarity = 3;
-    public int bossRarity = 4;
+    public StatDatabase skillBookRewards;
     public int baseGoldReward = 20; // For regular battles.
     public int rareGoldReward = 50; // For bosses.
     public int goldVariance = 6;
-    public int goldReward;
-    public int GetGoldReward()
+    protected void ResetRewards()
     {
-        return goldReward;
+        rewards.Clear();
+        rewardOptions.Clear();
     }
-    public List<string> allyRewards;
-    public List<string> GetAllyRewards()
+    public SelectList claimRewardList;
+    public void RefreshClaimableRewards()
     {
-        return allyRewards;
-    }
-    public List<string> equipmentRewards;
-    public List<string> GetEquipmentRewards()
-    {
-        return equipmentRewards;
-    }
-    public List<string> GetEquipmentRewardNames()
-    {
-        List<string> names = new List<string>();
-        for (int i = 0; i < equipmentRewards.Count; i++)
+        // TODO determine the claim names based on the reward types.
+        List<string> rewardNames = new List<string>();
+        for (int i = 0; i < rewards.Count; i++)
         {
-            dummyEquip.SetAllStats(equipmentRewards[i]);
-            names.Add(dummyEquip.GetName());
+            rewardNames.Add(ReturnRewardName(rewards[i], rewardOptions[i]));
         }
-        return names;
+        claimRewardList.SetSelectables(rewardNames);
     }
-
-    public void ResetRewards()
+    protected string ReturnRewardName(string rewardType, string rewardSpecifics)
     {
-        goldReward = 0;
-        allyRewards = new List<string>();
-        equipmentRewards = new List<string>();
+        switch (rewardType)
+        {
+            default:
+            return rewardType + " (" + rewardSpecifics + ")";
+            case "Gold":
+            return "Gold (" + rewardSpecifics + ")";
+            case "SkillBook":
+            return "Choose Skillbook";
+            case "Ally":
+            return "Choose New Ally";
+        }
     }
-
-    public void ApplyRewards()
+    public RewardSelectMenu rewardSelect;
+    public void ClickOnReward()
     {
-        for (int i = 0; i < allyRewards.Count; i++)
+        int index = claimRewardList.GetSelected();
+        if (index < 0 || index >= rewards.Count){return;}
+        switch (rewards[index])
         {
-            partyData.HireMember(actorStats.ReturnValue(allyRewards[i]), allyRewards[i] + " " + Random.Range(0, 1000));
+            default:
+            ClaimReward(rewards[index], rewardOptions[index]);
+            break;
+            case "SkillBook":
+            // TODO skill select pop up.
+            break;
+            case "Ally":
+            // TODO ally select pop up.
+            break;
         }
-        for (int i = 0; i < equipmentRewards.Count; i++)
-        {
-            partyData.equipmentInventory.AddEquipmentByStats(equipmentRewards[i]);
-        }
-        partyData.inventory.GainGold(goldReward);
     }
+    public void ClaimReward(string rewardType, string rewardChoice)
+    {
+        switch (rewardType)
+        {
+            case "Gold":
+            partyData.inventory.GainGold(int.Parse(rewardChoice));
+            break;
+            case "Consumable":
+            partyData.inventory.AddItemQuantity(rewardChoice);
+            break;
+            case "Ally":
+            partyData.HireMemberBySpriteName(rewardChoice);
+            break;
+            case "SkillBook":
+            partyData.spellBook.GainBook(rewardChoice);
+            break;
+            case "Relic":
+            partyData.dungeonBag.GainItem(rewardChoice);
+            break;
+        }
+        RemoveRewardAtIndex();
+    }
+    protected void RemoveRewardAtIndex()
+    {
+        // Selecting a reward removes the selection button.
+        int index = claimRewardList.GetSelected();
+        if (index < 0){return;}
+        rewards.RemoveAt(index);
+        rewardOptions.RemoveAt(index);
+        RefreshClaimableRewards();
+    }
+    // Display all the rewards.
+    public List<string> rewards;
+    // Click a reward to claim it or select an option.
+    public List<string> rewardOptions;
 
     public string GenerateRewardsByDifficulty(string battleType, int difficulty)
     {
@@ -101,17 +109,15 @@ public class StSBattleRewards : MonoBehaviour
         return stsRewardData.ReturnValue(battleType);
     }
 
-    public void GenerateRewards()
+    public void GenerateRewards(string battleType)
     {
-        ResetRewards();
-        string battleType = mapState.ReturnCurrentTile();
         string allRewards = GenerateRewardsByDifficulty(mapState.ReturnCurrentTile(), mapState.settings.GetDifficulty());
         string[] blocks = allRewards.Split("|");
         for (int i = 0; i < blocks.Length; i++)
         {
             GenerateReward(blocks[i]);
         }
-        //ApplyRewards();
+        RefreshClaimableRewards();
     }
 
     public void GenerateReward(string specifics)
@@ -119,67 +125,34 @@ public class StSBattleRewards : MonoBehaviour
         switch (specifics)
         {
             case "SkillBook":
-
+                rewards.Add("SkillBook");
+                rewardOptions.Add("TODO");
                 break;
-            case "Consumable":
-
+            case "RareSkillBook":
+                rewards.Add("SkillBook");
+                rewardOptions.Add("TODO");
                 break;
             case "ConsumableChance":
                 // ~ 30% chance for consumable?
                 break;
+            case "Consumable":
+                rewards.Add("Consumable");
+                rewardOptions.Add("TODO");
+                break;
             case "Relic":
+                rewards.Add("Relic");
+                rewardOptions.Add("TODO");
                 break;
             case "Gold":
-                goldReward += baseGoldReward + Random.Range(-goldVariance, goldVariance * 2);
+                rewards.Add("Gold");
+                rewardOptions.Add((baseGoldReward + rewardRNGSeed.Range(-goldVariance, goldVariance * 2)).ToString());
+                break;
+            case "Platinum":
+                rewards.Add("Gold");
+                rewardOptions.Add((rareGoldReward + rewardRNGSeed.Range(-goldVariance, goldVariance * 2)).ToString());
                 break;
             case "Ally":
                 break;
-            case "Platinum":
-                goldReward += rareGoldReward + Random.Range(-goldVariance, goldVariance * 2);
-                break;
-            /*case "Basic Ally":
-                allyRewardRarity.Add("");
-                allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
-                break;
-            case "Random Ally":
-                allyRewardRarity.Add("");
-                allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
-                break;
-            case "Rare Ally":
-                allyRewardRarity.Add("Rare");
-                allySelectButtons[allyRewardRarity.Count - 1].SetActive(true);
-                break;
-            case "Equipment":
-                equipmentRewards.Add(GetRandomEquipment(baseRarity));
-                break;
-            case "Rare Equipment":
-                equipmentRewards.Add(GetRandomEquipment(rareRarity));
-                break;
-            case "Boss Equipment":
-                equipmentRewards.Add(bossEquipment.ReturnRandomValue());
-                break;*/
         }
-    }
-
-    public void AddAllyReward(string newAlly)
-    {
-        allyRewards.Add(newAlly);
-        UpdateAllyRewardTexts();
-    }
-
-    public void AddEquipmentReward(string newEquip)
-    {
-        equipmentRewards.Add(newEquip);
-    }
-
-    public string GetRandomEquipment(int mininmumRarity = -1)
-    {
-        string rEquip = allEquipmentRewards.ReturnRandomValue();
-        dummyEquip.SetAllStats(rEquip);
-        if (dummyEquip.GetRarity() < mininmumRarity)
-        {
-            return GetRandomEquipment(mininmumRarity);
-        }
-        return rEquip;
     }
 }

@@ -136,6 +136,14 @@ public class ActiveManager : MonoBehaviour
             active.AffectActors(targets, specifics, active.GetPowerString(), 1);
             return;
         }
+        if (effect.Contains("AllSpeciesEquals"))
+        {
+            string[] allSpeciesDetails = effect.Split("Equals");
+            string specificSpecies = allSpeciesDetails[1];
+            targets = battle.map.AllActorsBySpecies(specificSpecies);
+            active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+            return;
+        }
         switch (effect)
         {
             case "Weather":

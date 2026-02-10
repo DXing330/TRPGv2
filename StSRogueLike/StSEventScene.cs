@@ -85,6 +85,8 @@ public class StSEventScene : MonoBehaviour
             partyData.Save();
             // Set the terrain.
             battleState.ForceTerrainType(stsEvent.eventEffect[0]);
+            // Set weather.
+            // Set time.
             // Load the enemies.
             enemyList.ResetLists();
             List<string> allEnemies = new List<string>();
