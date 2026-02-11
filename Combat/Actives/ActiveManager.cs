@@ -626,10 +626,15 @@ public class ActiveManager : MonoBehaviour
         active.AffectActors(targets, effect, specifics, power);
     }
 
-    public void ActivateSkill(BattleManager battle)
+    // ALL Skill Usage Should Go Through Here
+    public void ActivateSkill(BattleManager battle, bool cost = true)
     {
-        skillUser.SpendEnergy(active.GetEnergyCost());
-        skillUser.PayActionCost(active.GetActionCost());
+        if (cost)
+        {
+            skillUser.SpendEnergy(active.GetEnergyCost());
+            skillUser.PayActionCost(active.GetActionCost());
+        }
+        skillUser.UpdateRoundSkillTracker();
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower(), active.GetSelectedTile());
     }

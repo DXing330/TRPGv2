@@ -45,6 +45,7 @@ public class EquipmentRunesUI : MonoBehaviour
         equipmentStats = allEquipment.Split("@").ToList();
         for (int i = 0; i < runeGrid.Count; i++)
         {
+            runeGrid[i].ResetRunes();
             for (int j = 0; j < equipmentStats.Count; j++)
             {
                 runeGrid[i].SetEquipmentStats(equipmentStats[j]);

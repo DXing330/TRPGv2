@@ -1874,6 +1874,7 @@ public class BattleMap : MapManager
     public bool ApplyMovingTileEffect(TacticActor actor, int tileNumber, MoveCostManager moveManager = null)
     {
         combatLog.UpdateNewestLog(actor.GetPersonalName() + " moves to " + mapUtility.GetRowColumnCoordinateString(tileNumber, mapSize));
+        actor.UpdateRoundMoveTracker();
         if (moveManager != null)
         {
             combatLog.AddDetailedLogs("Move Cost: " + moveManager.MoveCostOfTile(tileNumber));

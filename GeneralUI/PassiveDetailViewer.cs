@@ -372,8 +372,6 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if within " + specifics + " tile(s)";
             case "Distance>":
                 return " if more than " + specifics + " tile(s) away";
-            //case "Type":
-            //return " if the damage is "+damageTypesReturnValue(dummyPassiveconditionSpecifics)+"";
             case "Health":
                 return " if health is "+specifics;
             case "HealthD":
@@ -571,6 +569,50 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target was hurt the least by the attacker";
             case "LethalAttack":
                 return " if the attack defeated the target";
+            case "FirstStrikeA":
+                return " if the attacker has not attacked yet";
+            case "FirstStrikeD":
+                return " if the target has not attacked yet";
+            case "MovedA": 
+                return " if the attacker has moved this round";
+            case "Moved<>A":
+                return " if the attacker has not moved this round";
+            case "MovedD":
+                return " if the target has moved this round";
+            case "Moved<>D":
+                return " if the target has not moved this round";
+            case "SkillUsedA":
+                return " if the attacker has used a skill this round";
+            case "SkillUsed<>A":
+                return " if the attacker has not used a skill this round";
+            case "SkillUsedD":
+                return " if the target has used a skill this round";
+            case "SkillUsed<>D":
+                return " if the target has not used a skill this round";
+            case "AttackedD":
+                return " if the target has been attacked this round";
+            case "Attacked<>D":
+                return " if the target has not been attacked this round";
+            case "PrevMovedA":
+                return " if the attacker has moved last round";
+            case "PrevMoved<>A":
+                return " if the attacker has not moved last round";
+            case "PrevMovedD":
+                return " if the target has moved last round";
+            case "PrevMoved<>D":
+                return " if the target has not moved last round";
+            case "PrevSkillUsedA":
+                return " if the attacker used a skill last round";
+            case "PrevSkillUsed<>A":
+                return " if the attacker did not use a skill last round";
+            case "PrevSkillUsedD":
+                return " if the target used a skill last round";
+            case "PrevSkillUsed<>D":
+                return " if the target did not use a skill last round";
+            case "PrevAttackedD":
+                return " if the target was attacked last round";
+            case "PrevAttacked<>D":
+                return " if the target was not attacked last round";
         }
         return "";
     }
@@ -699,28 +741,28 @@ public class PassiveDetailViewer : MonoBehaviour
             case "BreakGrapple":
                 return " break from any grapples";
             case "BaseDamageResistance":
-                string[] bDRes = specifics.Split(">>");
+                string[] bDRes = specifics.Split("Equals");
                 return " increase base " + bDRes[0] + " resistance by " + bDRes[1];
             case "CurrentDamageResistance":
-                string[] cDRes = specifics.Split(">>");
+                string[] cDRes = specifics.Split("Equals");
                 return " increase " + cDRes[0] + " resistance by " + cDRes[1];
             case "BaseElementalBonus":
-                string[] bDBonus = specifics.Split(">>");
+                string[] bDBonus = specifics.Split("Equals");
                 return " increase base " + bDBonus[0] + " damage by " + bDBonus[1];
             case "ElementalDamageBonus":
-                string[] cDBonus = specifics.Split(">>");
+                string[] cDBonus = specifics.Split("Equals");
                 return " increase " + cDBonus[0] + " damage by " + cDBonus[1];
             case "ScalingElementalBonus":
-                string[] sEB = specifics.Split(">>");
+                string[] sEB = specifics.Split("Equals");
                 return " increase base " + sEB[0] + " damage by " + sEB[3] + "% for each level of this passive";
             case "ScalingElementalResist":
-                string[] sER = specifics.Split(">>");
+                string[] sER = specifics.Split("Equals");
                 return " increase base " + sER[0] + " resistance by " + sER[3] + "% for each level of this passive";
             case "ElementalBonusDamage":
-                string[] eBD = specifics.Split(">>");
+                string[] eBD = specifics.Split("Equals");
                 return " deal " + eBD[1] + " " + eBD[0] + " damage";
             case "ElementalReflectDamage":
-                string[] eRD = specifics.Split(">>");
+                string[] eRD = specifics.Split("Equals");
                 return " deal " + eRD[1] + " " + eRD[0] + " damage";
             case "Sleep":
                 return "put " + target + " to sleep for " + specifics + " turns";
@@ -738,10 +780,6 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " move to a random forward tile";
             case "MoveBackwardRandom":
                 return " move to a random backward tile";
-            case "FirstStrikeA":
-                return " if the attacker has not attacked yet";
-            case "FirstStrikeD":
-                return " if the target has not attacked yet";
         }
         return " increase " + effect + " of " + target + " by " + specifics;
     }

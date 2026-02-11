@@ -131,8 +131,9 @@ public class TacticActor : ActorStats
         movement = 0;
         counterAttacks = 0;
         // Update all the turn trackers.
-        attacksEachRound.Add(0);
-        skillsEachRound.Add(0);
+        // This is before passives obviously.
+        // Some passives use previous round, some use recent round.
+        AddToRoundTrackers();
         ResetStats();
         if (sleeping)
         {
@@ -216,7 +217,19 @@ public class TacticActor : ActorStats
         mentalState = newInfo;
     }
     public string GetMentalState(){ return mentalState; }
-    // Keep track of skills/spells used and attacks.
+    // Keep track of skills/spells used, movement and attacks.
+    protected void ResetRoundTrackers()
+    {
+        ResetRoundAttackTracker();
+        ResetRoundSkillTracker();
+        ResetRoundMoveTracker();
+    }
+    protected void AddToRoundTrackers()
+    {
+        attacksEachRound.Add(0);
+        skillsEachRound.Add(0);
+        movesEachRound.Add(0);
+    }
     public List<int> attacksEachRound;
     public void ResetRoundAttackTracker()
     {
@@ -226,13 +239,21 @@ public class TacticActor : ActorStats
     {
         if (attacksEachRound == null || attacksEachRound.Count == 0)
         {
+            attacksEachRound = new List<int>();
             attacksEachRound.Add(1);
+            return;
         }
         attacksEachRound[attacksEachRound.Count - 1]++;
     }
-    public int ReturnRecentRoundAttacks()
+    public int ReturnCurrentRoundAttacks()
     {
+        if (attacksEachRound.Count <= 0){return -1;}
         return attacksEachRound[attacksEachRound.Count - 1];
+    }
+    public int ReturnPreviousRoundAttacks()
+    {
+        if (attacksEachRound.Count <= 1){return -1;}
+        return attacksEachRound[attacksEachRound.Count - 2];
     }
     public int ReturnTotalRoundAttacks()
     {
@@ -245,7 +266,56 @@ public class TacticActor : ActorStats
     }
     public void UpdateRoundSkillTracker()
     {
-        attacksEachRound[attacksEachRound.Count - 1]++;
+        if (skillsEachRound == null || skillsEachRound.Count == 0)
+        {
+            skillsEachRound = new List<int>();
+            skillsEachRound.Add(1);
+            return;
+        }
+        skillsEachRound[skillsEachRound.Count - 1]++;
+    }
+    public int ReturnCurrentRoundSkills()
+    {
+        if (skillsEachRound.Count <= 0){return -1;}
+        return skillsEachRound[skillsEachRound.Count - 1];
+    }
+    public int ReturnPreviousRoundSkills()
+    {
+        if (skillsEachRound.Count <= 1){return -1;}
+        return skillsEachRound[skillsEachRound.Count - 2];
+    }
+    public int ReturnTotalRoundSkills()
+    {
+        return skillsEachRound.Sum();
+    }
+    public List<int> movesEachRound;
+    public void ResetRoundMoveTracker()
+    {
+        movesEachRound.Clear();
+    }
+    public void UpdateRoundMoveTracker()
+    {
+        if (movesEachRound == null || movesEachRound.Count == 0)
+        {
+            movesEachRound = new List<int>();
+            movesEachRound.Add(1);
+            return;
+        }
+        movesEachRound[movesEachRound.Count - 1]++;
+    }
+    public int ReturnCurrentRoundMoves()
+    {
+        if (movesEachRound.Count <= 0) { return -1; }
+        return movesEachRound[movesEachRound.Count - 1];
+    }
+    public int ReturnPreviousRoundMoves()
+    {
+        if (movesEachRound.Count <= 1) { return -1; }
+        return movesEachRound[movesEachRound.Count - 2];
+    }
+    public int ReturnTotalRoundMoves()
+    {
+        return movesEachRound.Sum();
     }
     // Keep track of who hurt you, how many times and how much.
     public List<TacticActor> hurtByList;
@@ -450,8 +520,7 @@ public class TacticActor : ActorStats
         base.InitializeStats();
         ResetTarget();
         ResetHurtBy();
-        ResetRoundAttackTracker();
-        ResetRoundSkillTracker();
+        ResetRoundTrackers();
     }
     public void EndTurn()
     {

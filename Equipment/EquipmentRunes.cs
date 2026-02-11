@@ -25,6 +25,11 @@ public class EquipmentRunes : MonoBehaviour
     public List<GameObject> runeObjects;
     public SpriteContainer runeSprites;
     public List<string> runeNames;
+    public void ResetRunes()
+    {
+        utility.DisableGameObjects(runeObjects);
+        runeNames.Clear();
+    }
     public Image equipSlotImage;
     public void ChangeEquipSlotColor(Color newColor)
     {

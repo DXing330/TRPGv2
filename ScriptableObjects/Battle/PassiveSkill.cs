@@ -583,6 +583,46 @@ public class PassiveSkill : SkillEffect
                 return attacker.ReturnTotalRoundAttacks() <= 0;
             case "FirstStrikeD":
                 return target.ReturnTotalRoundAttacks() <= 0;
+            case "MovedA":
+                return attacker.ReturnCurrentRoundMoves() > 0;
+            case "Moved<>A":
+                return attacker.ReturnCurrentRoundMoves() == 0;
+            case "MovedD":
+                return target.ReturnCurrentRoundMoves() > 0;
+            case "Moved<>D":
+                return target.ReturnCurrentRoundMoves() == 0;
+            case "SkillUsedA":
+                return attacker.ReturnCurrentRoundSkills() > 0;
+            case "SkillUsed<>A":
+                return attacker.ReturnCurrentRoundSkills() == 0;
+            case "SkillUsedD":
+                return target.ReturnCurrentRoundSkills() > 0;
+            case "SkillUsed<>D":
+                return target.ReturnCurrentRoundSkills() == 0;
+            case "AttackedD":
+                return target.ReturnCurrentRoundAttacks() > 0;
+            case "Attacked<>D":
+                return target.ReturnCurrentRoundAttacks() == 0;
+            case "PrevMovedA":
+                return attacker.ReturnPreviousRoundMoves() > 0;
+            case "PrevMoved<>A":
+                return attacker.ReturnPreviousRoundMoves() == 0;
+            case "PrevMovedD":
+                return target.ReturnPreviousRoundMoves() > 0;
+            case "PrevMoved<>D":
+                return target.ReturnPreviousRoundMoves() == 0;
+            case "PrevSkillUsedA":
+                return attacker.ReturnPreviousRoundSkills() > 0;
+            case "PrevSkillUsed<>A":
+                return attacker.ReturnPreviousRoundSkills() == 0;
+            case "PrevSkillUsedD":
+                return target.ReturnPreviousRoundSkills() > 0;
+            case "PrevSkillUsed<>D":
+                return target.ReturnPreviousRoundSkills() == 0;
+            case "PrevAttackedD":
+                return target.ReturnPreviousRoundAttacks() > 0;
+            case "PrevAttacked<>D":
+                return target.ReturnPreviousRoundAttacks() == 0;
         }
         return true;
     }
