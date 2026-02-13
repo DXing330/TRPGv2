@@ -590,9 +590,9 @@ public class PassiveDetailViewer : MonoBehaviour
             case "SkillUsed<>D":
                 return " if the target has not used a skill this round";
             case "AttackedD":
-                return " if the target has been attacked this round";
+                return " if the target has attacked this round";
             case "Attacked<>D":
-                return " if the target has not been attacked this round";
+                return " if the target has not attacked this round";
             case "PrevMovedA":
                 return " if the attacker has moved last round";
             case "PrevMoved<>A":
@@ -610,9 +610,57 @@ public class PassiveDetailViewer : MonoBehaviour
             case "PrevSkillUsed<>D":
                 return " if the target did not use a skill last round";
             case "PrevAttackedD":
-                return " if the target was attacked last round";
+                return " if the target attacked last round";
             case "PrevAttacked<>D":
-                return " if the target was not attacked last round";
+                return " if the target has not attacked last round";
+            case "PrevAttackCountA":
+                return " if the attacker made exactly " + specifics + " attacks last round";
+            case "PrevAttackCount>A":
+                return " if the attacker made more than " + specifics + " attacks last round";
+            case "PrevAttackCount<A":
+                return " if the attacker made less than " + specifics + " attacks last round";
+            case "PrevAttackCount%A":
+                return " if the attacker made a multiple of " + specifics + " attacks last round";
+            case "PrevAttackCountD":
+                return " if the target attacked exactly " + specifics + " times last round";
+            case "PrevAttackCount>D":
+                return " if the target attacked more than " + specifics + " times last round";
+            case "PrevAttackCount<D":
+                return " if the target attacked less than " + specifics + " times last round";
+            case "PrevAttackCount%D":
+                return " if the target attacked a multiple of " + specifics + " times last round";
+            case "PrevSkillCountA":
+                return " if the attacker used exactly " + specifics + " skills last round";
+            case "PrevSkillCount>A":
+                return " if the attacker used more than " + specifics + " skills last round";
+            case "PrevSkillCount<A":
+                return " if the attacker used less than " + specifics + " skills last round";
+            case "PrevSkillCount%A":
+                return " if the attacker used a multiple of " + specifics + " skills last round";
+            case "PrevSkillCountD":
+                return " if the target used exactly " + specifics + " skills last round";
+            case "PrevSkillCount>D":
+                return " if the target used more than " + specifics + " skills last round";
+            case "PrevSkillCount<D":
+                return " if the target used less than " + specifics + " skills last round";
+            case "PrevSkillCount%D":
+                return " if the target used a multiple of " + specifics + " skills last round";
+            case "PrevMoveCountA":
+                return " if the attacker moved exactly " + specifics + " tiles last round";
+            case "PrevMoveCount>A":
+                return " if the attacker moved more than " + specifics + " tiles last round";
+            case "PrevMoveCount<A":
+                return " if the attacker moved less than " + specifics + " tiles last round";
+            case "PrevMoveCount%A":
+                return " if the attacker moved a multiple of " + specifics + " tiles last round";
+            case "PrevMoveCountD":
+                return " if the target moved exactly " + specifics + " tiles last round";
+            case "PrevMoveCount>D":
+                return " if the target moved more than " + specifics + " tiles last round";
+            case "PrevMoveCount<D":
+                return " if the target moved less than " + specifics + " tiles last round";
+            case "PrevMoveCount%D":
+                return " if the target moved a multiple of " + specifics + " tiles last round";
         }
         return "";
     }

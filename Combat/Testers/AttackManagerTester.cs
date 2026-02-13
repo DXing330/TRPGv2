@@ -46,10 +46,7 @@ public class AttackManagerTester : MonoBehaviour
     public int guardRange;
     public TacticActor dummyGuard;
     public string guardStats;
-    // Active Testing.
-    public ActiveManager activeManager;
-    public string activeName;
-    public int activeTargetTile;
+
 
     protected void InitializeMap()
     {
@@ -122,6 +119,10 @@ public class AttackManagerTester : MonoBehaviour
         map.combatLog.DebugLatestDetailsLog();
     }
 
+    // Active Testing.
+    public ActiveManager activeManager;
+    public string activeName;
+    public int activeTargetTile;
     [ContextMenu("Test Active")]
     public void TestActive()
     {
@@ -131,5 +132,27 @@ public class AttackManagerTester : MonoBehaviour
         activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder);
         activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder);
         battleManager.ActivateSkill(activeName, dummyAttacker);
+    }
+    // TODO
+    [ContextMenu("Test Basic Attack Skill")]
+    public void TestAA()
+    {
+        InitializeMap();
+        activeManager.SetSkillUser(dummyAttacker);
+        activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder);
+        activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder);
+        battleManager.ActivateSkill(activeName, dummyAttacker);
+    }
+    public string spellData;
+    [ContextMenu("Test Spell")]
+    public void TestSpell()
+    {
+        InitializeMap();
+        activeManager.SetSkillUser(dummyAttacker);
+        activeManager.SetSpell(spellData);
+        activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder, true);
+        activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder, true);
+        battleManager.ActivateSpell(dummyAttacker);
+        map.UpdateMap();
     }
 }

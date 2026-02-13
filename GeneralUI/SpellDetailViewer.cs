@@ -20,6 +20,19 @@ public class SpellDetailViewer : ActiveDescriptionViewer
         dummySpell.LoadSkillFromString(spellData);
         spellEffects.text = ReturnSpellDescription(dummySpell);
     }
+    [ContextMenu("Debug Standard Spell Descriptions")]
+    public void ShowStandardSpellDescriptions()
+    {
+        string spellDescriptions = "";
+        List<string> spellValues = divineSpellData.values;
+        for (int i = 0; i < spellValues.Count; i++)
+        {
+            dummySpell.LoadSkillFromString(spellValues[i]);
+            spellDescriptions += ReturnSpellDescription(dummySpell) + "\n";
+        }
+        spellEffects.text = spellDescriptions;
+        Debug.Log(spellDescriptions);
+    }
     public List<string> spellStatNames;
     public TMP_Text spellEffects;
     public List<StatTextText> spellStats;

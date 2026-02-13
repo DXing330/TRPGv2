@@ -182,7 +182,7 @@ public class SpellStore : MonoBehaviour
     public void PreviewNewSpell()
     {
         testMap.ResetAll();
-        string spellName = previewSpell.GetSpellName();
+        string spellName = previewSpell.GetSkillName();
         int manaCost = int.Parse(spellNameManaCosts.ReturnValue(spellName));
         testMap.LearnSpellChance(spellNamePrices.ReturnValue(spellName), (manaCost * practiceToMasteryIterations).ToString());
         testMap.SetActorSpriteName(dummyActor.GetSpriteName());
@@ -330,7 +330,7 @@ public class SpellStore : MonoBehaviour
         // Avoid blank names.
         if (newName == "") { return; }
         if (utility.CountCharactersInString(newName) == newName.Length) { return; }
-        dummySpell.SetSpellName(newName);
+        dummySpell.SetSkillName(newName);
         currentActorSpells[renamingList.GetSelected()] = dummySpell.GetSkillInfo();
         dummyActor.SetSpells(currentActorSpells);
         // Get the actor from the party data.

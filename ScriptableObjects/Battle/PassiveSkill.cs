@@ -623,6 +623,62 @@ public class PassiveSkill : SkillEffect
                 return target.ReturnPreviousRoundAttacks() > 0;
             case "PrevAttacked<>D":
                 return target.ReturnPreviousRoundAttacks() == 0;
+            case "AttackCountA":
+                return attacker.ReturnCurrentRoundAttacks() == int.Parse(conditionSpecifics);
+            case "AttackCount>A":
+                return attacker.ReturnCurrentRoundAttacks() > int.Parse(conditionSpecifics);
+            case "AttackCount<A":
+                return attacker.ReturnCurrentRoundAttacks() < int.Parse(conditionSpecifics);
+            case "AttackCount%A":
+                return (attacker.ReturnCurrentRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevAttackCountA":
+                return attacker.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
+            case "PrevAttackCount>A":
+                return attacker.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
+            case "PrevAttackCount<A":
+                return attacker.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
+            case "PrevAttackCount%A":
+                return (attacker.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevAttackCountD":
+                return target.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
+            case "PrevAttackCount>D":
+                return target.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
+            case "PrevAttackCount<D":
+                return target.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
+            case "PrevAttackCount%D":
+                return (target.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevSkillCountA":
+                return attacker.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
+            case "PrevSkillCount>A":
+                return attacker.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
+            case "PrevSkillCount<A":
+                return attacker.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
+            case "PrevSkillCount%A":
+                return (attacker.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
+            case "PrevSkillCountD":
+                return target.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
+            case "PrevSkillCount>D":
+                return target.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
+            case "PrevSkillCount<D":
+                return target.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
+            case "PrevSkillCount%D":
+                return (target.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
+            case "PrevMoveCountA":
+                return attacker.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
+            case "PrevMoveCount>A":
+                return attacker.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
+            case "PrevMoveCount<A":
+                return attacker.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
+            case "PrevMoveCount%A":
+                return (attacker.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
+            case "PrevMoveCountD":
+                return target.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
+            case "PrevMoveCount>D":
+                return target.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
+            case "PrevMoveCount<D":
+                return target.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
+            case "PrevMoveCount%D":
+                return (target.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
         }
         return true;
     }

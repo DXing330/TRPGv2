@@ -470,13 +470,10 @@ public class ActorInitialStats : ActorPassives
     public List<string> statuses;
     public List<int> statusDurations;
     public List<string> GetStatuses() { return statuses; }
-    public void AddStatus(string newCondition, int duration)
+    public virtual void AddStatus(string newCondition, int duration)
     {
         // Don't add blank statuses.
         if (newCondition.Length <= 1 || newCondition.Trim().Length <= 1) { return; }
-        // Luck gives you a chance to ignore statuses.
-        int luckRoll = UnityEngine.Random.Range(0, 100);
-        if (luckRoll < GetLuck()){return;}
         // Permanent statuses can stack up infinitely and are a win condition.
         if (duration < 0)
         {

@@ -59,6 +59,38 @@ public class BattleMapUtility : ScriptableObject
         }
         return actors;
     }
+    public int GetRandomEnemyLocation(TacticActor actor, List<int> targetedTiles, BattleMap map)
+    {
+        List<TacticActor> enemies = GetActorsOnTiles(map, targetedTiles);
+        for (int i = enemies.Count - 1; i >= 0; i--)
+        {
+            if (enemies[i].GetTeam() == actor.GetTeam())
+            {
+                enemies.RemoveAt(i);
+            }
+        }
+        if (enemies.Count == 0)
+        {
+            return -1;
+        }
+        return enemies[UnityEngine.Random.Range(0, enemies.Count)].GetLocation();
+    }
+    public int GetRandomAllyLocation(TacticActor actor, List<int> targetedTiles, BattleMap map)
+    {
+        List<TacticActor> allies = GetActorsOnTiles(map, targetedTiles);
+        for (int i = allies.Count - 1; i >= 0; i--)
+        {
+            if (allies[i].GetTeam() != actor.GetTeam())
+            {
+                allies.RemoveAt(i);
+            }
+        }
+        if (allies.Count == 0)
+        {
+            return -1;
+        }
+        return allies[UnityEngine.Random.Range(0, allies.Count)].GetLocation();
+    }
     // Calculation Utilities.
     public int AverageActorHealth(BattleMap map)
     {

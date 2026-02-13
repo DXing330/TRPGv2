@@ -671,6 +671,9 @@ public class BattleManager : MonoBehaviour
             case "Summon Skill":
                 NPCSkillAction(actionsLeft, actorAI.ReturnSkillWithEffect(turnActor, "Summon"));
                 return;
+            case "Summon Spell":
+                NPCSkillAction(actionsLeft, actorAI.ReturnSpellWithEffect(turnActor, "Summon"));
+                return;
             case "One Time Skill":
                 turnActor.IncrementCounter();
                 NPCSkillAction(actionsLeft, turnDetails[1]);
@@ -789,6 +792,41 @@ public class BattleManager : MonoBehaviour
             ActivateSkill(skills[i]);
             if (AdjustTurnNumber())
             {
+                return;
+            }
+        }
+        EndTurn();
+    }
+
+    protected void NPCSpellAction(int actionsLeft, string spell)
+    {
+        for (int i = 0; i < actionsLeft; i++)
+        {
+            // Get the active and the targeted tile.
+            activeManager.SetSkillUser(turnActor);
+            activeManager.SetSpell(spell);
+            int targetedTile = actorAI.ChooseSpellTargetLocation(turnActor, map, moveManager, activeManager.magicSpell);
+            // If you can't find a target or cast the skill or are silenced then just do a regular action.
+            if (targetedTile == -1 || !activeManager.CheckSpellCost())
+            {
+                StandardNPCAction(actionsLeft);
+                return;
+            }
+            activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
+            // Bool = TRUE for spells.
+            if (!actorAI.ValidSkillTargets(turnActor, map, activeManager, true))
+            {
+                StandardNPCAction(actionsLeft);
+                return;
+            }
+            ActivateSpell();
+            if (AdjustTurnNumber())
+            {
+                return;
+            }
+            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() < 0)
+            {
+                EndTurn();
                 return;
             }
         }
@@ -1165,8 +1203,8 @@ public class BattleManager : MonoBehaviour
     {
         ResetState();
         if (actor == null) { actor = turnActor; }
-        //turnActor.RemoveTempSpell(skillName);
-        combatLog.UpdateNewestLog(actor.GetPersonalName()+" casts a spell.");
+        activeManager.ActivateSpell(this);
+        combatLog.UpdateNewestLog(actor.GetPersonalName()+" casts  " + activeManager.magicSpell.GetSkillName());
     }
 
     public void ActiveDeathPassives(TacticActor actor)

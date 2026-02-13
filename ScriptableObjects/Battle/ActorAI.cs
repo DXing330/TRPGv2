@@ -80,19 +80,17 @@ public class ActorAI : ScriptableObject
 
     public string ReturnAIAttackSkill(TacticActor actor)
     {
-        int activeSkillIndex = utility.SafeParseInt(actorAttackSkills.ReturnValue(actor.GetSpriteName()), -1);
-        // Check if the skill exists.
-        if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return ""; }
-        // Check if the skill is an attack skill.
-        string skillName = actor.GetActiveSkill(activeSkillIndex);
-        active.LoadSkill(activeData.ReturnStats(skillName));
-        if (active.GetSkillType() != "Damage") { return ""; }
-        return skillName;
+        return actorAttackSkills.ReturnValue(actor.GetSpriteName());
     }
 
     public string ReturnSkillWithEffect(TacticActor actor, string skillEffect)
     {
         return conditionChecker.GetAvailableSkillWithEffect(actor, skillEffect);
+    }
+
+    public string ReturnSpellWithEffect(TacticActor actor, string spellEffect)
+    {
+        return conditionChecker.GetAvailableSpellWithEffect(actor, spellEffect);
     }
 
     public List<int> FindPathAwayFromTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)
@@ -253,6 +251,7 @@ public class ActorAI : ScriptableObject
         if (targetableTiles.Count <= 0) { return -1; }
         if (targetableTiles.Count == 1) { return targetableTiles[0]; }
         // Move skills pick a random empty tile?
+        // TODO move towards target?
         if (active.GetSkillType() == "Move")
         {
             targetableTiles = map.ReturnEmptyTiles(targetableTiles);
@@ -304,10 +303,14 @@ public class ActorAI : ScriptableObject
         return -1;
     }
 
-    public bool ValidSkillTargets(TacticActor currentActor, BattleMap map, ActiveManager activeManager)
+    public bool ValidSkillTargets(TacticActor currentActor, BattleMap map, ActiveManager activeManager, bool spell = false)
     {
         // Determine the type of skill being used.
         string skillType = activeManager.active.GetSkillType();
+        if (spell)
+        {
+            skillType = activeManager.magicSpell.GetSkillType();
+        }
         switch (skillType)
         {
             // If the skill has no type then it's a problem, just do a normal action.
@@ -321,6 +324,10 @@ public class ActorAI : ScriptableObject
                 // Unless it's a summon skill then just let it through.
                 // Should make an allow list of support skills that always go through.
                 string effect = activeManager.active.GetEffect();
+                if (spell)
+                {
+                    effect = activeManager.magicSpell.GetEffect();
+                }
                 if (EffectWhiteListed(effect))
                 {
                     return true;
@@ -328,5 +335,47 @@ public class ActorAI : ScriptableObject
                 return map.AlliesInTiles(currentActor, activeManager.targetedTiles);
         }
         return true;
+    }
+
+    public int ChooseSpellTargetLocation(TacticActor actor, BattleMap map, MoveCostManager moveManager, MagicSpell spell)
+    {
+        if (spell.GetRange(actor) == 0)
+        {
+            return actor.GetLocation();
+        }
+        List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(actor.GetLocation(), spell.GetRange(actor));
+        if (targetableTiles.Count <= 0) { return -1; }
+        // Mass summoning should fall under here.
+        if (targetableTiles.Count == 1) { return targetableTiles[0]; }
+        // Summoning will try to look for any empty tile.
+        if (spell.GetEffect().Contains("Summon"))
+        {
+            // Look for an empty tile in range.
+            targetableTiles = map.ReturnEmptyTiles(targetableTiles);
+            if (targetableTiles.Count <= 0)
+            {
+                return -1;
+            }
+            return targetableTiles[Random.Range(0, targetableTiles.Count)];
+        }
+        string type = spell.GetSkillType();
+        switch (type)
+        {
+            case "Damage":
+                if (actor.GetTarget() != null && targetableTiles.Contains(actor.GetTarget().GetLocation()))
+                {
+                    return actor.GetTarget().GetLocation();
+                }
+                // Else pick a random enemy.
+                else
+                {
+                    return map.GetRandomEnemyLocation(actor, targetableTiles);
+                }
+            case "Support":
+                // Else pick a random ally.
+                // TODO improve this.
+                return map.GetRandomAllyLocation(actor, targetableTiles);
+        }
+        return -1;
     }
 }

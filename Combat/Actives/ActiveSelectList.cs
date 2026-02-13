@@ -202,7 +202,6 @@ public class ActiveSelectList : SelectList
             return;
         }
         battle.ActivateSpell();
-        activeManager.ActivateSpell(battle);
         ResetState();
         mainPanel.SetActive(false);
     }

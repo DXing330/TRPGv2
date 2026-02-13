@@ -23,6 +23,8 @@ public class AIConditionChecker : ScriptableObject
 
     public ActiveSkill active;
     public StatDatabase activeData;
+    public MagicSpell spell;
+    public StatDatabase basicSpellData;
 
     public string GetAvailableSkillWithEffect(TacticActor actor, string skillEffect)
     {
@@ -33,6 +35,20 @@ public class AIConditionChecker : ScriptableObject
             if (active.GetEffect() == skillEffect && active.Activatable(actor))
             {
                 return actorActives[i];
+            }
+        }
+        return "";
+    }
+
+    public string GetAvailableSpellWithEffect(TacticActor actor, string skillEffect)
+    {
+        List<string> actorSpells = actor.GetSpells();
+        for (int i = 0; i < actorSpells.Count; i++)
+        {
+            spell.LoadSkillFromString(actorSpells[i]);
+            if (spell.GetEffect().Contains(skillEffect) && spell.Activatable(actor))
+            {
+                return actorSpells[i];
             }
         }
         return "";
@@ -144,6 +160,8 @@ public class AIConditionChecker : ScriptableObject
                 return map.TargetFacingActor(actor);
             case "SkillEffect":
                 return GetAvailableSkillWithEffect(actor, specifics) != "";
+            case "SpellEffect":
+                return GetAvailableSpellWithEffect(actor, specifics) != "";
             case "SandwichedByTarget":
                 return map.SandwichedByTarget(actor, specifics);
             case "TileSandwiched":

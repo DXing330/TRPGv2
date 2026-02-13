@@ -66,6 +66,11 @@ public class ActiveDescriptionViewer : MonoBehaviour
             string[] eBlocks = e.Split("Equals");
             return "All " + eBlocks[1] + " gain " + p + " " + ASD(s) + ".";
         }
+        if (e.EndsWith("Damage"))
+        {
+            string[] eBlocks = e.Split("Damage");
+            return "Deal " + ASD(s) + " " + eBlocks[0] + " damage.";
+        }
         switch (e)
         {
             case "CurrentHealth%":
@@ -92,7 +97,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Teleport+Attack":
                 return "Try to move " + ASD(s) + " the target and attack with " + APD(p) + "% damage.";
             case "Status":
-                return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
+                return "Inflict " + ASD(s) + " status for " + APD(p,e) + " turn(s).";
             case "Statuses":
                 return "Give the target(s) " + ASD(s) + " for " + APD(p,e) + " turn(s).";
             case "Buff":
@@ -155,8 +160,6 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Create " + ASD(s) + " borders on the target's tile(s).";
             case "True Attack":
                 return "Deal damage equal to " + APD(p) + "% of " + ASD(s) + ".";
-            case "ElementalDamage":
-                return "Deal " + APD(p) + " " + ASD(s) + " damage.";
             case "Flat Attack":
                 return "Deal " + ASD(s) + " damage.";
             case "Attack+Tile":
@@ -216,7 +219,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Manaize":
                 return "Convert " + ASD(s) + " into mana.";
             case "ChainLightning":
-                return "Lightning strikes the target and bounces and the target(s) get " + p + " " + s + ".";
+                return "Lightning strikes the target and bounces to nearby enemies and the target(s) receive " + p + " " + s + ".";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

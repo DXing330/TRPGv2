@@ -281,6 +281,8 @@ public class ActorStats : ActorInitialStats
     }
     public virtual int TakeDamage(int damage, string type = "Physical")
     {
+        // Buffer stacks prevent damage.
+        if (ConsumeBufferStack()){return 0;}
         WakeUp();
         int resistance = ReturnDamageResistanceOfType(type);
         if (resistance != 0)
@@ -351,7 +353,6 @@ public class ActorStats : ActorInitialStats
     // Call this before making an actor to ensure that the actor has a fresh start.
     public virtual void InitializeStats()
     {
-        manaEfficiency = 0;
         ClearStatuses();
         ClearBuffs();
         resistDmgTypes.Clear();
@@ -360,13 +361,11 @@ public class ActorStats : ActorInitialStats
         bonusDmgTypes.Clear();
         baseDmgBonuses.Clear();
         currentDmgBonuses.Clear();
-        silenced = false;
-        silenceDuration = 0;
-        sleeping = false;
-        sleepDuration = 0;
         ResetStats();
         EndTurnResetStats();
         ResetUniqueEffects();
+        ResetBufferStacks();
+        ResetArtifactStacks();
     }
     public void UpdateBaseHitChance(int amount){baseHitChance += amount;}
     public int currentHitChance;
@@ -619,6 +618,43 @@ public class ActorStats : ActorInitialStats
         }
         return SBD;
     }
+    public override void AddStatus(string newCondition, int duration)
+    {
+        if (newCondition.Length <= 1 || newCondition.Trim().Length <= 1) { return; }
+        // Luck gives you a chance to ignore statuses.
+        int luckRoll = UnityEngine.Random.Range(0, 100);
+        if (luckRoll < GetLuck()){return;}
+        // Don't add statuses that you are immune to.
+        List<string> possibleImmunities = GetStartTurnPassives();
+        for (int i = 0; i < possibleImmunities.Count; i++)
+        {
+            string[] details = possibleImmunities[i].Split("|");
+            if (details[4] == "RemoveStatus" && details[5] == newCondition)
+            {
+                return;
+            }
+        }
+        // Artifact stacks block new statuses.
+        // Can this be gamed to prevent curses? Maybe.
+        if (ConsumeArtifactStack()){return;}
+        // Permanent statuses can stack up infinitely and are a win condition.
+        if (duration < 0)
+        {
+            statuses.Add(newCondition);
+            statusDurations.Add(duration);
+            return;
+        }
+        int indexOf = statuses.IndexOf(newCondition);
+        if (indexOf < 0)
+        {
+            statuses.Add(newCondition);
+            statusDurations.Add(duration);
+        }
+        else
+        {
+            statusDurations[indexOf] = statusDurations[indexOf] + duration;
+        }
+    }
     public List<string> GetUniqueStatuses()
     {
         List<string> unique = new List<string>(statuses.Distinct());
@@ -706,7 +742,7 @@ public class ActorStats : ActorInitialStats
         }
         CheckUniqueEffects();
     }
-    // Unique Statuses
+    // UNIQUE STATUSES //
     public void ResetUniqueEffects()
     {
         Unsilence();
@@ -836,5 +872,36 @@ public class ActorStats : ActorInitialStats
         guarding = false;
         guardDuration = 0;
         guardRange = 0;
+    }
+    // NULLIFY DAMAGE/STATUS/ETC Stacks
+    public int bufferStacks;
+    public void GainBufferStack(int amount = 1)
+    {
+        bufferStacks += amount;
+    }
+    public void ResetBufferStacks()
+    {
+        bufferStacks = 0;
+    }
+    public bool ConsumeBufferStack()
+    {
+        if (bufferStacks <= 0){return false;}
+        bufferStacks--;
+        return true;
+    }
+    public int artifactStacks;
+    public void GainArtifactStack(int amount = 1)
+    {
+        artifactStacks += amount;
+    }
+    public void ResetArtifactStacks()
+    {
+        artifactStacks = 0;
+    }
+    public bool ConsumeArtifactStack()
+    {
+        if (artifactStacks <= 0){return false;}
+        artifactStacks--;
+        return true;
     }
 }

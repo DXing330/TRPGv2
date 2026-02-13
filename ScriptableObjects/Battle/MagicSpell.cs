@@ -15,14 +15,10 @@ public class MagicSpell : ActiveSkill
     }
     public int ReturnManaCost(TacticActor actor = null)
     {
-        //int tilesInRange = mapUtility.CountTilesByShapeSpan(GetRangeShape(), GetRange());
-        //int tilesInEffectRange = mapUtility.CountTilesByShapeSpan(GetShape(), GetSpan());
-        //int totalTiles = tilesInRange + tilesInEffectRange;
-        //return ((int) Mathf.Sqrt(totalTiles))*GetEnergyCost();
         int cost = GetEnergyCost();
         if (actor != null)
         {
-            string[] spellName = GetSpellName().Split("-");
+            string[] spellName = GetSkillName().Split("-");
             if (spellName.Length < 2){return cost;}
             int attributeCount = actor.AttributeCount(spellName[1]);
             return AdjustCostByAttributes(cost, attributeCount);
@@ -44,15 +40,6 @@ public class MagicSpell : ActiveSkill
         }
     }
     public string effectDelimiter = "?";
-    public void SetSpellName(string newInfo)
-    {
-        skillType = newInfo;
-        RefreshSkillInfo();
-    }
-    public string GetSpellName()
-    {
-        return skillType;
-    }
     public void AddEffects(string newInfo)
     {
         effect += effectDelimiter + newInfo;
@@ -86,7 +73,7 @@ public class MagicSpell : ActiveSkill
         List<int> powers = new List<int>();
         for (int i = 0; i < temp.Count; i++)
         {
-            powers.Add(int.Parse(temp[i]));
+            powers.Add(utility.SafeParseInt(temp[i], 1));
         }
         return powers;
     }

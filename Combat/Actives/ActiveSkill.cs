@@ -12,19 +12,30 @@ public class ActiveSkill : SkillEffect
     public string GetSkillInfo(){return skillInfo;}
     public List<string> skillInfoList;
     public List<string> GetSkillInfoList(){ return skillInfoList; }
-    public void RefreshSkillInfo()
+    public virtual void RefreshSkillInfo()
     {
-        skillInfoList[0] = skillType;
-        skillInfoList[1] = energyCost;
-        skillInfoList[2] = actionCost;
-        skillInfoList[3] = range;
-        skillInfoList[4] = rangeShape;
-        skillInfoList[5] = shape;
-        skillInfoList[6] = span;
-        skillInfoList[7] = effect;
-        skillInfoList[8] = specifics;
-        skillInfoList[9] = power;
+        skillInfoList[0] = skillName;
+        skillInfoList[1] = skillType;
+        skillInfoList[2] = energyCost;
+        skillInfoList[3] = actionCost;
+        skillInfoList[4] = range;
+        skillInfoList[5] = rangeShape;
+        skillInfoList[6] = shape;
+        skillInfoList[7] = span;
+        skillInfoList[8] = effect;
+        skillInfoList[9] = specifics;
+        skillInfoList[10] = power;
         skillInfo = String.Join(activeSkillDelimiter, skillInfoList);
+    }
+    public string skillName;
+    public void SetSkillName(string newInfo)
+    {
+        skillName = newInfo;
+        RefreshSkillInfo();
+    }
+    public string GetSkillName()
+    {
+        return skillName;
     }
     public string skillType;
     public string GetSkillType(){return skillType;}
@@ -34,8 +45,9 @@ public class ActiveSkill : SkillEffect
         skillInfoList = new List<string>(skillData.Split(activeSkillDelimiter));
         LoadSkill(skillInfoList);
     }
-    public void ResetSkillInfo()
+    public virtual void ResetSkillInfo()
     {
+        skillName = "";
         skillType = "";
         energyCost = "";
         actionCost = "";
@@ -47,23 +59,20 @@ public class ActiveSkill : SkillEffect
         specifics = "";
         power = "";
     }
-    public void LoadSkill(List<string> skillData)
+    public virtual void LoadSkill(List<string> skillData)
     {
-        if (skillData.Count < 10)
-        {
-            ResetSkillInfo();
-            return;
-        }
-        skillType = skillData[0];
-        energyCost = skillData[1];
-        actionCost = skillData[2];
-        range = skillData[3];
-        rangeShape = skillData[4];
-        shape = skillData[5];
-        span = skillData[6];
-        effect = skillData[7];
-        specifics = skillData[8];
-        power = skillData[9];
+        ResetSkillInfo();
+        skillName = skillData[0];
+        skillType = skillData[1];
+        energyCost = skillData[2];
+        actionCost = skillData[3];
+        range = skillData[4];
+        rangeShape = skillData[5];
+        shape = skillData[6];
+        span = skillData[7];
+        effect = skillData[8];
+        specifics = skillData[9];
+        power = skillData[10];
     }
     public string GetStat(string statName)
     {
