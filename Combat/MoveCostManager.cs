@@ -10,11 +10,24 @@ public class MoveCostManager : MonoBehaviour
     public int bigInt = 999;
     public List<string> stopDisplacement;
     public int moveTypeIndex;
+    public void UpdateInfoFromBattleMap(BattleMap map)
+    {
+        SetMapInfo(map.mapInfo);
+        SetMapTerrainEffects(map.terrainEffectTiles);
+        SetMapElevations(map.mapElevations);
+        SetBorders(map.borderDetails);
+        SetBuildings(map.buildings, map.buildingLocations);
+    }
     public List<string> mapInfo;
     public void SetMapInfo(List<string> newInfo)
     {
         mapInfo = newInfo;
         actorPathfinder.SetMapSize((int) Mathf.Sqrt(mapInfo.Count));
+    }
+    public List<string> mapTerrainEffects;
+    public void SetMapTerrainEffects(List<string> newInfo)
+    {
+        mapTerrainEffects = newInfo;
     }
     public List<int> mapElevations;
     public void SetMapElevations(List<int> newInfo)
@@ -59,6 +72,7 @@ public class MoveCostManager : MonoBehaviour
         teamInfo = newInfo;
     }
     public StatDatabase allMoveCosts;
+    public StatDatabase tEffectMoveCosts;
     // Current move cost should only be used to initialize actor pathfinder move costs, after that always rely on actorpathfinder for distances.
     public List<int> currentMoveCosts;
     public string defaultMoveType = "Walking";
@@ -69,6 +83,7 @@ public class MoveCostManager : MonoBehaviour
         string value = "";
         for (int i = 0; i < mapInfo.Count; i++)
         {
+            // Tile move costs.
             combined = mapInfo[i] + "-" + defaultMoveType;
             value = allMoveCosts.ReturnValue(combined);
             if (value == "")
@@ -87,18 +102,31 @@ public class MoveCostManager : MonoBehaviour
         currentMoveCosts.Clear();
         string combined = "";
         string value = "";
+        int cost = 1;
         for (int i = 0; i < mapInfo.Count; i++)
         {
             combined = mapInfo[i] + "-" + moveType;
             value = allMoveCosts.ReturnValue(combined);
             if (value == "")
             {
-                currentMoveCosts.Add(1);
+                cost = 1;
             }
             else
             {
-                currentMoveCosts.Add(int.Parse(value));
+                cost = int.Parse(value);
             }
+            // TEffect move costs.
+            combined = mapTerrainEffects[i] + "-" + moveType;
+            value = tEffectMoveCosts.ReturnValue(combined);
+            if (value == "")
+            {
+                cost += 0;
+            }
+            else
+            {
+                cost += int.Parse(value);
+            }
+            currentMoveCosts.Add(cost);
         }
         List<string> movingPassives = actor.GetMovingPassives();
         List<string> passiveInfo = new List<string>();
@@ -424,10 +452,20 @@ public class MoveCostManager : MonoBehaviour
         }
     }
 
+    public void FallingDamage(TacticActor actor, int fallHeight, BattleMap map)
+    {
+        //Flyers don't take falling damage.
+        if (actor.GetMoveType() == "Flying"){return;}
+        int potentiaFallDamage = Mathf.Max(actor.GetWeight(), 1) * fallHeight * fallHeight * 6;
+        int fallDamage = actor.TakeEffectDamage(potentiaFallDamage);
+        map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " takes " + fallDamage + " damage from falling.");
+    }
+
     protected void DisplaceActor(TacticActor actor, int direction, int force, BattleMap map)
     {
         int displaceDamage = Mathf.Max(actor.GetWeight(), 1) * force * 6;
         int nextTile = actor.GetLocation();
+        int initialElevation = map.GetTileElevation(nextTile);
         for (int i = 0; i < force; i++)
         {
             nextTile = PointInDirection(nextTile, direction);
@@ -456,6 +494,12 @@ public class MoveCostManager : MonoBehaviour
                 }
                 break;
             }
+        }
+        int finalElevation = map.GetTileElevation(actor.GetLocation());
+        // Falling damage.
+        if (finalElevation < initialElevation)
+        {
+            FallingDamage(actor, initialElevation - finalElevation, map);
         }
     }
 

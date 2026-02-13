@@ -50,7 +50,7 @@ public class ActorPathfinder : MapPathfinder
             moveCost = moveCosts[adjacentTiles[i]];
             if (extraCosts)
             {
-                moveCost += GetElevationDifference(closestTile, adjacentTiles[i]) / 2;
+                moveCost += GetElevationDifference(closestTile, adjacentTiles[i]);
                 int borderCost = GetBorderCost(closestTile, adjacentTiles[i]);
                 moveCost += borderCost;
                 int buildingCost = GetBuildingMoveCost(adjacentTiles[i]);

@@ -153,7 +153,12 @@ public class ActorAI : ScriptableObject
         int target = currentActor.GetTarget().GetLocation();
         if (currentActor.GetAttackRange() <= 1)
         {
-            target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target, currentActor.GetWeaponReach());
+            target = map.ReturnClosestTileWithinElevationDifference(currentActor.GetLocation(), target, currentActor.GetWeaponReach(), moveManager.currentMoveCosts);
+        }
+        else
+        {
+            // Path costs already calculated from [moveManager.GetAllMoveCosts(currentActor, map.battlingActors);] above
+            target = map.ReturnClosestTileWithLineOfSight(currentActor.GetLocation(), target, currentActor.GetAttackRange(), moveManager.currentMoveCosts);      
         }
         List<int> path = new List<int>();
         int pathCost = 0;

@@ -140,6 +140,52 @@ public class MapUtility : ScriptableObject
         int s2 = GetHexS(tileTwo, size);
         return (q1 == q2 || r1 == r2 || s1 ==s2);
     }
+    Vector3 CubeLerp(int q1, int r1, int s1, int q2, int r2, int s2, float t)
+    {
+        return new Vector3( Mathf.Lerp(q1, q2, t), Mathf.Lerp(r1, r2, t), Mathf.Lerp(s1, s2, t));
+    }
+    Vector3Int CubeRound(Vector3 frac)
+    {
+        int rq = Mathf.RoundToInt(frac.x);
+        int rr = Mathf.RoundToInt(frac.y);
+        int rs = Mathf.RoundToInt(frac.z);
+        float dq = Mathf.Abs(rq - frac.x);
+        float dr = Mathf.Abs(rr - frac.y);
+        float ds = Mathf.Abs(rs - frac.z);
+        if(dq > dr && dq > ds)
+        {
+            rq = -rr - rs;
+        }
+        else if(dr > ds)
+        {
+            rr = -rq - rs;
+        }
+        else
+        {
+            rs = -rq - rr;
+        }
+        return new Vector3Int(rq, rr, rs);
+    }
+    public List<int> ShortestLineBetweenPoints(int tileOne, int tileTwo, int size)
+    {
+        int q1 = GetHexQ(tileOne, size);
+        int r1 = GetHexR(tileOne, size);
+        int s1 = GetHexS(tileOne, size);
+        int q2 = GetHexQ(tileTwo, size);
+        int r2 = GetHexR(tileTwo, size);
+        int s2 = GetHexS(tileTwo, size);
+        int dist = DistanceBetweenTiles(tileOne,tileTwo, size);
+        List<int> line = new List<int>();
+        for(int i = 1; i < dist; i++)
+        {
+            float t = dist == 0 ? 0f : i / (float) dist;
+            Vector3 cube = CubeLerp(q1,r1,s1,q2,r2,s2,t);
+            Vector3Int rounded = CubeRound(cube);
+            int tile = ReturnTileNumberFromQRS(rounded.x, rounded.y, rounded.z, size);
+            line.Add(tile);
+        }
+        return line;
+    }
 
     public int GetHexQ(int location, int size)
     {

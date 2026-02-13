@@ -131,6 +131,11 @@ public class MapPathfinder : ScriptableObject
         return previousTiles[tileNumber];
     }
 
+    public List<int> ShortestPathToTile(int start, int end)
+    {
+        return mapUtility.ShortestLineBetweenPoints(start, end, mapSize);
+    }
+
     public List<int> StraightPathToTile(int start, int end)
     {
         List<int> path = new List<int>();

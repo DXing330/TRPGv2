@@ -65,6 +65,10 @@ public class MapPathfinderTester : MapManager
             {
                 path = pathfinder.StraightPathToTile(startPathTile, endPathTile);
             }
+            else if (state == 4)
+            {
+                path = pathfinder.ShortestPathToTile(startPathTile, endPathTile);
+            }
             HighlightPathTiles();
             return;
         }
@@ -87,7 +91,7 @@ public class MapPathfinderTester : MapManager
     }
     public override void ClickOnTile(int tileNumber)
     {
-        if (state == 0 || state == 3)
+        if (state == 0 || state == 3 || state == 4)
         {
             PathClickOnTile(tileNumber);
         }
@@ -108,15 +112,15 @@ public class MapPathfinderTester : MapManager
     {
         if (startPathTile >= 0)
         {
-            mapTiles[startPathTile].HighlightLayer(3, startPathColor);
+            mapTiles[startPathTile].HighlightLayer(4, startPathColor);
         }
         if (endPathTile >= 0)
         {
-            mapTiles[endPathTile].HighlightLayer(3, endPathColor);
+            mapTiles[endPathTile].HighlightLayer(4, endPathColor);
         }
         for (int i = 0; i < path.Count; i++)
         {
-            mapTiles[path[i]].HighlightLayer(3, pathColor);
+            mapTiles[path[i]].HighlightLayer(4, pathColor);
         }
     }
     public void HighlightBorderTiles()
@@ -124,7 +128,7 @@ public class MapPathfinderTester : MapManager
         ResetHighlights();
         for (int i = 0; i < ownedTiles.Count; i++)
         {
-            mapTiles[ownedTiles[i]].HighlightLayer(3, startPathColor);
+            mapTiles[ownedTiles[i]].HighlightLayer(4, startPathColor);
         }
         if (state == 1)
         {
@@ -136,7 +140,7 @@ public class MapPathfinderTester : MapManager
         }
         for (int i = 0; i < borders.Count; i++)
         {
-            mapTiles[borders[i]].HighlightLayer(3, endPathColor);
+            mapTiles[borders[i]].HighlightLayer(4, endPathColor);
         }
     }
 }

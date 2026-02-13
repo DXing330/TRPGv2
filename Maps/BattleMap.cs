@@ -163,7 +163,7 @@ public class BattleMap : MapManager
         buildingLocations.Clear();
         buildingHealths.Clear();
         buildingDefenses.Clear();
-        battleManager.moveManager.SetBuildings(buildings, buildingLocations);
+        battleManager.moveManager.UpdateInfoFromBattleMap(this);
     }
     public int GetBuildingIndexFromLocation(int tileNumber)
     {
@@ -226,7 +226,7 @@ public class BattleMap : MapManager
         buildingLocations.Add(buildingLocation);
         buildingHealths.Add(int.Parse(buHPDef[0]));
         buildingDefenses.Add(int.Parse(buHPDef[1]));
-        battleManager.moveManager.SetBuildings(buildings, buildingLocations);
+        battleManager.moveManager.UpdateInfoFromBattleMap(this);
     }
     protected void ApplyBuildingMovingEffect(TacticActor actor, int tileNumber)
     {
@@ -404,19 +404,6 @@ public class BattleMap : MapManager
             }
         }
         return false;
-    }
-    public List<int> GetAttackableTiles()
-    {
-        List<int> tiles = new List<int>();
-        for (int i = 0; i < battlingActors.Count; i++)
-        {
-            tiles.Add(battlingActors[i].GetLocation());
-        }
-        for (int i = 0; i < interactables.Count; i++)
-        {
-            tiles.Add(interactables[i].GetLocation());
-        }
-        return tiles;
     }
     public TacticActor ReturnLatestActor()
     {
@@ -718,14 +705,14 @@ public class BattleMap : MapManager
         mapTiles[tileNumber].ChangeBorder(effect, direction);
         UpdateTileBorderSprites(tileNumber);
         UpdateBorders();
-        battleManager.moveManager.SetBorders(borderDetails);
+        battleManager.moveManager.UpdateInfoFromBattleMap(this);
     }
     public void ChangeAllBorders(int tileNumber, string effect)
     {
         mapTiles[tileNumber].ChangeAllBorders(effect);
         UpdateTileBorderSprites(tileNumber);
         UpdateBorders();
-        battleManager.moveManager.SetBorders(borderDetails);
+        battleManager.moveManager.UpdateInfoFromBattleMap(this);
     }
     // Called during some battle passives.
     public void ChangeTile(int tileNumber, string effect, string specifics, bool force = false)
@@ -777,6 +764,8 @@ public class BattleMap : MapManager
             case "Border":
                 break;
         }
+        // Update the move cost manager, since any change might change tile move costs.
+        battleManager.moveManager.UpdateInfoFromBattleMap(this);
         UpdateMap();
     }
     protected void NewTileElevation(int tileNumber)
@@ -785,7 +774,7 @@ public class BattleMap : MapManager
         mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
         mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
         mapTiles[tileNumber].UpdateElevationSprite(elevationSprites.SpriteDictionary("E"+mapTiles[tileNumber].GetElevation().ToString()));
-        battleManager.moveManager.SetMapElevations(mapElevations);
+        battleManager.moveManager.UpdateInfoFromBattleMap(this);
         UpdateMap();
     }
     // TESTED IN BATTLEMAPTESTER
@@ -819,6 +808,11 @@ public class BattleMap : MapManager
         }
         // Update the elevation.
         NewTileElevation(tileNumber);
+    }
+    public int GetTileElevation(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= mapTiles.Count){return 0;}
+        return mapTiles[tileNumber].GetElevation();
     }
     public StatDatabase terrainTerrainInteractions;
     public List<string> terrainEffectTiles;
@@ -1389,21 +1383,42 @@ public class BattleMap : MapManager
     }
 
     // Override this to ignore tiles that have actors on them and then give the next closest tile.
-    public override int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff)
+    public override int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff, List<int> moveCosts)
     {
         List<int> adjacentTiles = mapUtility.AdjacentTiles(end, mapSize);
         int target = end;
         int dist = mapSize * mapSize;
         for (int i = 0; i < adjacentTiles.Count; i++)
         {
+            // Ignore those with elevation difference too large.
             if (ReturnElevationDifference(adjacentTiles[i], end) > maxElvDiff || GetActorOnTile(adjacentTiles[i]) != null)
             {
                 continue;
             }
-            if (mapUtility.DistanceBetweenTiles(adjacentTiles[i], start, mapSize) < dist)
+            if (moveCosts[adjacentTiles[i]] < dist)
             {
-                dist = mapUtility.DistanceBetweenTiles(adjacentTiles[i], start, mapSize);
+                dist = moveCosts[adjacentTiles[i]];
                 target = adjacentTiles[i];
+            }
+        }
+        return target;
+    }
+
+    public int ReturnClosestTileWithLineOfSight(int start, int end, int attackRange, List<int> moveCosts)
+    {
+        int target = end;
+        int dist = mapSize * mapSize;
+        for (int i = 0; i < mapInfo.Count; i++)
+        {
+            // Ignore those without line of sight.
+            if (!LineOfSightBetweenTiles(i, end, attackRange))
+            {
+                continue;
+            }
+            if (moveCosts[i] < dist)
+            {
+                dist = moveCosts[i];
+                target = i;
             }
         }
         return target;
@@ -1511,6 +1526,7 @@ public class BattleMap : MapManager
         return attackable.Contains(tileIndex);
     }
 
+    // Melees have to deal with elevation differences, ranged needs to deal with line of sight. Obviously ranged is still superior since you can always attack all adjacent tiles at least.
     public List<int> GetAttackableTiles(TacticActor actor)
     {
         int range = actor.GetAttackRange();
@@ -1518,19 +1534,53 @@ public class BattleMap : MapManager
         List<int> attackable = mapUtility.GetTilesInCircleShape(startTile, range, mapSize);
         attackable.Remove(startTile);
         // Melee attacks can't attack if the height difference is too large.
-        // Skills still work?
         if (range <= 1)
         {
             for (int i = attackable.Count - 1; i >= 0; i--)
             {
                 // Elevation difference of 3 or more means melee basic attacks are ineffective.
-                if (ReturnElevationDifference(attackable[i], startTile) > actor.GetWeaponReach())
+                if (ReturnElevationDifference(startTile, attackable[i]) > actor.GetWeaponReach())
+                {
+                    attackable.RemoveAt(i);
+                }
+            }
+        }
+        // Ranged Attacks.
+        else
+        {
+            for (int i = attackable.Count - 1; i >= 0; i--)
+            {
+                if (!LineOfSightBetweenTiles(startTile, attackable[i]))
                 {
                     attackable.RemoveAt(i);
                 }
             }
         }
         return attackable;
+    }
+    public bool LineOfSightBetweenTiles(int start, int target, int range = 2)
+    {
+        // If the tiles are adjacent then return true.
+        if (mapUtility.DistanceBetweenTiles(start, target, mapSize) <= 1){return true;}
+        // If tile is out of range return false.
+        if (mapUtility.DistanceBetweenTiles(start, target, mapSize) > range){return false;}
+        int startElevation = GetTileElevation(start);
+        // Get all the tiles inbetween the start and the target.
+        List<int> tilesBetween = mapUtility.ShortestLineBetweenPoints(start, target, mapSize);
+        for (int i = 0; i < tilesBetween.Count; i++)
+        {
+            // If there is a tile, elevation, teffect, border or building that blocks LoS then return false.
+            if (TileBlocksLineOfSight(tilesBetween[i], startElevation)){return false;}
+        }
+        return true;
+    }
+    public bool TileBlocksLineOfSight(int tile, int startElevation)
+    {
+        if (GetTileElevation(tile) > startElevation){return true;}
+        // Some teffects also block line of sight?
+        string tEffect = GetTerrainEffectOnTile(tile);
+        if (tEffect == "Fog" || tEffect == "Toxic Mist"){return true;}
+        return false;
     }
 
     public void UpdateSelectedAttackTile(TacticActor actor, int selectedTile)
