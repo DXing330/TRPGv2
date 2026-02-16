@@ -247,4 +247,9 @@ public class StatDatabase : ScriptableObject
         int index = Random.Range(0, values.Count);
         return values[index];
     }
+
+    public string ReturnMiddleValue()
+    {
+        return values[values.Count / 2];
+    }
 }

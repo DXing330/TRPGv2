@@ -25,7 +25,7 @@ public class PassiveSkill : SkillEffect
         map.ChangeTile(actor.GetLocation(), effect, specifics);
     }
 
-    public void ApplyAfterAttackPassives(TacticActor actor, TacticActor attackTarget, BattleMap map, bool hit = true, bool crit = false)
+    public void ApplyAfterAttackPassives(TacticActor actor, TacticActor attackTarget, int damage, BattleMap map, bool hit = true, bool crit = false)
     {
         List<string> passives = actor.GetAfterAttackPassives();
         if (passives.Count <= 0) { return; }
@@ -54,6 +54,38 @@ public class PassiveSkill : SkillEffect
             for (int h = 0; h < effects.Length; h++)
             {
                 AffectActor(actor, effects[h], GetEffectSpecifics(actor, effectSpecifics[h]));
+            }
+        }
+    }
+
+    public void ApplyAfterDefendPassives(TacticActor actor, TacticActor attackTarget, int damage, BattleMap map, bool hit = true, bool crit = false)
+    {
+        List<string> passives = attackTarget.GetAfterDefendPassives();
+        if (passives.Count <= 0) { return; }
+        for (int i = 0; i < passives.Count; i++)
+        {
+            string[] passiveData = passives[i].Split("|");
+            if (passiveData.Length <= 4) { continue; }
+            string[] conditions = passiveData[1].Split(",");
+            string[] specifics = passiveData[2].Split(",");
+            bool conditionsMet = true;
+            for (int j = 0; j < conditions.Length; j++)
+            {
+                conditionsMet = CheckAfterAttackCondition(conditions[j], specifics[j], actor, attackTarget, map, hit, crit);
+                if (!conditionsMet)
+                {
+                    break;
+                }
+            }
+            if (!conditionsMet)
+            {
+                continue;
+            }
+            string[] effects = passiveData[4].Split(",");
+            string[] effectSpecifics = passiveData[5].Split(",");
+            for (int h = 0; h < effects.Length; h++)
+            {
+                AffectActor(attackTarget, effects[h], GetEffectSpecifics(attackTarget, effectSpecifics[h]));
             }
         }
     }
@@ -180,7 +212,8 @@ public class PassiveSkill : SkillEffect
             case "DodgedAttack":
                 return !attackHit;
         }
-        return true;
+        // Large overlap with battle conditions.
+        return CheckBattleCondition(condition, specifics, target, attacker, map);
     }
 
     // Moving passives usually depend on the tile moved over.
@@ -679,6 +712,30 @@ public class PassiveSkill : SkillEffect
                 return target.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
             case "PrevMoveCount%D":
                 return (target.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
+            case "DefendCountD":
+                return target.ReturnCurrentRoundDefends() == int.Parse(conditionSpecifics);
+            case "DefendCount>D":
+                return target.ReturnCurrentRoundDefends() > int.Parse(conditionSpecifics);
+            case "DefendCount<D":
+                return target.ReturnCurrentRoundDefends() < int.Parse(conditionSpecifics);
+            case "DefendCount%D":
+                return (target.ReturnCurrentRoundDefends() % int.Parse(conditionSpecifics) == 0);
+            case "PrevDefendCountA":
+                return attacker.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
+            case "PrevDefendCount>A":
+                return attacker.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
+            case "PrevDefendCount<A":
+                return attacker.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
+            case "PrevDefendCount%A":
+                return (attacker.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
+            case "PrevDefendCountD":
+                return target.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
+            case "PrevDefendCount>D":
+                return target.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
+            case "PrevDefendCount<D":
+                return target.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
+            case "PrevDefendCount%D":
+                return (target.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
         }
         return true;
     }

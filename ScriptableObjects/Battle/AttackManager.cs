@@ -307,6 +307,7 @@ public class AttackManager : ScriptableObject
             attackTarget = GetGuard(target, attacker, map);
             map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " defends " + target.GetPersonalName() + " from the attack.");
         }
+        attackTarget.UpdateRoundDefendTracker();
         advantage = 0;
         if (attackMultiplier < 0) { damageMultiplier = baseMultiplier; }
         else { damageMultiplier = attackMultiplier; }
@@ -315,6 +316,18 @@ public class AttackManager : ScriptableObject
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
         finalDamageCalculation = "";
+        // Ranged attacks get elevation bonus/penalties.
+        if (attacker.GetAttackRange() > 1)
+        {
+            int elvDiff = map.ReturnPosNegElvDiff(attacker.GetLocation(), target.GetLocation());
+            if (elvDiff != 0)
+            {
+                finalDamageCalculation += "Elevation Difference: " + elvDiff;
+                finalDamageCalculation += "\n" + "Damage Multiplier: " + damageMultiplier + " -> ";
+                damageMultiplier += 10 * elvDiff;
+                finalDamageCalculation += damageMultiplier + "\n";
+            }
+        }
         CheckMapPassives(attacker, attackTarget, map, target.GetLocation(), true, true);
         // Bonus damage can be calculated here and triggers regardless of hit/miss.
         CheckPassives(attacker.GetAttackingPassives(), attackTarget, attacker, map);
@@ -323,7 +336,8 @@ public class AttackManager : ScriptableObject
         if (!RollToHit(attacker, attackTarget, map))
         {
             hit = false;
-            passive.ApplyAfterAttackPassives(attacker, attackTarget, map, hit, critHit);
+            passive.ApplyAfterAttackPassives(attacker, attackTarget, 0, map, hit, critHit);
+            passive.ApplyAfterDefendPassives(attacker, attackTarget, 0, map, hit, critHit);
             return;
         }
         baseDamage = Advantage(baseDamage, advantage);
@@ -367,7 +381,8 @@ public class AttackManager : ScriptableObject
         map.combatLog.AddDetailedLogs("Damage Calculations:");
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
-        passive.ApplyAfterAttackPassives(attacker, attackTarget, map, hit, critHit);
+        passive.ApplyAfterAttackPassives(attacker, attackTarget, baseDamage, map, hit, critHit);
+        passive.ApplyAfterDefendPassives(attacker, attackTarget, baseDamage, map, hit, critHit);
         // Check if the defender is alive, has counter attacks available and is in range.
         if (attackTarget.GetHealth() > 0 && attackTarget.CounterAttackAvailable() && map.DistanceBetweenActors(attackTarget, attacker) <= attackTarget.GetAttackRange())
         {

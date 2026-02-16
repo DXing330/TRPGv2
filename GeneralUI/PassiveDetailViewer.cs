@@ -240,6 +240,8 @@ public class PassiveDetailViewer : MonoBehaviour
             return "Upon death,";
             case "AfterAttack":
             return "After attacking,";
+            case "AfterDefend":
+            return "After being attacked,";
         }
         return "";
     }
@@ -569,6 +571,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target was hurt the least by the attacker";
             case "LethalAttack":
                 return " if the attack defeated the target";
+            case "CriticalAttack":
+                return " if the attack was a critical hit";
+            case "DodgedAttack":
+                return " if the attack was dodged";
             case "FirstStrikeA":
                 return " if the attacker has not attacked yet";
             case "FirstStrikeD":
@@ -661,6 +667,30 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target moved less than " + specifics + " tiles last round";
             case "PrevMoveCount%D":
                 return " if the target moved a multiple of " + specifics + " tiles last round";
+            case "DefendCountD":
+                return " if the target was attacked exactly " + specifics + " time(s) this round";
+            case "DefendCount>D":
+                return " if the target was attacked more than " + specifics + " time(s) this round";
+            case "DefendCount<D":
+                return " if the target was attacked less than " + specifics + " time(s) this round";
+            case "DefendCount%D":
+                return " if the target was attacked a multiple of " + specifics + " time(s) this round";
+            case "PrevDefendCountA":
+                return " if the attacker was attacked exactly " + specifics + " time(s) last round";
+            case "PrevDefendCount>A":
+                return " if the attacker was attacked more than " + specifics + " time(s) last round";
+            case "PrevDefendCount<A":
+                return " if the attacker was attacked less than " + specifics + " time(s) last round";
+            case "PrevDefendCount%A":
+                return " if the attacker was attacked a multiple of " + specifics + " time(s) last round";
+            case "PrevDefendCountD":
+                return " if the target was attacked exactly " + specifics + " time(s) last round";
+            case "PrevDefendCount>D":
+                return " if the target was attacked more than " + specifics + " time(s) last round";
+            case "PrevDefendCount<D":
+                return " if the target was attacked less than " + specifics + " time(s) last round";
+            case "PrevDefendCount%D":
+                return " if the target was attacked a multiple of " + specifics + " time(s) last round";
         }
         return "";
     }

@@ -53,6 +53,10 @@ public class MapManager : MonoBehaviour
     {
         return Mathf.Abs(mapTiles[tileOne].GetElevation() - mapTiles[tileTwo].GetElevation());
     }
+    public int ReturnPosNegElvDiff(int tileOne, int tileTwo)
+    {
+        return mapTiles[tileOne].GetElevation() - mapTiles[tileTwo].GetElevation();
+    }
     public virtual int ReturnClosestTileWithinElevationDifference(int start, int end, int maxElvDiff, List<int> moveCosts)
     {
         List<int> adjacentTiles = mapUtility.AdjacentTiles(end, mapSize);
@@ -78,6 +82,38 @@ public class MapManager : MonoBehaviour
         List<string> possibleElevations = tileElevationMappings.ReturnValue(tileType).Split("|").ToList();
         if (possibleElevations.Count < 2){return 0;}
         return int.Parse(possibleElevations[Random.Range(0, possibleElevations.Count)]);
+    }
+    public int MinElevation(string tileType)
+    {
+        int min = 3;
+        List<string> possibleElevations = tileElevationMappings.ReturnValue(tileType).Split("|").ToList();
+        for (int i = 0; i < possibleElevations.Count; i++)
+        {
+            if (int.Parse(possibleElevations[i]) < min)
+            {
+                min = int.Parse(possibleElevations[i]);
+            }
+        }
+        return min;
+    }
+    public int MaxElevation(string tileType)
+    {
+        int max = -3;
+        List<string> possibleElevations = tileElevationMappings.ReturnValue(tileType).Split("|").ToList();
+        for (int i = 0; i < possibleElevations.Count; i++)
+        {
+            if (int.Parse(possibleElevations[i]) > max)
+            {
+                max = int.Parse(possibleElevations[i]);
+            }
+        }
+        return max;
+    }
+    public int MiddleElevation(string tileType)
+    {
+        List<string> possibleElevations = tileElevationMappings.ReturnValue(tileType).Split("|").ToList();
+        if (possibleElevations.Count < 2){return 0;}
+        return int.Parse(possibleElevations[possibleElevations.Count / 2]);
     }
     public void InitializeElevations()
     {
@@ -354,8 +390,6 @@ public class MapManager : MonoBehaviour
         currentTiles = currentTileManager.GetCurrentTilesFromCenter(centerTile, mapSize, gridSize);
     }
 
-    public bool threeD = true;
-
     public List<string> ReturnMapInfoPlusElevation()
     {
         List<string> infoAndElevation = new List<string>(mapInfo);
@@ -384,11 +418,6 @@ public class MapManager : MonoBehaviour
     public virtual void UpdateMap()
     {
         UpdateCurrentTiles();
-        if (threeD)
-        {
-            mapDisplayers[0].DisplayCurrentTiles(mapTiles, ReturnMapInfoPlusElevation(), currentTiles);
-            return;
-        }
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
     }
 

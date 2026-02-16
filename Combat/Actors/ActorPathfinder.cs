@@ -53,6 +53,7 @@ public class ActorPathfinder : MapPathfinder
                 moveCost += GetElevationDifference(closestTile, adjacentTiles[i]);
                 int borderCost = GetBorderCost(closestTile, adjacentTiles[i]);
                 moveCost += borderCost;
+                // This could be moved to the movecost manager like tiles and teffects. Although I do enjoy roads being able to decrease move cost to alleviate elevation/border costs.
                 int buildingCost = GetBuildingMoveCost(adjacentTiles[i]);
                 moveCost += buildingCost;
                 if (moveCost < 1){moveCost = 1;}

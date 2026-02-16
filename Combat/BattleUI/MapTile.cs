@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -64,6 +65,10 @@ public class MapTile : MonoBehaviour
         borderDetails[direction] = "Border";
         borderObjects[direction].SetActive(true);
     }
+    public void SetBordersFromString(string newInfo)
+    {
+        borderDetails = newInfo.Split("|").ToList();
+    }
     public string ReturnBorderString()
     {
         return String.Join("|", borderDetails);
@@ -111,6 +116,12 @@ public class MapTile : MonoBehaviour
     }
     public void UpdateBorderImage(int direction, Sprite borderSprite)
     {
+        if (borderSprite == null)
+        {
+            borderObjects[direction].SetActive(false);
+            return;
+        }
+        borderObjects[direction].SetActive(true);
         borderImages[direction].sprite = borderSprite;
     }
     public List<string> GetBorders()

@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MapMakerTester : MonoBehaviour
 {
-    public bool threeD = false;
     public MapCurrentTiles currentTiles;
     public MapMaker mapMaker;
     public MapTester mapTester;
@@ -62,11 +61,6 @@ public class MapMakerTester : MonoBehaviour
 
     protected virtual void UpdateMap()
     {
-        if (threeD)
-        {
-            mapDisplayer.DisplayCurrentTiles(mapTiles, ReturnMapInfoPlusElevation(), currentTiles.GetCurrentTilesFromCenter(testCenter, testSize, gridSize));
-            return;
-        }
         mapDisplayer.DisplayCurrentTiles(mapTiles, mapInfo, currentTiles.GetCurrentTilesFromCenter(testCenter, testSize, gridSize));
     }
 

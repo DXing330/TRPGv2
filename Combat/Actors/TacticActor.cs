@@ -195,38 +195,60 @@ public class TacticActor : ActorStats
     public void SetDirection(int newDirection){direction = newDirection;}
     protected string immuneMentalState = "Calm";
     public string mentalState;
+    public int mentalStateDuration = 0;
+    public void UpdateMentalState()
+    {
+        if (mentalStateDuration > 0)
+        {
+            mentalStateDuration--;
+            if (mentalStateDuration <= 0)
+            {
+                ResetMentalState();
+            }
+        }
+    }
     public void ResetMentalState()
     {
-        if (mentalState == immuneMentalState) { return; }
         mentalState = "";
+        mentalStateDuration = 0;
     }
-    public void SetMentalState(string newInfo)
+    public void SetMentalState(string newInfo, int duration = 1)
     {
+        // Can't change to a weaker mental state.
+        if (duration < mentalStateDuration){return;}
         // Can change to immune no matter what.
         if (newInfo == immuneMentalState)
         {
             mentalState = immuneMentalState;
+            if (duration > mentalStateDuration)
+            {
+                mentalStateDuration = duration;
+            }
             return;
         }
         // Immunity blocks one negative change.
         if (mentalState == immuneMentalState)
         {
             mentalState = "";
+            mentalStateDuration = 0;
             return;
         }
         mentalState = newInfo;
+        mentalStateDuration = duration;
     }
     public string GetMentalState(){ return mentalState; }
     // Keep track of skills/spells used, movement and attacks.
     protected void ResetRoundTrackers()
     {
         ResetRoundAttackTracker();
+        ResetRoundDefendTracker();
         ResetRoundSkillTracker();
         ResetRoundMoveTracker();
     }
     protected void AddToRoundTrackers()
     {
         attacksEachRound.Add(0);
+        defendsEachRound.Add(0);
         skillsEachRound.Add(0);
         movesEachRound.Add(0);
     }
@@ -258,6 +280,35 @@ public class TacticActor : ActorStats
     public int ReturnTotalRoundAttacks()
     {
         return attacksEachRound.Sum();
+    }
+    public List<int> defendsEachRound;
+    public void ResetRoundDefendTracker()
+    {
+        defendsEachRound.Clear();
+    }
+    public void UpdateRoundDefendTracker()
+    {
+        if (defendsEachRound == null || defendsEachRound.Count == 0)
+        {
+            defendsEachRound = new List<int>();
+            defendsEachRound.Add(1);
+            return;
+        }
+        defendsEachRound[defendsEachRound.Count - 1]++;
+    }
+    public int ReturnCurrentRoundDefends()
+    {
+        if (defendsEachRound.Count <= 0){return -1;}
+        return defendsEachRound[defendsEachRound.Count - 1];
+    }
+    public int ReturnPreviousRoundDefends()
+    {
+        if (defendsEachRound.Count <= 1){return -1;}
+        return defendsEachRound[defendsEachRound.Count - 2];
+    }
+    public int ReturnTotalRoundDefends()
+    {
+        return defendsEachRound.Sum();
     }
     public List<int> skillsEachRound;
     public void ResetRoundSkillTracker()
@@ -518,6 +569,7 @@ public class TacticActor : ActorStats
     public override void InitializeStats()
     {
         base.InitializeStats();
+        ResetMentalState();
         ResetTarget();
         ResetHurtBy();
         ResetRoundTrackers();
@@ -533,7 +585,7 @@ public class TacticActor : ActorStats
         }
         EndTurnResetStats();
         ResetBonusActions();
-        ResetMentalState();
+        UpdateMentalState();
         CheckBuffDuration();
         CheckStatusDuration();
     }
