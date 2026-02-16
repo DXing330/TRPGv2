@@ -634,13 +634,13 @@ public class AttackManager : ScriptableObject
         // Check if any buildings are on the tiles.
         if (forAttacker)
         {
-            string attackerBuilding = map.GetBuildingOnLocation(attacker.GetLocation());
+            string attackerBuilding = map.GetBuildingOnTile(attacker.GetLocation());
             string attackingPassive = buildingPassives.ReturnAttackingPassive(attackerBuilding);
             ApplyPassiveEffect(attackingPassive, target, attacker, map);
         }
         if (forTarget)
         {
-            string defenderBuilding = map.GetBuildingOnLocation(targetTileNumber);
+            string defenderBuilding = map.GetBuildingOnTile(targetTileNumber);
             string defendingPassive = buildingPassives.ReturnDefendingPassive(defenderBuilding);
             ApplyPassiveEffect(defendingPassive, target, attacker, map);
         }

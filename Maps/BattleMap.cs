@@ -169,7 +169,7 @@ public class BattleMap : MapManager
     {
         return buildingLocations.IndexOf(tileNumber);
     }
-    public string GetBuildingOnLocation(int tileNumber)
+    public string GetBuildingOnTile(int tileNumber)
     {
         int indexOf = buildingLocations.IndexOf(tileNumber);
         if (indexOf < 0){return "";}
@@ -230,7 +230,7 @@ public class BattleMap : MapManager
     }
     protected void ApplyBuildingMovingEffect(TacticActor actor, int tileNumber)
     {
-        string building = GetBuildingOnLocation(actor.GetLocation());
+        string building = GetBuildingOnTile(actor.GetLocation());
         if (building.Length < 1) { return; }
         string[] buildingEffect = buildingEffectData.ReturnMovingPassive(building).Split("|");
         if (buildingEffect.Length < 6){return;}
@@ -241,7 +241,7 @@ public class BattleMap : MapManager
     }
     public void ApplyBuildingStartEffect(TacticActor actor)
     {
-        string building = GetBuildingOnLocation(actor.GetLocation());
+        string building = GetBuildingOnTile(actor.GetLocation());
         if (building.Length < 1) { return; }
         string[] buildingEffect = buildingEffectData.ReturnStartPassive(building).Split("|");
         if (buildingEffect.Length < 6){return;}
@@ -252,7 +252,7 @@ public class BattleMap : MapManager
     }
     public void ApplyBuildingEndEffect(TacticActor actor)
     {
-        string building = GetBuildingOnLocation(actor.GetLocation());
+        string building = GetBuildingOnTile(actor.GetLocation());
         if (building.Length < 1) { return; }
         string[] buildingEffect = buildingEffectData.ReturnEndPassive(building).Split("|");
         if (buildingEffect.Length < 6){return;}
@@ -1274,13 +1274,11 @@ public class BattleMap : MapManager
             buildingTiles[buildingLocations[i]] = buildings[i];
         }
     }
-
     public void UpdateBuildings()
     {
         GetBuildingTiles();
         mapDisplayers[buildingLayer].DisplayCurrentTiles(mapTiles, buildingTiles, currentTiles);
     }
-
     public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)
     {
         if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }

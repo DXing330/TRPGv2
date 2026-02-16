@@ -8,9 +8,7 @@ public class ActorMaker : MonoBehaviour
     public TacticActor actorPrefab;
     public BattleModifier battleModifier;
     public StatDatabase actorStats;
-    public StatDatabase spriteElementMapping;
     public StatDatabase elementPassives;
-    public StatDatabase spriteSpeciesMapping;
     public StatDatabase speciesPassives;
     public PassiveOrganizer passiveOrganizer;
     public MapPatternLocations mapPatterns;
@@ -55,7 +53,7 @@ public class ActorMaker : MonoBehaviour
         }
     }
 
-    protected void AddAttributePassives(TacticActor actor)
+    public void AddAttributePassives(TacticActor actor)
     {
         List<string> attributes = actor.GetAttributes();
         for (int i = 0; i < attributes.Count; i++)
@@ -64,7 +62,7 @@ public class ActorMaker : MonoBehaviour
         }
     }
 
-    protected void AddElementPassives(TacticActor actor)
+    public void AddElementPassives(TacticActor actor)
     {
         List<string> elements = actor.GetElements();
         for (int i = 0; i < elements.Count; i++)
@@ -73,7 +71,7 @@ public class ActorMaker : MonoBehaviour
         }
     }
 
-    protected void AddSpeciesPassives(TacticActor actor)
+    public void AddSpeciesPassives(TacticActor actor)
     {
         string speciesPassive = speciesPassives.ReturnValue(actor.GetSpecies());
         if (speciesPassive == "")

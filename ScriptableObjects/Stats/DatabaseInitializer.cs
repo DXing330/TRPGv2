@@ -6,6 +6,10 @@ public class DatabaseInitializer : MonoBehaviour
 {
     public string allData;
     public string allDataDelimiter = "}";
+    public void SetAllData(string newInfo)
+    {
+        allData = newInfo;
+    }
     public bool stats;
     public string allStatData;
     public bool sprites;

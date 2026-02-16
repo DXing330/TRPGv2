@@ -278,6 +278,26 @@ public class MapUtility : ScriptableObject
         return location;
     }
 
+    public List<int> GetAllTilesInColumn(int column, int size)
+    {
+        List<int> tiles = new List<int>();
+        for (int i = 0; i < size; i++)
+        {
+            tiles.Add(ReturnTileNumberFromRowCol(i, column, size));
+        }
+        return tiles;
+    }
+
+    public List<int> GetAllTilesInRow(int row, int size)
+    {
+        List<int> tiles = new List<int>();
+        for (int i = 0; i < size; i++)
+        {
+            tiles.Add(ReturnTileNumberFromRowCol(row, i, size));
+        }
+        return tiles;
+    }
+
     public List<int> GetTilesInColumn(int location, int span, int size)
     {
         List<int> tiles = new List<int>();
@@ -619,6 +639,20 @@ public class MapUtility : ScriptableObject
         return borders;
     }
 
+    public List<int> GetTilesInBorderShape(int span, int size)
+    {
+        List<int> borders = new List<int>();
+        for (int i = 0; i < span + 1; i++)
+        {
+            borders.AddRange(GetAllTilesInColumn(i, size));
+            borders.AddRange(GetAllTilesInRow(size - 1 - i, size));
+            borders.AddRange(GetAllTilesInColumn(size - 1 - i, size));
+            borders.AddRange(GetAllTilesInRow(i, size));
+        }
+        borders = borders.Distinct().ToList();
+        return borders;
+    }
+
     public bool TilesAdjacent(int location, int location2, int size)
     {
         return AdjacentTiles(location, size).Contains(location2);
@@ -686,6 +720,8 @@ public class MapUtility : ScriptableObject
         int direction = DirectionBetweenLocations(start, selected, size);
         switch (shape)
         {
+            case "Borders":
+                return GetTilesInBorderShape(span, size);
             case "Circle":
                 return GetTilesInCircleShape(selected, span, size);
             case "ECircle":

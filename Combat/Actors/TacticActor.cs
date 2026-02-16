@@ -214,6 +214,7 @@ public class TacticActor : ActorStats
     }
     public void SetMentalState(string newInfo, int duration = 1)
     {
+        if (duration < 1){duration = 1;}
         // Can't change to a weaker mental state.
         if (duration < mentalStateDuration){return;}
         // Can change to immune no matter what.

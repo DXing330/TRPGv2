@@ -8,24 +8,127 @@ using TMPro;
 public class MapEditor : MapManager
 {
     public MapEditorSaver savedData;
-    public GameObject cMapSelectObject;
-    public NumPad cMapSelect;
-    public int cMap;
+    public GameObject nameRaterObject;
+    // Change Name, Load Name, Copy To Name
+    enum NameRaterState
+    {
+        renaming,
+        loading,
+        copying,
+        newing
+    }
+    NameRaterState cNameRaterState;
+    public NameRater nameRater;
+    public PopUpMessage popUp;
+    public string cMap;
     public TMP_Text cMapText;
+    public void SetCMap(string newInfo)
+    {
+        cMap = newInfo;
+        cMapText.text = cMap;
+    }
+    public void DeleteMap()
+    {
+        savedData.DeleteKey(cMap);
+        SetCMap("TestMap0");
+        savedData.SetCurrentMap(this, cMap);
+    }
+    public void MakeNewMap()
+    {
+        cNameRaterState = NameRaterState.newing;
+        nameRaterObject.SetActive(true);
+        nameRater.ResetNewName();
+    }
+    public void RenameCurrentMap()
+    {
+        cNameRaterState = NameRaterState.renaming;
+        nameRaterObject.SetActive(true);
+        nameRater.ResetNewName();
+    }
+    public SelectList selectMapToLoad;
     public void ChangeCurrentMap()
     {
-        cMapSelectObject.SetActive(true);
-        cMapSelect.Reset();
-    }
-    public void SetCurrentMap()
-    {
-        cMap = cMapSelect.GetNumber();
-        cMapText.text = cMap.ToString();
+        // Terribly Inefficent.
+        // Should show a select list with keys and then select a key from the select list.
+        if (selectMapToLoad.GetSelected() < 0){return;}
+        if (editBattle)
+        {
+            cMap = selectMapToLoad.GetSelectedString();
+        }
+        else
+        {
+            SetCMap(selectMapToLoad.GetSelectedString());
+        }
         savedData.SetCurrentMap(this, cMap);
-        cMapSelect.Reset();
-        cMapSelectObject.SetActive(false);
+        /*cNameRaterState = NameRaterState.loading;
+        nameRaterObject.SetActive(true);
+        nameRater.ResetNewName();*/
     }
+    public void ForceCMap(string newMap)
+    {
+        cMap = newMap;
+        savedData.SetCurrentMap(this, cMap);
+    }
+    public bool copying;
     // Need to be able to copy maps to other maps.
+    public void CopyToOtherMap()
+    {
+        cNameRaterState = NameRaterState.copying;
+        nameRaterObject.SetActive(true);
+        nameRater.ResetNewName();
+    }
+    public void NameRaterConfirm()
+    {
+        string newName = nameRater.ConfirmName();
+        if (newName.Length <= 0){return;}
+        switch (cNameRaterState)
+        {
+            case NameRaterState.copying:
+            // Overwrite the new key.
+            savedData.SaveMapToName(this, newName);
+            break;
+            case NameRaterState.renaming:
+            // Check if the new key is available.
+            if (savedData.KeyExists(newName))
+            {
+                popUp.SetMessage("There Is Already A Map Saved With This Name");
+                break;
+            }
+            // Remove the current key.
+            savedData.DeleteKey(cMap);
+            // Save to the new key.
+            SetCMap(newName);
+            savedData.SaveMap(this);
+            selectMapToLoad.SetSelectables(savedData.savedKeys);
+            break;
+            case NameRaterState.newing:
+            // Check if the new key is available.
+            if (savedData.KeyExists(newName))
+            {
+                popUp.SetMessage("There Is Already A Map Saved With This Name");
+                break;
+            }
+            SetCMap(newName);
+            // Make a new map.
+            InitializeNewMap();
+            savedData.SaveMap(this);
+            selectMapToLoad.SetSelectables(savedData.savedKeys);
+            break;
+            case NameRaterState.loading:
+            // Check if the new key exists.
+            if (!savedData.KeyExists(newName))
+            {
+                popUp.SetMessage("No Map Saved With This Name");
+                break;
+            }
+            // Load the new key.
+            SetCMap(newName);
+            savedData.SetCurrentMap(this, cMap);
+            break;
+        }
+        nameRaterObject.SetActive(false);
+        nameRater.ResetNewName();
+    }
     public string defaultTile = "Plains";
     [ContextMenu("Initialize")]
     public void InitializeNewMap()
@@ -71,7 +174,29 @@ public class MapEditor : MapManager
             UpdateTileBorderSprites(i);
         }
     }
+    public void UpdateMapWithActors(List<string> actors, List<string> actorLocations)
+    {
+        UpdateMap();
+        List<string> actorTiles = new List<string>();
+        for (int i = 0; i < cMapInfo.Count; i++)
+        {
+            actorTiles.Add("");
+        }
+        for (int i = 0; i < actorLocations.Count; i++)
+        {
+            actorTiles[int.Parse(actorLocations[i])] = actors[i];
+        }
+        mapDisplayers[2].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles);
+    }
     public ColorDictionary colorDictionary;
+    public void HighlightTile(int tile)
+    {
+        for (int i = 0; i < mapTiles.Count; i++)
+        {
+            mapTiles[i].ResetHighlight();
+        }
+        mapTiles[tile].HighlightTile(colorDictionary.GetColorByName("Blue"));
+    }
     public void HighlightSelectedTiles()
     {
         for (int i = 0; i < mapTiles.Count; i++)
@@ -101,6 +226,7 @@ public class MapEditor : MapManager
         buildings = new List<string>(cBuildings);
         tileElevations = new List<string>(cTileElevations);
         savedData.SaveMap(this);
+        selectMapToLoad.SetSelectables(savedData.savedKeys);
     }
     public void UndoEdits()
     {
@@ -116,6 +242,9 @@ public class MapEditor : MapManager
     // Workflow: Select Tile -> Select Edits
     protected override void Start()
     {
+        savedData.LoadKeys();
+        selectMapToLoad.SetSelectables(savedData.savedKeys);
+        if (editBattle){return;}
         shapeSelect.SetSelectables(shapes);
         List<string> spans = new List<string>();
         for (int i = 0; i < mapSize / 2; i++)
@@ -123,7 +252,7 @@ public class MapEditor : MapManager
             spans.Add(i.ToString());
         }
         spanSelect.SetSelectables(spans);
-        cMapText.text = cMap.ToString();
+        SetCMap("TestMap0");
         savedData.SetCurrentMap(this, cMap);
         ChangeLayer(true);
         ChangeLayer(false);
@@ -190,11 +319,30 @@ public class MapEditor : MapManager
         return layerSpecificSelect.GetSelected();
     }
     public List<int> selectedTiles;
+    public BattleMapEditor battleMapEditor;
+    public bool editBattle = false;
     public override void ClickOnTile(int tileNumber)
     {
+        if (editBattle)
+        {
+            battleMapEditor.ClickOnTile(tileNumber);
+            return;
+        }
         if (tileNumber < 0)
         {
             selectedTiles.Clear();
+            return;
+        }
+        if (GetShape() == "All")
+        {
+            selectedTiles.Clear();
+            {
+                for (int i = 0; i < mapInfo.Count; i++)
+                {
+                    selectedTiles.Add(i);
+                }
+            }
+            HighlightSelectedTiles();
             return;
         }
         // Update the selected tiles.

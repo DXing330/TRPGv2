@@ -56,19 +56,26 @@ public class AttackManagerTester : MonoBehaviour
         // Set up the actors.
         dummyAttacker.SetInitialStatsFromString(attackerStats);
         dummyAttacker.InitializeStats();
+        // Need attribute/elemental/racial passives.
         for (int i = 0; i < testAttackerPassives.Count; i++)
         {
             dummyAttacker.AddPassiveSkill(testAttackerPassives[i], testAttackerPassiveLevels[i]);
         }
+        battleManager.actorMaker.AddElementPassives(dummyAttacker);
+        battleManager.actorMaker.AddAttributePassives(dummyAttacker);
+        battleManager.actorMaker.AddSpeciesPassives(dummyAttacker);
         passiveOrganizer.OrganizeActorPassives(dummyAttacker);
         dummyAttacker.SetLocation(attackerLocation);
         dummyAttacker.SetDirection(attackerDirection);
         dummyDefender.SetInitialStatsFromString(defenderStats);
+        dummyDefender.InitializeStats();
         for (int i = 0; i < testDefenderPassiveLevels.Count; i++)
         {
             dummyAttacker.AddPassiveSkill(testDefenderPassives[i], testDefenderPassiveLevels[i]);
         }
-        dummyDefender.InitializeStats();
+        battleManager.actorMaker.AddElementPassives(dummyDefender);
+        battleManager.actorMaker.AddAttributePassives(dummyDefender);
+        battleManager.actorMaker.AddSpeciesPassives(dummyDefender);
         passiveOrganizer.OrganizeActorPassives(dummyDefender);
         dummyDefender.SetLocation(defenderLocation);
         dummyDefender.SetDirection(defenderDirection);
@@ -90,6 +97,9 @@ public class AttackManagerTester : MonoBehaviour
         {
             dummyAttacker.AddPassiveSkill(testGuardPassives[i], testGuardPassiveLevels[i]);
         }
+        battleManager.actorMaker.AddElementPassives(dummyGuard);
+        battleManager.actorMaker.AddAttributePassives(dummyGuard);
+        battleManager.actorMaker.AddSpeciesPassives(dummyGuard);
         passiveOrganizer.OrganizeActorPassives(dummyGuard);
         if (guard)
         {

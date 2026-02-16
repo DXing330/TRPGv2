@@ -376,8 +376,8 @@ public class PassiveSkill : SkillEffect
             // Good RNG means you want to roll lower to get the chance.
             case "GoodRNG":
             return utility.Roll(-actor.GetLuck()) < int.Parse(conditionSpecifics);
+            
         }
-        // Most of them have no condition.
         return true;
     }
     // Need to know about the actor, might have other actors to check as well. Might need to know about the tile.
@@ -396,72 +396,53 @@ public class PassiveSkill : SkillEffect
     }
     public bool CheckBattleCondition(string condition, string conditionSpecifics, TacticActor target, TacticActor attacker, BattleMap map)
     {
+        if (condition == ""){return true;}
+        TacticActor checkedActor = target;
+        TacticActor comparedActor = attacker;
+        if (condition.EndsWith("A"))
+        {
+            checkedActor = attacker;
+            comparedActor = target;
+            condition = condition[..^1];
+        }
+        else if (condition.EndsWith("D"))
+        {
+            checkedActor = target;
+            comparedActor = attacker;
+            condition = condition[..^1];
+        }
         switch (condition)
         {
-            case "TileD":
-                return map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
-            case "Tile<>D":
-                return !map.GetTileInfoOfActor(target).Contains(conditionSpecifics);
-            case "TileA":
-                return map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
-            case "Tile<>A":
-                return !map.GetTileInfoOfActor(attacker).Contains(conditionSpecifics);
-            case "TileEffectA":
-                return map.GetTileEffectOfActor(attacker).Contains(conditionSpecifics);
-            case "TileEffect<>A":
-                return !map.GetTileEffectOfActor(attacker).Contains(conditionSpecifics);
-            case "TileEffectD":
-                return map.GetTileEffectOfActor(target).Contains(conditionSpecifics);
-            case "TileEffect<>D":
-                return !map.GetTileEffectOfActor(target).Contains(conditionSpecifics);
-            case "AdjacentAlly<>A":
-                return !map.AllyAdjacentToActor(attacker);
-            case "AdjacentAlly<>D":
-                return !map.AllyAdjacentToActor(target);
-            case "AdjacentAllyA":
-                return map.AllyAdjacentToActor(attacker);
-            case "AdjacentAllyD":
-                return map.AllyAdjacentToActor(target);
-            case "AdjacentAllySpriteA":
-                return map.AllyAdjacentWithSpriteName(attacker, conditionSpecifics);
-            case "AdjacentAllySpriteD":
-                return map.AllyAdjacentWithSpriteName(target, conditionSpecifics);
-            case "AdjacentAllyCount>A":
-                return map.GetAdjacentAllies(attacker).Count > int.Parse(conditionSpecifics);
-            case "AdjacentAllyCount<A":
-                return map.GetAdjacentAllies(attacker).Count < int.Parse(conditionSpecifics);
-            case "AdjacentAllyCount>D":
-                return map.GetAdjacentAllies(target).Count > int.Parse(conditionSpecifics);
-            case "AdjacentAllyCount<D":
-                return map.GetAdjacentAllies(target).Count < int.Parse(conditionSpecifics);
-            case "AdjacentEnemyCount>A":
-                return map.GetAdjacentEnemies(attacker).Count > int.Parse(conditionSpecifics);
-            case "AdjacentEnemyCount<A":
-                return map.GetAdjacentEnemies(attacker).Count < int.Parse(conditionSpecifics);
-            case "AdjacentEnemyCount>D":
-                return map.GetAdjacentEnemies(target).Count > int.Parse(conditionSpecifics);
-            case "AdjacentEnemyCount<D":
-                return map.GetAdjacentEnemies(target).Count < int.Parse(conditionSpecifics);
-            case "None":
-                return true;
-            case "Killing":
-                return attacker.GetAttack() >= target.GetDefense() + target.GetHealth();
+            case "Tile":
+                return map.GetTileInfoOfActor(checkedActor).Contains(conditionSpecifics);
+            case "Tile<>":
+                return !map.GetTileInfoOfActor(checkedActor).Contains(conditionSpecifics);
+            case "TileEffect":
+                return map.GetTileEffectOfActor(checkedActor).Contains(conditionSpecifics);
+            case "TileEffect<>":
+                return !map.GetTileEffectOfActor(checkedActor).Contains(conditionSpecifics);
+            case "AdjacentAlly<>":
+                return !map.AllyAdjacentToActor(checkedActor);
+            case "AdjacentAlly":
+                return map.AllyAdjacentToActor(checkedActor);
+            case "AdjacentAllySprite":
+                return map.AllyAdjacentWithSpriteName(checkedActor, conditionSpecifics);
+            case "AdjacentAllyCount>":
+                return map.GetAdjacentAllies(checkedActor).Count > int.Parse(conditionSpecifics);
+            case "AdjacentAllyCount<":
+                return map.GetAdjacentAllies(checkedActor).Count < int.Parse(conditionSpecifics);
+            case "AdjacentEnemyCount>":
+                return map.GetAdjacentEnemies(checkedActor).Count > int.Parse(conditionSpecifics);
+            case "AdjacentEnemyCount<":
+                return map.GetAdjacentEnemies(checkedActor).Count < int.Parse(conditionSpecifics);
             case "Distance":
-                return map.DistanceBetweenActors(target, attacker) <= int.Parse(conditionSpecifics);
+                return map.DistanceBetweenActors(checkedActor, comparedActor) <= int.Parse(conditionSpecifics);
             case "Distance>":
-                return map.DistanceBetweenActors(target, attacker) > int.Parse(conditionSpecifics);
-            case "Sprite":
-                return CheckConditionSpecifics(conditionSpecifics, target.GetSpriteName());
+                return map.DistanceBetweenActors(checkedActor, comparedActor) > int.Parse(conditionSpecifics);
             case "Health":
-                return CheckHealthConditions(conditionSpecifics, target);
-            case "HealthD":
-                return CheckHealthConditions(conditionSpecifics, target);
-            case "HealthA":
-                return CheckHealthConditions(conditionSpecifics, attacker);
-            case "EnergyA":
-                return CheckEnergyConditions(conditionSpecifics, attacker);
-            case "EnergyD":
-                return CheckEnergyConditions(conditionSpecifics, target);
+                return CheckHealthConditions(conditionSpecifics, checkedActor);
+            case "Energy":
+                return CheckEnergyConditions(conditionSpecifics, checkedActor);
             case "Weather":
                 return map.GetWeather().Contains(conditionSpecifics);
             case "Weather<>":
@@ -470,272 +451,174 @@ public class PassiveSkill : SkillEffect
                 return conditionSpecifics == map.GetTime();
             case "Time<>":
                 return conditionSpecifics != map.GetTime();
-            case "MentalStateA":
-                return conditionSpecifics == attacker.GetMentalState();
-            case "MentalStateD":
-                return conditionSpecifics == target.GetMentalState();
-            case "StatusA":
-                return attacker.StatusExists(conditionSpecifics);
-            case "StatusD":
-                return target.StatusExists(conditionSpecifics);
-            case "RangeD>":
-                return target.GetAttackRange() > int.Parse(conditionSpecifics);
-            case "RangeD<":
-                return target.GetAttackRange() < int.Parse(conditionSpecifics);
-            case "RangeA>":
-                return attacker.GetAttackRange() > int.Parse(conditionSpecifics);
-            case "RangeA<":
-                return attacker.GetAttackRange() < int.Parse(conditionSpecifics);
-            case "WeaponA":
-                return conditionSpecifics == attacker.GetWeaponType();
-            case "WeaponD":
-                return conditionSpecifics == target.GetWeaponType();
-            case "PassiveLevelsD>":
-                return target.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
-            case "PassiveLevelsD<":
-                return target.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
-            case "PassiveLevelsA>":
-                return attacker.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
-            case "PassiveLevelsA<":
-                return attacker.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
-            case "MoveType<>A":
-                return attacker.GetMoveType() != conditionSpecifics;
-            case "MoveType<>D":
-                return target.GetMoveType() != conditionSpecifics;
-            case "MoveTypeA":
-                return attacker.GetMoveType() == conditionSpecifics;
-            case "MoveTypeD":
-                return target.GetMoveType() == conditionSpecifics;
+            case "MentalState":
+                return conditionSpecifics == checkedActor.GetMentalState();
+            case "Status":
+                return checkedActor.StatusExists(conditionSpecifics);
+            case "Range>":
+                return checkedActor.GetAttackRange() > int.Parse(conditionSpecifics);
+            case "Range<":
+                return checkedActor.GetAttackRange() < int.Parse(conditionSpecifics);
+            case "Weapon":
+                return conditionSpecifics == checkedActor.GetWeaponType();
+            case "PassiveLevels>":
+                return checkedActor.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
+            case "PassiveLevels<":
+                return checkedActor.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
+            case "MoveType<>":
+                return checkedActor.GetMoveType() != conditionSpecifics;
+            case "MoveType":
+                return checkedActor.GetMoveType() == conditionSpecifics;
             case "Team":
                 if (conditionSpecifics == "Same")
                 {
-                    return attacker.GetTeam() == target.GetTeam();
+                    return checkedActor.GetTeam() == comparedActor.GetTeam();
                 }
-                return attacker.GetTeam() != target.GetTeam();
+                return checkedActor.GetTeam() != comparedActor.GetTeam();
+            // TODO look into seeing if we can combine these.
             case "Direction":
-                return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
+                return CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(comparedActor.GetDirection(), checkedActor.GetDirection()));
             case "Direction<>":
-                return !CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(target.GetDirection(), attacker.GetDirection()));
-            case "Direction<>D":
-                return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) != int.Parse(conditionSpecifics);
-            case "DirectionD":
-                return GetAttackDirectionFromDefenderPOV(attacker.GetDirection(), target.GetDirection()) == int.Parse(conditionSpecifics);
-            case "ElevationEqualsA":
-                return map.ReturnElevation(attacker.GetLocation()) == map.ReturnElevation(target.GetLocation());
-            case "Elevation>A":
-                return map.ReturnElevation(attacker.GetLocation()) > map.ReturnElevation(target.GetLocation());
-            case "Elevation<A":
-                return map.ReturnElevation(attacker.GetLocation()) < map.ReturnElevation(target.GetLocation());
-            case "ElementD":
-                return target.SameElement(conditionSpecifics);
-            case "Element<>D":
-                return target.SameElement(conditionSpecifics);
-            case "ElementA":
-                return attacker.SameElement(conditionSpecifics);
-            case "Element<>A":
-                return attacker.SameElement(conditionSpecifics);
-            case "SpeciesD":
-                return target.GetSpecies() == conditionSpecifics;
-            case "Species<>D":
-                return target.GetSpecies() != conditionSpecifics;
-            case "SpeciesA":
-                return attacker.GetSpecies() == conditionSpecifics;
-            case "Species<>A":
-                return attacker.GetSpecies() != conditionSpecifics;
-            case "TargetD":
-                return target.GetTarget() == attacker;
-            case "TargetD<>":
-                return target.GetTarget() != attacker;
+                return !CheckDirectionSpecifics(conditionSpecifics, CheckRelativeDirections(comparedActor.GetDirection(), checkedActor.GetDirection()));
+            case "IntDirection<>":
+                return GetAttackDirectionFromDefenderPOV(comparedActor.GetDirection(), checkedActor.GetDirection()) != int.Parse(conditionSpecifics);
+            case "IntDirection":
+                return GetAttackDirectionFromDefenderPOV(comparedActor.GetDirection(), checkedActor.GetDirection()) == int.Parse(conditionSpecifics);
+            case "ElevationEquals":
+                return map.ReturnElevation(checkedActor.GetLocation()) == map.ReturnElevation(comparedActor.GetLocation());
+            case "Elevation>":
+                return map.ReturnElevation(checkedActor.GetLocation()) > map.ReturnElevation(comparedActor.GetLocation());
+            case "Elevation<":
+                return map.ReturnElevation(checkedActor.GetLocation()) < map.ReturnElevation(comparedActor.GetLocation());
+            case "Element":
+                return checkedActor.SameElement(conditionSpecifics);
+            case "Element<>":
+                return !checkedActor.SameElement(conditionSpecifics);
+            case "Species":
+                return checkedActor.GetSpecies() == conditionSpecifics;
+            case "Species<>":
+                return checkedActor.GetSpecies() != conditionSpecifics;
+            // TODO change this wording.
+            case "Target":
+                return checkedActor.GetTarget() == comparedActor;
+            case "Target<>":
+                return checkedActor.GetTarget() != comparedActor;
             case "CounterAttack":
-                return target.CounterAttackAvailable();
-            case "AllyCount<A":
-                return map.AllAllies(attacker).Count < int.Parse(conditionSpecifics);
-            case "AllyCount>A":
-                return map.AllAllies(attacker).Count > int.Parse(conditionSpecifics);
-            case "Ally<EnemyA":
-                return map.AllAllies(attacker).Count < map.AllEnemies(attacker).Count;
-            case "Ally>EnemyA":
-                return map.AllAllies(attacker).Count > map.AllEnemies(attacker).Count;
-            case "AllyEqualsEnemyA":
-                return map.AllAllies(attacker).Count == map.AllEnemies(attacker).Count;
-            case "EnemyCount<A":
-                return map.AllEnemies(attacker).Count < int.Parse(conditionSpecifics);
-            case "EnemyCount>A":
-                return map.AllEnemies(attacker).Count > int.Parse(conditionSpecifics);
-            case "AllyCount<D":
-                return map.AllAllies(target).Count < int.Parse(conditionSpecifics);
-            case "AllyCount>D":
-                return map.AllAllies(target).Count > int.Parse(conditionSpecifics);
-            case "EnemyCount<D":
-                return map.AllEnemies(target).Count < int.Parse(conditionSpecifics);
-            case "EnemyCount>D":
-                return map.AllEnemies(target).Count > int.Parse(conditionSpecifics);
-            case "AverageHP>A":
-                return attacker.GetHealth() > map.AverageActorHealth();
-            case "AverageHP<A":
-                return attacker.GetHealth() < map.AverageActorHealth();
-            case "AverageHP>D":
-                return target.GetHealth() > map.AverageActorHealth();
-            case "AverageHP<D":
-                return target.GetHealth() < map.AverageActorHealth();
-            case "GrapplingA":
-                return attacker.Grappling();
-            case "GrappledA":
-                return attacker.Grappled();
-            case "GrapplingD":
-                return target.Grappling();
-            case "GrappledD":
-                return target.Grappled();
+                return checkedActor.CounterAttackAvailable();
+            case "AllyCount<":
+                return map.AllAllies(checkedActor).Count < int.Parse(conditionSpecifics);
+            case "AllyCount>":
+                return map.AllAllies(checkedActor).Count > int.Parse(conditionSpecifics);
+            case "Ally<Enemy":
+                return map.AllAllies(checkedActor).Count < map.AllEnemies(checkedActor).Count;
+            case "Ally>Enemy":
+                return map.AllAllies(checkedActor).Count > map.AllEnemies(checkedActor).Count;
+            case "AllyEqualsEnemy":
+                return map.AllAllies(checkedActor).Count == map.AllEnemies(checkedActor).Count;
+            case "EnemyCount<":
+                return map.AllEnemies(checkedActor).Count < int.Parse(conditionSpecifics);
+            case "EnemyCount>":
+                return map.AllEnemies(checkedActor).Count > int.Parse(conditionSpecifics);
+            case "Grappling":
+                return checkedActor.Grappling();
+            case "Grappled":
+                return checkedActor.Grappled();
             // Bad RNG means you want to roll higher to avoid the chance.
-            case "BadRNGA":
-                return utility.Roll(attacker.GetLuck()) < int.Parse(conditionSpecifics);
-            case "BadRNGD":
-                return utility.Roll(target.GetLuck()) < int.Parse(conditionSpecifics);
+            case "BadRNG":
+                return utility.Roll(checkedActor.GetLuck()) < int.Parse(conditionSpecifics);
             // Good RNG means you want to roll lower to get the chance.
-            case "GoodRNGA":
-                return utility.Roll(-attacker.GetLuck()) < int.Parse(conditionSpecifics);
-            case "GoodRNGD":
-                return utility.Roll(-target.GetLuck()) < int.Parse(conditionSpecifics);
-            case "HurtByA":
-                return attacker.WasHurtByActor(target);
-            case "HurtBy<>A":
-                return !attacker.WasHurtByActor(target);
-            case "HurtMostA":
-                return attacker.GetHurtBy() == target;
-            case "HurtLeastA":
-                return attacker.GetHurtBy(false) == target;
-            case "HurtByD":
-                return target.WasHurtByActor(attacker);
-            case "HurtBy<>D":
-                return !target.WasHurtByActor(attacker);
-            case "HurtMostD":
-                return target.GetHurtBy() == attacker;
-            case "HurtLeastD":
-                return target.GetHurtBy(false) == attacker;
-            case "FirstStrikeA":
-                return attacker.ReturnTotalRoundAttacks() <= 0;
-            case "FirstStrikeD":
-                return target.ReturnTotalRoundAttacks() <= 0;
-            case "MovedA":
-                return attacker.ReturnCurrentRoundMoves() > 0;
-            case "Moved<>A":
-                return attacker.ReturnCurrentRoundMoves() == 0;
-            case "MovedD":
-                return target.ReturnCurrentRoundMoves() > 0;
-            case "Moved<>D":
-                return target.ReturnCurrentRoundMoves() == 0;
-            case "SkillUsedA":
-                return attacker.ReturnCurrentRoundSkills() > 0;
-            case "SkillUsed<>A":
-                return attacker.ReturnCurrentRoundSkills() == 0;
-            case "SkillUsedD":
-                return target.ReturnCurrentRoundSkills() > 0;
-            case "SkillUsed<>D":
-                return target.ReturnCurrentRoundSkills() == 0;
-            case "AttackedD":
-                return target.ReturnCurrentRoundAttacks() > 0;
-            case "Attacked<>D":
-                return target.ReturnCurrentRoundAttacks() == 0;
-            case "PrevMovedA":
-                return attacker.ReturnPreviousRoundMoves() > 0;
-            case "PrevMoved<>A":
-                return attacker.ReturnPreviousRoundMoves() == 0;
-            case "PrevMovedD":
-                return target.ReturnPreviousRoundMoves() > 0;
-            case "PrevMoved<>D":
-                return target.ReturnPreviousRoundMoves() == 0;
-            case "PrevSkillUsedA":
-                return attacker.ReturnPreviousRoundSkills() > 0;
-            case "PrevSkillUsed<>A":
-                return attacker.ReturnPreviousRoundSkills() == 0;
-            case "PrevSkillUsedD":
-                return target.ReturnPreviousRoundSkills() > 0;
-            case "PrevSkillUsed<>D":
-                return target.ReturnPreviousRoundSkills() == 0;
-            case "PrevAttackedD":
-                return target.ReturnPreviousRoundAttacks() > 0;
-            case "PrevAttacked<>D":
-                return target.ReturnPreviousRoundAttacks() == 0;
-            case "AttackCountA":
-                return attacker.ReturnCurrentRoundAttacks() == int.Parse(conditionSpecifics);
-            case "AttackCount>A":
-                return attacker.ReturnCurrentRoundAttacks() > int.Parse(conditionSpecifics);
-            case "AttackCount<A":
-                return attacker.ReturnCurrentRoundAttacks() < int.Parse(conditionSpecifics);
-            case "AttackCount%A":
-                return (attacker.ReturnCurrentRoundAttacks() % int.Parse(conditionSpecifics) == 0);
-            case "PrevAttackCountA":
-                return attacker.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
-            case "PrevAttackCount>A":
-                return attacker.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
-            case "PrevAttackCount<A":
-                return attacker.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
-            case "PrevAttackCount%A":
-                return (attacker.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
-            case "PrevAttackCountD":
-                return target.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
-            case "PrevAttackCount>D":
-                return target.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
-            case "PrevAttackCount<D":
-                return target.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
-            case "PrevAttackCount%D":
-                return (target.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
-            case "PrevSkillCountA":
-                return attacker.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
-            case "PrevSkillCount>A":
-                return attacker.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
-            case "PrevSkillCount<A":
-                return attacker.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
-            case "PrevSkillCount%A":
-                return (attacker.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
-            case "PrevSkillCountD":
-                return target.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
-            case "PrevSkillCount>D":
-                return target.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
-            case "PrevSkillCount<D":
-                return target.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
-            case "PrevSkillCount%D":
-                return (target.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
-            case "PrevMoveCountA":
-                return attacker.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
-            case "PrevMoveCount>A":
-                return attacker.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
-            case "PrevMoveCount<A":
-                return attacker.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
-            case "PrevMoveCount%A":
-                return (attacker.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
-            case "PrevMoveCountD":
-                return target.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
-            case "PrevMoveCount>D":
-                return target.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
-            case "PrevMoveCount<D":
-                return target.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
-            case "PrevMoveCount%D":
-                return (target.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
-            case "DefendCountD":
-                return target.ReturnCurrentRoundDefends() == int.Parse(conditionSpecifics);
-            case "DefendCount>D":
-                return target.ReturnCurrentRoundDefends() > int.Parse(conditionSpecifics);
-            case "DefendCount<D":
-                return target.ReturnCurrentRoundDefends() < int.Parse(conditionSpecifics);
-            case "DefendCount%D":
-                return (target.ReturnCurrentRoundDefends() % int.Parse(conditionSpecifics) == 0);
-            case "PrevDefendCountA":
-                return attacker.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
-            case "PrevDefendCount>A":
-                return attacker.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
-            case "PrevDefendCount<A":
-                return attacker.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
-            case "PrevDefendCount%A":
-                return (attacker.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
-            case "PrevDefendCountD":
-                return target.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
-            case "PrevDefendCount>D":
-                return target.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
-            case "PrevDefendCount<D":
-                return target.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
-            case "PrevDefendCount%D":
-                return (target.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
+            case "GoodRNG":
+                return utility.Roll(-checkedActor.GetLuck()) < int.Parse(conditionSpecifics);
+            case "HurtBy":
+                return checkedActor.WasHurtByActor(comparedActor);
+            case "HurtBy<>":
+                return !checkedActor.WasHurtByActor(comparedActor);
+            case "HurtMost":
+                return checkedActor.GetHurtBy() == comparedActor;
+            case "HurtLeast":
+                return checkedActor.GetHurtBy(false) == comparedActor;
+            case "FirstStrike":
+                return checkedActor.ReturnTotalRoundAttacks() <= 0;
+            case "Moved":
+                return checkedActor.ReturnCurrentRoundMoves() > 0;
+            case "Moved<>":
+                return checkedActor.ReturnCurrentRoundMoves() == 0;
+            case "SkillUsed":
+                return checkedActor.ReturnCurrentRoundSkills() > 0;
+            case "SkillUsed<>":
+                return checkedActor.ReturnCurrentRoundSkills() == 0;
+            case "Attacked":
+                return checkedActor.ReturnCurrentRoundAttacks() > 0;
+            case "Attacked<>":
+                return checkedActor.ReturnCurrentRoundAttacks() == 0;
+            case "Defended":
+                return checkedActor.ReturnCurrentRoundDefends() > 0;
+            case "Defended<>":
+                return checkedActor.ReturnCurrentRoundDefends() == 0;
+            case "PrevDefended":
+                return checkedActor.ReturnPreviousRoundDefends() > 0;
+            case "PrevDefended<>":
+                return checkedActor.ReturnPreviousRoundDefends() == 0;
+            case "PrevMoved":
+                return checkedActor.ReturnPreviousRoundMoves() > 0;
+            case "PrevMoved<>":
+                return checkedActor.ReturnPreviousRoundMoves() == 0;
+            case "PrevSkillUsed":
+                return checkedActor.ReturnPreviousRoundSkills() > 0;
+            case "PrevSkillUsed<>":
+                return checkedActor.ReturnPreviousRoundSkills() == 0;
+            case "PrevAttacked":
+                return checkedActor.ReturnPreviousRoundAttacks() > 0;
+            case "PrevAttacked<>":
+                return checkedActor.ReturnPreviousRoundAttacks() == 0;
+            case "AttackCount":
+                return checkedActor.ReturnCurrentRoundAttacks() == int.Parse(conditionSpecifics);
+            case "AttackCount>":
+                return checkedActor.ReturnCurrentRoundAttacks() > int.Parse(conditionSpecifics);
+            case "AttackCount<":
+                return checkedActor.ReturnCurrentRoundAttacks() < int.Parse(conditionSpecifics);
+            case "AttackCount%":
+                return (checkedActor.ReturnCurrentRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevAttackCount":
+                return checkedActor.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
+            case "PrevAttackCount>":
+                return checkedActor.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
+            case "PrevAttackCount<":
+                return checkedActor.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
+            case "PrevAttackCount%":
+                return (checkedActor.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevSkillCount":
+                return checkedActor.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
+            case "PrevSkillCount>":
+                return checkedActor.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
+            case "PrevSkillCount<":
+                return checkedActor.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
+            case "PrevSkillCount%":
+                return (checkedActor.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
+            case "PrevMoveCount":
+                return checkedActor.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
+            case "PrevMoveCount>":
+                return checkedActor.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
+            case "PrevMoveCount<":
+                return checkedActor.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
+            case "PrevMoveCount%":
+                return (checkedActor.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
+            case "DefendCount":
+                return checkedActor.ReturnCurrentRoundDefends() == int.Parse(conditionSpecifics);
+            case "DefendCount>":
+                return checkedActor.ReturnCurrentRoundDefends() > int.Parse(conditionSpecifics);
+            case "DefendCount<":
+                return checkedActor.ReturnCurrentRoundDefends() < int.Parse(conditionSpecifics);
+            case "DefendCount%":
+                return (checkedActor.ReturnCurrentRoundDefends() % int.Parse(conditionSpecifics) == 0);
+            case "PrevDefendCount":
+                return checkedActor.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
+            case "PrevDefendCount>":
+                return checkedActor.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
+            case "PrevDefendCount<":
+                return checkedActor.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
+            case "PrevDefendCount%":
+                return (checkedActor.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
         }
         return true;
     }

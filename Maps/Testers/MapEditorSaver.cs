@@ -8,37 +8,81 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SavedMaps", menuName = "ScriptableObjects/DataContainers/SavedData/SavedMaps", order = 1)]
 public class MapEditorSaver : SavedData
 {
-    public int maxMaps = 999999;
-    public int currentMap;
-    public string delimiterTwo;
-    public void ChangeCurrentMap(MapEditor map, bool right = true)
+    public List<string> savedKeys;
+    public bool AddKey(string newKey)
     {
-        currentMap = utility.ChangeIndex(currentMap, right, maxMaps);
+        if (savedKeys.Contains(newKey)){return false;}
+        savedKeys.Add(newKey);
+        return true;
+    }
+    public void DeleteKey(string key)
+    {
+        if (!KeyExists(key)){return;}
+        savedKeys.Remove(key);
+        SaveKeys();
+        // Delete the file.
+        dataPath = Application.persistentDataPath + "/" + filename + currentMapName;
+        if (File.Exists(dataPath))
+        {
+            File.Delete(dataPath);
+            Debug.Log("File deleted!");
+        }
+    }
+    public bool KeyExists(string key)
+    {
+        return savedKeys.Contains(key);
+    }
+    public void SaveKeys()
+    {
+        dataPath = Application.persistentDataPath + "/" + filename;
+        allData = String.Join(delimiter, savedKeys);
+        File.WriteAllText(dataPath, allData);
+    }
+    public void LoadKeys()
+    {
+        savedKeys.Clear();
+        dataPath = Application.persistentDataPath + "/" + filename;
+        if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
+        else{return;}
+        savedKeys = allData.Split(delimiter).ToList();
+        utility.RemoveEmptyListItems(savedKeys);
+    }
+    public string currentMapName;
+    public string delimiterTwo;
+    public void SetCurrentMap(MapEditor map, string newInfo)
+    {
+        currentMapName = newInfo;
         LoadMap(map);
     }
-    public void SetCurrentMap(MapEditor map, int newInfo)
+    public void SaveMapToName(MapEditor map, string newInfo)
     {
-        if (newInfo > maxMaps)
-        {
-            newInfo = maxMaps;
-        }
-        currentMap = newInfo;
-        LoadMap(map);
+        currentMapName = newInfo;
+        SaveMap(map);
+    }
+    public string ReturnSaveMapDataString(MapEditor map)
+    {
+        string data = "";
+        data += "Tiles=" + String.Join(delimiterTwo, map.cMapInfo) + delimiter;
+        data += "TEffects=" + String.Join(delimiterTwo, map.cTerrainEffects) + delimiter;
+        data += "Elevations=" + String.Join(delimiterTwo, map.cTileElevations) + delimiter;
+        data += "Buildings=" + String.Join(delimiterTwo, map.cBuildings) + delimiter;
+        data += "Borders=" + String.Join(delimiterTwo, map.cBorders);
+        return data;
     }
     public void SaveMap(MapEditor map)
     {
-        dataPath = Application.persistentDataPath + "/" + filename + currentMap;
-        allData = "";
-        allData += "Tiles=" + String.Join(delimiterTwo, map.cMapInfo) + delimiter;
-        allData += "TEffects=" + String.Join(delimiterTwo, map.cTerrainEffects) + delimiter;
-        allData += "Elevations=" + String.Join(delimiterTwo, map.cTileElevations) + delimiter;
-        allData += "Buildings=" + String.Join(delimiterTwo, map.cBuildings) + delimiter;
-        allData += "Borders=" + String.Join(delimiterTwo, map.cBorders);
+        currentMapName = map.cMap;
+        if (AddKey(currentMapName))
+        {
+            SaveKeys();
+        }
+        dataPath = Application.persistentDataPath + "/" + filename + currentMapName;
+        allData = ReturnSaveMapDataString(map);
         File.WriteAllText(dataPath, allData);
     }
     public void LoadMap(MapEditor map)
     {
-        dataPath = Application.persistentDataPath + "/" + filename + currentMap;
+        dataPath = Application.persistentDataPath + "/" + filename + currentMapName;
         if (File.Exists(dataPath)){allData = File.ReadAllText(dataPath);}
         else
         {
@@ -48,7 +92,7 @@ public class MapEditorSaver : SavedData
         dataList = allData.Split(delimiter).ToList();
         for (int i = 0; i < dataList.Count; i++)
         {
-            if (!LoadStat(dataList[i], map))
+            if (!LoadMapStat(dataList[i], map))
             {
                 map.InitializeNewMap();
                 return;
@@ -56,7 +100,7 @@ public class MapEditorSaver : SavedData
         }
         map.UndoEdits();
     }
-    protected virtual bool LoadStat(string data, MapEditor map)
+    protected virtual bool LoadMapStat(string data, MapEditor map)
     {
         string[] blocks = data.Split("=");
         if (blocks.Length < 2){return false;}

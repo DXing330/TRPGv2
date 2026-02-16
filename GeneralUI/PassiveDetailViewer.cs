@@ -332,7 +332,7 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if there are more than " + specifics + " enemies adjacent to the target";
             case "AdjacentEnemyCount<D":
                 return " if there are less than " + specifics + " enemies adjacent to the target";
-            case "Direction":
+            case "DirectionA":
                 switch (specifics)
                 {
                     case "Front":
@@ -345,7 +345,7 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if the attacker is facing the target";
                 }
                 break;
-            case "Direction<>":
+            case "Direction<>A":
                 switch (specifics)
                 {
                     case "Front":
@@ -479,13 +479,13 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if you do have the " + specifics + " passive";
             case "Passive<>":
                 return " if you do not have the " + specifics + " passive";
-            case "PassiveLevelsD>":
+            case "PassiveLevels>D":
                 return " if the target has more than " + specifics + " passive levels";
-            case "PassiveLevelsD<":
+            case "PassiveLevels<D":
                 return " if the target has less than " + specifics + " passive levels";
-            case "PassiveLevelsA>":
+            case "PassiveLevels>A":
                 return " if the attacker's have more than " + specifics + " passive levels";
-            case "PassiveLevelsA<":
+            case "PassiveLevels<A":
                 return " if the attacker's have less than " + specifics + " passive levels";
             case "Counter":
                 return " if your counter is greater than " + specifics;
@@ -497,9 +497,9 @@ public class PassiveDetailViewer : MonoBehaviour
                     return " if you are on the same team";
                 }
                 return " if you are not on the same team";
-            case "Direction<>D":
+            case "IntDirection<>D":
                 return " if not attacking" + RelativeDirectionDescriptions(specifics);
-            case "DirectionD":
+            case "IntDirectionD":
                 return " if attacking" + RelativeDirectionDescriptions(specifics);
             case "Element":
                 return " if " + specifics + " element";
@@ -523,7 +523,7 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the attacker is not " + specifics;
             case "TargetD:":
                 return " if the target is targeting the attacker";
-            case "TargetD<>":
+            case "Target<>D":
                 return " if the target is not targeting the attacker";
             case "AverageHP>":
                 return " if your health is greater than the average health of the battle";
@@ -599,6 +599,18 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target has attacked this round";
             case "Attacked<>D":
                 return " if the target has not attacked this round";
+            case "DefendedD":
+                return " if the target was attacked this round";
+            case "Defended<>D":
+                return " if the target was not attacked this round";
+            case "PrevDefendedD":
+                return " if the target was attacked last round";
+            case "PrevDefended<>D":
+                return " if the target was not attacked last round";
+            case "PrevDefendedA":
+                return " if the attacker was attacked last round";
+            case "PrevDefended<>A":
+                return " if the attacker was not attacked last round";
             case "PrevMovedA":
                 return " if the attacker has moved last round";
             case "PrevMoved<>A":

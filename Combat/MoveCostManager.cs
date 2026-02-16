@@ -436,19 +436,23 @@ public class MoveCostManager : MonoBehaviour
         map.UpdateActors();
     }
 
-    public void DisplaceDamage(TacticActor actor, int force, BattleMap map, int nextTile, bool actorCollide = false, TacticActor actor2 = null)
+    public void DisplaceDamage(TacticActor actor, int force, BattleMap map, int nextTile, bool actorCollide = false, TacticActor actor2 = null, bool buildingCollide = false)
     {
         int displaceDamage = Mathf.Max(actor.GetWeight(), 1) * force * 6;
         int collideDamage = actor.TakeEffectDamage(displaceDamage);
-        if (!actorCollide)
+        if (buildingCollide)
         {
-            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with a " + mapInfo[nextTile] + " and takes " + collideDamage + " damage.");
+            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with a " + map.GetBuildingOnTile(nextTile) + " and takes " + collideDamage + " damage.");
         }
-        else
+        else if (actorCollide)
         {
             map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with " + actor2.GetPersonalName() + " and takes " + collideDamage + " damage.");
             collideDamage = actor2.TakeEffectDamage(displaceDamage);
             map.combatLog.UpdateNewestLog(actor2.GetPersonalName() + " takes " + collideDamage + " damage.");
+        }
+        else
+        {
+            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " collides with a " + mapInfo[nextTile] + " and takes " + collideDamage + " damage.");
         }
     }
 
@@ -475,6 +479,14 @@ public class MoveCostManager : MonoBehaviour
             if (stopDisplacement.Contains(mapInfo[nextTile]))
             {
                 DisplaceDamage(actor, force, map, nextTile);
+                break;
+            }
+            // TODO Can't push someone through a wall.
+            // Need to check the border in the opposite direction of the next tile.
+            // Can't push someone through a building.
+            if (stopDisplacement.Contains(map.GetBuildingOnTile(nextTile)))
+            {
+                DisplaceDamage(actor, force, map, nextTile, false, null, true);
                 break;
             }
             // Tiles are passable if no one is occupying them.

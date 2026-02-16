@@ -396,7 +396,7 @@ public class SkillEffect : ScriptableObject
                 target.ResetActions();
                 break;
             case "MentalState":
-                target.SetMentalState(effectSpecifics);
+                target.SetMentalState(effectSpecifics, level);
                 break;
             case "Amnesia":
                 target.RemoveRandomTempActiveSkill();
