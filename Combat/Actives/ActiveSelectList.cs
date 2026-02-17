@@ -76,7 +76,7 @@ public class ActiveSelectList : SelectList
         // Show the spell by name.
         SetSelectedSpell(battle.GetTurnActor().GetSpells()[selectedIndex]);
         activeManager.SetSpell(battle.GetTurnActor().GetSpells()[selectedIndex]);
-        UpdateSelectedText(activeManager.magicSpell.GetSkillType());
+        UpdateSelectedText(activeManager.magicSpell.GetSkillName());
         if (battle.GetTurnActor().GetSilenced())
         {
             ErrorMessage("Can't use spells while silenced.");

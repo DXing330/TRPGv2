@@ -39,7 +39,7 @@ public class ActiveSkill : SkillEffect
     }
     public string skillType;
     public string GetSkillType(){return skillType;}
-    public void LoadSkillFromString(string skillData)
+    public virtual void LoadSkillFromString(string skillData)
     {
         skillInfo = skillData;
         skillInfoList = new List<string>(skillData.Split(activeSkillDelimiter));
@@ -49,12 +49,12 @@ public class ActiveSkill : SkillEffect
     {
         skillName = "";
         skillType = "";
-        energyCost = "";
-        actionCost = "";
-        range = "";
-        rangeShape = "";
+        energyCost = "999";
+        actionCost = "999";
+        range = "0";
+        rangeShape = "0";
         shape = "";
-        span = "";
+        span = "0";
         effect = "";
         specifics = "";
         power = "";
@@ -62,6 +62,7 @@ public class ActiveSkill : SkillEffect
     public virtual void LoadSkill(List<string> skillData)
     {
         ResetSkillInfo();
+        if (skillData.Count <= 10){return;}
         skillName = skillData[0];
         skillType = skillData[1];
         energyCost = skillData[2];
@@ -175,7 +176,7 @@ public class ActiveSkill : SkillEffect
         if (span.Length <= 0) { return 0; }
         return int.Parse(span);
     }
-    int selectedTile;
+    public int selectedTile;
     public void ResetSelectedTile(){ selectedTile = -1; }
     public void SetSelectedTile(int newInfo) { selectedTile = newInfo; }
     public int GetSelectedTile(){ return selectedTile; }

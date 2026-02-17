@@ -492,6 +492,7 @@ public class ActorStats : ActorInitialStats
     public void LearnSpell(string newInfo)
     {
         if (newInfo.Length < 6){return;}
+        if (spells.Contains(newInfo)){return;}
         spells.Add(newInfo);
     }
     public void LearnTempSpell(string newInfo)
@@ -518,16 +519,8 @@ public class ActorStats : ActorInitialStats
     {
         List<string> spellNames = new List<string>();
         if (SpellCount() <= 0) { return spellNames; }
-        for (int i = 0; i < spells.Count; i++)
-        {
-            string[] blocks = spells[i].Split(activeSkillDelimiter);
-            spellNames.Add(blocks[0]);
-        }
-        for (int i = 0; i < tempSpells.Count; i++)
-        {
-            string[] blocks = tempSpells[i].Split(activeSkillDelimiter);
-            spellNames.Add(blocks[0]);
-        }
+        spellNames.AddRange(spells);
+        spellNames.AddRange(tempSpells);
         return spellNames;
     }
     public int SpellCount()

@@ -7,7 +7,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MagicSpell", menuName = "ScriptableObjects/BattleLogic/MagicSpell", order = 1)]
 public class MagicSpell : ActiveSkill
 {
-    public MapUtility mapUtility;
+    public override void LoadSkillFromString(string skillData)
+    {
+        skillInfo = standardSpells.ReturnValue(skillData);
+        if (skillInfo == "")
+        {
+            skillInfo = skillData;
+        }
+        skillInfoList = new List<string>(skillInfo.Split(activeSkillDelimiter));
+        LoadSkill(skillInfoList);
+    }
     public override bool Activatable(TacticActor actor)
     {
         if (actor.GetSilenced()){return false;}

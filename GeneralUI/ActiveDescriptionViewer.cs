@@ -118,6 +118,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Remove " + ASD(s) + " from the target(s).";
             case "Summon":
                 return "Summon a " + ASD(s) + ".";
+            case "RespawnSummon":
+                return "Summon a " + ASD(s) + " at your starting location.";
             case "MassSummon":
                 return "Summon " + ASD(s) + "(s).";
             case "RandomSummon":

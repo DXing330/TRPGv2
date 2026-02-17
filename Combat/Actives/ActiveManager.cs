@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ public class ActiveManager : MonoBehaviour
         List<int> powers = magicSpell.GetAllPowers();
         for (int i = 0; i < effects.Count; i++)
         {
-            ApplyActiveEffects(battle, targets, effects[i], specifics[i], powers[i], magicSpell.GetSelectedTile());
+            ApplyActiveEffects(battle, targets, effects[i], specifics[i], powers[i], magicSpell.GetSelectedTile(), true);
         }
     }
     public ActiveSkill active;
@@ -124,16 +125,21 @@ public class ActiveManager : MonoBehaviour
         return pathfinder.mapUtility.GetTilesByShapeSpan(startTile, shape, range, pathfinder.mapSize, skillUser.GetLocation());
     }
 
-    protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power, int selectedTile = -1)
+    protected void ApplyActiveEffects(BattleManager battle, List<TacticActor> targets, string effect, string specifics, int power, int selectedTile = -1, bool spellCast = false)
     {
         int targetTile = -1;
+        string powerString = active.GetPowerString();
+        if (spellCast)
+        {
+            powerString = magicSpell.GetPowerString();
+        }
         // There are some effects that naturally target a specific group of actors.
         if (effect.Contains("AllSpritesEquals"))
         {
             string[] allSpriteDetails = effect.Split("Equals");
             string specificSprite = allSpriteDetails[1];
             targets = battle.map.AllActorsBySprite(specificSprite);
-            active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+            active.AffectActors(targets, specifics, powerString, 1);
             return;
         }
         if (effect.Contains("AllSpeciesEquals"))
@@ -141,7 +147,7 @@ public class ActiveManager : MonoBehaviour
             string[] allSpeciesDetails = effect.Split("Equals");
             string specificSpecies = allSpeciesDetails[1];
             targets = battle.map.AllActorsBySpecies(specificSpecies);
-            active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+            active.AffectActors(targets, specifics, powerString, 1);
             return;
         }
         switch (effect)
@@ -192,6 +198,15 @@ public class ActiveManager : MonoBehaviour
                     battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
                 }
                 return;
+            case "RespawnSummon":
+                // Try to respawn at the initial location.
+                selectedTile = skillUser.GetInitialLocation();
+                if (battle.map.GetActorOnTile(selectedTile) == null)
+                {
+                    // Create a new actor on that location on the same team.
+                    battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
+                }
+                return;
             case "TributeSummon":
                 // Create a new actor on that location on the same team.
                 battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
@@ -215,7 +230,7 @@ public class ActiveManager : MonoBehaviour
                     // Create a new actor on that location on the same team.
                     // Pick a random actor from the specifics list.
                     string[] randomSummon = specifics.Split(",");
-                    battle.SpawnAndAddActor(selectedTile, randomSummon[Random.Range(0, randomSummon.Length)], skillUser.GetTeam());
+                    battle.SpawnAndAddActor(selectedTile, randomSummon[UnityEngine.Random.Range(0, randomSummon.Length)], skillUser.GetTeam());
                 }
                 return;
             case "MassRandomSummon":
@@ -224,7 +239,7 @@ public class ActiveManager : MonoBehaviour
                 {
                     if (battle.map.GetActorOnTile(targetedTiles[i]) == null)
                     {
-                        battle.SpawnAndAddActor(targetedTiles[i], randomPool[Random.Range(0, randomPool.Length)], skillUser.GetTeam());
+                        battle.SpawnAndAddActor(targetedTiles[i], randomPool[UnityEngine.Random.Range(0, randomPool.Length)], skillUser.GetTeam());
                     }
                 }
                 return;
@@ -516,11 +531,11 @@ public class ActiveManager : MonoBehaviour
             case "AllAllies":
                 // Get all allies from the map.
                 targets = battle.map.AllAllies(skillUser);
-                active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+                active.AffectActors(targets, specifics, powerString, 1);
                 return;
             case "AllEnemies":
                 targets = battle.map.AllEnemies(skillUser);
-                active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+                active.AffectActors(targets, specifics, powerString, 1);
                 return;
             case "Command":
                 for (int i = 0; i < targets.Count; i++)
@@ -535,7 +550,7 @@ public class ActiveManager : MonoBehaviour
                         // We can handle attack skill commands later.
                         case "Skill":
                         // Try to make all allies use a certain type of skill.
-                        string commandSkill = targets[i].ReturnSkillContainingName(active.GetPowerString());
+                        string commandSkill = targets[i].ReturnSkillContainingName(powerString);
                         if (activeData.KeyExists(commandSkill))
                         {
                             string[] commandSkillDetails = activeData.ReturnValue(commandSkill).Split(active.activeSkillDelimiter);
@@ -568,7 +583,7 @@ public class ActiveManager : MonoBehaviour
             case "ChainLightning":
                 // Keep track of the targets.
                 targets = battle.map.ChainLightningTargets(targetedTiles[0]);
-                active.AffectActors(targets, specifics, active.GetPowerString(), 1);
+                active.AffectActors(targets, specifics, powerString, 1);
                 return;
             case "MapChainLightning":
                 // Keep track of the targets.
@@ -576,7 +591,7 @@ public class ActiveManager : MonoBehaviour
                 for (int i = 0; i < targets.Count; i++)
                 {
                     if (targets[i] == null){continue;}
-                    battle.map.ChangeTile(targets[i].GetLocation(), specifics, active.GetPowerString());
+                    battle.map.ChangeTile(targets[i].GetLocation(), specifics, powerString);
                 }
                 return;
             case "Learn":
@@ -610,6 +625,23 @@ public class ActiveManager : MonoBehaviour
                 battle.map.AddAura(skillUser, power, specifics);
                 return;
             case "Manaize":
+                // Light/Dark is different.
+                if (specifics == "Light")
+                {
+                    if (battle.map.GetWeather() == "Day")
+                    {
+                        skillUser.RestoreMana(power);
+                    }
+                    return;
+                }
+                else if (specifics == "Dark")
+                {
+                    if (battle.map.GetWeather() == "Night")
+                    {
+                        skillUser.RestoreMana(power);
+                    }
+                    return;
+                }
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
                     // Check if the target tile is of the terrain effect.

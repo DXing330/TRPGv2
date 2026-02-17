@@ -53,7 +53,7 @@ public class StSSettings : SavedData
     public string ReturnBossModifiers()
     {
         // Handle some random buffs here.
-        return eliteModifiersPerDifficulty.ReturnValueAtIndex(difficultySetting);
+        return bossModifiersPerDifficulty.ReturnValueAtIndex(difficultySetting);
     }
     
     public override void Save()

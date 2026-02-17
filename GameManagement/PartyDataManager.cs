@@ -10,6 +10,8 @@ public class PartyDataManager : MonoBehaviour
     }
     // This is the one that the battle will actually read.
     public StatDatabase actorStats;
+    public TacticActor dummyActor;
+    public StatDatabase standardAttributes;
     public CharacterList fullParty;
     public List<PartyData> allParties;
     // For player + familiar.
@@ -67,7 +69,6 @@ public class PartyDataManager : MonoBehaviour
             else
             {
                 inventory.LoseGold();
-                // Maybe lose guild rank here.
             }
         }
         // Add exhaustion to all party members.
@@ -222,10 +223,15 @@ public class PartyDataManager : MonoBehaviour
         HireMember(actorStats.ReturnValue(spriteName), spriteName);
     }
 
+    // Add Random Attributes Here.
     public void HireMember(string stats, string personalName)
     {
         int nextID = guildCard.GetNextID();
         guildCard.IncrementNextID();
+        // Dummy Actor Loads Stats And Checks If Attributes Are Already Assigned.
+        dummyActor.SetInitialStatsFromString(stats);
+        dummyActor.InitializeAttributes(standardAttributes);
+        stats = dummyActor.GetInitialStats();
         mainPartyData.AddMember(stats, personalName, nextID.ToString());
         SetFullParty();
     }

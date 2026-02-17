@@ -45,7 +45,7 @@ public class AIConditionChecker : ScriptableObject
         List<string> actorSpells = actor.GetSpells();
         for (int i = 0; i < actorSpells.Count; i++)
         {
-            spell.LoadSkillFromString(actorSpells[i]);
+            spell.LoadSkillFromString(basicSpellData.ReturnValue(actorSpells[i]));
             if (spell.GetEffect().Contains(skillEffect) && spell.Activatable(actor))
             {
                 return actorSpells[i];

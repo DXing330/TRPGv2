@@ -279,15 +279,33 @@ public class ActorInitialStats : ActorPassives
     }
     public List<string> attributes;
     public void ResetAttributes(){attributes.Clear();}
+    public void AddAttribute(string newAttribute)
+    {
+        if (newAttribute.Length < 2){return;}
+        attributes.Add(newAttribute);
+    }
     public void SetAttributesFromString(string newInfo, string delimiter = ",")
     {
         ResetAttributes();
         attributes = newInfo.Split(delimiter).ToList();
+        utility.RemoveEmptyListItems(attributes);
     }
     public string GetAttributeString()
     {
         if (attributes.Count == 0) { return ""; }
         return String.Join(",", attributes);
+    }
+    public void InitializeAttributes(StatDatabase attrDB)
+    {
+        string randomAttr = attrDB.ReturnRandomKey();
+        if (attrDB.ReturnValue(randomAttr) == "1" && attributes.Count < 3)
+        {
+            AddAttribute(randomAttr);
+        }
+        if (attributes.Count < 3)
+        {
+            InitializeAttributes(attrDB);
+        }
     }
     public List<string> GetAttributes()
     {

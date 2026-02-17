@@ -669,8 +669,11 @@ public class BattleManager : MonoBehaviour
             case "Summon Skill":
                 NPCSkillAction(actionsLeft, actorAI.ReturnSkillWithEffect(turnActor, "Summon"));
                 return;
+            case "Spell":
+                NPCSpellAction(actionsLeft, turnDetails[1]);
+                return;
             case "Summon Spell":
-                NPCSkillAction(actionsLeft, actorAI.ReturnSpellWithEffect(turnActor, "Summon"));
+                NPCSpellAction(actionsLeft, actorAI.ReturnSpellWithEffect(turnActor, "Summon"));
                 return;
             case "One Time Skill":
                 turnActor.IncrementCounter();
@@ -810,7 +813,7 @@ public class BattleManager : MonoBehaviour
                 StandardNPCAction(actionsLeft);
                 return;
             }
-            activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
+            activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder, true);
             // Bool = TRUE for spells.
             if (!actorAI.ValidSkillTargets(turnActor, map, activeManager, true))
             {

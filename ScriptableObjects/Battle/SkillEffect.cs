@@ -163,6 +163,7 @@ public class SkillEffect : ScriptableObject
                 break;
             case "LightDamage":
                 int lightDamage = int.Parse(effectSpecifics) * level;
+                target.RemoveInvisibility();
                 lightDamage = target.ApplyMagicResist(lightDamage);
                 lightDamage = target.TakeEffectDamage(lightDamage, "Light");
                 if (combatLog != null && lightDamage > 0)
@@ -348,7 +349,7 @@ public class SkillEffect : ScriptableObject
             case "TemporarySkill":
                 target.AddTempActive(effectSpecifics);
                 break;
-            case "SingleTempSkill":
+            case "SingleTemporarySkill":
                 // If the target has it then do nothing.
                 if (!target.TempActiveExists(effectSpecifics))
                 {
@@ -356,10 +357,10 @@ public class SkillEffect : ScriptableObject
                 }
                 break;
             case "Spell":
-                target.LearnSpell(standardSpells.ReturnValue(effectSpecifics));
+                target.LearnSpell(effectSpecifics);
                 break;
             case "TemporarySpell":
-                target.LearnTempSpell(standardSpells.ReturnValue(effectSpecifics));
+                target.LearnTempSpell(effectSpecifics);
                 break;
             case "Speed":
                 target.UpdateSpeed(int.Parse(effectSpecifics) * level);

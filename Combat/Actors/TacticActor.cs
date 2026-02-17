@@ -245,6 +245,8 @@ public class TacticActor : ActorStats
         ResetRoundDefendTracker();
         ResetRoundSkillTracker();
         ResetRoundMoveTracker();
+        ResetLocationTracker();
+        ResetHealthTracker();
     }
     protected void AddToRoundTrackers()
     {
@@ -252,6 +254,44 @@ public class TacticActor : ActorStats
         defendsEachRound.Add(0);
         skillsEachRound.Add(0);
         movesEachRound.Add(0);
+        locationsEachRound.Add(GetLocation());
+        healthEachRound.Add(GetHealth());
+    }
+    public List<int> locationsEachRound;
+    public void ResetLocationTracker()
+    {
+        locationsEachRound.Clear();
+    }
+    public int GetLatestLocation()
+    {
+        return locationsEachRound[locationsEachRound.Count - 1];
+    }
+    public int GetPreviousLocation()
+    {
+        if (locationsEachRound.Count <= 1){return -1;}
+        return locationsEachRound[locationsEachRound.Count - 2];
+    }
+    public int GetInitialLocation()
+    {
+        return locationsEachRound[0];
+    }
+    public List<int> healthEachRound;
+    public void ResetHealthTracker()
+    {
+        healthEachRound.Clear();
+    }
+    public int GetLatestHealth()
+    {
+        return healthEachRound[healthEachRound.Count - 1];
+    }
+    public int GetPreviousHealth()
+    {
+        if (healthEachRound.Count <= 1){return -1;}
+        return healthEachRound[healthEachRound.Count - 2];
+    }
+    public int GetInitialHealth()
+    {
+        return healthEachRound[0];
     }
     public List<int> attacksEachRound;
     public void ResetRoundAttackTracker()

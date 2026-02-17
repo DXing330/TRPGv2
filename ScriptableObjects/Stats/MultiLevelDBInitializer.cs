@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MultiLevelDBInitializer : MonoBehaviour
 {
-    public List<DatabaseInitializer> allDBInit;
-    public List<SpriteContainer> spriteContainers;
     public string allData;
     public string delimiter;
+    public List<DatabaseInitializer> allDBInit;
+    public List<SpriteContainer> spriteContainers;
     [ContextMenu("Set All Data")]
     public void SetAllData()
     {
@@ -19,7 +19,6 @@ public class MultiLevelDBInitializer : MonoBehaviour
         }
     }
 
-    [ContextMenu("Initialize")]
     public void Initialize()
     {
         for (int i = 0; i < allDBInit.Count; i++)
