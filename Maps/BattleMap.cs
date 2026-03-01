@@ -1283,7 +1283,7 @@ public class BattleMap : MapManager
     {
         if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
         highlightedTiles = new List<string>(emptyList);
-        int maxActions = 2;
+        int maxActions = selectedActor.GetBaseActions();
         if (current) { maxActions = selectedActor.GetActions(); }
         for (int i = Mathf.Min(maxActions, colorDictionary.keys.Count - 2); i >= 0; i--)
         {

@@ -113,6 +113,9 @@ public class SkillEffect : ScriptableObject
                 }
                 break;
             case "FireDamage":
+                // Fire removes bleeds/freeze.
+                target.RemoveStatus("Bleed");
+                target.RemoveStatus("Frozen");
                 int fireDamage = int.Parse(effectSpecifics) * level;
                 fireDamage = target.ApplyMagicResist(fireDamage);
                 // Bonus Damage For Each Burn Stack, Penetrates Magic Resist.
@@ -209,9 +212,10 @@ public class SkillEffect : ScriptableObject
                 target.UpdateDefense(int.Parse(effectSpecifics) * level);
                 break;
             case "AllStats":
-                target.UpdateHealth(int.Parse(effectSpecifics) * level, false);
-                target.UpdateAttack(int.Parse(effectSpecifics) * level);
-                target.UpdateDefense(int.Parse(effectSpecifics) * level);
+                int allStatChange = int.Parse(effectSpecifics) * level;
+                target.UpdateHealth(allStatChange, false);
+                target.UpdateAttack(allStatChange);
+                target.UpdateDefense(allStatChange);
                 break;
             case "AllStats%":
                 AffectActor(target, "BaseHealth%", effectSpecifics, level);

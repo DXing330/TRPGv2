@@ -6,9 +6,15 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ActorPathfinder", menuName = "ScriptableObjects/BattleLogic/ActorPathfinder", order = 1)]
 public class ActorPathfinder : MapPathfinder
 {
-    public List<int> path;
-    public List<int> FindPaths(int startIndex, List<int> moveCosts, bool extraCosts = true)
+    public TacticActor currentActor;
+    public void SetCurrentActor(TacticActor actor)
     {
+        currentActor = actor;
+    }
+    public List<int> path;
+    public List<int> FindPaths(int startIndex, List<int> moveCosts, bool extraCosts = true, TacticActor actor = null)
+    {
+        SetCurrentActor(actor);
         ResetDistances(startIndex);
         for (int i = 0; i < moveCosts.Count - 1; i++)
         {
@@ -50,14 +56,22 @@ public class ActorPathfinder : MapPathfinder
             moveCost = moveCosts[adjacentTiles[i]];
             if (extraCosts)
             {
-                moveCost += GetElevationDifference(closestTile, adjacentTiles[i]);
+                // Fliers half elevation differences, because they aren't op enough already.
+                if (currentActor != null && currentActor.GetMoveType() == "Flying")
+                {
+                    moveCost += GetElevationDifference(closestTile, adjacentTiles[i]) / 2;
+                }
+                else
+                {
+                    moveCost += GetElevationDifference(closestTile, adjacentTiles[i]);
+                }
                 int borderCost = GetBorderCost(closestTile, adjacentTiles[i]);
                 moveCost += borderCost;
                 // This could be moved to the movecost manager like tiles and teffects. Although I do enjoy roads being able to decrease move cost to alleviate elevation/border costs.
                 int buildingCost = GetBuildingMoveCost(adjacentTiles[i]);
                 moveCost += buildingCost;
-                if (moveCost < 1){moveCost = 1;}
             }
+            if (moveCost < 1){moveCost = 1;}
             if (distances[closestTile] + moveCost < distances[adjacentTiles[i]])
             {
                 distances[adjacentTiles[i]] = distances[closestTile] + moveCost;

@@ -28,25 +28,18 @@ public class StatusDetailViewer : PassiveDetailViewer
         return wDetails;
     }
 
+    [ContextMenu("View All Statuses")]
+    public void ViewAllStatuses()
+    {
+        List<string> statusNames = allStatuses.GetAllKeys();
+        for (int i = 0; i < statusNames.Count; i++)
+        {
+            Debug.Log(statusNames[i] + " : " + ReturnStatusDetails(allStatuses.ReturnValue(statusNames[i])));
+        }
+    }
+
     public string ReturnStatusDetails(string newInfo)
     {
-        if (!newInfo.Contains("|"))
-        {
-            return "";
-        }
-        string[] dataBlocks = newInfo.Split("|");
-        string description = "";
-        description += PassiveTiming(dataBlocks[0]);
-        string[] effects = dataBlocks[1].Split(",");
-        string[] specifics = dataBlocks[2].Split(",");
-        for (int i = 0; i < effects.Length; i++)
-        {
-            description += PassiveEffect(effects[i], specifics[i], "target");
-            if (i < effects.Length - 1)
-            {
-                description += " and";
-            }
-        }
-        return description;
+        return ReturnPassiveDetails(newInfo);
     }
 }

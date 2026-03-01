@@ -222,6 +222,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Convert " + ASD(s) + " into mana.";
             case "ChainLightning":
                 return "Lightning strikes the target and bounces to nearby enemies and the target(s) receive " + p + " " + s + ".";
+            case "Invisible":
+                return "The target(s) turn invisible for " + ASD(s) + " turns";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

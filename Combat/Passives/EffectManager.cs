@@ -23,8 +23,8 @@ public class EffectManager : MonoBehaviour
         map.ActorStartsTurn(actor);
         passive.ApplyPassives(actor, "Start", map);
         // Status effects apply last so that passives have a chance to remove negative status effects.
-        status.ApplyBuffEffects(actor, statusData, "Start");
-        status.ApplyEffects(actor, statusData, "Start");
+        status.ApplyBuffEffects(actor, statusData, "Start", map);
+        status.ApplyStartEndEffects(actor, statusData, "Start", map);
         // Check on grapples at the start of every turn.
         if (actor.Grappled(map))
         {
@@ -39,8 +39,8 @@ public class EffectManager : MonoBehaviour
         map.ActorEndsTurn(actor);
         map.AuraActorEndsTurn(actor);
         passive.ApplyPassives(actor, "End", map);
-        status.ApplyBuffEffects(actor, statusData, "End");
-        status.ApplyEffects(actor, statusData, "End");
+        status.ApplyBuffEffects(actor, statusData, "End", map);
+        status.ApplyStartEndEffects(actor, statusData, "End", map);
         List<string> removedPassives = actor.DecreaseTempPassiveDurations();
         if (removedPassives.Count > 0)
         {

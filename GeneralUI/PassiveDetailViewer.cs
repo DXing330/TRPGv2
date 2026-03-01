@@ -746,6 +746,10 @@ public class PassiveDetailViewer : MonoBehaviour
         {
             return AffectMapText(effect, specifics);
         }
+        if (effect.EndsWith("Damage"))
+        {
+            return " deal " + specifics + " " + effect + " damage";
+        }
         switch (effect)
         {
             case "Increase":
@@ -848,12 +852,6 @@ public class PassiveDetailViewer : MonoBehaviour
             case "ScalingElementalResist":
                 string[] sER = specifics.Split("Equals");
                 return " increase base " + sER[0] + " resistance by " + sER[3] + "% for each level of this passive";
-            case "ElementalBonusDamage":
-                string[] eBD = specifics.Split("Equals");
-                return " deal " + eBD[1] + " " + eBD[0] + " damage";
-            case "ElementalReflectDamage":
-                string[] eRD = specifics.Split("Equals");
-                return " deal " + eRD[1] + " " + eRD[0] + " damage";
             case "Sleep":
                 return "put " + target + " to sleep for " + specifics + " turns";
             case "Silence":

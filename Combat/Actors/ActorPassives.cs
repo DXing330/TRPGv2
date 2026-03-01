@@ -299,7 +299,10 @@ public class ActorPassives : MonoBehaviour
         startBattlePassives = new List<string>(passives);
     }
     public List<string> startTurnPassives;
-    public List<string> GetStartTurnPassives() { return startTurnPassives; }
+    public List<string> GetStartTurnPassives()
+    {
+        return new List<string>(startTurnPassives);
+    }
     public void AddStartTurnPassive(string passiveName) { startTurnPassives.Add(passiveName); }
     public void AddStartTurnPassives(List<string> newSkills)
     {
@@ -311,7 +314,10 @@ public class ActorPassives : MonoBehaviour
     }
     public void SetStartTurnPassives(List<string> passives) { startTurnPassives = new List<string>(passives); }
     public List<string> endTurnPassives;
-    public List<string> GetEndTurnPassives() { return endTurnPassives; }
+    public List<string> GetEndTurnPassives()
+    {
+        return new List<string>(endTurnPassives);
+    }
     public void AddEndTurnPassive(string passiveName) { endTurnPassives.Add(passiveName); }
     public void AddEndTurnPassives(List<string> newSkills)
     {

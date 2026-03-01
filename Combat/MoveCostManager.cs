@@ -138,7 +138,9 @@ public class MoveCostManager : MonoBehaviour
             {
                 if (passiveSkill.CheckConditionSpecifics(passiveInfo[2], mapInfo[j]))
                 {
-                    currentMoveCosts[j] = Mathf.Max(1, passiveSkill.AffectInt(currentMoveCosts[j], passiveInfo[4], passiveInfo[5]));
+                    //currentMoveCosts[j] = Mathf.Max(1, passiveSkill.AffectInt(currentMoveCosts[j], passiveInfo[4], passiveInfo[5]));
+                    // The pathfinder will enforce movecosts being >= 1.
+                    currentMoveCosts[j] = passiveSkill.AffectInt(currentMoveCosts[j], passiveInfo[4], passiveInfo[5]);
                 }
             }
         }
@@ -171,7 +173,7 @@ public class MoveCostManager : MonoBehaviour
     public void GetAllMoveCosts(TacticActor actor, List<TacticActor> actors)
     {
         UpdateCurrentMoveCosts(actor, actors);
-        pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), currentMoveCosts);
+        pathCosts = actorPathfinder.FindPaths(actor.GetLocation(), currentMoveCosts, true, actor);
     }
 
     protected int ClosestAdjacentTile(int tile)

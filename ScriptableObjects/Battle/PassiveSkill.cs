@@ -249,6 +249,8 @@ public class PassiveSkill : SkillEffect
                 return !battleState.GetWeather().Contains(specifics);
             case "Time":
                 return specifics == battleState.GetTime();
+            case "Time<>":
+                return specifics != battleState.GetTime();
         }
         return true;
     }
@@ -291,6 +293,8 @@ public class PassiveSkill : SkillEffect
                 return !map.GetWeather().Contains(conditionSpecifics);
             case "Time":
                 return conditionSpecifics == map.GetTime();
+            case "Time<>":
+                return conditionSpecifics != map.GetTime();
             case "MoveType":
                 return conditionSpecifics == actor.GetMoveType();
             case "MoveType<>":
@@ -317,6 +321,8 @@ public class PassiveSkill : SkillEffect
                 return !map.AllyAdjacentToActor(actor);
             case "AdjacentAllyCount>":
                 return map.GetAdjacentAllies(actor).Count > int.Parse(conditionSpecifics);
+            case "AdjacentAllyCount<":
+                return map.GetAdjacentAllies(actor).Count < int.Parse(conditionSpecifics);
             case "AllyCount<":
                 return map.AllAllies(actor).Count < int.Parse(conditionSpecifics);
             case "AllyCount>":
@@ -413,24 +419,6 @@ public class PassiveSkill : SkillEffect
         }
         switch (condition)
         {
-            case "Tile":
-                return map.GetTileInfoOfActor(checkedActor).Contains(conditionSpecifics);
-            case "Tile<>":
-                return !map.GetTileInfoOfActor(checkedActor).Contains(conditionSpecifics);
-            case "TileEffect":
-                return map.GetTileEffectOfActor(checkedActor).Contains(conditionSpecifics);
-            case "TileEffect<>":
-                return !map.GetTileEffectOfActor(checkedActor).Contains(conditionSpecifics);
-            case "AdjacentAlly<>":
-                return !map.AllyAdjacentToActor(checkedActor);
-            case "AdjacentAlly":
-                return map.AllyAdjacentToActor(checkedActor);
-            case "AdjacentAllySprite":
-                return map.AllyAdjacentWithSpriteName(checkedActor, conditionSpecifics);
-            case "AdjacentAllyCount>":
-                return map.GetAdjacentAllies(checkedActor).Count > int.Parse(conditionSpecifics);
-            case "AdjacentAllyCount<":
-                return map.GetAdjacentAllies(checkedActor).Count < int.Parse(conditionSpecifics);
             case "AdjacentEnemyCount>":
                 return map.GetAdjacentEnemies(checkedActor).Count > int.Parse(conditionSpecifics);
             case "AdjacentEnemyCount<":
@@ -439,36 +427,10 @@ public class PassiveSkill : SkillEffect
                 return map.DistanceBetweenActors(checkedActor, comparedActor) <= int.Parse(conditionSpecifics);
             case "Distance>":
                 return map.DistanceBetweenActors(checkedActor, comparedActor) > int.Parse(conditionSpecifics);
-            case "Health":
-                return CheckHealthConditions(conditionSpecifics, checkedActor);
-            case "Energy":
-                return CheckEnergyConditions(conditionSpecifics, checkedActor);
-            case "Weather":
-                return map.GetWeather().Contains(conditionSpecifics);
-            case "Weather<>":
-                return !map.GetWeather().Contains(conditionSpecifics);
-            case "Time":
-                return conditionSpecifics == map.GetTime();
-            case "Time<>":
-                return conditionSpecifics != map.GetTime();
-            case "MentalState":
-                return conditionSpecifics == checkedActor.GetMentalState();
-            case "Status":
-                return checkedActor.StatusExists(conditionSpecifics);
-            case "Range>":
-                return checkedActor.GetAttackRange() > int.Parse(conditionSpecifics);
-            case "Range<":
-                return checkedActor.GetAttackRange() < int.Parse(conditionSpecifics);
-            case "Weapon":
-                return conditionSpecifics == checkedActor.GetWeaponType();
             case "PassiveLevels>":
                 return checkedActor.GetTotalPassiveLevels() > int.Parse(conditionSpecifics);
             case "PassiveLevels<":
                 return checkedActor.GetTotalPassiveLevels() < int.Parse(conditionSpecifics);
-            case "MoveType<>":
-                return checkedActor.GetMoveType() != conditionSpecifics;
-            case "MoveType":
-                return checkedActor.GetMoveType() == conditionSpecifics;
             case "Team":
                 if (conditionSpecifics == "Same")
                 {
@@ -490,10 +452,6 @@ public class PassiveSkill : SkillEffect
                 return map.ReturnElevation(checkedActor.GetLocation()) > map.ReturnElevation(comparedActor.GetLocation());
             case "Elevation<":
                 return map.ReturnElevation(checkedActor.GetLocation()) < map.ReturnElevation(comparedActor.GetLocation());
-            case "Element":
-                return checkedActor.SameElement(conditionSpecifics);
-            case "Element<>":
-                return !checkedActor.SameElement(conditionSpecifics);
             case "Species":
                 return checkedActor.GetSpecies() == conditionSpecifics;
             case "Species<>":
@@ -503,32 +461,6 @@ public class PassiveSkill : SkillEffect
                 return checkedActor.GetTarget() == comparedActor;
             case "Target<>":
                 return checkedActor.GetTarget() != comparedActor;
-            case "CounterAttack":
-                return checkedActor.CounterAttackAvailable();
-            case "AllyCount<":
-                return map.AllAllies(checkedActor).Count < int.Parse(conditionSpecifics);
-            case "AllyCount>":
-                return map.AllAllies(checkedActor).Count > int.Parse(conditionSpecifics);
-            case "Ally<Enemy":
-                return map.AllAllies(checkedActor).Count < map.AllEnemies(checkedActor).Count;
-            case "Ally>Enemy":
-                return map.AllAllies(checkedActor).Count > map.AllEnemies(checkedActor).Count;
-            case "AllyEqualsEnemy":
-                return map.AllAllies(checkedActor).Count == map.AllEnemies(checkedActor).Count;
-            case "EnemyCount<":
-                return map.AllEnemies(checkedActor).Count < int.Parse(conditionSpecifics);
-            case "EnemyCount>":
-                return map.AllEnemies(checkedActor).Count > int.Parse(conditionSpecifics);
-            case "Grappling":
-                return checkedActor.Grappling();
-            case "Grappled":
-                return checkedActor.Grappled();
-            // Bad RNG means you want to roll higher to avoid the chance.
-            case "BadRNG":
-                return utility.Roll(checkedActor.GetLuck()) < int.Parse(conditionSpecifics);
-            // Good RNG means you want to roll lower to get the chance.
-            case "GoodRNG":
-                return utility.Roll(-checkedActor.GetLuck()) < int.Parse(conditionSpecifics);
             case "HurtBy":
                 return checkedActor.WasHurtByActor(comparedActor);
             case "HurtBy<>":
@@ -620,7 +552,7 @@ public class PassiveSkill : SkillEffect
             case "PrevDefendCount%":
                 return (checkedActor.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
         }
-        return true;
+        return CheckStartEndCondition(condition, conditionSpecifics, checkedActor, map);
     }
 
     public bool CheckEnergyConditions(string specifics, TacticActor actor)

@@ -72,22 +72,28 @@ public class TacticActor : ActorStats
     public void ResetActions(){actions = 0;}
     // AAA
     public void AdjustActionAmount(int change){actions += change;}
-    public void SpendAction()
+    public void SpendAction(int actionCost = 1)
     {
         if (bonusActions > 0)
         {
-            bonusActions--;
+            bonusActions -= actionCost;
+            if (bonusActions < 0)
+            {
+                actions += bonusActions;
+                bonusActions = 0;
+            }
             return;
         }
-        actions--;
+        actions -= actionCost;
     }
     public int bonusActions;
     public void ResetBonusActions(){bonusActions = 0;}
     public void GainBonusActions(int amount){bonusActions += amount;}
     public int GetActions(){return actions + bonusActions;}
+    public int attackActionCost = 2;
     public void PayAttackCost()
     {
-        SpendAction();
+        SpendAction(attackActionCost);
     }
     public bool ActionsLeft(){return actions > 0;}
     public void PayActionCost(int cost){actions -= cost;}

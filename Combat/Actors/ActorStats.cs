@@ -617,16 +617,6 @@ public class ActorStats : ActorInitialStats
         // Luck gives you a chance to ignore statuses.
         int luckRoll = UnityEngine.Random.Range(0, 100);
         if (luckRoll < GetLuck()){return;}
-        // Don't add statuses that you are immune to.
-        List<string> possibleImmunities = GetStartTurnPassives();
-        for (int i = 0; i < possibleImmunities.Count; i++)
-        {
-            string[] details = possibleImmunities[i].Split("|");
-            if (details[4] == "RemoveStatus" && details[5] == newCondition)
-            {
-                return;
-            }
-        }
         // Artifact stacks block new statuses.
         // Can this be gamed to prevent curses? Maybe.
         if (ConsumeArtifactStack()){return;}

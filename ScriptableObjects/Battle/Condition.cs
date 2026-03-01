@@ -3,55 +3,56 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Condition", menuName = "ScriptableObjects/BattleLogic/Condition", order = 1)]
-public class Condition : SkillEffect
+public class Condition : PassiveSkill
 {
     List<string> statuses;
     List<string> statusInfo;
 
-    // Maybe good use of enum? Either start/end of turn or both.
     protected bool Timing(string timing, string time)
     {
         if (timing == "ALL"){return true;}
         return timing == time;
     }
 
-    public void ApplyEffects(TacticActor actor, StatDatabase allData, string timing)
+    protected bool ActorImmune(TacticActor actor, string status)
+    {
+        List<string> possibleImmunities = actor.GetStartTurnPassives();
+        possibleImmunities.AddRange(actor.GetEndTurnPassives());
+        for (int i = 0; i < possibleImmunities.Count; i++)
+        {
+            string[] details = possibleImmunities[i].Split("|");
+            // If you are unconditionally immune then it does nothing.
+            if (details[1] == "" && details[4] == "RemoveStatus" && details[5] == status)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void ApplyStartEndEffects(TacticActor actor, StatDatabase allData, string timing, BattleMap map)
     {
         statuses = new List<string>(actor.GetStatuses());
-        for (int i = 0; i < statuses.Count; i++)
+        for (int i = statuses.Count - 1; i >= 0; i--)
         {
             statusInfo = allData.ReturnStats(statuses[i]);
             if (!Timing(timing, statusInfo[0])){continue;}
-            // Statuses can apply multiple effects at once.
-            string[] effects = statusInfo[1].Split(",");
-            string[] specifics = statusInfo[2].Split(",");
-            for (int j = 0; j < effects.Length; j++)
-            {
-                AffectActor(actor, effects[j], specifics[j]);
-            }
+            // If you are immune to the status then continue.
+            if (ActorImmune(actor, statuses[i])){continue;}
+            ApplyPassive(actor, map, allData.ReturnValue(statuses[i]));
             // Decrease duration by 1.
             actor.AdjustStatusDuration(i);
         }
     }
 
-    public void ApplyBuffEffects(TacticActor actor, StatDatabase allData, string timing)
+    public void ApplyBuffEffects(TacticActor actor, StatDatabase allData, string timing, BattleMap map)
     {
         statuses = new List<string>(actor.GetBuffs());
-        for (int i = 0; i < statuses.Count; i++)
+        for (int i = statuses.Count - 1; i >= 0; i--)
         {
             statusInfo = allData.ReturnStats(statuses[i]);
-            if (statusInfo.Count < 3)
-            {
-                continue;
-            }
             if (!Timing(timing, statusInfo[0])){continue;}
-            // Statuses can apply multiple effects at once.
-            string[] effects = statusInfo[1].Split(",");
-            string[] specifics = statusInfo[2].Split(",");
-            for (int j = 0; j < effects.Length; j++)
-            {
-                AffectActor(actor, effects[j], specifics[j]);
-            }
+            ApplyPassive(actor, map, allData.ReturnValue(statuses[i]));
             actor.AdjustBuffDuration(i);
         }
     }
