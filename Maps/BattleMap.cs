@@ -1281,7 +1281,10 @@ public class BattleMap : MapManager
     }
     public void UpdateMovingHighlights(TacticActor selectedActor, MoveCostManager moveManager, bool current = true)
     {
-        if (emptyList.Count < mapSize * mapSize) { InitializeEmptyList(); }
+        if (emptyList.Count < mapSize * mapSize)
+        {
+            InitializeEmptyList();
+        }
         highlightedTiles = new List<string>(emptyList);
         int maxActions = selectedActor.GetBaseActions();
         if (current) { maxActions = selectedActor.GetActions(); }
@@ -1525,10 +1528,13 @@ public class BattleMap : MapManager
     }
 
     // Melees have to deal with elevation differences, ranged needs to deal with line of sight. Obviously ranged is still superior since you can always attack all adjacent tiles at least.
-    public List<int> GetAttackableTiles(TacticActor actor)
+    public List<int> GetAttackableTiles(TacticActor actor, bool current = true, int startTile = -1)
     {
         int range = actor.GetAttackRange();
-        int startTile = actor.GetLocation();
+        if (current)
+        {
+            startTile = actor.GetLocation();
+        }
         List<int> attackable = mapUtility.GetTilesInCircleShape(startTile, range, mapSize);
         attackable.Remove(startTile);
         // Melee attacks can't attack if the height difference is too large.

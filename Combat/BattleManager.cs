@@ -341,7 +341,7 @@ public class BattleManager : MonoBehaviour
         // This always calls an end turn.
         else
         {
-            StandardNPCAction(actionsLeft);
+            BasicNPCAction();
         }
     }
     bool endingTurn = false;
@@ -552,7 +552,7 @@ public class BattleManager : MonoBehaviour
         else
         {
             RefreshUI();
-            map.UpdateMovingHighlights(selectedActor, moveManager, false);
+            map.UpdateMovingHighlights(selectedActor, moveManager, selectedActor == turnActor);
         }
     }
 
@@ -596,8 +596,9 @@ public class BattleManager : MonoBehaviour
 
     protected void ActorAttacksActor(TacticActor attacker, TacticActor defender)
     {
-        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+defender.GetPersonalName()+".");
+        if (!attacker.AttackActionsLeft()){return;}
         attacker.PayAttackCost();
+        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+defender.GetPersonalName()+".");
         attackManager.ActorAttacksActor(attacker, defender, map);
         if (AdjustTurnNumber())
         {
@@ -693,7 +694,7 @@ public class BattleManager : MonoBehaviour
                 string chosenSkill = skills[Random.Range(0, skills.Length)];
                 if (chosenSkill == "None")
                 {
-                    StandardNPCAction(actionsLeft);
+                    BasicNPCAction();
                 }
                 else
                 {
@@ -705,7 +706,7 @@ public class BattleManager : MonoBehaviour
                 int tile = map.ReturnClosestTileOfType(turnActor, turnDetails[1]);
                 if (tile < 0)
                 {
-                    StandardNPCAction(actionsLeft);
+                    BasicNPCAction();
                     return;
                 }
                 else
@@ -714,7 +715,7 @@ public class BattleManager : MonoBehaviour
                     MoveAlongPath(turnActor, path);
                     if (turnActor.GetActions() > 0)
                     {
-                        StandardNPCAction(turnActor.GetActions());
+                        BasicNPCAction();
                         return;
                     }
                     else
@@ -726,7 +727,7 @@ public class BattleManager : MonoBehaviour
                 int sandwichingTile = map.ReturnClosestSandwichTargetBetweenTileOfType(turnActor, turnDetails[1]);
                 if (sandwichingTile < 0)
                 {
-                    StandardNPCAction(actionsLeft);
+                    BasicNPCAction();
                     return;
                 }
                 else
@@ -747,7 +748,7 @@ public class BattleManager : MonoBehaviour
                 int sandwichedTile = map.ReturnClosestTileSandwiched(turnActor, turnDetails[1]);
                 if (sandwichedTile < 0)
                 {
-                    StandardNPCAction(actionsLeft);
+                    BasicNPCAction();
                     return;
                 }
                 else
@@ -765,7 +766,7 @@ public class BattleManager : MonoBehaviour
                     }
                 }
             case "Basic":
-                StandardNPCAction(actionsLeft);
+                BasicNPCAction();
                 return;
         }
         EndTurn();
@@ -780,14 +781,14 @@ public class BattleManager : MonoBehaviour
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
             if (targetedTile == -1 || !activeManager.CheckSkillCost())
             {
-                StandardNPCAction(turnActor.GetActions());
+                BasicNPCAction();
                 return;
             }
             activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
             // If the skill has no valid targets in the case of an AOE, then just do a normal action.
             if (!actorAI.ValidSkillTargets(turnActor, map, activeManager))
             {
-                StandardNPCAction(turnActor.GetActions());
+                BasicNPCAction();
                 return;
             }
             ActivateSkill(skills[i]);
@@ -810,14 +811,14 @@ public class BattleManager : MonoBehaviour
             // If you can't find a target or cast the skill or are silenced then just do a regular action.
             if (targetedTile == -1 || !activeManager.CheckSpellCost())
             {
-                StandardNPCAction(actionsLeft);
+                BasicNPCAction();
                 return;
             }
             activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder, true);
             // Bool = TRUE for spells.
             if (!actorAI.ValidSkillTargets(turnActor, map, activeManager, true))
             {
-                StandardNPCAction(actionsLeft);
+                BasicNPCAction();
                 return;
             }
             ActivateSpell();
@@ -852,14 +853,14 @@ public class BattleManager : MonoBehaviour
             // If you can't find a target or cast the skill or are silenced then just do a regular action.
             if (targetedTile == -1 || !activeManager.CheckSkillCost())
             {
-                StandardNPCAction(actionsLeft);
+                BasicNPCAction();
                 return;
             }
             activeManager.GetTargetedTiles(targetedTile, moveManager.actorPathfinder);
             // If the skill has no valid targets in the case of an AOE, then just do a normal action.
             if (!actorAI.ValidSkillTargets(turnActor, map, activeManager))
             {
-                StandardNPCAction(actionsLeft);
+                BasicNPCAction();
                 return;
             }
             if (skill == "")
@@ -936,6 +937,7 @@ public class BattleManager : MonoBehaviour
             {
                 if (AIPathToTarget())
                 {
+                    EndTurn();
                     return;
                 }
             }
@@ -970,6 +972,7 @@ public class BattleManager : MonoBehaviour
             moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
             if (AIPathToTarget())
             {
+                EndTurn();
                 return;
             }
             if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
@@ -1006,6 +1009,7 @@ public class BattleManager : MonoBehaviour
                 moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
                 if (AIPathToTarget())
                 {
+                    EndTurn();
                     return;
                 }
             }
@@ -1037,48 +1041,44 @@ public class BattleManager : MonoBehaviour
         EndTurn();
     }
 
-    protected void StandardNPCAction(int actionsLeft)
+    protected void BasicNPCAction()
     {
-        for (int i = 0; i < actionsLeft; i++)
+        // This will make sure the path costs are up to date for AI action calculations.
+        moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
+        // Find a new target if needed.
+        // Don't hit your allies even if they hit you.
+        if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0 || turnActor.GetTarget().invisible || turnActor.GetTarget().GetTeam() == turnActor.GetTeam())
         {
-            moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
-            // Find a new target if needed.
-            // Don't hit your allies even if they hit you.
-            if (turnActor.GetTarget() == null || turnActor.GetTarget().GetHealth() <= 0 || turnActor.GetTarget().invisible || turnActor.GetTarget().GetTeam() == turnActor.GetTeam())
+            TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
+            if (closestEnemy == null)
             {
-                TacticActor closestEnemy = actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager);
-                if (closestEnemy == null)
-                {
-                    // No more enemies, just end turn.
-                    EndTurn();
-                    return;
-                }
-                turnActor.SetTarget(closestEnemy);
+                // No more enemies, just end turn.
+                EndTurn();
+                return;
             }
-            // If they can be attacked without moving then attack.
-            if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map)){ NPCAttackAction(); }
-            // Otherwise move.
-            else
-            {
-                // If target is out of range, first try to get a new target in range.
-                moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
-                turnActor.SetTarget(actorAI.GetClosestEnemy(map.battlingActors, turnActor, moveManager));
-                // If you're next to the new target then attack them.
-                if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map)){ NPCAttackAction(); }
-                else
-                {
-                    if (AIPathToTarget())
-                    {
-                        return;
-                    }
-                }
-            }
-            if (turnActor.GetActions() <= 0 || turnActor.GetHealth() <= 0)
+            turnActor.SetTarget(closestEnemy);
+        }
+        // If they can be attacked without moving then attack.
+        if (actorAI.EnemyInAttackRange(turnActor, turnActor.GetTarget(), map) && turnActor.AttackActionsLeft())
+        {
+            NPCAttackAction();
+        }
+        // Else Check If Target In Move + Attack Range.
+        else if (actorAI.EnemyInAttackableRange(turnActor, turnActor.GetTarget(), map, moveManager))
+        {
+            if (AIPathToTarget())
             {
                 EndTurn();
                 return;
             }
+            NPCAttackAction();
         }
+        // Else Try To Stay Out Of Enemy Attack Range.
+        else
+        {
+            AIPathTowardTarget();
+        }
+        // Always end turn at the end.
         EndTurn();
     }
 
@@ -1121,6 +1121,11 @@ public class BattleManager : MonoBehaviour
             else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
         }
         else { ActorAttacksActor(turnActor, turnActor.GetTarget()); }
+        // If you can attack again then do so.
+        if (turnActor.AttackActionsLeft() && turnActor.TargetValid())
+        {
+            NPCAttackAction(randomSkill);
+        }
     }
 
     protected void DragGrappledActor(TacticActor grappled, int tile)
@@ -1134,6 +1139,12 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    protected void AIPathTowardTarget()
+    {
+        List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
+        MoveTowardTarget(turnActor, path);
+    }
+
     protected bool AIPathToTarget()
     {
         List<int> path = actorAI.FindPathToTarget(turnActor, map, moveManager);
@@ -1141,11 +1152,40 @@ public class BattleManager : MonoBehaviour
         if (path.Count <= 0)
         {
             turnActor.ResetActions();
-            EndTurn();
             return true;
         }
         MoveAlongPath(turnActor, path);
         return false;
+    }
+
+    protected void MoveTowardTarget(TacticActor actor, List<int> path)
+    {
+        // If you're already in attack range then just move along the path.
+        List<int> targetAttackableTiles = map.GetAttackableTiles(actor.GetTarget());
+        if (targetAttackableTiles.Contains(actor.GetLocation()))
+        {
+            MoveAlongPath(actor, path);
+            return;
+        }
+        if (path.Count <= 0){return;}
+        for (int i = path.Count - 1; i >= 0; i--)
+        {
+            if (targetAttackableTiles.Contains(path[i])){return;}
+            int prevLoc = actor.GetLocation();
+            actor.SetDirection(moveManager.DirectionBetweenLocations(prevLoc, path[i]));
+            moveManager.MoveActorToTile(actor, path[i], map);
+            actor.PayMoveCost(moveManager.MoveCostOfTile(path[i]));
+            if (actor.Grappling())
+            {
+                DragGrappledActor(actor.GetGrappledActor(), prevLoc);
+            }
+            if (actor.GetMovement() < 0)
+            {
+                break;
+            }
+        }
+        map.UpdateActors();
+        ResetState();
     }
 
     protected void MoveAlongPath(TacticActor actor, List<int> path)
@@ -1155,10 +1195,10 @@ public class BattleManager : MonoBehaviour
         {
             int prevLoc = actor.GetLocation();
             actor.SetDirection(moveManager.DirectionBetweenLocations(prevLoc, path[i]));
-            // Only pay the move cost here if you're moving along a path.
-            actor.PayMoveCost(moveManager.MoveCostOfTile(path[i]));
             // This can decrease movement based on some tile passives.
             moveManager.MoveActorToTile(actor, path[i], map);
+            // Only pay the move cost here if you're moving along a path.
+            actor.PayMoveCost(moveManager.MoveCostOfTile(path[i]));
             if (actor.Grappling())
             {
                 DragGrappledActor(actor.GetGrappledActor(), prevLoc);

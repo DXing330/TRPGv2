@@ -44,7 +44,8 @@ public class TacticActor : ActorStats
     public int GetWeaponReach()
     {
         if (GetAttackRange() > 1){return 999;}
-        return weaponReach;
+        // Bigger things have bigger reach.
+        return Mathf.Max(weaponReach, GetBaseWeight());
     }
     public void SetWeaponReach(int newInfo){weaponReach = newInfo;}
     public void ResetArmor()
@@ -91,6 +92,10 @@ public class TacticActor : ActorStats
     public void GainBonusActions(int amount){bonusActions += amount;}
     public int GetActions(){return actions + bonusActions;}
     public int attackActionCost = 2;
+    public bool AttackActionsLeft()
+    {
+        return actions >= attackActionCost;
+    }
     public void PayAttackCost()
     {
         SpendAction(attackActionCost);
@@ -172,9 +177,9 @@ public class TacticActor : ActorStats
     {
         if (current)
         {
-            return (movement + (GetSpeed()*(actions-1)));
+            return (movement + (GetSpeed() * (actions - attackActionCost)));
         }
-        return GetMoveSpeed();
+        return (movement + (GetMoveSpeed() * (baseActions - attackActionCost)));
     }
     public string personalName;
     public void SetPersonalName(string newName){personalName = newName;}
@@ -529,6 +534,12 @@ public class TacticActor : ActorStats
     {
         if (target == null){return false;}
         return target.GetHealth() > 0;
+    }
+    public bool TargetValid()
+    {
+        if (!TargetAlive()){return false;}
+        if (target.invisible){return false;}
+        return true;
     }
     public TacticActor grappledActor;
     public TacticActor GetGrappledActor(){return grappledActor;}

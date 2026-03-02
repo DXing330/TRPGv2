@@ -216,27 +216,27 @@ public class MoveCostManager : MonoBehaviour
 
     public List<int> GetAllReachableTiles(TacticActor actor, List<TacticActor> actors, bool current = true)
     {
-        UpdateCurrentMoveCosts(actor, actors);
-        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(current), currentMoveCosts);
+        GetAllMoveCosts(actor, actors);
+        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRange(current), currentMoveCosts); // Needs To Use Current Move Cost Not Path Costs
         return reachableTiles;
     }
 
     public List<int> GetReachableTilesBasedOnActions(TacticActor actor, List<TacticActor> actors, int actionCount)
     {
-        UpdateCurrentMoveCosts(actor, actors);
-        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRangeBasedOnActions(actionCount), currentMoveCosts);
+        GetAllMoveCosts(actor, actors);
+        reachableTiles = actorPathfinder.FindTilesInMoveRange(actor.GetLocation(), actor.GetMoveRangeBasedOnActions(actionCount), currentMoveCosts); // Needs To Use Current Move Cost Not Path Costs
         return reachableTiles;
     }
 
-    public List<int> GetTilesInAttackRange(TacticActor actor, bool current = true)
+    public List<int> GetTilesInAttackRange(TacticActor actor, BattleMap map, bool current = true)
     {
-        List<int> tiles = actorPathfinder.FindTilesInAttackRange(actor, currentMoveCosts, current);
+        List<int> tiles = actorPathfinder.GetTilesInAttackRange(actor, map, pathCosts, current);
         return tiles;
     }
 
-    public bool TileInAttackableRange(TacticActor actor, int tileIndex)
+    public bool TileInAttackableRange(TacticActor actor, BattleMap map, int tileIndex)
     {
-        List<int> attackableTiles = GetTilesInAttackRange(actor);
+        List<int> attackableTiles = GetTilesInAttackRange(actor, map);
         return (attackableTiles.IndexOf(tileIndex) >= 0);
     }
 

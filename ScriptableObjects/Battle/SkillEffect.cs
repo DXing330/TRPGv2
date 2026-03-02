@@ -139,6 +139,8 @@ public class SkillEffect : ScriptableObject
                 break;
             case "IceDamage":
                 int iceDamage = int.Parse(effectSpecifics) * level;
+                // Ice removes bleeds.
+                target.RemoveStatus("Bleed");
                 // Freeze If Wet.
                 if (target.StatusExists("Wet"))
                 {
@@ -166,6 +168,7 @@ public class SkillEffect : ScriptableObject
                 break;
             case "LightDamage":
                 int lightDamage = int.Parse(effectSpecifics) * level;
+                // Reveal invisibility.
                 target.RemoveInvisibility();
                 lightDamage = target.ApplyMagicResist(lightDamage);
                 lightDamage = target.TakeEffectDamage(lightDamage, "Light");

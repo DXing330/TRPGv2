@@ -99,7 +99,7 @@ public class ActorPathfinder : MapPathfinder
         return tiles;
     }
 
-    public List<int> FindTilesInAttackRange(TacticActor actor, List<int> moveCosts, bool current = true)
+    public List<int> GetTilesInAttackRange(TacticActor actor, BattleMap map, List<int> moveCosts, bool current = true)
     {
         int start = actor.GetLocation();
         int moveRange = actor.GetMoveRangeWhileAttacking(current);
@@ -121,8 +121,7 @@ public class ActorPathfinder : MapPathfinder
         // O(n).
         for (int i = 0; i < tiles.Count; i++)
         {
-            List<int> adjacentTiles = mapUtility.AdjacentTiles(tiles[i], mapSize);
-            attackableTiles.AddRange(adjacentTiles.Except(attackableTiles));
+            attackableTiles.AddRange(map.GetAttackableTiles(actor, false, tiles[i]));
         }
         attackableTiles.Remove(start);
         return attackableTiles;

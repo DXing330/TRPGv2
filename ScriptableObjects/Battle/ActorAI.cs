@@ -174,7 +174,8 @@ public class ActorAI : ScriptableObject
                 pathCost -= moveManager.MoveCostOfTile(fullPath[i]);
                 break;
             }
-            if (EnemyInAttackRange(currentActor, currentActor.GetTarget(), map))
+            // Stop if you can attack the enemy from the tile.
+            if (EnemyAttackableFromTile(currentActor, fullPath[i], map))
             {
                 break;
             }
@@ -232,11 +233,18 @@ public class ActorAI : ScriptableObject
         return enemies[possibleIndices[Random.Range(0, possibleIndices.Count)]];
     }
 
-    public bool EnemyInAttackableRange(TacticActor currentActor, TacticActor target, MoveCostManager moveManager)
+    public bool EnemyInAttackableRange(TacticActor currentActor, TacticActor target, BattleMap map, MoveCostManager moveManager)
     {
         if (target == null) { return false; }
         if (target.GetHealth() <= 0) { return false; }
-        return moveManager.TileInAttackableRange(currentActor, target.GetLocation());
+        return moveManager.TileInAttackableRange(currentActor, map, target.GetLocation());
+    }
+
+    public bool EnemyAttackableFromTile(TacticActor actor, int tile, BattleMap map)
+    {
+        if (!actor.TargetValid()){return false;}
+        List<int> attackableTiles = map.GetAttackableTiles(actor, false, tile);
+        return attackableTiles.Contains(actor.GetTarget().GetLocation());
     }
 
     public bool EnemyInAttackRange(TacticActor currentActor, TacticActor target, BattleMap map)
