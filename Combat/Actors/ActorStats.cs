@@ -527,7 +527,44 @@ public class ActorStats : ActorInitialStats
     {
         return spells.Count + tempSpells.Count;
     }
+    public List<string> GetAttackingPassives(StatDatabase buffDB)
+    {
+        List<string> aPassives = new List<string>(attackingPassives);
+        aPassives.AddRange(GetBattleBuffsAndStatuses(buffDB, "Attack"));
+        return aPassives;
+    }
+    public List<string> GetDefendingPassives(StatDatabase buffDB)
+    {
+        List<string> dPassives = new List<string>(defendingPassives);
+        dPassives.AddRange(GetBattleBuffsAndStatuses(buffDB, "Defend"));
+        return dPassives;
+    }
     public List<string> buffs;
+    public List<string> GetBattleBuffsAndStatuses(StatDatabase buffDB, string timing)
+    {
+        List<string> battleBS = new List<string>();
+        for (int i = 0; i < buffs.Count; i++)
+        {
+            string data = buffDB.ReturnValue(buffs[i]);
+            string[] splitData = data.Split("|");
+            if (splitData[0] == timing)
+            {
+                battleBS.Add(data);
+                AdjustBuffDuration(i);
+            }
+        }
+        for (int i = 0; i < statuses.Count; i++)
+        {
+            string data = buffDB.ReturnValue(statuses[i]);
+            string[] splitData = data.Split("|");
+            if (splitData[0] == timing)
+            {
+                battleBS.Add(data);
+                AdjustStatusDuration(i);
+            }
+        }
+        return battleBS;
+    }
     public int defaultBuffDuration = 3;
     public List<int> buffDurations;
     public List<string> GetBuffs(){return buffs;}

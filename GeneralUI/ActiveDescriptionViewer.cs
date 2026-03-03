@@ -116,6 +116,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Remove " + ASD(s) + " from the target(s).";
             case "RemoveStatuses":
                 return "Remove " + ASD(s) + " from the target(s).";
+            case "ResetSummonedBy":
+                return "Break the summoner's command.";
             case "Summon":
                 return "Summon a " + ASD(s) + ".";
             case "RespawnSummon":

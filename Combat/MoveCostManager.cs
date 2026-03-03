@@ -230,7 +230,8 @@ public class MoveCostManager : MonoBehaviour
 
     public List<int> GetTilesInAttackRange(TacticActor actor, BattleMap map, bool current = true)
     {
-        List<int> tiles = actorPathfinder.GetTilesInAttackRange(actor, map, pathCosts, current);
+        GetAllMoveCosts(actor, map.battlingActors);
+        List<int> tiles = actorPathfinder.GetTilesInAttackRange(actor, map, currentMoveCosts, current);
         return tiles;
     }
 

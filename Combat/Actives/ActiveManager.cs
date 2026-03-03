@@ -190,12 +190,18 @@ public class ActiveManager : MonoBehaviour
                     battle.attackManager.ActorAttacksActor(skillUser, targets[i], battle.map, power);
                 }
                 return;
+            case "BreakSummonLink":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    targets[i].ResetSummonedBy();
+                }
+                return;
             case "Summon":
                 // Check if selected tile is free.
                 if (battle.map.GetActorOnTile(selectedTile) == null)
                 {
                     // Create a new actor on that location on the same team.
-                    battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
+                    battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam(), skillUser);
                 }
                 return;
             case "RespawnSummon":
@@ -204,12 +210,12 @@ public class ActiveManager : MonoBehaviour
                 if (battle.map.GetActorOnTile(selectedTile) == null)
                 {
                     // Create a new actor on that location on the same team.
-                    battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
+                    battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam(), skillUser);
                 }
                 return;
             case "TributeSummon":
                 // Create a new actor on that location on the same team.
-                battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam());
+                battle.SpawnAndAddActor(selectedTile, specifics, skillUser.GetTeam(), skillUser);
                 // Kill yourself as tribute.
                 skillUser.SetCurrentHealth(0);
                 skillUser.ResetActions();
@@ -219,7 +225,7 @@ public class ActiveManager : MonoBehaviour
                 {
                     if (battle.map.GetActorOnTile(targetedTiles[i]) == null)
                     {
-                        battle.SpawnAndAddActor(targetedTiles[i], specifics, skillUser.GetTeam());
+                        battle.SpawnAndAddActor(targetedTiles[i], specifics, skillUser.GetTeam(), skillUser);
                     }
                 }
                 return;
@@ -230,7 +236,7 @@ public class ActiveManager : MonoBehaviour
                     // Create a new actor on that location on the same team.
                     // Pick a random actor from the specifics list.
                     string[] randomSummon = specifics.Split(",");
-                    battle.SpawnAndAddActor(selectedTile, randomSummon[UnityEngine.Random.Range(0, randomSummon.Length)], skillUser.GetTeam());
+                    battle.SpawnAndAddActor(selectedTile, randomSummon[UnityEngine.Random.Range(0, randomSummon.Length)], skillUser.GetTeam(), skillUser);
                 }
                 return;
             case "MassRandomSummon":
@@ -239,7 +245,7 @@ public class ActiveManager : MonoBehaviour
                 {
                     if (battle.map.GetActorOnTile(targetedTiles[i]) == null)
                     {
-                        battle.SpawnAndAddActor(targetedTiles[i], randomPool[UnityEngine.Random.Range(0, randomPool.Length)], skillUser.GetTeam());
+                        battle.SpawnAndAddActor(targetedTiles[i], randomPool[UnityEngine.Random.Range(0, randomPool.Length)], skillUser.GetTeam(), skillUser);
                     }
                 }
                 return;
@@ -666,7 +672,7 @@ public class ActiveManager : MonoBehaviour
             skillUser.SpendEnergy(active.GetEnergyCost());
             skillUser.PayActionCost(active.GetActionCost());
         }
-        skillUser.UpdateRoundSkillTracker();
+        skillUser.UpdateRoundSkillTracker(active.GetSkillName());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower(), active.GetSelectedTile());
     }

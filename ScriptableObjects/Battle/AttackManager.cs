@@ -8,6 +8,7 @@ public class AttackManager : ScriptableObject
 {
     public PassiveSkill passive;
     public StatDatabase passiveData;
+    public StatDatabase buffStatusData;
     public TerrainPassivesList terrainPassives;
     public TerrainPassivesList tEffectPassives;
     public TerrainPassivesList weatherPassives;
@@ -18,6 +19,8 @@ public class AttackManager : ScriptableObject
     protected string damageRolls;
     protected string passiveEffectString;
     protected string finalDamageCalculation;
+    // Track if the attack is a counter attack.
+    public bool counterAttack = false;
     // Based on attacker/defender.
     protected int advantage;
     protected int baseDamage;
@@ -163,7 +166,6 @@ public class AttackManager : ScriptableObject
     // Used for most spell effects.
     public void ElementalFlatDamage(TacticActor attacker, TacticActor defender, BattleMap map, int damage, string element)
     {
-        // TODO Add guarding to these as well.
         attacker.SetDirection(map.DirectionBetweenActors(attacker, defender));
         if (!RollToHit(attacker, defender, map)){return;}
         baseDamage = damage;
@@ -245,12 +247,15 @@ public class AttackManager : ScriptableObject
     public void TrueDamageAttack(TacticActor attacker, TacticActor defender, BattleMap map, int attackMultiplier = -1, string type = "Attack")
     {
         // True damage ignores guarding, because it should be as OP as possible.
+        // True damage cannot be countered.
+        counterAttack = false;
+        bool critHit = false;
         attacker.SetDirection(map.DirectionBetweenActors(attacker, defender));
         UpdateBattleStats(attacker, defender);
         baseDamage = attackValue;
         // True damage ignores defender/terrain passives, making it even stronger than it should be.
         CheckMapPassives(attacker, defender, map, defender.GetLocation(), true, false);
-        CheckPassives(attacker.GetAttackingPassives(), defender, attacker, map);
+        CheckPassives(attacker.GetAttackingPassives(buffStatusData), defender, attacker, map);
         switch (type)
         {
             case "Health":
@@ -264,6 +269,7 @@ public class AttackManager : ScriptableObject
         baseDamage = Advantage(baseDamage, advantage);
         if (CritRoll(attacker, baseDamage))
         {
+            critHit = true;
             baseDamage = CritDamage(baseDamage);
         }
         baseDamage = defender.TakeDamage(baseDamage, "True");
@@ -274,6 +280,7 @@ public class AttackManager : ScriptableObject
             defender.SetTarget(attacker);
         }
         map.combatLog.UpdateNewestLog(defender.GetPersonalName() + " takes " + baseDamage + " damage.");
+        passive.ApplyAfterAttackPassives(attacker, defender, baseDamage, map, true, critHit, counterAttack);
         map.damageTracker.UpdateDamageStat(attacker, defender, baseDamage);
     }
     protected void UpdateBattleStats(TacticActor attacker, TacticActor defender)
@@ -330,14 +337,15 @@ public class AttackManager : ScriptableObject
         }
         CheckMapPassives(attacker, attackTarget, map, target.GetLocation(), true, true);
         // Bonus damage can be calculated here and triggers regardless of hit/miss.
-        CheckPassives(attacker.GetAttackingPassives(), attackTarget, attacker, map);
-        CheckPassives(attackTarget.GetDefendingPassives(), attackTarget, attacker, map);
+        CheckPassives(attacker.GetAttackingPassives(buffStatusData), attackTarget, attacker, map);
+        CheckPassives(attackTarget.GetDefendingPassives(buffStatusData), attackTarget, attacker, map);
+        // TODO Check any buffs/statuses that apply. 
         // Determine if you miss or not.
         if (!RollToHit(attacker, attackTarget, map))
         {
             hit = false;
-            passive.ApplyAfterAttackPassives(attacker, attackTarget, 0, map, hit, critHit);
-            passive.ApplyAfterDefendPassives(attacker, attackTarget, 0, map, hit, critHit);
+            passive.ApplyAfterAttackPassives(attacker, attackTarget, 0, map, hit, critHit, counterAttack);
+            passive.ApplyAfterDefendPassives(attacker, attackTarget, 0, map, hit, critHit, counterAttack);
             return;
         }
         baseDamage = Advantage(baseDamage, advantage);
@@ -381,15 +389,18 @@ public class AttackManager : ScriptableObject
         map.combatLog.AddDetailedLogs("Damage Calculations:");
         map.combatLog.AddDetailedLogs(damageRolls);
         map.combatLog.AddDetailedLogs(finalDamageCalculation);
-        passive.ApplyAfterAttackPassives(attacker, attackTarget, baseDamage, map, hit, critHit);
-        passive.ApplyAfterDefendPassives(attacker, attackTarget, baseDamage, map, hit, critHit);
+        passive.ApplyAfterAttackPassives(attacker, attackTarget, baseDamage, map, hit, critHit, counterAttack);
+        passive.ApplyAfterDefendPassives(attacker, attackTarget, baseDamage, map, hit, critHit, counterAttack);
         // Check if the defender is alive, has counter attacks available and is in range.
         if (attackTarget.GetHealth() > 0 && attackTarget.CounterAttackAvailable() && map.DistanceBetweenActors(attackTarget, attacker) <= attackTarget.GetAttackRange())
         {
             attackTarget.UseCounterAttack();
+            // Set Counter Attack Equal To True Only Right Before The Counter Attack Hits.
+            counterAttack = true;
             map.combatLog.UpdateNewestLog(attackTarget.GetPersonalName() + " counter attacks " + attacker.GetPersonalName());
             ActorAttacksActor(attackTarget, attacker, map);
         }
+        counterAttack = false;
     }
 
     protected int RollAttackDamage(int baseAttack)
@@ -462,13 +473,13 @@ public class AttackManager : ScriptableObject
             case "AttackValue":
             passiveEffectString += "\n";
             passiveEffectString += passiveName + "; " + "Bonus Damage" + ":" + bonusDamage + "->";
-            bonusDamage = passive.AffectInt(bonusDamage, passiveStats[4], passiveStats[5]);
+            bonusDamage = passive.AffectInt(bonusDamage, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += bonusDamage;
             break;
             case "DefenseValue":
             passiveEffectString += "\n";
             passiveEffectString += passiveName + "; " + "Bonus Defense" + ":" + bonusDefense + "->";
-            bonusDefense = passive.AffectInt(bonusDefense, passiveStats[4], passiveStats[5]);
+            bonusDefense = passive.AffectInt(bonusDefense, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += bonusDefense;
             break;
             case "AttackValue%":
@@ -486,19 +497,19 @@ public class AttackManager : ScriptableObject
             case "HitChance":
             passiveEffectString += "\n";
             passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + hitChance+"->";
-            hitChance = passive.AffectInt(hitChance, passiveStats[4], passiveStats[5]);
+            hitChance = passive.AffectInt(hitChance, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += hitChance;
             break;
             case "Dodge":
             passiveEffectString += "\n";
             passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + dodgeChance+"->";
-            dodgeChance = passive.AffectInt(dodgeChance, passiveStats[4], passiveStats[5]);
+            dodgeChance = passive.AffectInt(dodgeChance, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += dodgeChance;
             break;
             case "CritChance":
             passiveEffectString += "\n";
             passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + critChance+"->";
-            critChance = passive.AffectInt(critChance, passiveStats[4], passiveStats[5]);
+            critChance = passive.AffectInt(critChance, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += critChance;
             break;
             case "CritDamage":
@@ -529,7 +540,15 @@ public class AttackManager : ScriptableObject
 
     protected void ApplyPassiveEffect(string pData, TacticActor target, TacticActor attacker, BattleMap map)
     {
-        if (pData.Length < 6 || !pData.Contains("|")){return;}
+        if (pData.Length < 6 || !pData.Contains("|"))
+        {
+            // Try to get the data from the name.
+            pData = passiveData.ReturnValue(pData);
+            if (pData.Length < 6 || !pData.Contains("|"))
+            {
+                return;
+            }
+        }
         List<string> pStats = pData.Split("|").ToList();
         string passiveName = passiveData.ReturnKeyFromValue(pData);
         if (passive.CheckBattleConditions(pStats[1], pStats[2], target, attacker, map))

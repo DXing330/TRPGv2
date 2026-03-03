@@ -7,6 +7,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "MagicSpell", menuName = "ScriptableObjects/BattleLogic/MagicSpell", order = 1)]
 public class MagicSpell : ActiveSkill
 {
+    public StatDatabase spellAttributes;
     public override void LoadSkillFromString(string skillData)
     {
         skillInfo = standardSpells.ReturnValue(skillData);
@@ -27,25 +28,25 @@ public class MagicSpell : ActiveSkill
         int cost = GetEnergyCost();
         if (actor != null)
         {
-            string[] spellName = GetSkillName().Split("-");
-            if (spellName.Length < 2){return cost;}
-            int attributeCount = actor.AttributeCount(spellName[1]);
-            return AdjustCostByAttributes(cost, attributeCount);
+            string attribute = spellAttributes.ReturnValue(GetSkillName());
+            int attributeCount = actor.AttributeCount(attribute);
+            int nilCount = actor.AttributeCount("Nil");
+            return AdjustCostByAttributes(cost, attributeCount, nilCount);
         }
         return cost;
     }
-    protected int AdjustCostByAttributes(int baseCost, int attributeCount)
+    protected int AdjustCostByAttributes(int baseCost, int attributeCount, int nilCount)
     {
         switch (attributeCount)
         {
             default:
-            return 1;
-            case 0:
-            return Mathf.Max(1, baseCost);
+            return Mathf.Max(1, baseCost) * (nilCount + 1);
             case 1:
-            return Mathf.Max(1, baseCost * 3 / 4);
+            return Mathf.Max(1, baseCost / 2) * (nilCount + 1);
             case 2:
-            return Mathf.Max(1, baseCost / 2);
+            return Mathf.Max(1, baseCost / 3) * (nilCount + 1);
+            case 3:
+            return Mathf.Max(1, baseCost / 4) * (nilCount + 1);
         }
     }
     public string effectDelimiter = "?";

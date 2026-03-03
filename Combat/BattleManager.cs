@@ -157,12 +157,16 @@ public class BattleManager : MonoBehaviour
         if (autoBattle) { NPCTurn(); }
         else if (turnActor.GetTeam() > 0 && !controlAI) { NPCTurn(); }
     }
-    public void SpawnAndAddActor(int location, string actorName, int team = 0)
+    public void SpawnAndAddActor(int location, string actorName, int team = 0, TacticActor summoner = null)
     {
         TacticActor newActor = actorMaker.SpawnActor(location, actorName, team);
         map.AddActorToBattle(newActor);
         ApplyBattleModifiersToActor(newActor);
-        effectManager.StartBattle(map.ReturnLatestActor());
+        effectManager.SummonedStartBattle(newActor);
+        if (summoner != null)
+        {
+            summoner.AddSummonedActor(newActor);
+        }
     }
     protected void ApplyBattleModifiersToActor(TacticActor actor)
     {
@@ -317,8 +321,7 @@ public class BattleManager : MonoBehaviour
                 ConfusedTurn(turnActor.GetActions());
                 return;
         }
-        if (autoBattle) { NPCTurn(); }
-        else if (turnActor.GetTeam() > 0 && !controlAI) { NPCTurn(); }
+        if (autoBattle || turnActor.UncontrolledSummon() || turnActor.GetTeam() > 0 && !controlAI){NPCTurn();}
     }
     protected void NPCTurn()
     {
@@ -1043,6 +1046,13 @@ public class BattleManager : MonoBehaviour
 
     protected void BasicNPCAction()
     {
+        // Summoned enemies have summoning sickness.
+        if (turnActor.summoned && turnActor.summonedBy != null)
+        {
+            turnActor.ResetSummonedBy();
+            EndTurn();
+            return;
+        }
         // This will make sure the path costs are up to date for AI action calculations.
         moveManager.GetAllMoveCosts(turnActor, map.battlingActors);
         // Find a new target if needed.

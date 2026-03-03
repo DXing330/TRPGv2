@@ -18,6 +18,12 @@ public class EffectManager : MonoBehaviour
         passive.ApplyStartBattlePassives(actor, battleState);
     }
 
+    public void SummonedStartBattle(TacticActor actor)
+    {
+        StartBattle(actor);
+        passive.AffectActor(actor, "SingleTemporarySkill", "Break Summon Link");
+    }
+
     public void StartTurn(TacticActor actor, BattleMap map)
     {
         map.ActorStartsTurn(actor);
@@ -25,6 +31,8 @@ public class EffectManager : MonoBehaviour
         // Status effects apply last so that passives have a chance to remove negative status effects.
         status.ApplyBuffEffects(actor, statusData, "Start", map);
         status.ApplyStartEndEffects(actor, statusData, "Start", map);
+        // Decrease the counter of any buff/status that are not start/end turn.
+        status.AdjustOtherTimingDurations(actor, statusData);
         // Check on grapples at the start of every turn.
         if (actor.Grappled(map))
         {

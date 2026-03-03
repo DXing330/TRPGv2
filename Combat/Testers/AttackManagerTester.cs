@@ -21,6 +21,7 @@ public class AttackManagerTester : MonoBehaviour
     public List<string> attackerBorders;
     public List<string> testAttackerPassives;
     public List<string> testAttackerPassiveLevels;
+    public List<string> testAttackerBuffs;
     public int defenderLocation;
     public int defenderDirection;
     public string defenderBuilding;
@@ -29,6 +30,7 @@ public class AttackManagerTester : MonoBehaviour
     public List<string> defenderBorders;
     public List<string> testDefenderPassives;
     public List<string> testDefenderPassiveLevels;
+    public List<string> testDefenderBuffs;
     public int guardLocation;
     public int guardDirection;
     public string guardTile;
@@ -47,7 +49,6 @@ public class AttackManagerTester : MonoBehaviour
     public TacticActor dummyGuard;
     public string guardStats;
 
-
     protected void InitializeMap()
     {
         map.ForceStart();
@@ -61,6 +62,10 @@ public class AttackManagerTester : MonoBehaviour
         {
             dummyAttacker.AddPassiveSkill(testAttackerPassives[i], testAttackerPassiveLevels[i]);
         }
+        for (int i = 0; i < testAttackerBuffs.Count; i++)
+        {
+            dummyAttacker.AddBuff(testAttackerBuffs[i], dummyAttacker.defaultBuffDuration);
+        }
         battleManager.actorMaker.AddElementPassives(dummyAttacker);
         battleManager.actorMaker.AddAttributePassives(dummyAttacker);
         battleManager.actorMaker.AddSpeciesPassives(dummyAttacker);
@@ -71,7 +76,11 @@ public class AttackManagerTester : MonoBehaviour
         dummyDefender.InitializeStats();
         for (int i = 0; i < testDefenderPassiveLevels.Count; i++)
         {
-            dummyAttacker.AddPassiveSkill(testDefenderPassives[i], testDefenderPassiveLevels[i]);
+            dummyDefender.AddPassiveSkill(testDefenderPassives[i], testDefenderPassiveLevels[i]);
+        }
+        for (int i = 0; i < testDefenderBuffs.Count; i++)
+        {
+            dummyDefender.AddBuff(testDefenderBuffs[i], dummyDefender.defaultBuffDuration);
         }
         battleManager.actorMaker.AddElementPassives(dummyDefender);
         battleManager.actorMaker.AddAttributePassives(dummyDefender);
@@ -125,6 +134,13 @@ public class AttackManagerTester : MonoBehaviour
         InitializeMap();
         // Set up the guard if you want.
         // Show all the passives that are taking effect.
+        attackManager.ActorAttacksActor(dummyAttacker, dummyDefender, map);
+        map.combatLog.DebugLatestDetailsLog();
+    }
+
+    [ContextMenu("Test Attack WO Reseting")]
+    public void TestAttackWOReset()
+    {
         attackManager.ActorAttacksActor(dummyAttacker, dummyDefender, map);
         map.combatLog.DebugLatestDetailsLog();
     }

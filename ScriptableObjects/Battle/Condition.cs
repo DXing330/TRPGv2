@@ -14,6 +14,15 @@ public class Condition : PassiveSkill
         return timing == time;
     }
 
+    protected bool OtherTiming(string timing)
+    {
+        if (timing == "ALL" || timing == "Start" || timing == "End")
+        {
+            return false;
+        }
+        return true;
+    }
+
     protected bool ActorImmune(TacticActor actor, string status)
     {
         List<string> possibleImmunities = actor.GetStartTurnPassives();
@@ -54,6 +63,24 @@ public class Condition : PassiveSkill
             if (!Timing(timing, statusInfo[0])){continue;}
             ApplyPassive(actor, map, allData.ReturnValue(statuses[i]));
             actor.AdjustBuffDuration(i);
+        }
+    }
+
+    public void AdjustOtherTimingDurations(TacticActor actor, StatDatabase allData)
+    {
+        statuses = new List<string>(actor.GetBuffs());
+        for (int i = statuses.Count - 1; i >= 0; i--)
+        {
+            statusInfo = allData.ReturnStats(statuses[i]);
+            if (!OtherTiming(statusInfo[0])){continue;}
+            actor.AdjustBuffDuration(i);
+        }
+        statuses = new List<string>(actor.GetStatuses());
+        for (int i = statuses.Count - 1; i >= 0; i--)
+        {
+            statusInfo = allData.ReturnStats(statuses[i]);
+            if (!OtherTiming(statusInfo[0])){continue;}
+            actor.AdjustStatusDuration(i);
         }
     }
 }

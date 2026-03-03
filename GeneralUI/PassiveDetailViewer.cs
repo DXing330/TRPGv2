@@ -709,7 +709,26 @@ public class PassiveDetailViewer : MonoBehaviour
 
     protected string AdjustSpecificsText(string specifics)
     {
-        switch (specifics)
+        string adjustedSpecifics = specifics;
+        string targetString = "the target";
+        if (specifics.Contains("ScalingEquals"))
+        {
+            string[] scalingBasedOn = specifics.Split("Equals");
+            if (scalingBasedOn.Length > 1)
+            {
+                adjustedSpecifics = scalingBasedOn[1];
+                if (adjustedSpecifics.EndsWith("D"))
+                {
+                    adjustedSpecifics = adjustedSpecifics[..^1];
+                }
+                else if (adjustedSpecifics.EndsWith("A"))
+                {
+                    targetString = "the attacker";
+                    adjustedSpecifics = adjustedSpecifics[..^1];
+                }
+            }
+        }
+        switch (adjustedSpecifics)
         {
             case "Defense":
                 return "your defense value";
@@ -717,6 +736,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return "your attack value";
             case "Attack/2":
                 return "half your attack value";
+            case "SkillsUsed":
+                return "how many skills " + targetString + " used";
         }
         return specifics;
     }

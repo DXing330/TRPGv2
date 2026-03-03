@@ -154,6 +154,8 @@ public class TacticActor : ActorStats
         {
             actions = Mathf.Max(actions, baseActions);
         }
+        // Pay for any summons. Pay for auras?
+        ControlSummonedActors();
     }
     public int GetMoveRangeBasedOnActions(int actionCount)
     {
@@ -363,11 +365,13 @@ public class TacticActor : ActorStats
         return defendsEachRound.Sum();
     }
     public List<int> skillsEachRound;
+    public List<string> skillsUsed;
     public void ResetRoundSkillTracker()
     {
         skillsEachRound.Clear();
+        skillsUsed.Clear();
     }
-    public void UpdateRoundSkillTracker()
+    public void UpdateRoundSkillTracker(string skillName)
     {
         if (skillsEachRound == null || skillsEachRound.Count == 0)
         {
@@ -376,6 +380,7 @@ public class TacticActor : ActorStats
             return;
         }
         skillsEachRound[skillsEachRound.Count - 1]++;
+        skillsUsed.Add(skillName);
     }
     public int ReturnCurrentRoundSkills()
     {
@@ -623,14 +628,66 @@ public class TacticActor : ActorStats
         }
         return false;
     }
+    protected void ResetSummonTrackers()
+    {
+        summoned = false;
+        summonedBy = null;
+        summonedActors.Clear();
+    }
+    public bool summoned = false;
+    public bool UncontrolledSummon()
+    {
+        return (summoned && summonedBy == null);
+    }
+    public TacticActor summonedBy;
+    public void SetSummonedBy(TacticActor summonedByActor)
+    {
+        summonedBy = summonedByActor;
+    }
+    // Breaks the connection between the summoned and summoner.
+    public void ResetSummonedBy()
+    {
+        summonedBy.ReleaseSummonedActor(this);
+        summonedBy = null;
+    }
+    public List<TacticActor> summonedActors;
+    public void AddSummonedActor(TacticActor newActor)
+    {
+        summonedActors.Add(newActor);
+        newActor.summoned = true;
+        newActor.SetSummonedBy(this);
+    }
+    public void ReleaseSummonedActor(TacticActor actor)
+    {
+        summonedActors.Remove(actor);
+    }
+    // Pay 1 action each to control summoned units.
+    public void ControlSummonedActors()
+    {
+        for (int i = summonedActors.Count - 1; i >= 0; i--)
+        {
+            if (actions > 0)
+            {
+                actions--;
+                continue;
+            }
+            // If you can't pay then release them.
+            else
+            {
+                summonedActors[i].ResetSummonedBy();
+            }
+        }
+    }
     // For organization purposes.
     public override void InitializeStats()
     {
         base.InitializeStats();
+        currentEnergy = GetBaseEnergy();
         ResetMentalState();
         ResetTarget();
         ResetHurtBy();
         ResetRoundTrackers();
+        ResetSummonTrackers();
     }
     public void EndTurn()
     {
@@ -656,7 +713,6 @@ public class TacticActor : ActorStats
         stats.Add(GetMana().ToString());
         return stats;
     }
-
     public string ReturnPersistentStats(string delimiter = "|")
     {
         string healthString = GetHealth().ToString();
