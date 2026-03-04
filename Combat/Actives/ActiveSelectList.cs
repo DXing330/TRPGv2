@@ -53,7 +53,7 @@ public class ActiveSelectList : SelectList
         IncrementState();
         ShowSelected();
         activeManager.SetSkillFromName(selected);
-        activeDescription.text = descriptionViewer.ReturnActiveDescription(activeManager.active);
+        activeDescription.text = descriptionViewer.ReturnActiveDescription(activeManager.active, activeManager.skillUser, battle.map);
         if (battle.GetTurnActor().GetSilenced())
         {
             ErrorMessage("Can't use skills while silenced.");
@@ -165,7 +165,7 @@ public class ActiveSelectList : SelectList
     public void ActivateSkill()
     {
         // Check cost here.
-        if (!activeManager.CheckSkillCost())
+        if (!activeManager.CheckSkillCost(battle.map))
         {
             // Show an error message instead of just returning?
             ErrorMessage("Not enough resources to use this skill.");
@@ -195,7 +195,7 @@ public class ActiveSelectList : SelectList
 
     public void ActivateSpell()
     {
-        if (!activeManager.CheckSpellCost())
+        if (!activeManager.CheckSpellCost(battle.map))
         {
             // Show an error message instead of just returning?
             ErrorMessage("Not enough resources to cast this spell.");

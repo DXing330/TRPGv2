@@ -123,6 +123,23 @@ public class BattleUIManager : MonoBehaviour
         targetHPText.text = target.GetHealth().ToString();
         targetDEFText.text = target.GetDefense().ToString();
     }
+    // Target Stats Preview
+    public TMP_Text targetedName;
+    public TMP_Text targetedHealth;
+    public TMP_Text targetedTeam;
+    public void PreviewTarget(TacticActor target = null)
+    {
+        if (target == null || target.invisible)
+        {
+            targetedName.text = "";
+            targetedHealth.text = "";
+            targetedTeam.text = "";
+            return;
+        }
+        targetedName.text = target.GetPersonalName();
+        targetedHealth.text = target.GetHealth().ToString();
+        targetedTeam.text = target.GetTeam().ToString();
+    }
     // TODO
     public void UpdateStatSheet(TacticActor actor)
     {

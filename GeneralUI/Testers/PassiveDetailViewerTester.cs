@@ -30,7 +30,7 @@ public class PassiveDetailViewerTester : MonoBehaviour
     public void TestSinglePassiveDescription()
     {
         string testPassiveInfo = allPassives.ReturnValue(testPassiveName);
-        Debug.Log(testPassiveName);
+        Debug.Log(testPassiveInfo);
         Debug.Log(detailViewer.ReturnPassiveDetails(testPassiveInfo));
     }
 }

@@ -19,6 +19,8 @@ public class SkillEffect : ScriptableObject
         {
             case "Passive":
                 target.AddPassiveSkill(effectSpecifics, "1");
+                int newPassiveLevel = target.GetLevelFromPassive(effectSpecifics);
+                passiveOrganizer.AddSortedPassiveNewLevel(target, effectSpecifics, newPassiveLevel);
                 break;
             case "TemporaryPassive":
                 if (target.AddTempPassive(effectSpecifics, level))
@@ -398,6 +400,9 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Weight":
                 target.UpdateWeight(int.Parse(effectSpecifics));
+                break;
+            case "TempWeight":
+                target.UpdateTempWeight(int.Parse(effectSpecifics));
                 break;
             case "Death":
                 target.SetCurrentHealth(0);

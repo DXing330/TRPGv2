@@ -46,6 +46,72 @@ public class PassiveSkill : SkillEffect
         map.ChangeTile(actor.GetLocation(), effect, specifics);
     }
 
+    public void ApplyAdjustCostPassive(TacticActor actor, ActiveSkill active, BattleMap map, string passiveData)
+    {
+        string[] data = passiveData.Split("|");
+        if (data.Length < 6){return;}
+        // Check the conditions.
+        string[] conditions = data[1].Split(",");
+        string[] cSpecifics = data[2].Split(",");
+        for (int i = 0; i < conditions.Length; i++)
+        {
+            if (!CheckAdjustCostCondition(actor, active, map, conditions[i], cSpecifics[i])){return;}
+        }
+        // Apply the effects.
+        string target = data[3];
+        string effect = data[4];
+        int change = int.Parse(data[5]);
+        switch (effect)
+        {
+            case "ActionCost":
+                active.AdjustFlatActionCost(change);
+                break;
+            case "ActionCost%":
+                active.AdjustPercentActionCost(change);
+                break;
+            case "EnergyCost":
+                active.AdjustFlatEnergyCost(change);
+                break;
+            case "EnergyCost%":
+                active.AdjustPercentEnergyCost(change);
+                break;
+            case "ActionOverride":
+                active.SetActionCostOverride(change);
+                break;
+            case "EnergyOverride":
+                active.SetEnergyCostOverride(change);
+                break;
+        }
+    }
+
+    protected bool CheckAdjustCostCondition(TacticActor actor, ActiveSkill active, BattleMap map, string condition, string specifics)
+    {
+        // First check if the condition is related to the active.
+        switch (condition)
+        {
+            case "SkillName":
+            return active.GetSkillName().Contains(specifics);
+            case "SkillType":
+            return active.GetSkillType() == specifics;
+            case "SkillEffect":
+            return active.GetEffect().Contains(specifics);
+            case "SkillRange>":
+            return active.GetRange(actor) > int.Parse(specifics);
+            case "SkillRange<":
+            return active.GetRange(actor) < int.Parse(specifics);
+            case "SkillRangeShape":
+            return active.GetRangeShape() == specifics;
+            case "SkillSpan>":
+            return active.GetSpan(actor) > int.Parse(specifics);
+            case "SkillSpan<":
+            return active.GetSpan(actor) < int.Parse(specifics);
+            case "SkillShape":
+            return active.GetShape() == specifics;
+        }
+        // Else check if the condition is related to the active user.
+        return CheckStartEndCondition(condition, specifics, actor, map);
+    }
+
     public void ApplyAfterAttackPassives(TacticActor actor, TacticActor attackTarget, int damage, BattleMap map, bool hit = true, bool crit = false, bool counterAttack = false)
     {
         List<string> passives = actor.GetAfterAttackPassives();
@@ -405,7 +471,88 @@ public class PassiveSkill : SkillEffect
             // Good RNG means you want to roll lower to get the chance.
             case "GoodRNG":
             return utility.Roll(-actor.GetLuck()) < int.Parse(conditionSpecifics);
-            
+            case "FirstStrike":
+                return actor.ReturnTotalRoundAttacks() <= 0;
+            case "Moved":
+                return actor.ReturnCurrentRoundMoves() > 0;
+            case "Moved<>":
+                return actor.ReturnCurrentRoundMoves() == 0;
+            case "SkillUsed":
+                return actor.ReturnCurrentRoundSkills() > 0;
+            case "SkillUsed<>":
+                return actor.ReturnCurrentRoundSkills() == 0;
+            case "Attacked":
+                return actor.ReturnCurrentRoundAttacks() > 0;
+            case "Attacked<>":
+                return actor.ReturnCurrentRoundAttacks() == 0;
+            case "Defended":
+                return actor.ReturnCurrentRoundDefends() > 0;
+            case "Defended<>":
+                return actor.ReturnCurrentRoundDefends() == 0;
+            case "PrevDefended":
+                return actor.ReturnPreviousRoundDefends() > 0;
+            case "PrevDefended<>":
+                return actor.ReturnPreviousRoundDefends() == 0;
+            case "PrevMoved":
+                return actor.ReturnPreviousRoundMoves() > 0;
+            case "PrevMoved<>":
+                return actor.ReturnPreviousRoundMoves() == 0;
+            case "PrevSkillUsed":
+                return actor.ReturnPreviousRoundSkills() > 0;
+            case "PrevSkillUsed<>":
+                return actor.ReturnPreviousRoundSkills() == 0;
+            case "PrevAttacked":
+                return actor.ReturnPreviousRoundAttacks() > 0;
+            case "PrevAttacked<>":
+                return actor.ReturnPreviousRoundAttacks() == 0;
+            case "AttackCount":
+                return actor.ReturnCurrentRoundAttacks() == int.Parse(conditionSpecifics);
+            case "AttackCount>":
+                return actor.ReturnCurrentRoundAttacks() > int.Parse(conditionSpecifics);
+            case "AttackCount<":
+                return actor.ReturnCurrentRoundAttacks() < int.Parse(conditionSpecifics);
+            case "AttackCount%":
+                return (actor.ReturnCurrentRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevAttackCount":
+                return actor.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
+            case "PrevAttackCount>":
+                return actor.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
+            case "PrevAttackCount<":
+                return actor.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
+            case "PrevAttackCount%":
+                return (actor.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "PrevSkillCount":
+                return actor.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
+            case "PrevSkillCount>":
+                return actor.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
+            case "PrevSkillCount<":
+                return actor.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
+            case "PrevSkillCount%":
+                return (actor.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
+            case "PrevMoveCount":
+                return actor.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
+            case "PrevMoveCount>":
+                return actor.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
+            case "PrevMoveCount<":
+                return actor.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
+            case "PrevMoveCount%":
+                return (actor.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
+            case "DefendCount":
+                return actor.ReturnCurrentRoundDefends() == int.Parse(conditionSpecifics);
+            case "DefendCount>":
+                return actor.ReturnCurrentRoundDefends() > int.Parse(conditionSpecifics);
+            case "DefendCount<":
+                return actor.ReturnCurrentRoundDefends() < int.Parse(conditionSpecifics);
+            case "DefendCount%":
+                return (actor.ReturnCurrentRoundDefends() % int.Parse(conditionSpecifics) == 0);
+            case "PrevDefendCount":
+                return actor.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
+            case "PrevDefendCount>":
+                return actor.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
+            case "PrevDefendCount<":
+                return actor.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
+            case "PrevDefendCount%":
+                return (actor.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
         }
         return true;
     }
@@ -490,88 +637,6 @@ public class PassiveSkill : SkillEffect
                 return checkedActor.GetHurtBy() == comparedActor;
             case "HurtLeast":
                 return checkedActor.GetHurtBy(false) == comparedActor;
-            case "FirstStrike":
-                return checkedActor.ReturnTotalRoundAttacks() <= 0;
-            case "Moved":
-                return checkedActor.ReturnCurrentRoundMoves() > 0;
-            case "Moved<>":
-                return checkedActor.ReturnCurrentRoundMoves() == 0;
-            case "SkillUsed":
-                return checkedActor.ReturnCurrentRoundSkills() > 0;
-            case "SkillUsed<>":
-                return checkedActor.ReturnCurrentRoundSkills() == 0;
-            case "Attacked":
-                return checkedActor.ReturnCurrentRoundAttacks() > 0;
-            case "Attacked<>":
-                return checkedActor.ReturnCurrentRoundAttacks() == 0;
-            case "Defended":
-                return checkedActor.ReturnCurrentRoundDefends() > 0;
-            case "Defended<>":
-                return checkedActor.ReturnCurrentRoundDefends() == 0;
-            case "PrevDefended":
-                return checkedActor.ReturnPreviousRoundDefends() > 0;
-            case "PrevDefended<>":
-                return checkedActor.ReturnPreviousRoundDefends() == 0;
-            case "PrevMoved":
-                return checkedActor.ReturnPreviousRoundMoves() > 0;
-            case "PrevMoved<>":
-                return checkedActor.ReturnPreviousRoundMoves() == 0;
-            case "PrevSkillUsed":
-                return checkedActor.ReturnPreviousRoundSkills() > 0;
-            case "PrevSkillUsed<>":
-                return checkedActor.ReturnPreviousRoundSkills() == 0;
-            case "PrevAttacked":
-                return checkedActor.ReturnPreviousRoundAttacks() > 0;
-            case "PrevAttacked<>":
-                return checkedActor.ReturnPreviousRoundAttacks() == 0;
-            case "AttackCount":
-                return checkedActor.ReturnCurrentRoundAttacks() == int.Parse(conditionSpecifics);
-            case "AttackCount>":
-                return checkedActor.ReturnCurrentRoundAttacks() > int.Parse(conditionSpecifics);
-            case "AttackCount<":
-                return checkedActor.ReturnCurrentRoundAttacks() < int.Parse(conditionSpecifics);
-            case "AttackCount%":
-                return (checkedActor.ReturnCurrentRoundAttacks() % int.Parse(conditionSpecifics) == 0);
-            case "PrevAttackCount":
-                return checkedActor.ReturnPreviousRoundAttacks() == int.Parse(conditionSpecifics);
-            case "PrevAttackCount>":
-                return checkedActor.ReturnPreviousRoundAttacks() > int.Parse(conditionSpecifics);
-            case "PrevAttackCount<":
-                return checkedActor.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
-            case "PrevAttackCount%":
-                return (checkedActor.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
-            case "PrevSkillCount":
-                return checkedActor.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
-            case "PrevSkillCount>":
-                return checkedActor.ReturnPreviousRoundSkills() > int.Parse(conditionSpecifics);
-            case "PrevSkillCount<":
-                return checkedActor.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
-            case "PrevSkillCount%":
-                return (checkedActor.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
-            case "PrevMoveCount":
-                return checkedActor.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
-            case "PrevMoveCount>":
-                return checkedActor.ReturnPreviousRoundMoves() > int.Parse(conditionSpecifics);
-            case "PrevMoveCount<":
-                return checkedActor.ReturnPreviousRoundMoves() < int.Parse(conditionSpecifics);
-            case "PrevMoveCount%":
-                return (checkedActor.ReturnPreviousRoundMoves() % int.Parse(conditionSpecifics) == 0);
-            case "DefendCount":
-                return checkedActor.ReturnCurrentRoundDefends() == int.Parse(conditionSpecifics);
-            case "DefendCount>":
-                return checkedActor.ReturnCurrentRoundDefends() > int.Parse(conditionSpecifics);
-            case "DefendCount<":
-                return checkedActor.ReturnCurrentRoundDefends() < int.Parse(conditionSpecifics);
-            case "DefendCount%":
-                return (checkedActor.ReturnCurrentRoundDefends() % int.Parse(conditionSpecifics) == 0);
-            case "PrevDefendCount":
-                return checkedActor.ReturnPreviousRoundDefends() == int.Parse(conditionSpecifics);
-            case "PrevDefendCount>":
-                return checkedActor.ReturnPreviousRoundDefends() > int.Parse(conditionSpecifics);
-            case "PrevDefendCount<":
-                return checkedActor.ReturnPreviousRoundDefends() < int.Parse(conditionSpecifics);
-            case "PrevDefendCount%":
-                return (checkedActor.ReturnPreviousRoundDefends() % int.Parse(conditionSpecifics) == 0);
         }
         return CheckStartEndCondition(condition, conditionSpecifics, checkedActor, map);
     }

@@ -245,6 +245,12 @@ public class ActorPassives : MonoBehaviour
             case "OOC":
                 outOfCombatPassives.Add(passiveName);
                 break;
+            case "AdjustActives":
+                adjustActivesPassives.Add(passiveName);
+                break;
+            case "AdjustSpells":
+                adjustSpellsPassives.Add(passiveName);
+                break;
         }
     }
     public void RemoveSortedPassive(string passiveName, string type)
@@ -281,9 +287,14 @@ public class ActorPassives : MonoBehaviour
             case "OOC":
                 outOfCombatPassives.Remove(passiveName);
                 break;
+            case "AdjustActives":
+                adjustActivesPassives.Remove(passiveName);
+                break;
+            case "AdjustSpells":
+                adjustSpellsPassives.Remove(passiveName);
+                break;
         }
     }
-    public string GetPassiveSkill(int index) { return passiveSkills[index]; }
     public List<string> startBattlePassives;
     public List<string> GetStartBattlePassives() { return startBattlePassives; }
     public void AddStartBattlePassives(List<string> newSkills)
@@ -453,4 +464,32 @@ public class ActorPassives : MonoBehaviour
         }
     }
     public void SetOOCPassives(List<string> passives){outOfCombatPassives = new List<string>(passives);}
+    public List<string> adjustActivesPassives;
+    public List<string> GetAdjustActivesPassives() { return adjustActivesPassives; }
+    public void AddAdjustActivesPassives(List<string> newSkills)
+    {
+        for (int i = 0; i < newSkills.Count; i++)
+        {
+            if (newSkills[i].Length <= 1) { continue; }
+            adjustActivesPassives.Add(newSkills[i]);
+        }
+    }
+    public void SetAdjustActivesPassives(List<string> passives)
+    {
+        adjustActivesPassives = new List<string>(passives);
+    }
+    public List<string> adjustSpellsPassives;
+    public List<string> GetAdjustSpellsPassives() { return adjustSpellsPassives; }
+    public void AddAdjustSpellsPassives(List<string> newSkills)
+    {
+        for (int i = 0; i < newSkills.Count; i++)
+        {
+            if (newSkills[i].Length <= 1) { continue; }
+            adjustSpellsPassives.Add(newSkills[i]);
+        }
+    }
+    public void SetAdjustSpellsPassives(List<string> passives)
+    {
+        adjustSpellsPassives = new List<string>(passives);
+    }
 }

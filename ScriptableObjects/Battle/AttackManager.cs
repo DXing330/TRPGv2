@@ -323,18 +323,6 @@ public class AttackManager : ScriptableObject
         damageRolls = "Damage Rolls: ";
         passiveEffectString = "Applied Passives: ";
         finalDamageCalculation = "";
-        // Ranged attacks get elevation bonus/penalties.
-        if (attacker.GetAttackRange() > 1)
-        {
-            int elvDiff = map.ReturnPosNegElvDiff(attacker.GetLocation(), target.GetLocation());
-            if (elvDiff != 0)
-            {
-                finalDamageCalculation += "Elevation Difference: " + elvDiff;
-                finalDamageCalculation += "\n" + "Damage Multiplier: " + damageMultiplier + " -> ";
-                damageMultiplier += 10 * elvDiff;
-                finalDamageCalculation += damageMultiplier + "\n";
-            }
-        }
         CheckMapPassives(attacker, attackTarget, map, target.GetLocation(), true, true);
         // Bonus damage can be calculated here and triggers regardless of hit/miss.
         CheckPassives(attacker.GetAttackingPassives(buffStatusData), attackTarget, attacker, map);
@@ -363,6 +351,18 @@ public class AttackManager : ScriptableObject
         AttackDefenseMultipliersBonuses();
         // Deal Damage To Any Buildings Supporting The Target.
         map.DamageActorBuilding(target.GetLocation(), attacker, baseDamage);
+            // Ranged attacks get elevation bonus/penalties.
+        if (attacker.GetAttackRange() > 1)
+        {
+            int elvDiff = map.ReturnPosNegElvDiff(attacker.GetLocation(), target.GetLocation());
+            if (elvDiff != 0)
+            {
+                finalDamageCalculation += "Elevation Difference: " + elvDiff;
+                finalDamageCalculation += "\n" + "Damage Multiplier: " + damageMultiplier + " -> ";
+                damageMultiplier += 10 * elvDiff;
+                finalDamageCalculation += damageMultiplier + "\n";
+            }
+        }
         // First subtract defense.
         finalDamageCalculation += "Subtract Defense: " + baseDamage + " - " + defenseValue + " = ";
         baseDamage = baseDamage - defenseValue;
@@ -456,13 +456,13 @@ public class AttackManager : ScriptableObject
         {
             case "Advantage":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + advantage+"->";
+            passiveEffectString += passiveName + " : " + passiveStats[3] + " : " + advantage+"->";
             advantage = passive.AffectInt(advantage, passiveStats[4], passiveStats[5]);
             passiveEffectString += advantage;
             break;
             case "Damage%":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + damageMultiplier + "->";
+            passiveEffectString += passiveName + " : " + passiveStats[3] + " : " + damageMultiplier + "->";
             damageMultiplier = passive.AffectInt(damageMultiplier, passiveStats[4], passiveStats[5]);
             if (damageMultiplier < 0)
             {
@@ -472,49 +472,49 @@ public class AttackManager : ScriptableObject
             break;
             case "AttackValue":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + "Bonus Damage" + ":" + bonusDamage + "->";
+            passiveEffectString += passiveName + " : " + "Bonus Damage" + " : " + bonusDamage + "->";
             bonusDamage = passive.AffectInt(bonusDamage, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += bonusDamage;
             break;
             case "DefenseValue":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + "Bonus Defense" + ":" + bonusDefense + "->";
+            passiveEffectString += passiveName + " : " + "Bonus Defense" + " : " + bonusDefense + "->";
             bonusDefense = passive.AffectInt(bonusDefense, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += bonusDefense;
             break;
             case "AttackValue%":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + "Attack Multiplier" + ":" + attackDamageMultiplier + "->";
+            passiveEffectString += passiveName + " : " + "Attack Multiplier" + " : " + attackDamageMultiplier + "->";
             attackDamageMultiplier = passive.AffectInt(attackDamageMultiplier, passiveStats[4], passiveStats[5]);
             passiveEffectString += attackDamageMultiplier;
             break;
             case "DefenseValue%":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + "Defense Multiplier" + ":" + defenseMultiplier + "->";
+            passiveEffectString += passiveName + " : " + "Defense Multiplier" + " : " + defenseMultiplier + "->";
             defenseMultiplier = passive.AffectInt(defenseMultiplier, passiveStats[4], passiveStats[5]);
             passiveEffectString += defenseMultiplier;
             break;
             case "HitChance":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + hitChance+"->";
+            passiveEffectString += passiveName + " : " + passiveStats[3] + " : " + hitChance+"->";
             hitChance = passive.AffectInt(hitChance, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += hitChance;
             break;
             case "Dodge":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + dodgeChance+"->";
+            passiveEffectString += passiveName + " : " + passiveStats[3] + " : " + dodgeChance+"->";
             dodgeChance = passive.AffectInt(dodgeChance, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += dodgeChance;
             break;
             case "CritChance":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + critChance+"->";
+            passiveEffectString += passiveName + " : " + passiveStats[3] + " : " + critChance+"->";
             critChance = passive.AffectInt(critChance, passiveStats[4], passiveStats[5], attacker, target);
             passiveEffectString += critChance;
             break;
             case "CritDamage":
             passiveEffectString += "\n";
-            passiveEffectString += passiveName + "; " + passiveStats[3] + ":" + critDamage+"->";
+            passiveEffectString += passiveName + " : " + passiveStats[3] + " : " + critDamage+"->";
             critDamage = passive.AffectInt(critDamage, passiveStats[4], passiveStats[5]);
             passiveEffectString += critDamage;
             break;

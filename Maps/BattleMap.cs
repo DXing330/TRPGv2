@@ -722,6 +722,9 @@ public class BattleMap : MapManager
             case "Tile":
                 ChangeTerrain(tileNumber, specifics, force);
                 break;
+            case "Elevation":
+                ChangeTileElevation(tileNumber, int.Parse(specifics));
+                break;
             case "TerrainEffect":
                 ChangeTEffect(tileNumber, specifics, force);
                 break;
@@ -768,14 +771,18 @@ public class BattleMap : MapManager
         battleManager.moveManager.UpdateInfoFromBattleMap(this);
         UpdateMap();
     }
-    protected void NewTileElevation(int tileNumber)
+    protected void ChangeTileElevation(int tileNumber, int newElevation)
     {
-        if (tileNumber < 0 || tileNumber >= mapElevations.Count){return;}
-        mapElevations[tileNumber] = RandomElevation(mapInfo[tileNumber]);
+        mapElevations[tileNumber] = newElevation;
         mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
         mapTiles[tileNumber].UpdateElevationSprite(elevationSprites.SpriteDictionary("E"+mapTiles[tileNumber].GetElevation().ToString()));
         battleManager.moveManager.UpdateInfoFromBattleMap(this);
         UpdateMap();
+    }
+    protected void NewRandomTileElevation(int tileNumber)
+    {
+        if (tileNumber < 0 || tileNumber >= mapElevations.Count){return;}
+        ChangeTileElevation(tileNumber, RandomElevation(mapInfo[tileNumber]));
     }
     // TESTED IN BATTLEMAPTESTER
     public void ChainReplaceTEffects(int tileNumber, string change)
@@ -792,7 +799,7 @@ public class BattleMap : MapManager
         if (force)
         {
             mapInfo[tileNumber] = change;
-            NewTileElevation(tileNumber);
+            NewRandomTileElevation(tileNumber);
             return;
         }
         string t_t = mapInfo[tileNumber] + "-" + change;
@@ -807,7 +814,7 @@ public class BattleMap : MapManager
             mapInfo[tileNumber] = newInfo;
         }
         // Update the elevation.
-        NewTileElevation(tileNumber);
+        NewRandomTileElevation(tileNumber);
     }
     public int GetTileElevation(int tileNumber)
     {
@@ -1179,7 +1186,6 @@ public class BattleMap : MapManager
                     TacticActor target = GetActorOnTile(tile);
                     if (target == null)
                     {
-                        Debug.Log("No Actor Found");
                         break;
                     }
                     if (setEffect)

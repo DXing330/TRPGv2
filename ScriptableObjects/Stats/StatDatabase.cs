@@ -21,6 +21,22 @@ public class StatDatabase : ScriptableObject
     public bool defaultsEnabled;
     public string defaultKey;
     public string defaultValue;
+    public bool defaultPassivesEnabled;
+    public string ReturnDefaultPassive(string passiveName)
+    {
+        // Timing, Condition, Specifics, Target, Effect, Specifics, Power
+        // Default is adding a skill.
+        string effect = "Skill";
+        string specifics = passiveName;
+        // Standardize the delimiter later if needed.
+        if (passiveName.Contains("-"))
+        {
+            string[] blocks = passiveName.Split("-");
+            effect = blocks[0];
+            specifics = blocks[1];
+        }
+        return "BS|||Self|" + effect + "|" + specifics;
+    }
     public List<string> keys;
     public List<string> values;
 
@@ -213,6 +229,7 @@ public class StatDatabase : ScriptableObject
         }
         else
         {
+            if (defaultPassivesEnabled){return ReturnDefaultPassive(key);}
             if (defaultsEnabled){return defaultValue;}
             return "";
         }

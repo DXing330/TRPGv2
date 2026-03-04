@@ -7,6 +7,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Active", menuName = "ScriptableObjects/BattleLogic/Active", order = 1)]
 public class ActiveSkill : SkillEffect
 {
+    // Used to check the conditions of active cost adjusting passives.
+    public PassiveSkill passiveChecker;
     public string activeSkillDelimiter = "_";
     public string skillInfo;
     public string GetSkillInfo(){return skillInfo;}
@@ -43,26 +45,30 @@ public class ActiveSkill : SkillEffect
     {
         skillInfo = skillData;
         skillInfoList = new List<string>(skillData.Split(activeSkillDelimiter));
-        LoadSkill(skillInfoList);
+        LoadSkill(skillInfoList, skillData);
     }
     public virtual void ResetSkillInfo()
     {
         skillName = "";
-        skillType = "";
-        energyCost = "999";
-        actionCost = "999";
+        skillType = "Support";
+        energyCost = "1";
+        actionCost = "1";
         range = "0";
-        rangeShape = "0";
-        shape = "";
+        rangeShape = "Circle";
+        shape = "Circle";
         span = "0";
-        effect = "";
+        effect = "Passive";
         specifics = "";
-        power = "";
+        power = "1";
     }
-    public virtual void LoadSkill(List<string> skillData)
+    public virtual void LoadSkill(List<string> skillData, string newName = "")
     {
         ResetSkillInfo();
-        if (skillData.Count <= 10){return;}
+        if (skillData.Count <= 10)
+        {
+            specifics = newName;
+            return;
+        }
         skillName = skillData[0];
         skillType = skillData[1];
         energyCost = skillData[2];
@@ -96,9 +102,15 @@ public class ActiveSkill : SkillEffect
         energyCost = newInfo;
         RefreshSkillInfo();
     }
-    public int GetEnergyCost()
+    public int GetEnergyCost(TacticActor actor = null, BattleMap map = null)
     {
-        return utility.SafeParseInt(energyCost);
+        int cost = utility.SafeParseInt(energyCost);
+        if (actor != null && map != null)
+        {
+            (int aCost, int eCost) = GetAdjustedCost(actor, map);
+            cost = eCost;
+        }
+        return cost;
     }
     public void AddEnergyCost(int newInfo)
     {
@@ -106,28 +118,109 @@ public class ActiveSkill : SkillEffect
         RefreshSkillInfo();
     }
     public string actionCost;
-    public int GetActionCost()
+    public int GetActionCost(TacticActor actor = null, BattleMap map = null)
     {
-        return utility.SafeParseInt(actionCost);
+        int cost = utility.SafeParseInt(actionCost);
+        if (actor != null && map != null)
+        {
+            (int aCost, int eCost) = GetAdjustedCost(actor, map);
+            cost = aCost;
+        }
+        return cost;
     }
-    public virtual bool Activatable(TacticActor actor)
+    protected int flatActionAdjust = 0;
+    protected int percentActionAdjust = 0;
+    protected int flatEnergyAdjust = 0;
+    protected int percentEnergyAdjust = 0;
+    protected int overrideActionValue = -1;
+    protected int overrideEnergyValue = -1;
+    public void AdjustFlatActionCost(int amount)
     {
-        // Silence disables actives which is very strong against some enemies.
+        flatActionAdjust += amount;
+    }
+    public void AdjustPercentActionCost(int percent)
+    {
+        percentActionAdjust += percent;
+    }
+    public void AdjustFlatEnergyCost(int amount)
+    {
+        flatEnergyAdjust += amount;
+    }
+    public void AdjustPercentEnergyCost(int percent)
+    {
+        percentEnergyAdjust += percent;
+    }
+    public void SetActionCostOverride(int value)
+    {
+        if (overrideActionValue > -1)
+        {
+            overrideActionValue = Mathf.Min(overrideActionValue, value);
+            return;
+        }
+        overrideActionValue = value;
+    }
+    public void SetEnergyCostOverride(int value)
+    {
+        if (overrideEnergyValue > -1)
+        {
+            overrideEnergyValue = Mathf.Min(overrideEnergyValue, value);
+            return;
+        }
+        overrideEnergyValue = value;
+    }
+    protected virtual (int aCost, int eCost) GetAdjustedCost(TacticActor actor, BattleMap map)
+    {
+        int newACost = int.Parse(actionCost);
+        int newECost = int.Parse(energyCost);
+        flatActionAdjust = 0;
+        percentActionAdjust = 0;
+        flatEnergyAdjust = 0;
+        percentEnergyAdjust = 0;
+        overrideActionValue = -1;
+        overrideEnergyValue = -1;
+        // Iterate through active cost adjustment passives.
+        List<string> adjustPassives = actor.GetAdjustActivesPassives();
+        for (int i = 0; i < adjustPassives.Count; i++)
+        {
+            passiveChecker.ApplyAdjustCostPassive(actor, this, map, adjustPassives[i]);
+        }
+        // Apply the percent then flat changes.
+        newACost = newACost * (100 + percentActionAdjust) / 100;
+        newACost += flatActionAdjust;
+        newECost = newECost * (100 + percentEnergyAdjust) / 100;
+        newECost += flatEnergyAdjust;
+        // Clamp the costs.
+        newACost = Mathf.Max(1, newACost);
+        newECost = Mathf.Max(0, newECost);
+        // Apply the override if applicable.
+        if (overrideEnergyValue > -1)
+        {
+            newECost = overrideEnergyValue;
+        }
+        if (overrideActionValue > - 1)
+        {
+            newACost = overrideActionValue;
+        }
+        return (newACost, newECost);
+    }
+    public virtual bool Activatable(TacticActor actor, BattleMap map)
+    {
         if (actor.GetSilenced()){return false;}
-        return (actor.GetActions() >= GetActionCost() && actor.GetEnergy() >= GetEnergyCost());
+        (int actionCost, int energyCost) = GetAdjustedCost(actor, map);
+        return (actor.GetActions() >= actionCost && actor.GetEnergy() >= energyCost);
     }
-    // Get all the tiles that are being targeted.
     public string range;
     public void SetRange(string newInfo)
     {
         range = newInfo;
         RefreshSkillInfo();
     }
-    public string GetRangeString()
+    public string GetRangeString(TacticActor actor = null, BattleMap map = null)
     {
-        return range;
+        if (range.Length > 2){return range;}
+        return GetRange(actor, map).ToString();
     }
-    public int GetRange(TacticActor skillUser = null)
+    public int GetRange(TacticActor skillUser = null, BattleMap map = null)
     {
         if (range == "") { return 0; }
         switch (range)
@@ -147,6 +240,14 @@ public class ActiveSkill : SkillEffect
             case "AttackRange+":
                 if (skillUser == null) { return 1; }
                 return (skillUser.GetAttackRange() + 1);
+            case "AttackRange++":
+                if (skillUser == null) { return 1; }
+                return (skillUser.GetAttackRange() + 2);
+        }
+        // TODO adjust the range of skills here?
+        if (skillUser != null && map != null)
+        {
+
         }
         return int.Parse(range);
     }
@@ -171,9 +272,13 @@ public class ActiveSkill : SkillEffect
         span = newInfo;
         RefreshSkillInfo();
     }
-    public int GetSpan()
+    public int GetSpan(TacticActor actor = null, BattleMap map = null)
     {
         if (span.Length <= 0) { return 0; }
+        if (actor != null && map != null)
+        {
+            // TODO Change the span based on adjust active passives?
+        }
         return int.Parse(span);
     }
     public int selectedTile;

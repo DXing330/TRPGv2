@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class ActiveManager : MonoBehaviour
 {
+    // Basically everything in the battle needs to know the map state at all times.
+    public BattleMap map;
     public GeneralUtility utility;
     public MagicSpell magicSpell;
     public void SetSpell(string spellInfo)
@@ -42,12 +44,12 @@ public class ActiveManager : MonoBehaviour
 
     public void SetSkillFromName(string skillName)
     {
-        active.LoadSkill(activeData.ReturnStats(skillName));
-    }
-
-    public void SetSkill(TacticActor actor, int skillIndex)
-    {
-        active.LoadSkill(activeData.ReturnStats(actor.activeSkills[skillIndex]));
+        string sData = activeData.ReturnValue(skillName);
+        if (sData == "")
+        {
+            sData = skillName;
+        }
+        active.LoadSkillFromString(sData);
     }
 
     protected void ResetTargetableTiles()
@@ -111,14 +113,14 @@ public class ActiveManager : MonoBehaviour
 
     protected List<int> GetTiles(int startTile, string shape, MapPathfinder pathfinder, bool targetable = true, bool spellCast = false)
     {
-        int range = active.GetRange(skillUser);
-        if (spellCast){ range = magicSpell.GetRange(skillUser); }
+        int range = active.GetRange(skillUser, map);
+        if (spellCast){ range = magicSpell.GetRange(skillUser, map); }
         if (!targetable)
         {
-            range = active.GetSpan();
+            range = active.GetSpan(skillUser, map);
             if (spellCast)
             {
-                range = magicSpell.GetSpan();
+                range = magicSpell.GetSpan(skillUser, map);
             }
         }
         int direction = pathfinder.DirectionBetweenLocations(skillUser.GetLocation(), startTile);
@@ -259,10 +261,16 @@ public class ActiveManager : MonoBehaviour
                 return;
             case "Teleport":
                 // Check if selected tile is free.
-                int target = targetedTiles[0];
-                if (battle.map.GetActorOnTile(target) == null)
+                if (battle.map.GetActorOnTile(targetedTiles[0]) == null)
                 {
-                    skillUser.SetLocation(target);
+                    skillUser.SetLocation(targetedTiles[0]);
+                    battle.map.UpdateActors();
+                }
+                return;
+            case "TeleportTarget":
+                if (battle.map.GetActorOnTile(targetedTiles[0]) == null && skillUser.GetTarget() != null)
+                {
+                    skillUser.GetTarget().SetLocation(targetedTiles[0]);
                     battle.map.UpdateActors();
                 }
                 return;
@@ -603,7 +611,7 @@ public class ActiveManager : MonoBehaviour
             case "Learn":
                 for (int i = 0; i < targets.Count; i++)
                 {
-                    skillUser.LearnRandomActive(targets[i]);
+                    skillUser.AddActiveSkill(targets[i].ReturnMostRecentSkill());
                 }
                 return;
             case "Teach":
@@ -659,6 +667,14 @@ public class ActiveManager : MonoBehaviour
                     }
                 }
                 return;
+            case "SupportWeight":
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    // Grant them your weight and defense.
+                    active.AffectActor(targets[i], "TempWeight", skillUser.GetWeight().ToString(), power);
+                    active.AffectActor(targets[i], "TempDefense", skillUser.GetDefense().ToString(), power);
+                }
+                return;
         }
         // Covers status/mental state/amnesia/stat changes/etc.
         active.AffectActors(targets, effect, specifics, power);
@@ -669,21 +685,21 @@ public class ActiveManager : MonoBehaviour
     {
         if (cost)
         {
-            skillUser.SpendEnergy(active.GetEnergyCost());
-            skillUser.PayActionCost(active.GetActionCost());
+            skillUser.SpendEnergy(active.GetEnergyCost(skillUser, map));
+            skillUser.PayActionCost(active.GetActionCost(skillUser, map));
         }
         skillUser.UpdateRoundSkillTracker(active.GetSkillName());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower(), active.GetSelectedTile());
     }
 
-    public bool CheckSkillCost()
+    public bool CheckSkillCost(BattleMap map)
     {
-        return active.Activatable(skillUser);
+        return active.Activatable(skillUser, map);
     }
 
-    public bool CheckSpellCost()
+    public bool CheckSpellCost(BattleMap map)
     {
-        return magicSpell.Activatable(skillUser);
+        return magicSpell.Activatable(skillUser, map);
     }
 }

@@ -78,6 +78,7 @@ public class ActorStats : ActorInitialStats
         ResetTempDefense();
         ResetTempHealth();
         ResetBonusAttackRange();
+        tempWeight = 0;
         currentCritDamage = baseCritDamage;
         currentCrit = baseCrit;
         currentHitChance = baseHitChance;
@@ -117,7 +118,15 @@ public class ActorStats : ActorInitialStats
     {
         currentWeight += changeAmount;
     }
-    public int GetWeight() { return currentWeight; }
+    public int tempWeight;
+    public void UpdateTempWeight(int changeAmount)
+    {
+        tempWeight += changeAmount;
+    }
+    public int GetWeight()
+    {
+        return currentWeight + tempWeight;
+    }
     public int tempInitiative;
     public void ResetTempInitiative()
     {
@@ -550,7 +559,6 @@ public class ActorStats : ActorInitialStats
             if (splitData[0] == timing)
             {
                 battleBS.Add(data);
-                AdjustBuffDuration(i);
             }
         }
         for (int i = 0; i < statuses.Count; i++)
@@ -560,7 +568,6 @@ public class ActorStats : ActorInitialStats
             if (splitData[0] == timing)
             {
                 battleBS.Add(data);
-                AdjustStatusDuration(i);
             }
         }
         return battleBS;

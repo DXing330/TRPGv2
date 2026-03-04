@@ -42,14 +42,14 @@ public class ActiveDescriptionViewer : MonoBehaviour
         dummyActive.LoadSkillFromString(activeData.ReturnValue(activeName));
         return ReturnActiveDescription(dummyActive);
     }
-    public string ReturnActiveDescription(ActiveSkill activeSkill)
+    public string ReturnActiveDescription(ActiveSkill activeSkill, TacticActor actor = null, BattleMap map = null)
     {
         string activeDescription = AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
-        activeDescription += "\n" + "Action Cost: " + activeSkill.GetActionCost();
-        activeDescription += "\n" + "Energy Cost: " + activeSkill.GetEnergyCost();
+        activeDescription += "\n" + "Action Cost: " + activeSkill.GetActionCost(actor, map);
+        activeDescription += "\n" + "Energy Cost: " + activeSkill.GetEnergyCost(actor, map);
         // Shape / Span.
-        activeDescription += "\n" + "Range: " + activeSkill.GetRangeShape() + "-" + activeSkill.GetRangeString();
-        activeDescription += "\n" + "Span: " + activeSkill.GetShape() + "-" + activeSkill.GetSpan();
+        activeDescription += "\n" + "Range: " + activeSkill.GetRangeShape() + "-" + activeSkill.GetRangeString(actor, map);
+        activeDescription += "\n" + "Span: " + activeSkill.GetShape() + "-" + activeSkill.GetSpan(actor, map);
         return activeDescription;
     }
 
@@ -94,6 +94,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return ASD(s) + " the target(s) with " + APD(p) + " additional force.";
             case "Teleport":
                 return "Move to the targeted tile.";
+            case "TeleportTarget":
+                return "Teleport your target to the targeted tile.";
             case "Teleport+Attack":
                 return "Try to move " + ASD(s) + " the target and attack with " + APD(p) + "% damage.";
             case "Status":
@@ -226,6 +228,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Lightning strikes the target and bounces to nearby enemies and the target(s) receive " + p + " " + s + ".";
             case "Invisible":
                 return "The target(s) turn invisible for " + ASD(s) + " turns";
+            case "SupportWeight":
+                return "Gives the target(s) bonus defense and weight equal to your own.";
         }
         return "The target(s) gain " + ASD(s) + " " + e + ".";
     }

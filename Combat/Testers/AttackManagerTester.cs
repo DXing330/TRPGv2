@@ -17,6 +17,7 @@ public class AttackManagerTester : MonoBehaviour
     public int attackerDirection;
     public string attackerBuilding;
     public string attackerTile;
+    public int attackerElevation;
     public string attackerTEffect;
     public List<string> attackerBorders;
     public List<string> testAttackerPassives;
@@ -26,6 +27,7 @@ public class AttackManagerTester : MonoBehaviour
     public int defenderDirection;
     public string defenderBuilding;
     public string defenderTile;
+    public int defenderElevation;
     public string defenderTEffect;
     public List<string> defenderBorders;
     public List<string> testDefenderPassives;
@@ -34,6 +36,7 @@ public class AttackManagerTester : MonoBehaviour
     public int guardLocation;
     public int guardDirection;
     public string guardTile;
+    public int guardElevation;
     public string guardTEffect;
     public List<string> guardBorders;
     public List<string> testGuardPassives;
@@ -94,10 +97,12 @@ public class AttackManagerTester : MonoBehaviour
         map.SetWeather(dummyWeather);
         map.AddBuilding(attackerBuilding, attackerLocation);
         map.ChangeTile(attackerLocation, "Tile", attackerTile, true);
+        map.ChangeTile(attackerLocation, "Elevation", attackerElevation.ToString());
         map.ChangeTile(attackerLocation, "TerrainEffect", attackerTEffect, true);
         map.ChangeTile(attackerLocation, "Borders", String.Join("|", attackerBorders), true);
         map.AddBuilding(defenderBuilding, defenderLocation);
         map.ChangeTile(defenderLocation, "Tile", defenderTile, true);
+        map.ChangeTile(defenderLocation, "Elevation", defenderElevation.ToString());
         map.ChangeTile(defenderLocation, "TerrainEffect", defenderTEffect, true);
         map.ChangeTile(defenderLocation, "Borders", String.Join("|", defenderBorders), true);
         dummyGuard.SetInitialStatsFromString(guardStats);
@@ -118,6 +123,7 @@ public class AttackManagerTester : MonoBehaviour
         dummyGuard.SetDirection(guardDirection);
         dummyGuard.ResetTarget();
         map.ChangeTile(guardLocation, "Tile", guardTile, true);
+        map.ChangeTile(guardLocation, "Elevation", guardElevation.ToString());
         map.ChangeTile(guardLocation, "TerrainEffect", guardTEffect, true);
         map.ChangeTile(guardLocation, "Borders", String.Join("|", guardBorders), true);
         dummyAttacker.SetTeam(0);
@@ -126,6 +132,10 @@ public class AttackManagerTester : MonoBehaviour
         map.AddActorToBattle(dummyAttacker);
         map.AddActorToBattle(dummyDefender);
         map.AddActorToBattle(dummyGuard);
+        // Apply Start Battle Passives
+        battleManager.effectManager.StartBattle(dummyAttacker);
+        battleManager.effectManager.StartBattle(dummyDefender);
+        battleManager.effectManager.StartBattle(dummyGuard);
     }
 
     [ContextMenu("Test Attack")]

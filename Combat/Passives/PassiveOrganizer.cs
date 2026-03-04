@@ -11,7 +11,6 @@ public class PassiveOrganizer : ScriptableObject
     public MultiKeyStatDatabase passiveNameLevels;
     public StatDatabase allPassives;
     public StatDatabase passiveNames;
-    public StatDatabase passiveTiming;
     public List<string> startBattlePassives;
     public List<string> startTurnPassives;
     public List<string> endTurnPassives;
@@ -22,6 +21,8 @@ public class PassiveOrganizer : ScriptableObject
     public List<string> afterAttackPassives;
     public List<string> afterDefendPassives;
     public List<string> outOfCombatPassives;
+    public List<string> adjustActivesPassives;
+    public List<string> adjustSpellsPassives;
 
     protected void ClearLists()
     {
@@ -35,6 +36,8 @@ public class PassiveOrganizer : ScriptableObject
         afterAttackPassives.Clear();
         afterDefendPassives.Clear();
         outOfCombatPassives.Clear();
+        adjustActivesPassives.Clear();
+        adjustSpellsPassives.Clear();
     }
 
     protected void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
@@ -46,28 +49,43 @@ public class PassiveOrganizer : ScriptableObject
             for (int j = 1; j <= int.Parse(passiveLevels[i]); j++)
             {
                 passiveName = passiveNameLevels.GetMultiKeyValue(passives[i], j.ToString());
-                SortPassive(passiveName, passiveTiming.ReturnValue(passiveName));
+                // Don't add any extra passive if they're still the same name at higher levels.
+                if (passiveName == passives[i] && j > 1)
+                {
+                    continue;
+                }
+                SortPassive(passiveName);
             }
         }
     }
 
+    public void AddSortedPassiveNewLevel(TacticActor actor, string passive, int passiveLevel)
+    {
+        string passiveName = passiveNameLevels.GetMultiKeyValue(passive, passiveLevel.ToString());
+        if (passiveName == passive && passiveLevel > 1){return;}
+        AddSortedPassive(actor, passiveName);
+    }
+
     public void AddSortedPassive(TacticActor actor, string passiveName)
     {
-        string timing = passiveTiming.ReturnValue(passiveName);
         string passiveData = allPassives.ReturnValue(passiveName);
+        string[] blocks = passiveData.Split("|");
+        string timing = blocks[0];
         actor.AddSortedPassive(passiveData, timing);
     }
 
     public void RemoveSortedPassive(TacticActor actor, string passiveName)
     {
-        string timing = passiveTiming.ReturnValue(passiveName);
         string passiveData = allPassives.ReturnValue(passiveName);
+        string[] blocks = passiveData.Split("|");
+        string timing = blocks[0];
         actor.RemoveSortedPassive(passiveData, timing);
     }
 
-    protected void SortPassive(string passive, string timing, bool data = false)
+    protected void SortPassive(string passive, bool data = false)
     {
         string passiveDetails = "";
+        string timing = "";
         if (data)
         {
             passiveDetails = passive;
@@ -76,6 +94,8 @@ public class PassiveOrganizer : ScriptableObject
         {
             passiveDetails = allPassives.ReturnValue(passive);
         }
+        string[] detailBlocks = passiveDetails.Split("|");
+        timing = detailBlocks[0];
         switch (timing)
         {
             case "Moving":
@@ -108,6 +128,12 @@ public class PassiveOrganizer : ScriptableObject
             case "OOC":
                 outOfCombatPassives.Add(passiveDetails);
                 break;
+            case "AdjustActives":
+                adjustActivesPassives.Add(passiveDetails);
+                break;
+            case "AdjustSpells":
+                adjustSpellsPassives.Add(passiveDetails);
+                break;
         }
     }
 
@@ -118,7 +144,7 @@ public class PassiveOrganizer : ScriptableObject
         {
             List<string> customData = customPassives[i].Split("|").ToList();
             if (customData.Count < 5){continue;}
-            SortPassive(customPassives[i], customData[0], true);
+            SortPassive(customPassives[i], true);
         }
     }
 
@@ -131,7 +157,7 @@ public class PassiveOrganizer : ScriptableObject
         {
             string passiveDetails = allRunePassives.ReturnValue(runePassives[i]);
             string[] blocks = passiveDetails.Split("|");
-            SortPassive(passiveDetails, blocks[0], true);
+            SortPassive(passiveDetails, true);
         }
     }
 
@@ -150,5 +176,7 @@ public class PassiveOrganizer : ScriptableObject
         actor.SetAfterAttackPassives(afterAttackPassives);
         actor.SetAfterDefendPassives(afterDefendPassives);
         actor.SetOOCPassives(outOfCombatPassives);
+        actor.SetAdjustActivesPassives(adjustActivesPassives);
+        actor.SetAdjustSpellsPassives(adjustSpellsPassives);
     }
 }

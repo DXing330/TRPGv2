@@ -46,6 +46,6 @@ public class MultiKeyStatDatabase : StatDatabase
                 if (keyCount <= 3 && secondKeys[i] == key2 && thirdKeys[i] == key3){return values[i];}
             }
         }
-        return "";
+        return key1;
     }
 }

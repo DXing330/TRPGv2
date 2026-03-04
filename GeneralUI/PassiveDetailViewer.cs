@@ -1,6 +1,11 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class PassiveDetailViewer : MonoBehaviour
 {
@@ -103,6 +108,7 @@ public class PassiveDetailViewer : MonoBehaviour
                 allInfo.Add(allPassives.ReturnValue(passiveName));
             }
         }
+        allInfo = allInfo.Distinct().ToList();
         return allInfo;
     }
 
@@ -242,6 +248,10 @@ public class PassiveDetailViewer : MonoBehaviour
             return "After attacking,";
             case "AfterDefend":
             return "After being attacked,";
+            case "AdjustActives":
+            return "When using a skill,";
+            case "AdjustSpells":
+            return "When casting a spell,";
         }
         return "";
     }
@@ -703,6 +713,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the target was attacked less than " + specifics + " time(s) last round";
             case "PrevDefendCount%D":
                 return " if the target was attacked a multiple of " + specifics + " time(s) last round";
+            case "SkillName":
+                return " if it is a [" + specifics + "] type";
+            case "SkillType":
+                return " if it is a " + specifics + " type";
+            case "SkillEffect":
+                return " if it has a " + specifics + " type";
         }
         return "";
     }
@@ -760,12 +776,36 @@ public class PassiveDetailViewer : MonoBehaviour
         return "";
     }
 
+    protected string AffectSkillText(string effect, string specifics)
+    {
+        switch (effect)
+        {
+            case "ActionOverride":
+                return " set the action cost to " + specifics;
+            case "EnergyOverride":
+                return " set the cost to " + specifics;
+            case "ActionCost":
+                return " change the action cost by " + specifics;
+            case "ActionCost%":
+                return " change the action cost by " + specifics + "%";
+            case "EnergyCost":
+                return " change the cost by " + specifics;
+            case "EnergyCost%":
+                return " change the cost by " + specifics + "%";
+        }
+        return "";
+    }
+
     protected string PassiveEffect(string effect, string specifics, string target)
     {
         specifics = AdjustSpecificsText(specifics);
         if (target == "Map")
         {
             return AffectMapText(effect, specifics);
+        }
+        if (target == "Skill")
+        {
+            return AffectSkillText(effect, specifics);
         }
         if (effect.EndsWith("Damage"))
         {

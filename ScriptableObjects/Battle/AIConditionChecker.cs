@@ -26,13 +26,13 @@ public class AIConditionChecker : ScriptableObject
     public MagicSpell spell;
     public StatDatabase basicSpellData;
 
-    public string GetAvailableSkillWithEffect(TacticActor actor, string skillEffect)
+    public string GetAvailableSkillWithEffect(TacticActor actor, BattleMap map, string skillEffect)
     {
         List<string> actorActives = actor.GetActiveSkills();
         for (int i = 0; i < actorActives.Count; i++)
         {
             active.LoadSkillFromString(activeData.ReturnValue(actorActives[i]));
-            if (active.GetEffect() == skillEffect && active.Activatable(actor))
+            if (active.GetEffect() == skillEffect && active.Activatable(actor, map))
             {
                 return actorActives[i];
             }
@@ -40,13 +40,13 @@ public class AIConditionChecker : ScriptableObject
         return "";
     }
 
-    public string GetAvailableSpellWithEffect(TacticActor actor, string skillEffect)
+    public string GetAvailableSpellWithEffect(TacticActor actor, BattleMap map, string skillEffect)
     {
         List<string> actorSpells = actor.GetSpells();
         for (int i = 0; i < actorSpells.Count; i++)
         {
             spell.LoadSkillFromString(basicSpellData.ReturnValue(actorSpells[i]));
-            if (spell.GetEffect().Contains(skillEffect) && spell.Activatable(actor))
+            if (spell.GetEffect().Contains(skillEffect) && spell.Activatable(actor, map))
             {
                 return actorSpells[i];
             }
@@ -159,9 +159,9 @@ public class AIConditionChecker : ScriptableObject
             case "TargetFacingOff":
                 return map.TargetFacingActor(actor);
             case "SkillEffect":
-                return GetAvailableSkillWithEffect(actor, specifics) != "";
+                return GetAvailableSkillWithEffect(actor, map, specifics) != "";
             case "SpellEffect":
-                return GetAvailableSpellWithEffect(actor, specifics) != "";
+                return GetAvailableSpellWithEffect(actor, map, specifics) != "";
             case "SandwichedByTarget":
                 return map.SandwichedByTarget(actor, specifics);
             case "TileSandwiched":

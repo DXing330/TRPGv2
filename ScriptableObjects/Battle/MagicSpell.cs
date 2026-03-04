@@ -18,12 +18,12 @@ public class MagicSpell : ActiveSkill
         skillInfoList = new List<string>(skillInfo.Split(activeSkillDelimiter));
         LoadSkill(skillInfoList);
     }
-    public override bool Activatable(TacticActor actor)
+    public override bool Activatable(TacticActor actor, BattleMap map)
     {
         if (actor.GetSilenced()){return false;}
         return (actor.GetActions() >= GetActionCost() && actor.GetMana() >= ReturnManaCost(actor));
     }
-    public int ReturnManaCost(TacticActor actor = null)
+    public int ReturnManaCost(TacticActor actor = null, BattleMap map = null)
     {
         int cost = GetEnergyCost();
         if (actor != null)

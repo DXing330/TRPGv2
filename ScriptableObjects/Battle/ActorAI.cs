@@ -74,7 +74,7 @@ public class ActorAI : ScriptableObject
         }
         if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return true; }
         activeSkillName = actor.GetActiveSkill(activeSkillIndex);
-        active.LoadSkill(activeData.ReturnStats(activeSkillName));
+        active.LoadSkillFromString(activeData.ReturnValue(activeSkillName));
         return false;
     }
 
@@ -83,14 +83,14 @@ public class ActorAI : ScriptableObject
         return actorAttackSkills.ReturnValue(actor.GetSpriteName());
     }
 
-    public string ReturnSkillWithEffect(TacticActor actor, string skillEffect)
+    public string ReturnSkillWithEffect(TacticActor actor, BattleMap map, string skillEffect)
     {
-        return conditionChecker.GetAvailableSkillWithEffect(actor, skillEffect);
+        return conditionChecker.GetAvailableSkillWithEffect(actor, map, skillEffect);
     }
 
-    public string ReturnSpellWithEffect(TacticActor actor, string spellEffect)
+    public string ReturnSpellWithEffect(TacticActor actor, BattleMap map, string spellEffect)
     {
-        return conditionChecker.GetAvailableSpellWithEffect(actor, spellEffect);
+        return conditionChecker.GetAvailableSpellWithEffect(actor, map, spellEffect);
     }
 
     public List<int> FindPathAwayFromTarget(TacticActor currentActor, BattleMap map, MoveCostManager moveManager)

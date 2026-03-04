@@ -391,6 +391,9 @@ public class BattleManager : MonoBehaviour
             case "Attack":
                 StartAttacking();
                 break;
+            case "Target":
+                StartTargeting();
+                break;
             // Spells/Items/Actives are the same.
             default:
                 map.ResetHighlights();
@@ -448,9 +451,11 @@ public class BattleManager : MonoBehaviour
     {
         confirmMovePanel.SetActive(false);
         confirmAttackPanel.SetActive(false);
+        confirmTargetPanel.SetActive(false);
     }
     public GameObject confirmMovePanel;
     public GameObject confirmAttackPanel;
+    public GameObject confirmTargetPanel;
     public void ConfirmMovementToTile()
     {
         if (selectedState != "Move"){return;}
@@ -467,7 +472,13 @@ public class BattleManager : MonoBehaviour
             StartAttacking();
         }
     }
-
+    public void ConfirmTarget()
+    {
+        if (selectedState != "Target"){return;}
+        if (selectedTile < 0){return;}
+        turnActor.SetTarget(map.GetActorOnTile(selectedTile));
+        ResetState();
+    }
     public void ClickOnTile(int tileNumber)
     {
         // UI takes priority over gameplay.
@@ -505,6 +516,10 @@ public class BattleManager : MonoBehaviour
             map.UpdateSelectedAttackTile(turnActor, selectedTile);
             // Preview the battle details.
             UI.PreviewBattleStats(turnActor, map.GetActorOnTile(selectedTile));
+            break;
+            case "Target":
+            map.UpdateSelectedAttackTile(turnActor, selectedTile);
+            UI.PreviewTarget(map.GetActorOnTile(selectedTile));
             break;
             case "":
             ViewActorOnTile(selectedTile);
@@ -557,6 +572,13 @@ public class BattleManager : MonoBehaviour
             RefreshUI();
             map.UpdateMovingHighlights(selectedActor, moveManager, selectedActor == turnActor);
         }
+    }
+
+    protected void StartTargeting()
+    {
+        map.ResetHighlights();
+        UI.PreviewTarget();
+        map.UpdateSelectedAttackTile(turnActor, selectedTile);
     }
 
     protected void StartAttacking()
@@ -671,13 +693,13 @@ public class BattleManager : MonoBehaviour
                 NPCSkillAction(actionsLeft, turnDetails[1]);
                 return;
             case "Summon Skill":
-                NPCSkillAction(actionsLeft, actorAI.ReturnSkillWithEffect(turnActor, "Summon"));
+                NPCSkillAction(actionsLeft, actorAI.ReturnSkillWithEffect(turnActor, map, "Summon"));
                 return;
             case "Spell":
                 NPCSpellAction(actionsLeft, turnDetails[1]);
                 return;
             case "Summon Spell":
-                NPCSpellAction(actionsLeft, actorAI.ReturnSpellWithEffect(turnActor, "Summon"));
+                NPCSpellAction(actionsLeft, actorAI.ReturnSpellWithEffect(turnActor, map, "Summon"));
                 return;
             case "One Time Skill":
                 turnActor.IncrementCounter();
@@ -782,7 +804,7 @@ public class BattleManager : MonoBehaviour
         {
             activeManager.SetSkillFromName(skills[i]);
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
-            if (targetedTile == -1 || !activeManager.CheckSkillCost())
+            if (targetedTile == -1 || !activeManager.CheckSkillCost(map))
             {
                 BasicNPCAction();
                 return;
@@ -812,7 +834,7 @@ public class BattleManager : MonoBehaviour
             activeManager.SetSpell(spell);
             int targetedTile = actorAI.ChooseSpellTargetLocation(turnActor, map, moveManager, activeManager.magicSpell);
             // If you can't find a target or cast the skill or are silenced then just do a regular action.
-            if (targetedTile == -1 || !activeManager.CheckSpellCost())
+            if (targetedTile == -1 || !activeManager.CheckSpellCost(map))
             {
                 BasicNPCAction();
                 return;
@@ -854,7 +876,7 @@ public class BattleManager : MonoBehaviour
             }
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
             // If you can't find a target or cast the skill or are silenced then just do a regular action.
-            if (targetedTile == -1 || !activeManager.CheckSkillCost())
+            if (targetedTile == -1 || !activeManager.CheckSkillCost(map))
             {
                 BasicNPCAction();
                 return;
@@ -1112,7 +1134,7 @@ public class BattleManager : MonoBehaviour
         {
             activeManager.SetSkillFromName(attackActive);
             activeManager.SetSkillUser(turnActor);
-            if (activeManager.CheckSkillCost())
+            if (activeManager.CheckSkillCost(map))
             {
                 int targetTile = turnActor.GetTarget().GetLocation();
                 if (activeManager.active.GetRange() == 0)

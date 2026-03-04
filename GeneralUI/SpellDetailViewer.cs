@@ -14,6 +14,13 @@ public class SpellDetailViewer : ActiveDescriptionViewer
         dummySpell.LoadSkillFromString(divineSpellData.ReturnValue(activeSelect.GetSelectedStat()));
         popUp.SetMessage(ReturnSpellDescription(dummySpell));
     }
+    public string testActiveName;
+    [ContextMenu("Debug Active Description")]
+    public void ShowActiveDescription()
+    {
+        dummyActive.LoadSkillFromString(testActiveName);
+        spellEffects.text = ReturnActiveDescription(dummyActive);
+    }
     [ContextMenu("Debug Spell Description")]
     public void ShowSpellDescription()
     {

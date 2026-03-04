@@ -366,6 +366,15 @@ public class TacticActor : ActorStats
     }
     public List<int> skillsEachRound;
     public List<string> skillsUsed;
+    public string ReturnMostUsedSkill()
+    {
+        return "";
+    }
+    public string ReturnMostRecentSkill()
+    {
+        if (skillsUsed.Count < 1){return "";}
+        return skillsUsed[skillsUsed.Count - 1];
+    }
     public void ResetRoundSkillTracker()
     {
         skillsEachRound.Clear();
