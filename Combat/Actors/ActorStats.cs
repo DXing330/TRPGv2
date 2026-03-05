@@ -57,7 +57,7 @@ public class ActorStats : ActorInitialStats
         // Silence/Invis/Guard/Etc.
         ResetUniqueEffects();
     }
-    // Start of turn.
+    // Start of Turn
     public void ResetStats()
     {
         currentAttack = baseAttack;
@@ -71,7 +71,7 @@ public class ActorStats : ActorInitialStats
         // At the start of your turn during the round reset it.
         ResetTempInitiative();
     }
-    // End of turn.
+    // End of Turn
     protected void EndTurnResetStats()
     {
         ResetTempAttack();
@@ -195,7 +195,7 @@ public class ActorStats : ActorInitialStats
         {
             return 0;
         }
-        TakeDamage(damage, type);
+        damage = TakeDamage(damage, type);
         return damage;
     }
     public List<string> bonusDmgTypes;

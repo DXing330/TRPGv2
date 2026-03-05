@@ -75,10 +75,10 @@ public class PassiveSkill : SkillEffect
             case "EnergyCost%":
                 active.AdjustPercentEnergyCost(change);
                 break;
-            case "ActionOverride":
+            case "OverrideA":
                 active.SetActionCostOverride(change);
                 break;
-            case "EnergyOverride":
+            case "OverrideE":
                 active.SetEnergyCostOverride(change);
                 break;
         }
@@ -314,11 +314,11 @@ public class PassiveSkill : SkillEffect
                 return map.mapInfo[currentTile].Contains(specifics); // Contains, since DeepWater counts as Water
             case "Tile<>":
                 return !map.mapInfo[currentTile].Contains(specifics);
-            case "Elevation<":
+            case "RawElevation<":
                 return map.ReturnElevation(currentTile) <= int.Parse(specifics);
-            case "Elevation>":
+            case "RawElevation>":
                 return map.ReturnElevation(currentTile) >= int.Parse(specifics);
-            case "Elevation":
+            case "RawElevation":
                 return map.ReturnElevation(currentTile) == int.Parse(specifics);
         }
         return true;
@@ -443,9 +443,9 @@ public class PassiveSkill : SkillEffect
             return actor.GetCounter() >= int.Parse(conditionSpecifics);
             case "CounterAttack":
             return actor.CounterAttackAvailable();
-            case "Elevation<":
+            case "RawElevation<":
             return map.ReturnElevation(actor.GetLocation()) <= int.Parse(conditionSpecifics);
-            case "Elevation>":
+            case "RawElevation>":
             return map.ReturnElevation(actor.GetLocation()) >= int.Parse(conditionSpecifics);
             case "Element":
             return actor.SameElement(conditionSpecifics);

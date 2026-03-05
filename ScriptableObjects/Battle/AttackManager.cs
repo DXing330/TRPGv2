@@ -306,7 +306,7 @@ public class AttackManager : ScriptableObject
         bool critHit = false;
         bool guard = GuardActive(target, attacker, map);
         attacker.SetDirection(map.DirectionBetweenActors(attacker, target));
-        attacker.UpdateTempInitiative(-1);
+        //attacker.UpdateTempInitiative(-1);
         attacker.UpdateRoundAttackTracker();
         TacticActor attackTarget = target;
         if (guard)

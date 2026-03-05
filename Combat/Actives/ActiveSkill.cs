@@ -51,11 +51,11 @@ public class ActiveSkill : SkillEffect
     {
         skillName = "";
         skillType = "Support";
-        energyCost = "1";
-        actionCost = "1";
+        energyCost = "2";
+        actionCost = "2";
         range = "0";
         rangeShape = "Circle";
-        shape = "Circle";
+        shape = "None";
         span = "0";
         effect = "Passive";
         specifics = "";
@@ -184,11 +184,11 @@ public class ActiveSkill : SkillEffect
         {
             passiveChecker.ApplyAdjustCostPassive(actor, this, map, adjustPassives[i]);
         }
-        // Apply the percent then flat changes.
-        newACost = newACost * (100 + percentActionAdjust) / 100;
+        // Apply flat changes then percentage changes.
         newACost += flatActionAdjust;
-        newECost = newECost * (100 + percentEnergyAdjust) / 100;
+        newACost += newACost * (percentActionAdjust) / 100;
         newECost += flatEnergyAdjust;
+        newECost += newECost * (percentEnergyAdjust) / 100;
         // Clamp the costs.
         newACost = Mathf.Max(1, newACost);
         newECost = Mathf.Max(0, newECost);

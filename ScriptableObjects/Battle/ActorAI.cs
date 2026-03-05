@@ -263,8 +263,7 @@ public class ActorAI : ScriptableObject
         List<int> targetableTiles = moveManager.actorPathfinder.FindTilesInRange(currentActor.GetLocation(), active.GetRange(currentActor));
         if (targetableTiles.Count <= 0) { return -1; }
         if (targetableTiles.Count == 1) { return targetableTiles[0]; }
-        // Move skills pick a random empty tile?
-        // TODO move towards target?
+        // TODO this is more complicated since move is often displacement as well.
         if (active.GetSkillType() == "Move")
         {
             targetableTiles = map.ReturnEmptyTiles(targetableTiles);

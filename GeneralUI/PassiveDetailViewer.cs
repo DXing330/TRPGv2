@@ -258,6 +258,21 @@ public class PassiveDetailViewer : MonoBehaviour
 
     protected string PassiveConditionText(string condition, string specifics)
     {
+        // Consolidate A/D conditions into one.
+        string conTarget = "you";
+        string comparedTarget = "";
+        if (condition.EndsWith("A"))
+        {
+            conTarget = "the attacker";
+            comparedTarget = "the target";
+            condition = condition[..^1];
+        }
+        if (condition.EndsWith("D"))
+        {
+            conTarget = "the target";
+            comparedTarget = "the attacker";
+            condition = condition[..^1];
+        }
         switch (condition)
         {
             case "None":
@@ -265,84 +280,34 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Killing":
                 return " if attack is greater than the sum of the target's health and defense";
             case "AllyCount<":
-                return " if there are less than " + specifics + " allies left";
+                return " if there are less than " + specifics + " allies left for " + conTarget;
             case "AllyCount>":
-                return " if there are more than " + specifics + " allies left";
-            case "AllyCount<A":
-                return " if the attacker has less than " + specifics + " allies left";
-            case "AllyCount>A":
-                return " if the attacker has more than " + specifics + " allies left";
-            case "AllyCount<D":
-                return " if the target has less than " + specifics + " allies left";
-            case "AllyCount>D":
-                return " if the target has more than " + specifics + " allies left";
+                return " if there are more than " + specifics + " allies left for " + conTarget;
             case "Ally<Enemy":
-                return " if there are less allies than enemies";
+                return " if there are less allies than enemies for " + conTarget;
             case "Ally>Enemy":
-                return " if there are more allies than enemies";
+                return " if there are more allies than enemies for " + conTarget;
             case "AllyEqualsEnemy":
-                return " if there are equal allies and enemies";
-            case "Ally<EnemyA":
-                return " if the attacker has less allies than enemies";
-            case "Ally>EnemyA":
-                return " if the attacker has more allies than enemies";
-            case "AllyEqualsEnemyA":
-                return " if the attacker has equal allies and enemies";
+                return " if there are equal allies and enemies for " + conTarget;
             case "EnemyCount<":
-                return " if there are less than " + specifics + " enemies left";
+                return " if there are less than " + specifics + " enemies left for " + conTarget;
             case "EnemyCount>":
-                return " if there are more than " + specifics + " enemies left";
-            case "EnemyCount<A":
-                return " if the attacker has less than " + specifics + " enemies left";
-            case "EnemyCount>A":
-                return " if the attacker has more than " + specifics + " enemies left";
-            case "EnemyCount<D":
-                return " if the target has less than " + specifics + " enemies left";
-            case "EnemyCount>D":
-                return " if the target has more than " + specifics + " enemies left";
+                return " if there are more than " + specifics + " enemies left for " + conTarget;
             case "AdjacentAllyCount>":
-                return " if there are more than " + specifics + " allies adjacent";
+                return " if there are more than " + specifics + " allies adjacent for " + conTarget;
             case "AdjacentAllyCount<":
-                return " if there are less than " + specifics + " allies adjacent";
-            case "AdjacentAllyCount>A":
-                return " if the attacker has more than " + specifics + " allies adjacent";
-            case "AdjacentAllyCount<A":
-                return " if the attacker has less than " + specifics + " allies adjacent";
-            case "AdjacentAllyCount>D":
-                return " if the target has more than " + specifics + " allies adjacent";
-            case "AdjacentAllyCount<D":
-                return " if the target has less than " + specifics + " allies adjacent";
+                return " if there are less than " + specifics + " allies adjacent for " + conTarget;
             case "AdjacentAlly":
-                return " if another ally is adjacent";
-            case "AdjacentAllyA":
-                return " if the attacker has an adjacent ally";
-            case "AdjacentAllyD":
-                return " if the target has an adjacent ally";
+                return " if another ally is adjacent to " + conTarget;
             case "AdjacentAlly<>":
-                return " if another ally is not adjacent";
-            case "AdjacentAlly<>A":
-                return " if the attacker has no adjacent ally";
-            case "AdjacentAlly<>D":
-                return " if the target has no adjacent ally";
+                return " if another ally is not adjacent to " + conTarget;
             case "AdjacentAllySprite":
-                return " if a " + specifics + " ally is adjacent";
-            case "AdjacentAllySpriteA":
-                return " if a " + specifics + " ally is adjacent";
-            case "AdjacentAllySpriteD":
-                return " if a " + specifics + " ally is adjacent to the target";
+                return " if a " + specifics + " ally is adjacent to " + conTarget;
             case "AdjacentEnemyCount>":
-                return " if there are more than " + specifics + " enemies adjacent";
+                return " if there are more than " + specifics + " enemies adjacent to " + conTarget;
             case "AdjacentEnemyCount<":
-                return " if there are less than " + specifics + " enemies adjacent";
-            case "AdjacentEnemyCount>A":
-                return " if there are more than " + specifics + " enemies adjacent to the attacker";
-            case "AdjacentEnemyCount<A":
-                return " if there are less than " + specifics + " enemies adjacent to the attacker";
-            case "AdjacentEnemyCount>D":
-                return " if there are more than " + specifics + " enemies adjacent to the target";
-            case "AdjacentEnemyCount<D":
-                return " if there are less than " + specifics + " enemies adjacent to the target";
-            case "DirectionA":
+                return " if there are less than " + specifics + " enemies adjacent to " + conTarget;
+            case "Direction":
                 switch (specifics)
                 {
                     case "Front":
@@ -355,7 +320,7 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if the attacker is facing the target";
                 }
                 break;
-            case "Direction<>A":
+            case "Direction<>":
                 switch (specifics)
                 {
                     case "Front":
@@ -368,66 +333,38 @@ public class PassiveDetailViewer : MonoBehaviour
                         return " if the attacker is not facing the target";
                 }
                 break;
-            case "Elevation<A":
-                return " if the attacker is on lower elevation";
-            case "Elevation>A":
-                return " if the attacker is on higher elevation";
-            case "ElevationEqualsA":
-                return " if the attacker is on equal elevation";
             case "Elevation<":
-                return " if tile elevation is less than " + specifics;
+                return " if the attacker is on lower elevation";
             case "Elevation>":
+                return " if the attacker is on higher elevation";
+            case "ElevationEquals":
+                return " if the attacker is on equal elevation";
+            case "RawElevation<":
+                return " if tile elevation is less than " + specifics;
+            case "RawElevation>":
                 return " if tile elevation is more than " + specifics;
-            case "Elevation":
+            case "RawElevation":
                 return " if tile elevation is equal to " + specifics;
             case "Distance":
                 return " if within " + specifics + " tile(s)";
             case "Distance>":
                 return " if more than " + specifics + " tile(s) away";
             case "Health":
-                return " if health is "+specifics;
-            case "HealthD":
-                return " if the target's health is "+specifics;
-            case "HealthA":
-                return " if the attacker's health is "+specifics;
+                return " if " + conTarget + " health is "+specifics;
             case "Energy":
-                return " if energy is "+specifics;
-            case "EnergyD":
-                return " if the target's energy is "+specifics;
-            case "EnergyA":
-                return " if the attacker's energy is "+specifics;
+                return " if " + conTarget + " energy is "+specifics;
             case "Tile":
-                return " if on a " + specifics + " tile";
+                return " if " + conTarget + " on a " + specifics + " tile";
             case "Tile<>":
-                return " if not on a " + specifics + " tile";
-            case "TileD":
-                return " if the target is on a " + specifics + " tile";
-            case "Tile<>D":
-                return " if the target is not on a " + specifics + " tile";
+                return " if " + conTarget + " not on a " + specifics + " tile";
             case "TileEffect":
-                return " if on a " + specifics + " tile";
+                return " if " + conTarget + " on a " + specifics + " tile";
             case "TileEffect<>":
-                return " if not on a " + specifics + " tile";
-            case "TileA":
-                return " if the attacker is on a " + specifics + " tile";
-            case "Tile<>A":
-                return " if the attacker is not on a " + specifics + " tile";
-            case "TileEffectA":
-                return " if the attacker is on a " + specifics + " tile";
-            case "TileEffect<>A":
-                return " if the attacker is not on a " + specifics + " tile";
-            case "TileEffectD":
-                return " if the target is on a " + specifics + " tile";
-            case "TileEffect<>D":
-                return " if the target is not on a " + specifics + " tile";
+                return " if " + conTarget + " not on a " + specifics + " tile";
             case "Weapon":
-                return " if a " + specifics + " is equipped";
-            case "WeaponA":
-                return " if the attacker has a " + specifics + " weapon equipped";
-            case "WeaponD":
-                return " if the target has a " + specifics + " weapon equipped";
+                return " if a " + specifics + " weapon is equipped to " + conTarget;
             case "Weapon<>":
-                return " if not weapon is equipped";
+                return " if no weapon is equipped to " + conTarget;
             case "Weather":
                 return " if the weather is " + specifics + "";
             case "Weather<>":
@@ -437,45 +374,21 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Time<>":
                 return " if the time of day is not " + specifics + "";
             case "MoveType":
-                return " if movement type is " + specifics;
+                return " if movement type of " + conTarget + " equals " + specifics;
             case "MoveType<>":
-                return " if movement type is not " + specifics;
-            case "MoveType<>A":
-                return " if the attacker's movement type is not " + specifics;;
-            case "MoveType<>D":
-                return " if the target's movement type is not " + specifics;
-            case "MoveTypeA":
-                return " if the attacker's movement type is " + specifics;
-            case "MoveTypeD":
-                return " if the target's movement type is " + specifics;
+                return " if movement type of " + conTarget + " is not " + specifics;
             case "MentalState":
-                return " if " + specifics + "";
-            case "MentalStateA":
-                return " if the attacker is " + specifics + "";
-            case "MentalStateD":
-                return " if the target is " + specifics + "";
+                return " if " + conTarget + " is " + specifics;
             case "Status":
-                return " if you have " + specifics + " status";
+                return " if " + conTarget + " has " + specifics + " status";
             case "StatusCount>":
-                return " if you have more than " + specifics + " status effects";
+                return " if " + conTarget + " has more than " + specifics + " status effects";
             case "Status<>":
-                return " if you do not have " + specifics + " status";
-            case "StatusA":
-                return " if the attacker has " + specifics + " status";
-            case "StatusD":
-                return " if the target has " + specifics + " status";
+                return " if " + conTarget + " does not have " + specifics + " status";
             case "Range>":
-                return " if attack range is greater than " + specifics;
+                return " if attack range is greater than " + specifics + " for " + conTarget;
             case "Range<":
-                return " if attack range is less than " + specifics;
-            case "RangeD>":
-                return " if the target's attack range is greater than " + specifics;
-            case "RangeD<":
-                return " if the target's attack range is less than " + specifics;
-            case "RangeA>":
-                return " if the attacker's attack range is greater than " + specifics;
-            case "RangeA<":
-                return " if the attacker's attack range is less than " + specifics;
+                return " if attack range is less than " + specifics + " for " + conTarget;
             case "Round":
                 switch (specifics)
                 {
@@ -486,19 +399,15 @@ public class PassiveDetailViewer : MonoBehaviour
                 }
                 break;
             case "Passive":
-                return " if you do have the " + specifics + " passive";
+                return " if the " + specifics + " passive exists for " + conTarget;
             case "Passive<>":
-                return " if you do not have the " + specifics + " passive";
-            case "PassiveLevels>D":
-                return " if the target has more than " + specifics + " passive levels";
-            case "PassiveLevels<D":
-                return " if the target has less than " + specifics + " passive levels";
-            case "PassiveLevels>A":
-                return " if the attacker's have more than " + specifics + " passive levels";
-            case "PassiveLevels<A":
-                return " if the attacker's have less than " + specifics + " passive levels";
+                return " if the " + specifics + " passive does not exists for " + conTarget;
+            case "PassiveLevels>":
+                return " the total passive levels are more than " + specifics + " for " + conTarget;
+            case "PassiveLevels<":
+                return " the total passive levels are less than " + specifics + " for " + conTarget;
             case "Counter":
-                return " if your counter is greater than " + specifics;
+                return " if the counter is greater than " + specifics + " for " + conTarget;
             case "CounterAttack":
                 return " if a counter attack is available";
             case "Team":
@@ -507,212 +416,122 @@ public class PassiveDetailViewer : MonoBehaviour
                     return " if you are on the same team";
                 }
                 return " if you are not on the same team";
-            case "IntDirection<>D":
+            case "IntDirection<>":
                 return " if not attacking" + RelativeDirectionDescriptions(specifics);
-            case "IntDirectionD":
+            case "IntDirection":
                 return " if attacking" + RelativeDirectionDescriptions(specifics);
             case "Element":
-                return " if " + specifics + " element";
+                return " if " + conTarget + "'s element is " + specifics + " element";
             case "Element<>":
-                return " if not " + specifics + " element";
-            case "ElementD":
-                return " if the target's element is "+specifics;
-            case "Element<>D":
-                return " if the target's element is not "+specifics;
-            case "ElementA":
-                return " if the attacker's element is "+specifics;
-            case "Element<>A":
-                return " if the attacker's element is not "+specifics;
-            case "SpeciesD":
-                return " if the target is " + specifics;
-            case "Species<>D":
-                return " if the target is not " + specifics;
-            case "SpeciesA":
-                return " if the attacker is " + specifics;
-            case "Species<>A":
-                return " if the attacker is not " + specifics;
-            case "TargetD:":
+                return " if " + conTarget + "'s element is not " + specifics + " element";
+            case "Species":
+                return " if " + conTarget + "'s species is " + specifics;
+            case "Species<>":
+                return " if " + conTarget + "'s species is not " + specifics;
+            case "Target:":
                 return " if the target is targeting the attacker";
-            case "Target<>D":
+            case "Target<>":
                 return " if the target is not targeting the attacker";
             case "AverageHP>":
-                return " if your health is greater than the average health of the battle";
+                return " if health is greater than the average health of the battle for " + conTarget;
             case "AverageHP<":
-                return " if your health is less than the average health of the battle";
-            case "AverageHP>A":
-                return " if the attacker's health is greater than the average health of the battle";
-            case "AverageHP<A":
-                return " if the attacker's health is less than the average health of the battle";
-            case "AverageHP>D":
-                return " if the target's health is greater than the average health of the battle";
-            case "AverageHP<D":
-                return " if the target's health is less than the average health of the battle";
+                return " if health is less than the average health of the battle for " + conTarget;
             case "Grappling":
-                return " if you are grappling";
+                return " if " + conTarget + " is grappling";
             case "Grappled":
-                return " if you are grappled";
-            case "GrapplingA":
-                return " if the attacker is grappling";
-            case "GrappledA":
-                return " if the attacker is grappled";
-            case "GrapplingD":
-                return " if the target is grappling";
-            case "GrappledD":
-                return " if the target is grappled";
+                return " if " + conTarget + " is grappled";
             case "BadRNG":
                 return " with ~" + specifics + "% chance";
             case "GoodRNG":
                 return " with ~" + specifics + "% chance";
-            case "HurtByA":
-                return " if the attacker was hurt by the target";
-            case "HurtBy<>A":
-                return " if the attacker was not hurt by the target";
+            case "HurtBy":
+                return " if " + conTarget + " was hurt by " + comparedTarget;
+            case "HurtBy<>":
+                return " if " + conTarget + " was not hurt by " + comparedTarget;
             case "HurtMostA":
-                return " if the attacker was hurt the most by the target";
+                return " if " + conTarget + " was hurt most by " + comparedTarget;
             case "HurtLeastA":
-                return " if the attacker was hurt the least by the target";
-            case "HurtByD":
-                return " if the target was hurt by the attacker";
-            case "HurtBy<>D":
-                return " if the target was not hurt by the attacker";
-            case "HurtMostD":
-                return " if the target was hurt the most by the attacker";
-            case "HurtLeastD":
-                return " if the target was hurt the least by the attacker";
+                return " if " + conTarget + " was hurt least by " + comparedTarget;
             case "LethalAttack":
                 return " if the attack defeated the target";
             case "CriticalAttack":
                 return " if the attack was a critical hit";
             case "DodgedAttack":
                 return " if the attack was dodged";
-            case "FirstStrikeA":
-                return " if the attacker has not attacked yet";
-            case "FirstStrikeD":
-                return " if the target has not attacked yet";
-            case "MovedA": 
-                return " if the attacker has moved this round";
-            case "Moved<>A":
-                return " if the attacker has not moved this round";
-            case "MovedD":
-                return " if the target has moved this round";
-            case "Moved<>D":
-                return " if the target has not moved this round";
-            case "SkillUsedA":
-                return " if the attacker has used a skill this round";
-            case "SkillUsed<>A":
-                return " if the attacker has not used a skill this round";
-            case "SkillUsedD":
-                return " if the target has used a skill this round";
-            case "SkillUsed<>D":
-                return " if the target has not used a skill this round";
-            case "AttackedD":
-                return " if the target has attacked this round";
-            case "Attacked<>D":
-                return " if the target has not attacked this round";
-            case "DefendedD":
-                return " if the target was attacked this round";
-            case "Defended<>D":
-                return " if the target was not attacked this round";
-            case "PrevDefendedD":
-                return " if the target was attacked last round";
-            case "PrevDefended<>D":
-                return " if the target was not attacked last round";
-            case "PrevDefendedA":
-                return " if the attacker was attacked last round";
-            case "PrevDefended<>A":
-                return " if the attacker was not attacked last round";
-            case "PrevMovedA":
-                return " if the attacker has moved last round";
-            case "PrevMoved<>A":
-                return " if the attacker has not moved last round";
-            case "PrevMovedD":
-                return " if the target has moved last round";
-            case "PrevMoved<>D":
-                return " if the target has not moved last round";
-            case "PrevSkillUsedA":
-                return " if the attacker used a skill last round";
-            case "PrevSkillUsed<>A":
-                return " if the attacker did not use a skill last round";
-            case "PrevSkillUsedD":
-                return " if the target used a skill last round";
-            case "PrevSkillUsed<>D":
-                return " if the target did not use a skill last round";
-            case "PrevAttackedD":
-                return " if the target attacked last round";
-            case "PrevAttacked<>D":
-                return " if the target has not attacked last round";
-            case "PrevAttackCountA":
-                return " if the attacker made exactly " + specifics + " attacks last round";
-            case "PrevAttackCount>A":
-                return " if the attacker made more than " + specifics + " attacks last round";
-            case "PrevAttackCount<A":
-                return " if the attacker made less than " + specifics + " attacks last round";
-            case "PrevAttackCount%A":
-                return " if the attacker made a multiple of " + specifics + " attacks last round";
-            case "PrevAttackCountD":
-                return " if the target attacked exactly " + specifics + " times last round";
-            case "PrevAttackCount>D":
-                return " if the target attacked more than " + specifics + " times last round";
-            case "PrevAttackCount<D":
-                return " if the target attacked less than " + specifics + " times last round";
-            case "PrevAttackCount%D":
-                return " if the target attacked a multiple of " + specifics + " times last round";
-            case "PrevSkillCountA":
-                return " if the attacker used exactly " + specifics + " skills last round";
-            case "PrevSkillCount>A":
-                return " if the attacker used more than " + specifics + " skills last round";
-            case "PrevSkillCount<A":
-                return " if the attacker used less than " + specifics + " skills last round";
-            case "PrevSkillCount%A":
-                return " if the attacker used a multiple of " + specifics + " skills last round";
-            case "PrevSkillCountD":
-                return " if the target used exactly " + specifics + " skills last round";
-            case "PrevSkillCount>D":
-                return " if the target used more than " + specifics + " skills last round";
-            case "PrevSkillCount<D":
-                return " if the target used less than " + specifics + " skills last round";
-            case "PrevSkillCount%D":
-                return " if the target used a multiple of " + specifics + " skills last round";
-            case "PrevMoveCountA":
-                return " if the attacker moved exactly " + specifics + " tiles last round";
-            case "PrevMoveCount>A":
-                return " if the attacker moved more than " + specifics + " tiles last round";
-            case "PrevMoveCount<A":
-                return " if the attacker moved less than " + specifics + " tiles last round";
-            case "PrevMoveCount%A":
-                return " if the attacker moved a multiple of " + specifics + " tiles last round";
-            case "PrevMoveCountD":
-                return " if the target moved exactly " + specifics + " tiles last round";
-            case "PrevMoveCount>D":
-                return " if the target moved more than " + specifics + " tiles last round";
-            case "PrevMoveCount<D":
-                return " if the target moved less than " + specifics + " tiles last round";
-            case "PrevMoveCount%D":
-                return " if the target moved a multiple of " + specifics + " tiles last round";
-            case "DefendCountD":
-                return " if the target was attacked exactly " + specifics + " time(s) this round";
-            case "DefendCount>D":
-                return " if the target was attacked more than " + specifics + " time(s) this round";
-            case "DefendCount<D":
-                return " if the target was attacked less than " + specifics + " time(s) this round";
-            case "DefendCount%D":
-                return " if the target was attacked a multiple of " + specifics + " time(s) this round";
-            case "PrevDefendCountA":
-                return " if the attacker was attacked exactly " + specifics + " time(s) last round";
-            case "PrevDefendCount>A":
-                return " if the attacker was attacked more than " + specifics + " time(s) last round";
-            case "PrevDefendCount<A":
-                return " if the attacker was attacked less than " + specifics + " time(s) last round";
-            case "PrevDefendCount%A":
-                return " if the attacker was attacked a multiple of " + specifics + " time(s) last round";
-            case "PrevDefendCountD":
-                return " if the target was attacked exactly " + specifics + " time(s) last round";
-            case "PrevDefendCount>D":
-                return " if the target was attacked more than " + specifics + " time(s) last round";
-            case "PrevDefendCount<D":
-                return " if the target was attacked less than " + specifics + " time(s) last round";
-            case "PrevDefendCount%D":
-                return " if the target was attacked a multiple of " + specifics + " time(s) last round";
+            case "FirstStrike":
+                return " if " + conTarget + " has not attacked yet";
+            case "Moved":
+                return " if " + conTarget + " moved this round";
+            case "Moved<>":
+                return " if " + conTarget + " did not move this round";
+            case "SkillUsed":
+                return " if " + conTarget + " used a skill this round";
+            case "SkillUsed<>":
+                return " if " + conTarget + " did not use a skill this round";
+            case "Attacked":
+                return " if " + conTarget + " attacked this round";
+            case "Attacked<>":
+                return " if " + conTarget + " did not attack this round";
+            case "Defended":
+                return " if " + conTarget + " was attacked this round";
+            case "Defended<>":
+                return " if " + conTarget + " was not attacked this round";
+            case "PrevDefended":
+                return " if " + conTarget + " was attacked last round";
+            case "PrevDefended<>":
+                return " if " + conTarget + " was not attacked last round";
+            case "PrevMoved":
+                return " if " + conTarget + " moved last round";
+            case "PrevMoved<>":
+                return " if " + conTarget + " did not move last round";
+            case "PrevSkillUsed":
+                return " if " + conTarget + " used a skill last round";
+            case "PrevSkillUsed<>":
+                return " if " + conTarget + " did not use a skill last round";
+            case "PrevAttacked":
+                return " if " + conTarget + " attacked last round";
+            case "PrevAttacked<>":
+                return " if " + conTarget + " did not attack last round";
+            case "PrevAttackCount":
+                return " if " + conTarget + " made exactly " + specifics + " attacks last round";
+            case "PrevAttackCount>":
+                return " if " + conTarget + " made more than " + specifics + " attacks last round";
+            case "PrevAttackCount<":
+                return " if " + conTarget + " made less than " + specifics + " attacks last round";
+            case "PrevAttackCount%":
+                return " if " + conTarget + " made a multiple of " + specifics + " attacks last round";
+            case "PrevSkillCount":
+                return " if " + conTarget + " used exactly " + specifics + " skills last round";
+            case "PrevSkillCount>":
+                return " if " + conTarget + " used more than " + specifics + " skills last round";
+            case "PrevSkillCount<":
+                return " if " + conTarget + " used less than " + specifics + " skills last round";
+            case "PrevSkillCount%":
+                return " if " + conTarget + " used a multiple of " + specifics + " skills last round";
+            case "PrevMoveCount":
+                return " if " + conTarget + " moved exactly " + specifics + " tiles last round";
+            case "PrevMoveCount>":
+                return " if " + conTarget + " moved more than " + specifics + " tiles last round";
+            case "PrevMoveCount<":
+                return " if " + conTarget + " moved less than " + specifics + " tiles last round";
+            case "PrevMoveCount%":
+                return " if " + conTarget + " moved a multiple of " + specifics + " tiles last round";
+            case "DefendCount":
+                return " if " + conTarget + " was attacked exactly " + specifics + " time(s) this round";
+            case "DefendCount>":
+                return " if " + conTarget + " was attacked more than " + specifics + " time(s) this round";
+            case "DefendCount<":
+                return " if " + conTarget + " was attacked less than " + specifics + " time(s) this round";
+            case "DefendCount%":
+                return " if " + conTarget + " was attacked a multiple of " + specifics + " time(s) this round";
+            case "PrevDefendCount":
+                return " if " + conTarget + " was attacked exactly " + specifics + " time(s) last round";
+            case "PrevDefendCount>":
+                return " if " + conTarget + " was attacked more than " + specifics + " time(s) last round";
+            case "PrevDefendCount<":
+                return " if " + conTarget + " was attacked less than " + specifics + " time(s) last round";
+            case "PrevDefendCount%":
+                return " if " + conTarget + " was attacked a multiple of " + specifics + " time(s) last round";
             case "SkillName":
                 return " if it is a [" + specifics + "] type";
             case "SkillType":
@@ -780,9 +599,9 @@ public class PassiveDetailViewer : MonoBehaviour
     {
         switch (effect)
         {
-            case "ActionOverride":
+            case "OverrideA":
                 return " set the action cost to " + specifics;
-            case "EnergyOverride":
+            case "OverrideE":
                 return " set the cost to " + specifics;
             case "ActionCost":
                 return " change the action cost by " + specifics;

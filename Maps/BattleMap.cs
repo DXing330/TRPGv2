@@ -1651,6 +1651,11 @@ public class BattleMap : MapManager
         return mapUtility.DirectionBetweenLocations(actor1.GetLocation(), actor2.GetLocation(), mapSize);
     }
 
+    public int DirectionBetweenActorAndLocation(TacticActor actor, int location)
+    {
+        return mapUtility.DirectionBetweenLocations(actor.GetLocation(), location, mapSize);
+    }
+
     public int DistanceBetweenActors(TacticActor actor1, TacticActor actor2)
     {
         if (actor1 == null || actor2 == null)

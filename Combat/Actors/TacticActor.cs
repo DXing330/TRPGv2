@@ -103,16 +103,33 @@ public class TacticActor : ActorStats
     public bool ActionsLeft(){return actions > 0;}
     public void PayActionCost(int cost){actions -= cost;}
     public int movement;
-    public int GetMovement(){return movement;}
+    public int GetMovement(){return movement + tempMovement;}
     protected void MoveAction()
     {
         SpendAction();
         movement += GetSpeed();
     }
     public void GainMovement(int amount){movement += amount;}
+    public int tempMovement;
+    public void GainTempMovement(int amount)
+    {
+        tempMovement += amount;
+    }
     public void PayMoveCost(int cost)
     {
-        movement -= cost;
+        if (tempMovement > 0)
+        {
+            tempMovement -= cost;
+            if (tempMovement < 0)
+            {
+                movement += tempMovement;
+                tempMovement = 0;
+            }
+        }
+        else if (tempMovement <= 0)
+        {
+            movement -= cost;
+        }
         if (movement < 0)
         {
             int maxActions = actions;
@@ -136,6 +153,7 @@ public class TacticActor : ActorStats
     {
         counterAttacks--;
     }
+    // Start of Turn
     public void NewTurn()
     {
         // Default is two actions.
@@ -701,12 +719,13 @@ public class TacticActor : ActorStats
     public void EndTurn()
     {
         movement = 0;
+        tempMovement = 0;
         // Allow some slight turn manipulation by saving your actions.
-        if (actions > 0)
+        /*if (actions > 0)
         {
             UpdateTempInitiative(actions * 2);
             ResetActions();
-        }
+        }*/
         EndTurnResetStats();
         ResetBonusActions();
         UpdateMentalState();

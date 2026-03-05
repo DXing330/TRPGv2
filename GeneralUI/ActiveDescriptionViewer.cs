@@ -142,6 +142,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Make target(s) more likely to attack.";
             case "Attack+Move":
                 return "Attack the target(s) and move " + ASD(s) + " " + APD(p) + " tile(s).";
+            case "Move":
+                return "Move " + ASD(s) + " " + APD(p) + " tile(s).";
             case "Move+Attack":
                 return "Move to the targeted tile and attack any target in " + ASD(s) + " of the the targeted tile.";
             case "Charge+Attack":

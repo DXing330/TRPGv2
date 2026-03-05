@@ -400,6 +400,11 @@ public class ActiveManager : MonoBehaviour
                 }
                 battle.moveManager.MoveSkill(skillUser, specifics, power, battle.map);
                 return;
+            case "Move":
+                // Change your direction to face the targeted tile.
+                skillUser.SetDirection(map.DirectionBetweenActorAndLocation(skillUser, targetedTiles[0]));
+                battle.moveManager.MoveSkill(skillUser, specifics, power, battle.map);
+                return;
             case "Move+Attack":
                 // Move to the tile selected.
                 int prevTile = skillUser.GetLocation();
