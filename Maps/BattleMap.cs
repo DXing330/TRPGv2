@@ -1079,14 +1079,14 @@ public class BattleMap : MapManager
     {
         for (int i = auras.Count - 1; i >= 0; i--)
         {
-            auras[i].UpdateLocation();
+            auras[i].UpdateAuraLocation();
         }
     }
     // Later we can deal with adding custom auras.
-    public void AddAura(TacticActor auraUser, int duration, string auraName)
+    public void AddAura(TacticActor auraUser, int targetTile, int duration, string auraName)
     {
         AuraEffect newAura = new AuraEffect();
-        newAura.InitializeAura(auraUser, duration, auraData.ReturnValue(auraName));
+        newAura.InitializeAura(auraUser, targetTile, duration, auraData.ReturnValue(auraName));
         auras.Add(newAura);
     }
     public void AuraNextRound()
@@ -1103,10 +1103,11 @@ public class BattleMap : MapManager
             auras[i].ActorEndsTurn(this, actor);
         }
     }
+    public AuraManager auraManager;
     public void ApplyAuraEffects()
     {
         UpdateAuraLocations();
-        passiveEffect.TriggerAllAuraEffects(auras, battlingActors, this);
+        auraManager.TriggerAllAuraEffects(auras, battlingActors);
     }
     [ContextMenu("Test Aura Highlights")]
     public void HighlightSelectedActorAuras()
@@ -2027,8 +2028,8 @@ public class BattleMap : MapManager
         for (int i = 0; i < mapInfo.Count; i++)
         {
             t_w = mapInfo[i] + "-" + GetWeather();
-            string effectAndSpecifics = tileWeatherInteractions.ReturnValue(t_w);
-            string[] blocks = effectAndSpecifics.Split("-");
+            string eAndS = tileWeatherInteractions.ReturnValue(t_w);
+            string[] blocks = eAndS.Split("-");
             if (blocks.Length < 2) { continue; }
             switch (blocks[0])
             {

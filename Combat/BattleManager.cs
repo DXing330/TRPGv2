@@ -619,11 +619,19 @@ public class BattleManager : MonoBehaviour
         ActorAttacksActor(turnActor, selectedActor);
     }
 
-    protected void ActorAttacksActor(TacticActor attacker, TacticActor defender)
+    public void PublicAAA(TacticActor attacker, TacticActor defender, bool payCost = true)
     {
-        if (!attacker.AttackActionsLeft()){return;}
-        attacker.PayAttackCost();
-        combatLog.UpdateNewestLog(turnActor.GetPersonalName()+" attacks "+defender.GetPersonalName()+".");
+        ActorAttacksActor(attacker, defender, payCost);
+    }
+
+    protected void ActorAttacksActor(TacticActor attacker, TacticActor defender, bool payCost = true)
+    {
+        if (payCost)
+        {
+            if (!attacker.AttackActionsLeft()){return;}
+            attacker.PayAttackCost();
+        }
+        combatLog.UpdateNewestLog(attacker.GetPersonalName() + " attacks " + defender.GetPersonalName() + ".");
         attackManager.ActorAttacksActor(attacker, defender, map);
         if (AdjustTurnNumber())
         {
@@ -631,7 +639,7 @@ public class BattleManager : MonoBehaviour
         }
         // After you finish attacking reset the selected actor.
         selectedActor = null;
-        if (selectedState == "Attack" && turnActor.GetActions() <= 0 && turnActor.GetTeam() == 0)
+        if (selectedState == "Attack" && attacker.GetActions() <= 0 && attacker.GetTeam() == 0)
         {
             ResetState();
         }

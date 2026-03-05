@@ -183,6 +183,8 @@ public class PassiveDetailViewer : MonoBehaviour
     public string ReturnAuraDetails(AuraEffect aura)
     {
         string description = aura.GetAuraName() + " (" + aura.GetTeamTarget() + ") :\n";
+        // There are some special things auras can do, like trigger basic attacks.
+        // TODO make a switch of those special cases here.
         description += PassiveEffect(aura.effect, aura.effectSpecifics, aura.target);
         description += PassiveConditionText(aura.condition, aura.conditionSpecifics);
         return description;

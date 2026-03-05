@@ -9,7 +9,7 @@ public class AuraEffect
 {
     // Auras don't store anything else, so they can use the most basic delimiters.
     public string delimiter = "|";
-    public void InitializeAura(TacticActor user, int newDuration, string auraData)
+    public void InitializeAura(TacticActor user, int targetLocation, int newDuration, string auraData)
     {
         actor = user;
         team = actor.GetTeam();
@@ -21,6 +21,11 @@ public class AuraEffect
         for (int i = 0; i < data.Length; i++)
         {
             LoadStat(data[i], i);
+        }
+        if (center != "User")
+        {
+            actorAura = 0;
+            location = targetLocation;
         }
     }
     protected void LoadStat(string stat, int index)
@@ -36,27 +41,30 @@ public class AuraEffect
                 teamTarget = stat;
                 return;
             case 2:
-                shape = stat;
+                center = stat;
                 return;
             case 3:
-                span = int.Parse(stat);
+                shape = stat;
                 return;
             case 4:
-                trigger = int.Parse(stat);
+                span = stat;
                 return;
             case 5:
-                condition = stat;
+                trigger = int.Parse(stat);
                 return;
             case 6:
-                conditionSpecifics = stat;
+                condition = stat;
                 return;
             case 7:
-                target = stat;
+                conditionSpecifics = stat;
                 return;
             case 8:
-                effect = stat;
+                target = stat;
                 return;
             case 9:
+                effect = stat;
+                return;
+            case 10:
                 effectSpecifics = stat;
                 return;
         }
@@ -76,7 +84,7 @@ public class AuraEffect
     }
     public int team;
     public int location;
-    public void UpdateLocation()
+    public void UpdateAuraLocation()
     {
         if (ActorAura() && actor != null && actor.GetHealth() > 0)
         {
@@ -155,9 +163,21 @@ public class AuraEffect
             return target.GetTeam() == team && targetInside;
         }
     }
+    // User/Fixed/Moving/Random?
+    public string center;
     // Circle, Cone, ELine
     public string shape;
-    public int span;
+    public string span;
+    public int GetSpan()
+    {
+        switch (span)
+        {
+            default:
+            return int.Parse(span);
+            case "AttackRange":
+            return actor.GetAttackRange();
+        }
+    }
     public bool ActorInAura(TacticActor actor, BattleMap map)
     {
         return GetAuraTiles(map).Contains(actor.GetLocation());
@@ -170,9 +190,9 @@ public class AuraEffect
         switch (shape)
         {
             default:
-            return map.mapUtility.GetTilesByShapeSpan(location, shape, span, map.mapSize, start);
+            return map.mapUtility.GetTilesByShapeSpan(location, shape, GetSpan(), map.mapSize, start);
             case "Cone":
-            return map.mapUtility.GetTilesByShapeSpan(start, shape, span, map.mapSize, location);
+            return map.mapUtility.GetTilesByShapeSpan(start, shape, GetSpan(), map.mapSize, location);
         }
     }
     // Trigger auras apply whenever someone moves into them for the first time each round and meets the conditions, ex. Spirit Guardians.
@@ -202,8 +222,11 @@ public class AuraEffect
     public string condition;
     public string conditionSpecifics;
     public string target;
+    public string GetTarget(){return target;}
     public string effect;
+    public string GetEffect(){return effect;}
     public string effectSpecifics;
+    public string GetEffectSpecifics(){return effectSpecifics;}
     public List<string> ReturnPassiveStats()
     {
         List<string> stats = new List<string>();

@@ -30,6 +30,12 @@ public class PassiveSkill : SkillEffect
         {
             default:
             return 0;
+            case "Defense":
+                return actor.GetDefense();
+            case "Attack":
+                return actor.GetAttack();
+            case "Attack/2":
+                return (actor.GetAttack() / 2);
             case "SkillsUsed":
             return actor.ReturnTotalRoundSkills();
             case "Attacks":
@@ -804,7 +810,7 @@ public class PassiveSkill : SkillEffect
     }
     // Other passive-like things can borrow the passive to apply their effects
     // For example an aura can borrow this so all the passive conditions are in 1 place.
-    protected bool CheckAuraCondition(AuraEffect aura, TacticActor actor, BattleMap map)
+    public bool CheckAuraCondition(AuraEffect aura, TacticActor actor, BattleMap map)
     {
         // Check if already triggered.
         if (aura.AlreadyTriggered(actor)){return false;}
@@ -825,20 +831,6 @@ public class PassiveSkill : SkillEffect
             map.combatLog.AddDetailedLogs(map.detailViewer.ReturnAuraDetails(aura));
             AffectActor(actor, aura.effect, aura.effectSpecifics);
             aura.ActorTriggersAura(actor);
-        }
-    }
-    protected void TriggerAuraEffects(List<AuraEffect> allAura, TacticActor actor, BattleMap map)
-    {
-        for (int i = 0; i < allAura.Count; i++)
-        {
-            TriggerAuraEffect(allAura[i], actor, map);
-        }
-    }
-    public void TriggerAllAuraEffects(List<AuraEffect> allAura, List<TacticActor> actors, BattleMap map)
-    {
-        for (int i = 0; i < actors.Count; i++)
-        {
-            TriggerAuraEffects(allAura, actors[i], map);
         }
     }
 }

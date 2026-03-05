@@ -107,9 +107,9 @@ public class SpellBook : SavedData
         string newPowers = "";
         for (int i = 0; i < effectCount; i++)
         {
-            string effectAndSpecifics = ReturnRandomEffectAndSpecifics();
+            string eAndS = ReturnRandomEffectAndSpecifics();
             // split
-            string[] blocks = effectAndSpecifics.Split(activeDelimiter);
+            string[] blocks = eAndS.Split(activeDelimiter);
             effects += blocks[0];
             specifics += blocks[1];
             newPowers += powers[UnityEngine.Random.Range(0, powers.Count)];
@@ -126,12 +126,12 @@ public class SpellBook : SavedData
 
     public string ReturnRandomEffectAndSpecifics()
     {
-        string effectAndSpecifics = "";
+        string eAndS = "";
         string effect = spellComponents.ReturnRandomKey();
         List<string> possibleSpecifics = spellComponents.ReturnStats(effect);
         string specifics = possibleSpecifics[UnityEngine.Random.Range(0, possibleSpecifics.Count)];
-        effectAndSpecifics = effect + magicSpell.activeSkillDelimiter + specifics;
-        return effectAndSpecifics;
+        eAndS = effect + magicSpell.activeSkillDelimiter + specifics;
+        return eAndS;
     }
 
     public void CombineSpells(MagicSpell spell1, MagicSpell spell2, MagicSpell combinedSpell)

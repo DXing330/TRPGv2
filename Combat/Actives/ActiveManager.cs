@@ -641,7 +641,7 @@ public class ActiveManager : MonoBehaviour
                 }
                 return;
             case "Aura":
-                battle.map.AddAura(skillUser, power, specifics);
+                battle.map.AddAura(skillUser, targetedTiles[0], power, specifics);
                 return;
             case "Manaize":
                 // Light/Dark is different.
