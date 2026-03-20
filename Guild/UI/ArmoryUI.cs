@@ -112,7 +112,13 @@ public class ArmoryUI : MonoBehaviour
     public StatDatabase speciesPassives;
     public string selectedPassive;
     public string selectedPassiveLevel;
-    public PassiveDetailViewer detailViewer;
+    public PassiveDetailViewer passiveViewer;
+    public ActiveDescriptionViewer activeViewer;
+    public void SelectActive()
+    {
+        if (allActors.GetSelected() < 0 || selectedActor == null){return;}
+        activeViewer.SelectActive(selectedActor);
+    }
 
     public virtual void ResetView()
     {
@@ -139,7 +145,7 @@ public class ArmoryUI : MonoBehaviour
         List<string> allActives = selectedActor.GetActiveSkills();
         // Go through all the passives.
         // For any that add actives at the start of battle, add those actives.
-        List<string> allPassives = detailViewer.ReturnAllPassiveInfo(actorPassives.stats, actorPassives.data);
+        List<string> allPassives = passiveViewer.ReturnAllPassiveInfo(actorPassives.stats, actorPassives.data);
         for (int i = 0; i < allPassives.Count; i++)
         {
             string[] blocks = allPassives[i].Split("|");
@@ -174,7 +180,7 @@ public class ArmoryUI : MonoBehaviour
     public virtual void UpdateSelectedActor()
     {
         EndSelectingEquipment();
-        detailViewer.DisablePanel();
+        passiveViewer.DisablePanel();
         UpdateActorStats();
     }
 
@@ -189,13 +195,13 @@ public class ArmoryUI : MonoBehaviour
         if (allActors.GetSelected() < 0) { return; }
         selectedPassive = actorPassives.statTexts[actorPassives.GetSelected() % actorPassives.statTexts.Count].GetStatText();
         selectedPassiveLevel = actorPassives.statTexts[actorPassives.GetSelected() % actorPassives.statTexts.Count].GetText();
-        detailViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
+        passiveViewer.UpdatePassiveNames(selectedPassive, selectedPassiveLevel);
     }
 
     public virtual void ViewCustomPassiveDetails()
     {
         if (allActors.GetSelected() < 0 || selectedActor == null){return;}
-        detailViewer.ViewCustomPassives(selectedActor);
+        passiveViewer.ViewCustomPassives(selectedActor);
     }
 
     public virtual void BeginSelectingEquipment()

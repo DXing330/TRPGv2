@@ -51,7 +51,7 @@ public class MedicinePanel : MonoBehaviour
     {
         int index = medicineSelect.GetSelected();
         if (index < 0) { return; }
-        dummyActive.LoadSkillFromString(activeData.ReturnValue(currentUsableItems[index]));
+        dummyActive.LoadSkillFromString(activeData.ReturnValue(currentUsableItems[index]), null);
         medicineEffectText.text = activeDescriptionViewer.ReturnActiveDescription(dummyActive);
     }
 

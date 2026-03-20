@@ -27,9 +27,9 @@ public class AuraManager : MonoBehaviour
             return true;
         }
     }
-    protected void TriggerAuraEffect(AuraEffect aura, TacticActor actor)
+    protected void TriggerAuraEffect(AuraEffect aura, TacticActor actor, string triggerType)
     {
-        if (!aura.TriggerAura()){return;}
+        if (!aura.TriggerAura(triggerType)){return;}
         if (passive.CheckAuraCondition(aura, actor, map))
         {
             map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " is affected by " + aura.GetAuraName() + ".");
@@ -44,18 +44,15 @@ public class AuraManager : MonoBehaviour
             aura.ActorTriggersAura(actor);
         }
     }
-    protected void TriggerAuraEffects(List<AuraEffect> allAura, TacticActor actor)
+    protected void TriggerAuraEffects(List<AuraEffect> allAura, TacticActor actor, string triggerType)
     {
         for (int i = 0; i < allAura.Count; i++)
         {
-            TriggerAuraEffect(allAura[i], actor);
+            TriggerAuraEffect(allAura[i], actor, triggerType);
         }
     }
-    public void TriggerAllAuraEffects(List<AuraEffect> allAura, List<TacticActor> actors)
+    public void TriggerAllAuraEffects(List<AuraEffect> allAura, TacticActor triggeringActor, string triggerType)
     {
-        for (int i = 0; i < actors.Count; i++)
-        {
-            TriggerAuraEffects(allAura, actors[i]);
-        }
+        TriggerAuraEffects(allAura, triggeringActor, triggerType);
     }
 }

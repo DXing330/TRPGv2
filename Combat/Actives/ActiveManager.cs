@@ -42,14 +42,15 @@ public class ActiveManager : MonoBehaviour
         return activeData.KeyExists(skillName);
     }
 
-    public void SetSkillFromName(string skillName)
+    public void SetSkillFromName(string skillName, TacticActor newSkillUser)
     {
+        skillUser = newSkillUser;
         string sData = activeData.ReturnValue(skillName);
         if (sData == "")
         {
             sData = skillName;
         }
-        active.LoadSkillFromString(sData);
+        active.LoadSkillFromString(sData, skillUser);
     }
 
     protected void ResetTargetableTiles()
@@ -641,7 +642,7 @@ public class ActiveManager : MonoBehaviour
                 }
                 return;
             case "Aura":
-                battle.map.AddAura(skillUser, targetedTiles[0], power, specifics);
+                battle.map.AddAura(skillUser, targetedTiles[0], specifics, power);
                 return;
             case "Manaize":
                 // Light/Dark is different.
@@ -685,7 +686,7 @@ public class ActiveManager : MonoBehaviour
         active.AffectActors(targets, effect, specifics, power);
     }
 
-    // ALL Skill Usage Should Go Through Here
+    // All Skill Usage Should Go Through Here
     public void ActivateSkill(BattleManager battle, bool cost = true)
     {
         if (cost)
@@ -696,6 +697,8 @@ public class ActiveManager : MonoBehaviour
         skillUser.UpdateRoundSkillTracker(active.GetSkillName());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower(), active.GetSelectedTile());
+        // TODO Trigger After Skill Auras Here.
+        battle.map.ApplyAuraEffects(skillUser, "Skill");
     }
 
     public bool CheckSkillCost(BattleMap map)

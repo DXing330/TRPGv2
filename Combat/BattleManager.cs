@@ -807,10 +807,9 @@ public class BattleManager : MonoBehaviour
 
     protected void NPCChainSkillActions(string[] skills)
     {
-        activeManager.SetSkillUser(turnActor);
         for (int i = 0; i < skills.Length; i++)
         {
-            activeManager.SetSkillFromName(skills[i]);
+            activeManager.SetSkillFromName(skills[i], turnActor);
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
             if (targetedTile == -1 || !activeManager.CheckSkillCost(map))
             {
@@ -873,14 +872,13 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < actionsLeft; i++)
         {
             // Get the active and the targeted tile.
-            activeManager.SetSkillUser(turnActor);
             if (skill == "")
             {
-                activeManager.SetSkillFromName(actorAI.ReturnAIActiveSkill());
+                activeManager.SetSkillFromName(actorAI.ReturnAIActiveSkill(), turnActor);
             }
             else
             {
-                activeManager.SetSkillFromName(skill);
+                activeManager.SetSkillFromName(skill, turnActor);
             }
             int targetedTile = actorAI.ChooseSkillTargetLocation(turnActor, map, moveManager);
             // If you can't find a target or cast the skill or are silenced then just do a regular action.
@@ -1131,7 +1129,7 @@ public class BattleManager : MonoBehaviour
             string rSkill = turnActorSkills[Random.Range(0, turnActorSkills.Count - 1)];
             if (activeManager.SkillExists(rSkill))
             {
-                activeManager.SetSkillFromName(rSkill);
+                activeManager.SetSkillFromName(rSkill, turnActor);
                 if (activeManager.active.GetSkillType() == "Damage")
                 {
                     attackActive = rSkill;
@@ -1140,8 +1138,7 @@ public class BattleManager : MonoBehaviour
         }
         if (activeManager.SkillExists(attackActive))
         {
-            activeManager.SetSkillFromName(attackActive);
-            activeManager.SetSkillUser(turnActor);
+            activeManager.SetSkillFromName(attackActive, turnActor);
             if (activeManager.CheckSkillCost(map))
             {
                 int targetTile = turnActor.GetTarget().GetLocation();
@@ -1290,12 +1287,11 @@ public class BattleManager : MonoBehaviour
 
     public void ActiveDeathPassives(TacticActor actor)
     {
-        activeManager.SetSkillUser(actor);
         List<string> deathActives = new List<string>(actor.GetDeathActives());
         for (int i = 0; i < deathActives.Count; i++)
         {
             if (deathActives[i].Length <= 0) { continue; }
-            activeManager.SetSkillFromName(deathActives[i]);
+            activeManager.SetSkillFromName(deathActives[i], actor);
             activeManager.GetTargetedTiles(actor.GetLocation(), moveManager.actorPathfinder);
             ActivateSkill(deathActives[i], actor);
         }

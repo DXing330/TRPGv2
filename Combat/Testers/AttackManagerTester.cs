@@ -23,6 +23,7 @@ public class AttackManagerTester : MonoBehaviour
     public List<string> testAttackerPassives;
     public List<string> testAttackerPassiveLevels;
     public List<string> testAttackerBuffs;
+    public List<string> testAttackerAuras;
     public int defenderLocation;
     public int defenderDirection;
     public string defenderBuilding;
@@ -33,6 +34,7 @@ public class AttackManagerTester : MonoBehaviour
     public List<string> testDefenderPassives;
     public List<string> testDefenderPassiveLevels;
     public List<string> testDefenderBuffs;
+    public List<string> testDefenderAuras;
     public int guardLocation;
     public int guardDirection;
     public string guardTile;
@@ -69,6 +71,10 @@ public class AttackManagerTester : MonoBehaviour
         {
             dummyAttacker.AddBuff(testAttackerBuffs[i], dummyAttacker.defaultBuffDuration);
         }
+        for (int i = 0; i < testAttackerAuras.Count; i++)
+        {
+            map.AddAura(dummyAttacker, attackerLocation, testAttackerAuras[i], 1);
+        }
         battleManager.actorMaker.AddElementPassives(dummyAttacker);
         battleManager.actorMaker.AddAttributePassives(dummyAttacker);
         battleManager.actorMaker.AddSpeciesPassives(dummyAttacker);
@@ -84,6 +90,10 @@ public class AttackManagerTester : MonoBehaviour
         for (int i = 0; i < testDefenderBuffs.Count; i++)
         {
             dummyDefender.AddBuff(testDefenderBuffs[i], dummyDefender.defaultBuffDuration);
+        }
+        for (int i = 0; i < testDefenderAuras.Count; i++)
+        {
+            map.AddAura(dummyDefender, defenderLocation, testDefenderAuras[i], 1);
         }
         battleManager.actorMaker.AddElementPassives(dummyDefender);
         battleManager.actorMaker.AddAttributePassives(dummyDefender);
@@ -163,8 +173,7 @@ public class AttackManagerTester : MonoBehaviour
     public void TestActive()
     {
         InitializeMap();
-        activeManager.SetSkillUser(dummyAttacker);
-        activeManager.SetSkillFromName(activeName);
+        activeManager.SetSkillFromName(activeName, dummyAttacker);
         activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder);
         activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder);
         battleManager.ActivateSkill(activeName, dummyAttacker);

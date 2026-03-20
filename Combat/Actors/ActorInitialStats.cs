@@ -120,10 +120,14 @@ public class ActorInitialStats : ActorPassives
                 return GetBaseEnergy().ToString();
             case "Actives":
                 return GetActivesString();
+            case "ActiveMods":
+                return GetActiveModsString();
             case "DeathActives":
                 return GetDeathActivesString();
             case "Spells":
                 return GetSpellsString();
+            case "SpellMods":
+                return GetSpellModsString();
             case "MagicPower":
                 return GetMagicPower().ToString();
             case "MagicResist":
@@ -215,6 +219,9 @@ public class ActorInitialStats : ActorPassives
             case "Actives":
                 SetActiveSkills(newStat.Split(",").ToList());
                 break;
+            case "ActiveMods":
+                SetActiveMods(newStat.Split(",").ToList());
+                break;
             case "DeathActives":
                 SetDeathActives(newStat.Split(",").ToList());
                 break;
@@ -232,6 +239,9 @@ public class ActorInitialStats : ActorPassives
                 break;
             case "Spells":
                 SetSpells(newStat.Split(",").ToList());
+                break;
+            case "SpellMods":
+                SetSpellMods(newStat.Split(",").ToList());
                 break;
             case "CustomSpells":
                 SetCustomSpells(newStat.Split(passiveDelimiter).ToList());
@@ -412,6 +422,28 @@ public class ActorInitialStats : ActorPassives
         return String.Join(",", activeSkills);
     }
     protected string activeSkillDelimiter = "_";
+    // TODO Implement The Active Mods And Display The Modified Actives In Armory
+    // Active Mods Buff Power/Energy/Action/Range/Span
+    // Each Active Can Have X(2+?) Mods But Each Mod Can Only Apply 1(2+?) Time To Each Active.
+    public List<string> activeMods;
+    public List<string> GetActiveMods()
+    {
+        return activeMods;
+    }
+    public string GetActiveModsString()
+    {
+        if (activeMods.Count == 0) { return ""; }
+        return String.Join(",", activeMods);
+    }
+    public void SetActiveMods(List<string> newMods)
+    {
+        activeMods = newMods;
+        if (activeMods.Count == 0) { return; }
+        for (int i = activeMods.Count - 1; i >= 0; i--)
+        {
+            if (activeMods[i].Length <= 1) { activeMods.RemoveAt(i); }
+        }
+    }
     public int magicPower;
     public void SetMagicPower(int newInfo)
     {
@@ -471,6 +503,21 @@ public class ActorInitialStats : ActorPassives
         for (int i = spells.Count - 1; i >= 0; i--)
         {
             if (spells[i].Length <= 1) { spells.RemoveAt(i); }
+        }
+    }
+    public List<string> spellMods;
+    public string GetSpellModsString()
+    {
+        if (spellMods.Count == 0) { return ""; }
+        return String.Join(",", spellMods);
+    }
+    public void SetSpellMods(List<string> newMods)
+    {
+        spellMods = newMods;
+        if (spellMods.Count == 0) { return; }
+        for (int i = spellMods.Count - 1; i >= 0; i--)
+        {
+            if (spellMods[i].Length <= 1) { spellMods.RemoveAt(i); }
         }
     }
     public List<string> customSpells;

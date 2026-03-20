@@ -52,7 +52,7 @@ public class ActiveSelectList : SelectList
         }
         IncrementState();
         ShowSelected();
-        activeManager.SetSkillFromName(selected);
+        activeManager.SetSkillFromName(selected, battle.GetTurnActor());
         activeDescription.text = descriptionViewer.ReturnActiveDescription(activeManager.active, activeManager.skillUser, battle.map);
         if (battle.GetTurnActor().GetSilenced())
         {

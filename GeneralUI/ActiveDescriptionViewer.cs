@@ -8,10 +8,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
     public StatDatabase activeData;
     public SelectStatTextList activeSelect;
     public PopUpMessage popUp;
-    public void SelectActive()
+    public void SelectActive(TacticActor actor = null)
     {
         if (activeSelect.GetSelected() < 0){return;}
-        popUp.SetMessage(ReturnActiveDescriptionFromName(activeSelect.GetSelectedStat()));
+        popUp.SetMessage(ReturnActiveDescriptionFromName(activeSelect.GetSelectedStat(), actor));
     }
 
     public string ReturnSpellDescription(MagicSpell spell, TacticActor caster = null)
@@ -37,10 +37,10 @@ public class ActiveDescriptionViewer : MonoBehaviour
     {
         return AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
     }
-    public string ReturnActiveDescriptionFromName(string activeName)
+    public string ReturnActiveDescriptionFromName(string activeName, TacticActor actor)
     {
-        dummyActive.LoadSkillFromString(activeData.ReturnValue(activeName));
-        return ReturnActiveDescription(dummyActive);
+        dummyActive.LoadSkillFromString(activeData.ReturnValue(activeName), actor);
+        return ReturnActiveDescription(dummyActive, actor);
     }
     public string ReturnActiveDescription(ActiveSkill activeSkill, TacticActor actor = null, BattleMap map = null)
     {

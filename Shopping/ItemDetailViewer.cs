@@ -92,7 +92,7 @@ public class ItemDetailViewer : MonoBehaviour
                 itemInfo.text = "";
                 return;
             }
-            active.LoadSkillFromString(data);
+            active.LoadSkillFromString(data, null);
             itemInfo.text = itemDescriptions.ReturnActiveDescription(active);
         }
     }

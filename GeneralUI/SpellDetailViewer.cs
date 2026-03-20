@@ -18,7 +18,7 @@ public class SpellDetailViewer : ActiveDescriptionViewer
     [ContextMenu("Debug Active Description")]
     public void ShowActiveDescription()
     {
-        dummyActive.LoadSkillFromString(testActiveName);
+        dummyActive.LoadSkillFromString(testActiveName, null);
         spellEffects.text = ReturnActiveDescription(dummyActive);
     }
     [ContextMenu("Debug Spell Description")]

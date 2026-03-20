@@ -8,7 +8,7 @@ using UnityEngine;
 public class MagicSpell : ActiveSkill
 {
     public StatDatabase spellAttributes;
-    public override void LoadSkillFromString(string skillData)
+    public override void LoadSkillFromString(string skillData, TacticActor actor = null)
     {
         skillInfo = standardSpells.ReturnValue(skillData);
         if (skillInfo == "")

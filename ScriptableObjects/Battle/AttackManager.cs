@@ -297,6 +297,7 @@ public class AttackManager : ScriptableObject
         bonusDefense = 0;
     }
     // Basic attack damage calculation
+    // All Basic Attacks Should Pass Through Here.
     public void ActorAttacksActor(TacticActor attacker, TacticActor target, BattleMap map, int attackMultiplier = -1, string type = "Physical")
     {
         // If the target is already dead then stop.
@@ -401,6 +402,8 @@ public class AttackManager : ScriptableObject
             ActorAttacksActor(attackTarget, attacker, map);
         }
         counterAttack = false;
+        // TODO Trigger After Attack Auras Here.
+        map.ApplyAuraEffects(attacker, "Attack");
     }
 
     protected int RollAttackDamage(int baseAttack)

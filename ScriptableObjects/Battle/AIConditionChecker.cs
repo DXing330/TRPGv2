@@ -31,7 +31,7 @@ public class AIConditionChecker : ScriptableObject
         List<string> actorActives = actor.GetActiveSkills();
         for (int i = 0; i < actorActives.Count; i++)
         {
-            active.LoadSkillFromString(activeData.ReturnValue(actorActives[i]));
+            active.LoadSkillFromString(activeData.ReturnValue(actorActives[i]), actor);
             if (active.GetEffect() == skillEffect && active.Activatable(actor, map))
             {
                 return actorActives[i];

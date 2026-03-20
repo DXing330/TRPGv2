@@ -69,6 +69,8 @@ public class PassiveSkill : SkillEffect
         int change = int.Parse(data[5]);
         switch (effect)
         {
+            default:
+                break;
             case "ActionCost":
                 active.AdjustFlatActionCost(change);
                 break;
@@ -821,16 +823,5 @@ public class PassiveSkill : SkillEffect
         // Check the aura conditions.
         if (!CheckStartEndCondition(aura.condition, aura.conditionSpecifics, actor, map)){return false;}
         return true;
-    }
-    protected void TriggerAuraEffect(AuraEffect aura, TacticActor actor, BattleMap map)
-    {
-        if (!aura.TriggerAura()){return;}
-        if (CheckAuraCondition(aura, actor, map))
-        {
-            map.combatLog.UpdateNewestLog(actor.GetPersonalName() + " is affected by " + aura.GetAuraName() + ".");
-            map.combatLog.AddDetailedLogs(map.detailViewer.ReturnAuraDetails(aura));
-            AffectActor(actor, aura.effect, aura.effectSpecifics);
-            aura.ActorTriggersAura(actor);
-        }
     }
 }

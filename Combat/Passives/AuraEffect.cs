@@ -53,18 +53,21 @@ public class AuraEffect
                 trigger = int.Parse(stat);
                 return;
             case 6:
-                condition = stat;
+                triggerType = stat;
                 return;
             case 7:
-                conditionSpecifics = stat;
+                condition = stat;
                 return;
             case 8:
-                target = stat;
+                conditionSpecifics = stat;
                 return;
             case 9:
-                effect = stat;
+                target = stat;
                 return;
             case 10:
+                effect = stat;
+                return;
+            case 11:
                 effectSpecifics = stat;
                 return;
         }
@@ -200,18 +203,19 @@ public class AuraEffect
     // Trigger - Start, End, Moving
     // Nontrigger - Attacking, Defending
     public int trigger;
-    public bool TriggerAura()
+    public string triggerType;
+    public bool TriggerAura(string triggerTiming)
     {
-        return trigger > 0;
+        if (trigger <= 0){return false;}
+        return triggerType == triggerTiming;
     }
     public bool AlreadyTriggered(TacticActor actor)
     {
-        if (!TriggerAura()){return false;}
         return triggeredActors.Contains(actor);
     }
     public void ActorTriggersAura(TacticActor actor)
     {
-        if (TriggerAura() && !triggeredActors.Contains(actor))
+        if (!triggeredActors.Contains(actor))
         {
             triggeredActors.Add(actor);
         }

@@ -13,9 +13,10 @@ public class BattleMap : MapManager
         InitializeEmptyList();
         terrainEffectTiles = new List<string>(emptyList);
         interactables.Clear();
-        // Reset borders.
+        // Reset Everything.
         InitializeBorders();
         ResetBuildings();
+        ResetAuras();
         ResetActors();
     }
     protected override void Start()
@@ -47,7 +48,7 @@ public class BattleMap : MapManager
         ApplyTileStartEffect(actor);
         ApplyBuildingStartEffect(actor);
         ApplyTerrainStartEffect(actor);
-        ApplyAuraEffects();
+        ApplyAuraEffects(actor, "Start");
     }
     public void ActorEndsTurn(TacticActor actor)
     {
@@ -55,7 +56,7 @@ public class BattleMap : MapManager
         ApplyTileEndEffect(actor);
         ApplyBuildingEndEffect(actor);
         EndTurnOnInteractable(actor);
-        ApplyAuraEffects();
+        ApplyAuraEffects(actor, "End");
     }
     public string weather;
     public TerrainPassivesList weatherPassives;
@@ -1058,6 +1059,10 @@ public class BattleMap : MapManager
     }
     public StatDatabase auraData;
     public List<AuraEffect> auras;
+    public void ResetAuras()
+    {
+        auras.Clear();
+    }
     public List<AuraEffect> ReturnActorAuras(TacticActor actor)
     {
         List<AuraEffect> actorAuras = new List<AuraEffect>();
@@ -1083,7 +1088,7 @@ public class BattleMap : MapManager
         }
     }
     // Later we can deal with adding custom auras.
-    public void AddAura(TacticActor auraUser, int targetTile, int duration, string auraName)
+    public void AddAura(TacticActor auraUser, int targetTile, string auraName, int duration)
     {
         AuraEffect newAura = new AuraEffect();
         newAura.InitializeAura(auraUser, targetTile, duration, auraData.ReturnValue(auraName));
@@ -1104,10 +1109,11 @@ public class BattleMap : MapManager
         }
     }
     public AuraManager auraManager;
-    public void ApplyAuraEffects()
+    // This needs to differeniate between start/end/move/attack/skill.
+    public void ApplyAuraEffects(TacticActor triggeringActor, string triggerType = "Move")
     {
         UpdateAuraLocations();
-        auraManager.TriggerAllAuraEffects(auras, battlingActors);
+        auraManager.TriggerAllAuraEffects(auras, triggeringActor, triggerType);
     }
     [ContextMenu("Test Aura Highlights")]
     public void HighlightSelectedActorAuras()
@@ -1944,7 +1950,7 @@ public class BattleMap : MapManager
         ApplyInteractableEffect(actor, tileNumber);
         // Check if the actor moved into any auras.
         // Check if the actor's aura moved into any actors.
-        ApplyAuraEffects();
+        ApplyAuraEffects(actor);
         // You can die while moving now, due to auras dealing damage.
         if (actor.GetHealth() <= 0)
         {

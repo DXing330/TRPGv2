@@ -41,11 +41,16 @@ public class ActiveSkill : SkillEffect
     }
     public string skillType;
     public string GetSkillType(){return skillType;}
-    public virtual void LoadSkillFromString(string skillData)
+    public virtual void LoadSkillFromString(string skillData, TacticActor actor)
     {
         skillInfo = skillData;
         skillInfoList = new List<string>(skillData.Split(activeSkillDelimiter));
         LoadSkill(skillInfoList, skillData);
+        // Load Mods As Soon As You Load The Skill?
+        if (actor != null)
+        {
+            ApplyActorMods(actor);
+        }
     }
     public virtual void ResetSkillInfo()
     {
@@ -80,6 +85,58 @@ public class ActiveSkill : SkillEffect
         effect = skillData[8];
         specifics = skillData[9];
         power = skillData[10];
+    }
+    public virtual void ApplyActorMods(TacticActor actor)
+    {
+        List<string> mods = actor.GetActiveMods();
+        for (int i = 0; i < mods.Count; i++)
+        {
+            string[] modDetails = mods[i].Split(activeSkillDelimiter);
+            if (modDetails[0] != skillName){continue;}
+            // Active Mods Buff Power/Energy/Action/Range/Span
+            switch (modDetails[1])
+            {
+                default:
+                break;
+                case "Power":
+                int powerInt = GetPower();
+                if (powerInt <= 0){break;}
+                // If it's an int under 2 then double it?
+                if (powerInt == 1)
+                {
+                    power = "2";
+                }
+                // If int > 2 then 50% increase?
+                else if (powerInt > 1)
+                {
+                    power = ((powerInt * 3) / 2).ToString();
+                }
+                // Else do nothing.
+                break;
+                case "Energy":
+                energyCost = Mathf.Max(0, int.Parse(energyCost) - 1).ToString();
+                break;
+                case "Action":
+                actionCost = Mathf.Max(0, int.Parse(actionCost) - 1).ToString();
+                break;
+                case "Range":
+                // If it's a string then add a plus.
+                if (range.Length > 2)
+                {
+                    range = range + "+";
+                }
+                // Else add 1.
+                else
+                {
+                    range = (int.Parse(range) + 1).ToString();
+                }
+                break;
+                case "Span":
+                if (span.Length <= 0){break;}
+                span = (int.Parse(span) + 1).ToString();
+                break;
+            }
+        }
     }
     public string GetStat(string statName)
     {
@@ -223,31 +280,24 @@ public class ActiveSkill : SkillEffect
     public int GetRange(TacticActor skillUser = null, BattleMap map = null)
     {
         if (range == "") { return 0; }
-        switch (range)
+        int plusCount = 0;
+        string rangeString = range;
+        for (int i = range.Length - 1; i >= 0; i--)
+        {
+            if (range[i] == '+')
+            {
+                plusCount++;
+                rangeString = rangeString.Remove(i, 1);
+            }
+        }
+        switch (rangeString)
         {
             case "Move":
                 if (skillUser == null) { return 1; }
-                return skillUser.GetSpeed();
-            case "Move+":
-                if (skillUser == null) { return 1; }
-                return skillUser.GetSpeed() + 1;
-            case "Move++":
-                if (skillUser == null) { return 1; }
-                return skillUser.GetSpeed() + 2;
+                return skillUser.GetSpeed() + plusCount;
             case "AttackRange":
                 if (skillUser == null) { return 1; }
-                return skillUser.GetAttackRange();
-            case "AttackRange+":
-                if (skillUser == null) { return 1; }
-                return (skillUser.GetAttackRange() + 1);
-            case "AttackRange++":
-                if (skillUser == null) { return 1; }
-                return (skillUser.GetAttackRange() + 2);
-        }
-        // TODO adjust the range of skills here?
-        if (skillUser != null && map != null)
-        {
-
+                return skillUser.GetAttackRange() + plusCount;
         }
         return int.Parse(range);
     }
@@ -274,10 +324,9 @@ public class ActiveSkill : SkillEffect
     }
     public int GetSpan(TacticActor actor = null, BattleMap map = null)
     {
-        if (span.Length <= 0) { return 0; }
-        if (actor != null && map != null)
+        if (span.Length <= 0)
         {
-            // TODO Change the span based on adjust active passives?
+            return 0;
         }
         return int.Parse(span);
     }

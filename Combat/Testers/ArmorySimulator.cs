@@ -28,7 +28,7 @@ public class ArmorySimulator : ArmoryUI
     {
         EndSelectingEquipment();
         statsObjects.SetActive(true);
-        detailViewer.DisablePanel();
+        passiveViewer.DisablePanel();
         selectedActor.SetInitialStatsFromString(allActors.allActorData[allActors.GetSelected()]);
         actorStats.UpdateActorStatTexts(selectedActor);
         actorSpriteStats.UpdateActorSpriteStats(selectedActor);

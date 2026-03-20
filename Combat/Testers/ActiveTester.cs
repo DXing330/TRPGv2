@@ -16,7 +16,7 @@ public class ActiveTester : MonoBehaviour
     public void GetTargetableTiles()
     {
         moveCostManager.SetMapInfo(map.mapInfo);
-        activeManager.SetSkillFromName(skillName);
+        activeManager.SetSkillFromName(skillName, null);
         targetableTiles = activeManager.GetTargetableTiles(startTile, moveCostManager.actorPathfinder);
         // Pick a random tile.
         activeManager.GetTargetedTiles(targetableTiles[Random.Range(0, targetableTiles.Count)], moveCostManager.actorPathfinder);

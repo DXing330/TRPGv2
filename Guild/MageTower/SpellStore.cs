@@ -5,6 +5,7 @@ using TMPro;
 
 public class SpellStore : MonoBehaviour
 {
+    /*
     void Start()
     {
         partyData.SetFullParty();
@@ -341,4 +342,5 @@ public class SpellStore : MonoBehaviour
         partyData.SetFullParty();
         StartRenamingSpells();
     }
+    */
 }

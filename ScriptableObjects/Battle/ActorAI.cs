@@ -74,7 +74,7 @@ public class ActorAI : ScriptableObject
         }
         if (activeSkillIndex < 0 || activeSkillIndex >= actor.GetActiveSkills().Count) { return true; }
         activeSkillName = actor.GetActiveSkill(activeSkillIndex);
-        active.LoadSkillFromString(activeData.ReturnValue(activeSkillName));
+        active.LoadSkillFromString(activeData.ReturnValue(activeSkillName), actor);
         return false;
     }
 
