@@ -152,6 +152,9 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Give the target(s) " + ASD(s) + " for " + APD(p) + " turns.";
             case "Passive":
                 return "Grant the target(s) " + ASD(s) + ".";
+            case "PassiveAtLevel":
+                string[] passiveAtLevel = s.Split("Equals");
+                return "Grant the target(s) " + passiveAtLevel[1] + " levels of " + passiveAtLevel[0] + ".";
             case "Attack+Status":
                 return "Attack the target(s) and inflict " + ASD(s) + " for " + APD(p,e) + " turns.";
             case "Attack+MentalState":
@@ -175,7 +178,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "MentalState":
                 return "Try to change the target(s) mental state to " + ASD(s) + ".";
             case "Amnesia":
-                return "Try to make the target forget " + ASD(s) + " temporary active skill(s).";
+                return "Try to make the target forget " + ASD(s) + " active skill(s).";
             case "Attack+Grapple":
                 return "Grapple the target and attack them.";
             case "Grapple":
@@ -189,7 +192,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
             case "Swap":
                 return "Switch " + ASD(s) + " with the targeted location.";
             case "Attack+Amnesia":
-                return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " temporary active skill(s).";
+                return "Attack the target(s)  with " + APD(p) + "% damage, and try to make the target forget " + ASD(s) + " active skill(s).";
             case "Weather":
                 return "Change the weather to " + ASD(s) + ".";
             case "Movement":

@@ -17,7 +17,7 @@ public class ActiveManager : MonoBehaviour
     public void ActivateSpell(BattleManager battle)
     {
         skillUser.UseMana(magicSpell.ReturnManaCost(skillUser));
-        skillUser.PayActionCost(magicSpell.GetActionCost());
+        skillUser.SpendAction(magicSpell.GetActionCost());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         List<string> effects = magicSpell.GetAllEffects();
         List<string> specifics = magicSpell.GetAllSpecifics();
@@ -28,6 +28,7 @@ public class ActiveManager : MonoBehaviour
         }
     }
     public ActiveSkill active;
+    public PassiveSkill passive;
     public TacticActor skillUser;
     public void SetSkillUser(TacticActor user){skillUser = user;}
     public StatDatabase activeData;
@@ -692,11 +693,13 @@ public class ActiveManager : MonoBehaviour
         if (cost)
         {
             skillUser.SpendEnergy(active.GetEnergyCost(skillUser, map));
-            skillUser.PayActionCost(active.GetActionCost(skillUser, map));
+            skillUser.SpendAction(active.GetActionCost(skillUser, map));
         }
+        bool temp = skillUser.RemoveTempActive(active.GetSkillName());
         skillUser.UpdateRoundSkillTracker(active.GetSkillName());
         List<TacticActor> targets = battle.map.GetActorsOnTiles(targetedTiles);
         ApplyActiveEffects(battle, targets, active.GetEffect(), active.GetSpecifics(), active.GetPower(), active.GetSelectedTile());
+        passive.ApplyAfterSkillPassives(skillUser, targets, map, active, temp);
         // TODO Trigger After Skill Auras Here.
         battle.map.ApplyAuraEffects(skillUser, "Skill");
     }

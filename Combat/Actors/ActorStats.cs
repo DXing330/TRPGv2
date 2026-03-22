@@ -58,7 +58,7 @@ public class ActorStats : ActorInitialStats
         ResetUniqueEffects();
     }
     // Start of Turn
-    public void ResetStats()
+    public virtual void ResetStats()
     {
         currentAttack = baseAttack;
         currentDefense = baseDefense;
@@ -72,7 +72,7 @@ public class ActorStats : ActorInitialStats
         ResetTempInitiative();
     }
     // End of Turn
-    protected void EndTurnResetStats()
+    protected virtual void EndTurnResetStats()
     {
         ResetTempAttack();
         ResetTempDefense();
@@ -350,6 +350,11 @@ public class ActorStats : ActorInitialStats
     public void UpdateDefense(int changeAmount) { currentDefense += changeAmount; }
     public int currentSpeed;
     public int GetSpeed() { return currentSpeed; }
+    public override void SetMoveSpeed(int newMoveSpeed)
+    {
+        moveSpeed = newMoveSpeed;
+        currentSpeed = moveSpeed;
+    }
     public void UpdateSpeed(int changeAmount)
     {
         currentSpeed += changeAmount;
@@ -427,15 +432,16 @@ public class ActorStats : ActorInitialStats
     }
     public void RemoveRandomActiveSkill()
     {
-        if (activeSkills.Count <= 0) { return; }
-        int index = UnityEngine.Random.Range(0, activeSkills.Count);
-        RemoveActiveSkill(index);
-    }
-    public void RemoveRandomTempActiveSkill()
-    {
-        if (tempActives.Count <= 0) { return; }
-        int index = UnityEngine.Random.Range(0, tempActives.Count);
-        tempActives.RemoveAt(index);
+        if (tempActives.Count <= 0)
+        {
+            // Remove a regular active skill only if there are no temp actives to remove.
+            if (activeSkills.Count <= 0) { return; }
+            int index = UnityEngine.Random.Range(0, activeSkills.Count);
+            RemoveActiveSkill(index);
+            return;
+        }
+        int tempIndex = UnityEngine.Random.Range(0, tempActives.Count);
+        tempActives.RemoveAt(tempIndex);
     }
     public void AddActiveSkill(string skillName)
     {
@@ -461,14 +467,6 @@ public class ActorStats : ActorInitialStats
     public bool TempActiveExists(string skillName)
     {
         return tempActives.Contains(skillName);
-    }
-    public void RemoveTempActive(string skillName)
-    {
-        int indexOf = tempActives.IndexOf(skillName);
-        if (indexOf >= 0)
-        {
-            tempActives.RemoveAt(indexOf);
-        }
     }
     public int ActiveSkillCount()
     {

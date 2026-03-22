@@ -13,6 +13,8 @@ public class PassiveDetailViewerTester : MonoBehaviour
     public string allPassiveInfo;
     public List<string> passiveInfo;
     public string testPassiveName;
+    public string testPassiveData;
+    public List<string> testPassiveNames;
 
     [ContextMenu("Test All Passives")]
     public void TestPassiveDescriptions()
@@ -32,5 +34,23 @@ public class PassiveDetailViewerTester : MonoBehaviour
         string testPassiveInfo = allPassives.ReturnValue(testPassiveName);
         Debug.Log(testPassiveInfo);
         Debug.Log(detailViewer.ReturnPassiveDetails(testPassiveInfo));
+    }
+
+    [ContextMenu("Test Multiple Passive")]
+    public void TestMultiplePassiveDescription()
+    {
+        for (int i = 0; i < testPassiveNames.Count; i++)
+        {
+            string testPassiveInfo = allPassives.ReturnValue(testPassiveNames[i]);
+            Debug.Log(testPassiveInfo);
+            Debug.Log(detailViewer.ReturnPassiveDetails(testPassiveInfo));
+        }
+    }
+
+    [ContextMenu("Test Single Passive Data")]
+    public void TestSinglePassiveData()
+    {
+        Debug.Log(testPassiveData);
+        Debug.Log(detailViewer.ReturnPassiveDetails(testPassiveData));
     }
 }

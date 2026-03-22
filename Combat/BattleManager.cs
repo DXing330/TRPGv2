@@ -1272,8 +1272,7 @@ public class BattleManager : MonoBehaviour
     {
         ResetState();
         if (actor == null){actor = turnActor;}
-        actor.RemoveTempActive(skillName);
-        combatLog.UpdateNewestLog(actor.GetPersonalName()+" uses "+skillName+".");
+        combatLog.UpdateNewestLog(actor.GetPersonalName() + " uses " + skillName + ".");
         activeManager.ActivateSkill(this);
     }
 

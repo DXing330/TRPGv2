@@ -251,6 +251,12 @@ public class ActorPassives : MonoBehaviour
             case "AdjustSpells":
                 adjustSpellsPassives.Add(passiveName);
                 break;
+            case "AfterSkill":
+                afterSkillPassives.Add(passiveName);
+                break;
+            case "AfterSpell":
+                afterSpellPassives.Add(passiveName);
+                break;
         }
     }
     public void RemoveSortedPassive(string passiveName, string type)
@@ -292,6 +298,12 @@ public class ActorPassives : MonoBehaviour
                 break;
             case "AdjustSpells":
                 adjustSpellsPassives.Remove(passiveName);
+                break;
+            case "AfterSkill":
+                afterSkillPassives.Remove(passiveName);
+                break;
+            case "AfterSpell":
+                afterSpellPassives.Remove(passiveName);
                 break;
         }
     }
@@ -491,5 +503,39 @@ public class ActorPassives : MonoBehaviour
     public void SetAdjustSpellsPassives(List<string> passives)
     {
         adjustSpellsPassives = new List<string>(passives);
+    }
+    public List<string> afterSkillPassives;
+    public List<string> GetAfterSkillPassives()
+    {
+        return afterSkillPassives;
+    }
+    public void AddAfterSkillPassives(List<string> newPassives)
+    {
+        for (int i = 0; i < newPassives.Count; i++)
+        {
+            if (newPassives[i].Length <= 1) { continue; }
+            afterSkillPassives.Add(newPassives[i]);
+        }
+    }
+    public void SetAfterSkillPassives(List<string> passives)
+    {
+        afterSkillPassives = new List<string>(passives);
+    }
+    public List<string> afterSpellPassives;
+    public List<string> GetAfterSpellPassives()
+    {
+        return afterSpellPassives;
+    }
+    public void AddAfterSpellPassives(List<string> newPassives)
+    {
+        for (int i = 0; i < newPassives.Count; i++)
+        {
+            if (newPassives[i].Length <= 1) { continue; }
+            afterSpellPassives.Add(newPassives[i]);
+        }
+    }
+    public void SetAfterSpellPassives(List<string> passives)
+    {
+        afterSpellPassives = new List<string>(passives);
     }
 }

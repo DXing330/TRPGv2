@@ -79,6 +79,8 @@ public class AttackManagerTester : MonoBehaviour
         battleManager.actorMaker.AddAttributePassives(dummyAttacker);
         battleManager.actorMaker.AddSpeciesPassives(dummyAttacker);
         passiveOrganizer.OrganizeActorPassives(dummyAttacker);
+        dummyAttacker.SetActions(dummyAttacker.GetBaseActions());
+        dummyAttacker.SetCurrentHealth(dummyAttacker.GetBaseHealth());
         dummyAttacker.SetLocation(attackerLocation);
         dummyAttacker.SetDirection(attackerDirection);
         dummyDefender.SetInitialStatsFromString(defenderStats);
@@ -99,6 +101,8 @@ public class AttackManagerTester : MonoBehaviour
         battleManager.actorMaker.AddAttributePassives(dummyDefender);
         battleManager.actorMaker.AddSpeciesPassives(dummyDefender);
         passiveOrganizer.OrganizeActorPassives(dummyDefender);
+        dummyDefender.SetActions(dummyDefender.GetBaseActions());
+        dummyDefender.SetCurrentHealth(dummyDefender.GetBaseHealth());
         dummyDefender.SetLocation(defenderLocation);
         dummyDefender.SetDirection(defenderDirection);
         dummyDefender.ResetTarget();
@@ -177,6 +181,7 @@ public class AttackManagerTester : MonoBehaviour
         activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder);
         activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder);
         battleManager.ActivateSkill(activeName, dummyAttacker);
+        map.combatLog.DebugLatestDetailsLog();
     }
     // TODO
     [ContextMenu("Test Basic Attack Skill")]
@@ -198,6 +203,29 @@ public class AttackManagerTester : MonoBehaviour
         activeManager.GetTargetableTiles(dummyAttacker.GetLocation(), battleManager.moveManager.actorPathfinder, true);
         activeManager.GetTargetedTiles(activeTargetTile, battleManager.moveManager.actorPathfinder, true);
         battleManager.ActivateSpell(dummyAttacker);
+        map.UpdateMap();
+    }
+    // Test Start/End Turn Passives
+    [ContextMenu("Test Start Turn")]
+    public void TestStartTurn()
+    {
+        InitializeMap();
+        dummyAttacker.NewTurn();
+        battleManager.effectManager.StartTurn(dummyAttacker, map);
+        dummyAttacker.EndTurn();
+        battleManager.effectManager.EndTurn(dummyAttacker, map);
+        map.ApplyEndTerrainEffect(dummyAttacker);
+        map.UpdateMap();
+    }
+    [ContextMenu("Test End Turn")]
+    public void TestEndTurn()
+    {
+        InitializeMap();
+        dummyAttacker.EndTurn();
+        battleManager.effectManager.EndTurn(dummyAttacker, map);
+        map.ApplyEndTerrainEffect(dummyAttacker);
+        dummyAttacker.NewTurn();
+        battleManager.effectManager.StartTurn(dummyAttacker, map);
         map.UpdateMap();
     }
 }

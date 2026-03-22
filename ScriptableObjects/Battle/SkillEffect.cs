@@ -22,6 +22,12 @@ public class SkillEffect : ScriptableObject
                 int newPassiveLevel = target.GetLevelFromPassive(effectSpecifics);
                 passiveOrganizer.AddSortedPassiveNewLevel(target, effectSpecifics, newPassiveLevel);
                 break;
+            case "PassiveAtLevel":
+                string[] passiveAtLevel = effectSpecifics.Split("Equals");
+                target.AddPassiveSkill(passiveAtLevel[0], passiveAtLevel[1]);
+                int newPassiveAtLevel = target.GetLevelFromPassive(effectSpecifics);
+                passiveOrganizer.AddSortedPassiveNewLevel(target, effectSpecifics, newPassiveAtLevel);
+                break;
             case "TemporaryPassive":
                 if (target.AddTempPassive(effectSpecifics, level))
                 {
@@ -371,6 +377,9 @@ public class SkillEffect : ScriptableObject
             case "TemporarySpell":
                 target.LearnTempSpell(effectSpecifics);
                 break;
+            case "SetSpeed":
+                target.SetMoveSpeed(int.Parse(effectSpecifics));
+                break;
             case "Speed":
                 target.UpdateSpeed(int.Parse(effectSpecifics) * level);
                 break;
@@ -380,14 +389,18 @@ public class SkillEffect : ScriptableObject
             case "Movement":
                 AffectActorMovement(target, effectSpecifics, level);
                 break;
+            case "TempMovement":
+                target.GainTempMovement(level * int.Parse(effectSpecifics));
+                break;
             case "BaseActions":
                 target.UpdateBaseActions(level * int.Parse(effectSpecifics));
                 break;
             case "Actions":
                 target.AdjustActionAmount(level * int.Parse(effectSpecifics));
                 break;
+            // Ice Cream isn't really the same since bonus actions are reset before passives are calculated. Maybe this is fine since storing up infinite actions doesn't make much sense physically.
             case "BonusActions":
-                target.GainBonusActions(level * int.Parse(effectSpecifics));
+                target.GainBonusActions(int.Parse(effectSpecifics));
                 break;
             case "MoveType":
                 target.SetMoveType(effectSpecifics);
@@ -412,7 +425,7 @@ public class SkillEffect : ScriptableObject
                 target.SetMentalState(effectSpecifics, level);
                 break;
             case "Amnesia":
-                target.RemoveRandomTempActiveSkill();
+                target.RemoveRandomActiveSkill();
                 break;
             case "Counter":
                 target.UpdateCounter(int.Parse(effectSpecifics));
@@ -453,6 +466,7 @@ public class SkillEffect : ScriptableObject
             case "BreakGrapple":
                 target.BreakGrapple();
                 break;
+            // Current And Base Are Simple Enough.
             case "BaseDamageResistance":
                 string[] baseResist = effectSpecifics.Split("Equals");
                 target.UpdateBaseDamageResist(baseResist[0], SafeParseInt(baseResist[1]));
@@ -469,6 +483,7 @@ public class SkillEffect : ScriptableObject
                 string[] cBonus = effectSpecifics.Split("Equals");
                 target.UpdateCurrentElementalDamageBonus(cBonus[0], SafeParseInt(cBonus[1]));
                 break;
+            // TODO Scaling Is Twice As Complex For No Reason?
             case "ScalingElementalBonus":
                 string[] scalingEB = effectSpecifics.Split("Equals");
                 target.UpdateElementalDamageBonus(scalingEB[0], GetScalingInt(target, scalingEB[1], scalingEB[2], scalingEB[3]));
@@ -517,6 +532,12 @@ public class SkillEffect : ScriptableObject
                 break;
             case "MagicResist":
                 target.GainMagicResist(int.Parse(effectSpecifics));
+                break;
+            case "Artifact":
+                target.GainArtifactStack(int.Parse(effectSpecifics));
+                break;
+            case "Buffer":
+                target.GainBufferStack(int.Parse(effectSpecifics));
                 break;
         }
     }

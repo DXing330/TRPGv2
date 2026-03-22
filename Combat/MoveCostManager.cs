@@ -532,7 +532,7 @@ public class MoveCostManager : MonoBehaviour
             switch (passiveInfo[3])
             {
                 case "Self":
-                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
+                    if (passiveSkill.CheckMovingCondition(actor, passiveInfo[1], passiveInfo[2], location, map))
                     {
                         passiveSkill.AffectActor(actor, passiveInfo[4], passiveInfo[5]);
                     }
@@ -540,7 +540,7 @@ public class MoveCostManager : MonoBehaviour
                 case "MoveCost":
                     break;
                 case "Map":
-                    if (passiveSkill.CheckMovingCondition(passiveInfo[1], passiveInfo[2], location, map))
+                    if (passiveSkill.CheckMovingCondition(actor, passiveInfo[1], passiveInfo[2], location, map))
                     {
                         passiveSkill.AffectMap(actor, passiveInfo[4], passiveInfo[5], map);
                     }

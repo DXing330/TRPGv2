@@ -23,6 +23,8 @@ public class PassiveOrganizer : ScriptableObject
     public List<string> outOfCombatPassives;
     public List<string> adjustActivesPassives;
     public List<string> adjustSpellsPassives;
+    public List<string> afterSkillPassives;
+    public List<string> afterSpellPassives;
 
     protected void ClearLists()
     {
@@ -38,6 +40,7 @@ public class PassiveOrganizer : ScriptableObject
         outOfCombatPassives.Clear();
         adjustActivesPassives.Clear();
         adjustSpellsPassives.Clear();
+        afterSkillPassives.Clear();
     }
 
     protected void OrganizePassivesList(List<string> passives, List<string> passiveLevels)
@@ -134,6 +137,12 @@ public class PassiveOrganizer : ScriptableObject
             case "AdjustSpells":
                 adjustSpellsPassives.Add(passiveDetails);
                 break;
+            case "AfterSkill":
+                afterSkillPassives.Add(passiveDetails);
+                break;
+            case "AfterSpell":
+                afterSpellPassives.Add(passiveDetails);
+                break;
         }
     }
 
@@ -178,5 +187,7 @@ public class PassiveOrganizer : ScriptableObject
         actor.SetOOCPassives(outOfCombatPassives);
         actor.SetAdjustActivesPassives(adjustActivesPassives);
         actor.SetAdjustSpellsPassives(adjustSpellsPassives);
+        actor.SetAfterSkillPassives(afterSkillPassives);
+        actor.SetAfterSpellPassives(afterSpellPassives);
     }
 }

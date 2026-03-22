@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class AuraManager : MonoBehaviour
 {
+    public GeneralUtility utility;
     public BattleMap map;
     public PassiveSkill passive;
     public string GetAuraSpecifics(AuraEffect aura)
     {
-        int eSpecifics = passive.GetScalingSpecifics(aura.actor, aura.effectSpecifics);
+        int eSpecifics = utility.SafeParseInt(passive.GetEffectSpecifics(aura.actor, aura.effectSpecifics), 0);
         if (eSpecifics <= 0)
         {
             return aura.effectSpecifics;

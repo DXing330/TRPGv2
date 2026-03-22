@@ -241,7 +241,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "Defend":
             return "When being attacked,";
             case "TakeDamage":
-            return "When receiving damage,";
+            return "When receiving attack damage,";
             case "End":
             return "At the end of each turn,";
             case "Death":
@@ -254,6 +254,10 @@ public class PassiveDetailViewer : MonoBehaviour
             return "When using a skill,";
             case "AdjustSpells":
             return "When casting a spell,";
+            case "AfterSkill":
+            return "After using a skill,";
+            case "AfterSpell":
+            return "After using a spell,";
         }
         return "";
     }
@@ -399,7 +403,13 @@ public class PassiveDetailViewer : MonoBehaviour
                     case "Odd":
                         return " at the start of the first round and every other round";
                 }
-                break;
+                return " every " + specifics + " rounds";
+            case "Round>":
+                return " after the first " + specifics + " rounds";
+            case "Round<":
+                return " the first " + specifics + " rounds";
+            case "RoundEquals":
+                return " on round " + specifics;
             case "Passive":
                 return " if the " + specifics + " passive exists for " + conTarget;
             case "Passive<>":
@@ -458,8 +468,12 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the attack defeated the target";
             case "CriticalAttack":
                 return " if the attack was a critical hit";
+            case "CriticalAttack<>":
+                return " if the attack was not a critical hit";
             case "DodgedAttack":
                 return " if the attack was dodged";
+            case "DodgedAttack<>":
+                return " if the attack was not dodged";
             case "FirstStrike":
                 return " if " + conTarget + " has not attacked yet";
             case "Moved":
@@ -494,6 +508,38 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if " + conTarget + " attacked last round";
             case "PrevAttacked<>":
                 return " if " + conTarget + " did not attack last round";
+            case "ActionCount":
+                return " if " + conTarget + " used exactly " + specifics + " actions this round";
+            case "ActionCount>":
+                return " if " + conTarget + " used more than " + specifics + " actions this round";
+            case "ActionCount<":
+                return " if " + conTarget + " used less than " + specifics + " actions this round";
+            case "ActionCount%":
+                return " if " + conTarget + " used a multiple of " + specifics + " actions this round";
+            case "PrevActionCount":
+                return " if " + conTarget + " used exactly " + specifics + " actions last round";
+            case "PrevActionCount>":
+                return " if " + conTarget + " used more than " + specifics + " actions last round";
+            case "PrevActionCount<":
+                return " if " + conTarget + " used less than " + specifics + " actions last round";
+            case "PrevActionCount%":
+                return " if " + conTarget + " used a multiple of " + specifics + " actions last round";
+            case "TotalActionCount":
+                return " if " + conTarget + " used exactly " + specifics + " actions";
+            case "TotalActionCount>":
+                return " if " + conTarget + " used more than " + specifics + " actions";
+            case "TotalActionCount<":
+                return " if " + conTarget + " used less than " + specifics + " actions";
+            case "TotalActionCount%":
+                return " if " + conTarget + " used a multiple of " + specifics + " actions";
+            case "AttackCount":
+                return " if " + conTarget + " made exactly " + specifics + " attacks this round";
+            case "AttackCount>":
+                return " if " + conTarget + " made more than " + specifics + " attacks this round";
+            case "AttackCount<":
+                return " if " + conTarget + " made less than " + specifics + " attacks this round";
+            case "AttackCount%":
+                return " if " + conTarget + " made a multiple of " + specifics + " attacks this round";
             case "PrevAttackCount":
                 return " if " + conTarget + " made exactly " + specifics + " attacks last round";
             case "PrevAttackCount>":
@@ -502,6 +548,22 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if " + conTarget + " made less than " + specifics + " attacks last round";
             case "PrevAttackCount%":
                 return " if " + conTarget + " made a multiple of " + specifics + " attacks last round";
+            case "TotalAttackCount":
+                return " if " + conTarget + " made exactly " + specifics + " attacks";
+            case "TotalAttackCount>":
+                return " if " + conTarget + " made more than " + specifics + " attacks";
+            case "TotalAttackCount<":
+                return " if " + conTarget + " made less than " + specifics + " attacks";
+            case "TotalAttackCount%":
+                return " if " + conTarget + " made a multiple of " + specifics + " attacks";
+            case "SkillCount":
+                return " if " + conTarget + " used exactly " + specifics + " skills this round";
+            case "SkillCount>":
+                return " if " + conTarget + " used more than " + specifics + " skills this round";
+            case "SkillCount<":
+                return " if " + conTarget + " used less than " + specifics + " skills this round";
+            case "SkillCount%":
+                return " if " + conTarget + " used a multiple of " + specifics + " skills this round";
             case "PrevSkillCount":
                 return " if " + conTarget + " used exactly " + specifics + " skills last round";
             case "PrevSkillCount>":
@@ -510,6 +572,14 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if " + conTarget + " used less than " + specifics + " skills last round";
             case "PrevSkillCount%":
                 return " if " + conTarget + " used a multiple of " + specifics + " skills last round";
+            case "TotalSkillCount":
+                return " if " + conTarget + " used exactly " + specifics + " skills";
+            case "TotalSkillCount>":
+                return " if " + conTarget + " used more than " + specifics + " skills";
+            case "TotalSkillCount<":
+                return " if " + conTarget + " used less than " + specifics + " skills";
+            case "TotalSkillCount%":
+                return " if " + conTarget + " used a multiple of " + specifics + " skills";
             case "PrevMoveCount":
                 return " if " + conTarget + " moved exactly " + specifics + " tiles last round";
             case "PrevMoveCount>":
@@ -540,6 +610,17 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if it is a " + specifics + " type";
             case "SkillEffect":
                 return " if it has a " + specifics + " type";
+            case "FirstDefend":
+                return " if attacked for the first time";
+            case "Damage>":
+                return " if the damage is more than";
+            case "Damage<":
+                return " if the damage is less than";
+            // AFTERSKILL CONDITIONS
+            case "ActionCost>":
+                return " if the skill costs more than " + specifics + " actions";
+            case "ActionCost<":
+                return " if the skill costs less than " + specifics + " actions";
         }
         return "";
     }
@@ -547,7 +628,8 @@ public class PassiveDetailViewer : MonoBehaviour
     protected string AdjustSpecificsText(string specifics)
     {
         string adjustedSpecifics = specifics;
-        string targetString = "the target";
+        string targetString = "you";
+        string multiplier = "";
         if (specifics.Contains("ScalingEquals"))
         {
             string[] scalingBasedOn = specifics.Split("Equals");
@@ -557,6 +639,7 @@ public class PassiveDetailViewer : MonoBehaviour
                 if (adjustedSpecifics.EndsWith("D"))
                 {
                     adjustedSpecifics = adjustedSpecifics[..^1];
+                    targetString = "the target";
                 }
                 else if (adjustedSpecifics.EndsWith("A"))
                 {
@@ -564,19 +647,38 @@ public class PassiveDetailViewer : MonoBehaviour
                     adjustedSpecifics = adjustedSpecifics[..^1];
                 }
             }
+            if (scalingBasedOn.Length > 2)
+            {
+                multiplier = scalingBasedOn[2] + " times ";
+            }
+        }
+        else
+        {
+            return specifics;
         }
         switch (adjustedSpecifics)
         {
+            default:
+                return multiplier + "your " + "[" + adjustedSpecifics + "] level";
+            case "DamageTaken":
+                return multiplier + "the amount of damage taken";
             case "Defense":
-                return "your defense value";
+                return multiplier + "your defense value";
             case "Attack":
-                return "your attack value";
+                return multiplier + "your attack value";
             case "Attack/2":
-                return "half your attack value";
+                return multiplier + "half your attack value";
             case "SkillsUsed":
-                return "how many skills " + targetString + " used";
+                return multiplier + "how many skills " + targetString + " used";
+            case "Attacks":
+                return multiplier + "how many times " + targetString + " attacked";
+            case "Defends":
+                return multiplier + "how many times " + targetString + " was attacked";
+            case "Moves":
+                return multiplier + "how many times " + targetString + " moved";
+            case "RoundAttacks":
+                return multiplier + "how many times " + targetString + " attacked this round";
         }
-        return specifics;
     }
 
     protected string AffectMapText(string effect, string specifics)
@@ -604,15 +706,15 @@ public class PassiveDetailViewer : MonoBehaviour
             case "OverrideA":
                 return " set the action cost to " + specifics;
             case "OverrideE":
-                return " set the cost to " + specifics;
+                return " set the energy cost to " + specifics;
             case "ActionCost":
                 return " change the action cost by " + specifics;
             case "ActionCost%":
                 return " change the action cost by " + specifics + "%";
             case "EnergyCost":
-                return " change the cost by " + specifics;
+                return " change the energy cost by " + specifics;
             case "EnergyCost%":
-                return " change the cost by " + specifics + "%";
+                return " change the energy cost by " + specifics + "%";
         }
         return "";
     }
@@ -630,18 +732,21 @@ public class PassiveDetailViewer : MonoBehaviour
         }
         if (effect.EndsWith("Damage"))
         {
-            return " deal " + specifics + " " + effect + " damage";
+            return " deal " + specifics + " " + effect + " to " + target;
         }
         switch (effect)
         {
+            case "Set":
             case "Increase":
-                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "Increase%":
-                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "Decrease":
-                return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
             case "Decrease%":
                 return IncreaseDecreaseTargetSpecifics(effect, specifics, target);
+            case "Passive":
+                return " grant " + target + " the " + specifics + " passive";
+            case "PassiveAtLevel":
+                string[] passiveAtLevel = specifics.Split("Equals");
+                return " grant " + target + " " + passiveAtLevel[1] + " levels of the " + passiveAtLevel[0] + " passive";
             case "BaseHealth":
                 return " increase maximum health of " + target + " by " + specifics;
             case "BaseHealth%":
@@ -671,7 +776,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "RemoveStatus":
                 return " remove all " + specifics + " status effects from " + target;
             case "Health":
-                return " " + target + " regain up to " + specifics + " health";
+                return " " + target + " regain health up to " + specifics;
             case "Health%":
                 return " " + target + " regain up to " + specifics + "% health";
             case "Attack%":
@@ -686,6 +791,8 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " increase Attack Range of " + target + " by up to " + specifics;
             case "TempRange":
                 return " increase Attack Range of " + target + " by " + specifics;
+            case "SetSpeed":
+                return " set Base Speed of " + target + " to " + specifics;
             case "BaseSpeed":
                 return " increase Base Speed of " + target + " by up to " + specifics;
             case "TempAttack%":
@@ -703,7 +810,7 @@ public class PassiveDetailViewer : MonoBehaviour
             case "MentalState":
                 return " change mental state to " + specifics;
             case "Amnesia":
-                return " make " + target + " forget 1 temporary active skill";
+                return " make " + target + " forget 1 active skill";
             case "Active":
                 return " use " + specifics;
             case "Death":
@@ -756,6 +863,10 @@ public class PassiveDetailViewer : MonoBehaviour
 
     protected string IncreaseDecreaseTargetSpecifics(string effect, string specifics, string target)
     {
+        if (effect == "Set")
+        {
+            return " " + effect + " " + target + " to " + specifics;
+        }
         switch (target)
         {
             case "MoveCost":

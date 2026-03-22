@@ -362,7 +362,10 @@ public class ActorInitialStats : ActorPassives
     public int GetBaseDefense() { return baseDefense; }
     public void UpdateBaseDefense(int changeAmount) { baseDefense += changeAmount; }
     public int moveSpeed;
-    public void SetMoveSpeed(int newMoveSpeed) { moveSpeed = newMoveSpeed; }
+    public virtual void SetMoveSpeed(int newMoveSpeed)
+    {
+        moveSpeed = newMoveSpeed;
+    }
     public void SetMoveSpeedMax(int newMax)
     {
         moveSpeed = Mathf.Max(moveSpeed, newMax);

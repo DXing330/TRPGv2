@@ -6,45 +6,64 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Passive", menuName = "ScriptableObjects/BattleLogic/Passive", order = 1)]
 public class PassiveSkill : SkillEffect
 {
-    public string GetEffectSpecifics(TacticActor actor, string specifics)
+    public string GetEffectSpecifics(TacticActor actor, string specifics, int input = 0, BattleMap map = null)
     {
-        switch (specifics)
+        // Some are scaling.
+        if (specifics.Contains("ScalingEquals"))
         {
-            case "Defense":
-                return actor.GetDefense().ToString();
-            case "Attack":
-                return actor.GetAttack().ToString();
-            case "Attack/2":
-                return (actor.GetAttack() / 2).ToString();
+            string[] scaling = specifics.Split("Equals");
+            int amount = 0;
+            string scalingSpecifics = scaling[1];
+            if (scalingSpecifics.EndsWith("A") || scalingSpecifics.EndsWith("D"))
+            {
+                scalingSpecifics = scalingSpecifics[..^1];
+            }
+            switch (scalingSpecifics)
+            {
+                // Scaled based on the passive level. 
+                default:
+                amount = actor.GetLevelFromPassive(scaling[1]);
+                break;
+                case "DamageTaken":
+                amount = input;
+                break;
+                case "Defense":
+                amount = actor.GetDefense();
+                break;
+                case "Attack":
+                amount = actor.GetAttack();
+                break;
+                case "Attack/2":
+                amount = actor.GetAttack() / 2;
+                break;
+                case "Actions":
+                amount = actor.GetActions();
+                break;
+                case "SkillsUsed":
+                amount = actor.ReturnTotalRoundSkills();
+                break;
+                case "Attacks":
+                amount = actor.ReturnTotalRoundAttacks();
+                break;
+                case "Defends":
+                amount = actor.ReturnTotalRoundDefends();
+                break;
+                case "Moves":
+                amount = actor.ReturnTotalRoundMoves();
+                break;
+                case "RoundAttacks":
+                amount = actor.ReturnCurrentRoundAttacks();
+                break;
+            }
+            // Some scaling includes a multiplier.
+            int multiplier = 1;
+            if (scaling.Length > 2)
+            {
+                multiplier = int.Parse(scaling[2]);
+            }
+            return (amount * multiplier).ToString();
         }
         return specifics;
-    }
-
-    public int GetScalingSpecifics(TacticActor actor, string specifics)
-    {
-        if (specifics.EndsWith("A") || specifics.EndsWith("D"))
-        {
-            specifics = specifics[..^1];
-        }
-        switch (specifics)
-        {
-            default:
-            return 0;
-            case "Defense":
-                return actor.GetDefense();
-            case "Attack":
-                return actor.GetAttack();
-            case "Attack/2":
-                return (actor.GetAttack() / 2);
-            case "SkillsUsed":
-            return actor.ReturnTotalRoundSkills();
-            case "Attacks":
-            return actor.ReturnTotalRoundAttacks();
-            case "Defends":
-            return actor.ReturnTotalRoundDefends();
-            case "Moves":
-            return actor.ReturnTotalRoundMoves();
-        }
     }
 
     public void AffectMap(TacticActor actor, string effect, string specifics, BattleMap map)
@@ -65,30 +84,34 @@ public class PassiveSkill : SkillEffect
         }
         // Apply the effects.
         string target = data[3];
-        string effect = data[4];
-        int change = int.Parse(data[5]);
-        switch (effect)
+        string[] effects = data[4].Split(",");
+        string[] specifics = data[5].Split(",");
+        for (int i = 0; i < effects.Length; i++)
         {
-            default:
-                break;
-            case "ActionCost":
-                active.AdjustFlatActionCost(change);
-                break;
-            case "ActionCost%":
-                active.AdjustPercentActionCost(change);
-                break;
-            case "EnergyCost":
-                active.AdjustFlatEnergyCost(change);
-                break;
-            case "EnergyCost%":
-                active.AdjustPercentEnergyCost(change);
-                break;
-            case "OverrideA":
-                active.SetActionCostOverride(change);
-                break;
-            case "OverrideE":
-                active.SetEnergyCostOverride(change);
-                break;
+            int change = int.Parse(specifics[i]);
+            switch (effects[i])
+            {
+                default:
+                    break;
+                case "ActionCost":
+                    active.AdjustFlatActionCost(change);
+                    break;
+                case "ActionCost%":
+                    active.AdjustPercentActionCost(change);
+                    break;
+                case "EnergyCost":
+                    active.AdjustFlatEnergyCost(change);
+                    break;
+                case "EnergyCost%":
+                    active.AdjustPercentEnergyCost(change);
+                    break;
+                case "OverrideA":
+                    active.SetActionCostOverride(change);
+                    break;
+                case "OverrideE":
+                    active.SetEnergyCostOverride(change);
+                    break;
+            }
         }
     }
 
@@ -120,6 +143,40 @@ public class PassiveSkill : SkillEffect
         return CheckStartEndCondition(condition, specifics, actor, map);
     }
 
+    public void ApplyAfterSkillPassives(TacticActor skillUser, List<TacticActor> targets, BattleMap map, ActiveSkill skillUsed, bool tempSkill = false)
+    {
+        List<string> passives = skillUser.GetAfterSkillPassives();
+        if (passives.Count <= 0) { return; }
+        for (int i = 0; i < passives.Count; i++)
+        {
+            string[] passiveData = passives[i].Split("|");
+            if (passiveData.Length <= 4) { continue; }
+            string[] conditions = passiveData[1].Split(",");
+            string[] specifics = passiveData[2].Split(",");
+            bool conditionsMet = true;
+            for (int j = 0; j < conditions.Length; j++)
+            {
+                conditionsMet = CheckAfterSkillCondition(conditions[j], specifics[j], skillUser, targets, map, skillUsed, tempSkill);
+                if (!conditionsMet)
+                {
+                    break;
+                }
+            }
+            if (!conditionsMet)
+            {
+                continue;
+            }
+            // For now only affect the actor, later might after other things.
+            string[] effects = passiveData[4].Split(",");
+            string[] effectSpecifics = passiveData[5].Split(",");
+            for (int h = 0; h < effects.Length; h++)
+            {
+                string specificDetails = GetEffectSpecifics(skillUser, effectSpecifics[h], 0, map);
+                ApplyPassiveEffectToTarget(skillUser, map, passiveData[4], effects[h], specificDetails);
+            }
+        }
+    }
+
     public void ApplyAfterAttackPassives(TacticActor actor, TacticActor attackTarget, int damage, BattleMap map, bool hit = true, bool crit = false, bool counterAttack = false)
     {
         List<string> passives = actor.GetAfterAttackPassives();
@@ -143,12 +200,12 @@ public class PassiveSkill : SkillEffect
             {
                 continue;
             }
-            // For now only affect the actor, later might after other things.
             string[] effects = passiveData[4].Split(",");
             string[] effectSpecifics = passiveData[5].Split(",");
             for (int h = 0; h < effects.Length; h++)
             {
-                AffectActor(actor, effects[h], GetEffectSpecifics(actor, effectSpecifics[h]));
+                string specificDetails = GetEffectSpecifics(actor, effectSpecifics[h], 0, map);
+                ApplyPassiveEffectToTarget(actor, map, passiveData[4], effects[h], specificDetails);
             }
         }
     }
@@ -176,11 +233,17 @@ public class PassiveSkill : SkillEffect
             {
                 continue;
             }
+            TacticActor target = attackTarget;
+            if (passiveData[3] == "Attacker")
+            {
+                target = actor;
+            }
             string[] effects = passiveData[4].Split(",");
             string[] effectSpecifics = passiveData[5].Split(",");
             for (int h = 0; h < effects.Length; h++)
             {
-                AffectActor(attackTarget, effects[h], GetEffectSpecifics(attackTarget, effectSpecifics[h]));
+                string specificDetails = GetEffectSpecifics(attackTarget, effectSpecifics[h], 0, map);
+                ApplyPassiveEffectToTarget(actor, map, passiveData[4], effects[h], specificDetails);
             }
         }
     }
@@ -217,10 +280,64 @@ public class PassiveSkill : SkillEffect
         }
     }
 
-    public void ApplyPassive(TacticActor actor, BattleMap map, string passive)
+    public void ApplyPassiveEffectToTarget(TacticActor actor, BattleMap map, string target, string effect, string specifics)
     {
         List<TacticActor> targets = new List<TacticActor>();
         List<int> tiles = new List<int>();
+        switch (target)
+        {
+            default:
+                AffectActor(actor, effect, specifics);
+                break;
+            // Move based on wording (effect) and distance (specifics).
+            case "MoveSelf":
+                map.MoveActorPassive(actor, effect, specifics);
+                break;
+            case "AdjacentAllies":
+                AffectActor(actor, effect, specifics);
+                targets = map.GetAdjacentAllies(actor);
+                for (int j = 0; j < targets.Count; j++)
+                {
+                    AffectActor(targets[j], effect, specifics);
+                }
+                break;
+            case "AdjacentEnemies":
+                targets = map.GetAdjacentEnemies(actor);
+                for (int j = 0; j < targets.Count; j++)
+                {
+                    AffectActor(targets[j], effect, specifics);
+                }
+                break;
+            case "AllEnemies":
+                break;
+            case "AdjacentActors":
+                break;
+            case "BackAllies":
+                tiles.Add(map.ReturnTileInRelativeDirection(actor, 2));
+                tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
+                tiles.Add(map.ReturnTileInRelativeDirection(actor, 4));
+                targets = map.ReturnAlliesInTiles(actor, tiles);
+                for (int j = 0; j < targets.Count; j++)
+                {
+                    AffectActor(targets[j], effect, specifics);
+                }
+                break;
+            case "BackAlly":
+                tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
+                targets = map.ReturnAlliesInTiles(actor,tiles);
+                for (int j = 0; j < targets.Count; j++)
+                {
+                    AffectActor(targets[j], effect, specifics);
+                }
+                break;
+            case "Map":
+                AffectMap(actor, effect, specifics, map);
+                break;
+        }
+    }
+
+    public void ApplyPassive(TacticActor actor, BattleMap map, string passive)
+    {
         List<string> passiveData = passive.Split("|").ToList();
         if (passiveData.Count <= 4) { return; }
         if (!CheckStartEndConditions(actor, passiveData[1], passiveData[2], map)){return;}
@@ -228,72 +345,39 @@ public class PassiveSkill : SkillEffect
         string[] effectSpecifics = passiveData[5].Split(",");
         for (int i = 0; i < effects.Length; i++)
         {
-            switch (passiveData[3])
-            {
-                // Move based on wording (effect) and distance (specifics).
-                case "MoveSelf":
-                    map.MoveActorPassive(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    break;
-                case "Self":
-                    AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    break;
-                case "AdjacentAllies":
-                    AffectActor(actor, effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    targets = map.GetAdjacentAllies(actor);
-                    for (int j = 0; j < targets.Count; j++)
-                    {
-                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    }
-                    break;
-                case "AdjacentEnemies":
-                    targets = map.GetAdjacentEnemies(actor);
-                    for (int j = 0; j < targets.Count; j++)
-                    {
-                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    }
-                    break;
-                case "AdjacentActors":
-                    break;
-                case "BackAllies":
-                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 2));
-                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
-                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 4));
-                    targets = map.ReturnAlliesInTiles(actor, tiles);
-                    for (int j = 0; j < targets.Count; j++)
-                    {
-                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    }
-                    break;
-                case "BackAlly":
-                    tiles.Add(map.ReturnTileInRelativeDirection(actor, 3));
-                    targets = map.ReturnAlliesInTiles(actor,tiles);
-                    for (int j = 0; j < targets.Count; j++)
-                    {
-                        AffectActor(targets[j], effects[i], GetEffectSpecifics(actor, effectSpecifics[i]));
-                    }
-                    break;
-                case "Map":
-                    AffectMap(actor, effects[i], effectSpecifics[i], map);
-                    break;
-            }
+            string specifics = GetEffectSpecifics(actor, effectSpecifics[i], 0, map);
+            ApplyPassiveEffectToTarget(actor, map, passiveData[4], effects[i], specifics);
         }
     }
 
     public void ApplyPassives(TacticActor actor, string timing, BattleMap map)
     {
         List<string> passives = new List<string>();
-        if (timing == "End")
+        switch (timing)
         {
+            case "End":
             passives = actor.GetEndTurnPassives();
-        }
-        if (timing == "Start")
-        {
+            break;
+            case "Start":
             passives = actor.GetStartTurnPassives();
+            break;
         }
         for (int h = passives.Count - 1; h >= 0; h--)
         {
             ApplyPassive(actor, map, passives[h]);
         }
+    }
+
+    public bool CheckAfterSkillCondition(string condition, string specifics, TacticActor skillUser, List<TacticActor> targets, BattleMap map, ActiveSkill skillData, bool tempSKill = false)
+    {
+        switch (condition)
+        {
+            case "ActionCost>":
+                return skillData.GetActionCost() > int.Parse(specifics);
+            case "ActionCost<":
+                return skillData.GetActionCost() > int.Parse(specifics);
+        }
+        return CheckStartEndCondition(condition, specifics, skillUser, map);
     }
 
     public bool CheckAfterAttackCondition(string condition, string specifics, TacticActor attacker, TacticActor target, BattleMap map, bool attackHit, bool attackCrit, bool counterAttack)
@@ -304,17 +388,25 @@ public class PassiveSkill : SkillEffect
                 return target.GetHealth() <= 0;
             case "CriticalAttack":
                 return attackCrit;
+            case "CriticalAttack<>":
+                return !attackCrit;
             case "DodgedAttack":
                 return !attackHit;
+            case "DodgedAttack<>":
+                return attackHit;
             case "CounterAttack":
                 return counterAttack;
+            case "FirstAttack":
+                return attacker.ReturnTotalRoundAttacks() == 1;
+            case "FirstDefend":
+                return target.ReturnTotalRoundDefends() == 1;
         }
         // Large overlap with battle conditions.
         return CheckBattleCondition(condition, specifics, target, attacker, map);
     }
 
     // Moving passives usually depend on the tile moved over.
-    public bool CheckMovingCondition(string condition, string specifics, int currentTile, BattleMap map)
+    public bool CheckMovingCondition(TacticActor actor, string condition, string specifics, int currentTile, BattleMap map)
     {
         switch (condition)
         {
@@ -329,7 +421,7 @@ public class PassiveSkill : SkillEffect
             case "RawElevation":
                 return map.ReturnElevation(currentTile) == int.Parse(specifics);
         }
-        return true;
+        return CheckStartEndCondition(condition, specifics, actor, map);
     }
 
     public bool CheckStartBattleCondition(string condition, string specifics, TacticActor actor, BattleState battleState)
@@ -443,6 +535,12 @@ public class PassiveSkill : SkillEffect
                         return (map.GetRound() + 1) % 2 == 0;
                 }
                 return map.GetRound() % int.Parse(conditionSpecifics) == 0;
+            case "Round>":
+                return map.GetRound() > int.Parse(conditionSpecifics);
+            case "Round<":
+                return map.GetRound() < int.Parse(conditionSpecifics);
+            case "RoundEquals":
+                return map.GetRound() == int.Parse(conditionSpecifics);
             case "Passive":
             return actor.GetPassiveSkills().Contains(conditionSpecifics);
             case "Passive<>":
@@ -513,6 +611,30 @@ public class PassiveSkill : SkillEffect
                 return actor.ReturnPreviousRoundAttacks() > 0;
             case "PrevAttacked<>":
                 return actor.ReturnPreviousRoundAttacks() == 0;
+            case "ActionCount":
+                return actor.ReturnCurrentRoundActions() == int.Parse(conditionSpecifics);
+            case "ActionCount>":
+                return actor.ReturnCurrentRoundActions() > int.Parse(conditionSpecifics);
+            case "ActionCount<":
+                return actor.ReturnCurrentRoundActions() < int.Parse(conditionSpecifics);
+            case "ActionCount%":
+                return (actor.ReturnCurrentRoundActions() % int.Parse(conditionSpecifics) == 0);
+            case "PrevActionCount":
+                return actor.ReturnPreviousRoundActions() == int.Parse(conditionSpecifics);
+            case "PrevActionCount>":
+                return actor.ReturnPreviousRoundActions() > int.Parse(conditionSpecifics);
+            case "PrevActionCount<":
+                return actor.ReturnPreviousRoundActions() < int.Parse(conditionSpecifics);
+            case "PrevActionCount%":
+                return (actor.ReturnPreviousRoundActions() % int.Parse(conditionSpecifics) == 0);
+            case "TotalActionCount":
+                return actor.ReturnTotalRoundActions() == int.Parse(conditionSpecifics);
+            case "TotalActionCount>":
+                return actor.ReturnTotalRoundActions() > int.Parse(conditionSpecifics);
+            case "TotalActionCount<":
+                return actor.ReturnTotalRoundActions() < int.Parse(conditionSpecifics);
+            case "TotalActionCount%":
+                return (actor.ReturnTotalRoundActions() % int.Parse(conditionSpecifics) == 0);
             case "AttackCount":
                 return actor.ReturnCurrentRoundAttacks() == int.Parse(conditionSpecifics);
             case "AttackCount>":
@@ -529,6 +651,22 @@ public class PassiveSkill : SkillEffect
                 return actor.ReturnPreviousRoundAttacks() < int.Parse(conditionSpecifics);
             case "PrevAttackCount%":
                 return (actor.ReturnPreviousRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "TotalAttackCount":
+                return actor.ReturnTotalRoundAttacks() == int.Parse(conditionSpecifics);
+            case "TotalAttackCount>":
+                return actor.ReturnTotalRoundAttacks() > int.Parse(conditionSpecifics);
+            case "TotalAttackCount<":
+                return actor.ReturnTotalRoundAttacks() < int.Parse(conditionSpecifics);
+            case "TotalAttackCount%":
+                return (actor.ReturnTotalRoundAttacks() % int.Parse(conditionSpecifics) == 0);
+            case "SkillCount":
+                return actor.ReturnCurrentRoundSkills() == int.Parse(conditionSpecifics);
+            case "SkillCount>":
+                return actor.ReturnCurrentRoundSkills() > int.Parse(conditionSpecifics);
+            case "SkillCount<":
+                return actor.ReturnCurrentRoundSkills() < int.Parse(conditionSpecifics);
+            case "SkillCount%":
+                return (actor.ReturnCurrentRoundSkills() % int.Parse(conditionSpecifics) == 0);
             case "PrevSkillCount":
                 return actor.ReturnPreviousRoundSkills() == int.Parse(conditionSpecifics);
             case "PrevSkillCount>":
@@ -537,6 +675,14 @@ public class PassiveSkill : SkillEffect
                 return actor.ReturnPreviousRoundSkills() < int.Parse(conditionSpecifics);
             case "PrevSkillCount%":
                 return (actor.ReturnPreviousRoundSkills() % int.Parse(conditionSpecifics) == 0);
+            case "TotalSkillCount":
+                return actor.ReturnTotalRoundSkills() == int.Parse(conditionSpecifics);
+            case "TotalSkillCount>":
+                return actor.ReturnTotalRoundSkills() > int.Parse(conditionSpecifics);
+            case "TotalSkillCount<":
+                return actor.ReturnTotalRoundSkills() < int.Parse(conditionSpecifics);
+            case "TotalSkillCount%":
+                return (actor.ReturnTotalRoundSkills() % int.Parse(conditionSpecifics) == 0);
             case "PrevMoveCount":
                 return actor.ReturnPreviousRoundMoves() == int.Parse(conditionSpecifics);
             case "PrevMoveCount>":
@@ -692,17 +838,21 @@ public class PassiveSkill : SkillEffect
         return false;
     }
 
-    public bool CheckTakeDamageCondition(string condition, string conditionSpecifics, int damageAmount, string damageType)
+    public bool CheckTakeDamageCondition(string condition, string conditionSpecifics, int damageAmount, string damageType, TacticActor attacker, TacticActor target)
     {
         switch (condition)
         {
             case "None":
                 return true;
+            case "FirstAttack":
+                return attacker.ReturnTotalRoundAttacks() == 1;
+            case "FirstDefend":
+                return target.ReturnTotalRoundDefends() == 1;
             case "Type":
                 return conditionSpecifics == damageType;
-            case "<":
+            case "Damage<":
                 return int.Parse(conditionSpecifics) < damageAmount;
-            case ">":
+            case "Damage>":
                 return int.Parse(conditionSpecifics) > damageAmount;
         }
         return true;
@@ -774,7 +924,7 @@ public class PassiveSkill : SkillEffect
     {
         string[] scalingBasedOn = scalingSpecifics.Split("Equals");
         if (scalingBasedOn.Length < 2){return affected;}
-        int power = GetScalingSpecifics(scalingActor, scalingBasedOn[1]);
+        int power = int.Parse(GetEffectSpecifics(scalingActor, scalingSpecifics));
         return AffectInt(affected, effect, power.ToString());
     }
 
@@ -783,9 +933,10 @@ public class PassiveSkill : SkillEffect
     {
         TacticActor scalingActor = actor;
         int power = 0;
-        if (effectSpecifics.Contains("Scaling") && scalingActor != null)
+        if (effectSpecifics.Contains("ScalingEquals") && scalingActor != null)
         {
-            if (effectSpecifics.EndsWith("D") && target != null)
+            string[] scalingSpecifics = effectSpecifics.Split("Equals");
+            if (scalingSpecifics[1].EndsWith("D") && target != null)
             {
                 scalingActor = target;
             }
@@ -795,6 +946,8 @@ public class PassiveSkill : SkillEffect
         if (!intEffect){return affected;}
         switch (effect)
         {
+            case "Set":
+                return power;
             case "Increase":
                 affected += power;
                 break;

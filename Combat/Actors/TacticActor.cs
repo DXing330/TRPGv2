@@ -75,6 +75,7 @@ public class TacticActor : ActorStats
     public void AdjustActionAmount(int change){actions += change;}
     public void SpendAction(int actionCost = 1)
     {
+        UpdateRoundActionTracker(actionCost);
         if (bonusActions > 0)
         {
             bonusActions -= actionCost;
@@ -101,7 +102,6 @@ public class TacticActor : ActorStats
         SpendAction(attackActionCost);
     }
     public bool ActionsLeft(){return actions > 0;}
-    public void PayActionCost(int cost){actions -= cost;}
     public int movement;
     public int GetMovement(){return movement + tempMovement;}
     protected void MoveAction()
@@ -115,6 +115,7 @@ public class TacticActor : ActorStats
     {
         tempMovement += amount;
     }
+    public void ResetTempMovement(){tempMovement = 0;}
     public void PayMoveCost(int cost)
     {
         if (tempMovement > 0)
@@ -153,11 +154,15 @@ public class TacticActor : ActorStats
     {
         counterAttacks--;
     }
+    public override void ResetStats()
+    {
+        base.ResetStats();
+        movement = 0;
+    }
     // Start of Turn
     public void NewTurn()
     {
         // Default is two actions.
-        movement = 0;
         counterAttacks = 0;
         // Update all the turn trackers.
         // This is before passives obviously.
@@ -272,18 +277,22 @@ public class TacticActor : ActorStats
     // Keep track of skills/spells used, movement and attacks.
     protected void ResetRoundTrackers()
     {
+        ResetRoundActionTracker();
         ResetRoundAttackTracker();
         ResetRoundDefendTracker();
         ResetRoundSkillTracker();
+        ResetRoundSpellTracker();
         ResetRoundMoveTracker();
         ResetLocationTracker();
         ResetHealthTracker();
     }
     protected void AddToRoundTrackers()
     {
+        actionsEachRound.Add(0);
         attacksEachRound.Add(0);
         defendsEachRound.Add(0);
         skillsEachRound.Add(0);
+        spellsEachRound.Add(0);
         movesEachRound.Add(0);
         locationsEachRound.Add(GetLocation());
         healthEachRound.Add(GetHealth());
@@ -323,6 +332,45 @@ public class TacticActor : ActorStats
     public int GetInitialHealth()
     {
         return healthEachRound[0];
+    }
+    public List<int> actionsEachRound;
+    public void ResetRoundActionTracker()
+    {
+        actionsEachRound.Clear();
+    }
+    public void UpdateRoundActionTracker(int amount = 1)
+    {
+        if (actionsEachRound == null || actionsEachRound.Count == 0)
+        {
+            actionsEachRound = new List<int>();
+            actionsEachRound.Add(amount);
+            return;
+        }
+        actionsEachRound[actionsEachRound.Count - 1] += amount;
+    }
+    public int ReturnCurrentRoundActions()
+    {
+        if (actionsEachRound == null || actionsEachRound.Count <= 0)
+        {
+            return -1;
+        }
+        return actionsEachRound[actionsEachRound.Count - 1];
+    }
+    public int ReturnPreviousRoundActions()
+    {
+        if (actionsEachRound == null || actionsEachRound.Count <= 1)
+        {
+            return -1;
+        }
+        return actionsEachRound[actionsEachRound.Count - 2];
+    }
+    public int ReturnTotalRoundActions()
+    {
+        if (actionsEachRound == null)
+        {
+            return 0;
+        }
+        return actionsEachRound.Sum();
     }
     public List<int> attacksEachRound;
     public void ResetRoundAttackTracker()
@@ -384,6 +432,18 @@ public class TacticActor : ActorStats
     }
     public List<int> skillsEachRound;
     public List<string> skillsUsed;
+    public List<string> tempSkillsUsed;
+    public bool RemoveTempActive(string skillName)
+    {
+        int indexOf = tempActives.IndexOf(skillName);
+        if (indexOf >= 0)
+        {
+            tempActives.RemoveAt(indexOf);
+            tempSkillsUsed.Add(skillName);
+            return true;
+        }
+        return false;
+    }
     public string ReturnMostUsedSkill()
     {
         return "";
@@ -397,6 +457,7 @@ public class TacticActor : ActorStats
     {
         skillsEachRound.Clear();
         skillsUsed.Clear();
+        tempSkillsUsed.Clear();
     }
     public void UpdateRoundSkillTracker(string skillName)
     {
@@ -422,6 +483,62 @@ public class TacticActor : ActorStats
     public int ReturnTotalRoundSkills()
     {
         return skillsEachRound.Sum();
+    }
+    public List<int> spellsEachRound;
+    public List<string> spellsUsed;
+    public List<string> tempSpellsUsed;
+    public void RemoveTempSpellActive(string spellName)
+    {
+        int indexOf = tempSpells.IndexOf(spellName);
+        if (indexOf >= 0)
+        {
+            tempSpells.RemoveAt(indexOf);
+            tempSpellsUsed.Add(spellName);
+        }
+    }
+    public string ReturnMostUsedSpell()
+    {
+        if (spellsUsed == null || spellsUsed.Count == 0){return "";}
+        return spellsUsed.GroupBy(s => s).OrderByDescending(g => g.Count()).First().Key;
+    }
+    public string ReturnMostRecentSpell()
+    {
+        if (spellsUsed == null || spellsUsed.Count < 1){return "";}
+        return spellsUsed[spellsUsed.Count - 1];
+    }
+    public void ResetRoundSpellTracker()
+    {
+        spellsEachRound.Clear();
+        spellsUsed.Clear();
+        tempSpellsUsed.Clear();
+    }
+    public void UpdateRoundSpellTracker(string spellName)
+    {
+        if (spellsEachRound == null || spellsEachRound.Count == 0)
+        {
+            spellsEachRound = new List<int>();
+            spellsEachRound.Add(1);
+        }
+        else
+        {
+            spellsEachRound[spellsEachRound.Count - 1]++;
+        }
+        spellsUsed.Add(spellName);
+    }
+    public int ReturnCurrentRoundSpells()
+    {
+        if (spellsEachRound == null || spellsEachRound.Count <= 0){return 0;}
+        return spellsEachRound[spellsEachRound.Count - 1];
+    }
+    public int ReturnPreviousRoundSpells()
+    {
+        if (spellsEachRound == null || spellsEachRound.Count <= 1){return 0;}
+        return spellsEachRound[spellsEachRound.Count - 2];
+    }
+    public int ReturnTotalRoundSpells()
+    {
+        if (spellsEachRound == null){return 0;}
+        return spellsEachRound.Sum();
     }
     public List<int> movesEachRound;
     public void ResetRoundMoveTracker()
@@ -716,9 +833,14 @@ public class TacticActor : ActorStats
         ResetRoundTrackers();
         ResetSummonTrackers();
     }
+    protected override void EndTurnResetStats()
+    {
+        base.EndTurnResetStats();
+        ResetTempMovement();
+        ResetBonusActions();
+    }
     public void EndTurn()
     {
-        movement = 0;
         tempMovement = 0;
         // Allow some slight turn manipulation by saving your actions.
         /*if (actions > 0)
@@ -727,7 +849,6 @@ public class TacticActor : ActorStats
             ResetActions();
         }*/
         EndTurnResetStats();
-        ResetBonusActions();
         UpdateMentalState();
         CheckBuffDuration();
         CheckStatusDuration();

@@ -352,7 +352,7 @@ public class AttackManager : ScriptableObject
         AttackDefenseMultipliersBonuses();
         // Deal Damage To Any Buildings Supporting The Target.
         map.DamageActorBuilding(target.GetLocation(), attacker, baseDamage);
-            // Ranged attacks get elevation bonus/penalties.
+        // Ranged attacks get elevation bonus/penalties.
         if (attacker.GetAttackRange() > 1)
         {
             int elvDiff = map.ReturnPosNegElvDiff(attacker.GetLocation(), target.GetLocation());
@@ -373,9 +373,9 @@ public class AttackManager : ScriptableObject
         if (damageMultiplier < 0) { damageMultiplier = 0; }
         finalDamageCalculation += "\n" + "Damage Multiplier: " + baseDamage + " * " + damageMultiplier + "% = ";
         baseDamage = damageMultiplier * baseDamage / baseMultiplier;
-        // Check if the passive affects damage.
-        baseDamage = CheckTakeDamagePassives(attackTarget.GetTakeDamagePassives(), baseDamage, type);
         finalDamageCalculation += baseDamage;
+        // Check if the passive affects damage.
+        baseDamage = CheckTakeDamagePassives(attackTarget.GetTakeDamagePassives(), baseDamage, type, attacker, attackTarget);
         // Show the resistance calculation.
         ElementalResistance(attackTarget, baseDamage, type);
         baseDamage = attackTarget.TakeDamage(baseDamage, type);
@@ -569,15 +569,18 @@ public class AttackManager : ScriptableObject
         }
     }
 
-    protected int CheckTakeDamagePassives(List<string> passives, int damage, string damageType)
+    protected int CheckTakeDamagePassives(List<string> passives, int damage, string damageType, TacticActor attacker, TacticActor target)
     {
         int originalDamage = damage;
         for (int i = 0; i < passives.Count; i++)
         {
             List<string> passiveStats = passives[i].Split("|").ToList();
-            if (passive.CheckTakeDamageCondition(passiveStats[1], passiveStats[2], originalDamage, damageType))
+            if (passive.CheckTakeDamageCondition(passiveStats[1], passiveStats[2], originalDamage, damageType, attacker, target))
             {
+                string passiveName = passiveData.ReturnKeyFromValue(passives[i]);
+                finalDamageCalculation += "\n" + passiveName + "; Damage : " + damage;
                 damage = passive.AffectInt(damage, passiveStats[4], passiveStats[5]);
+                finalDamageCalculation += " > " + damage;
             }
         }
         return damage;
