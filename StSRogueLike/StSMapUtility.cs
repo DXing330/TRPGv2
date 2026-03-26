@@ -4,122 +4,31 @@ using UnityEngine;
 
 public class StSMapUtility : MonoBehaviour
 {
-    public MapUtility mapUtility;
+    public RectMapUtility mapUtility;
     public RNGUtility mapRNGSeed;
 
-    public int RandomPointRight(int location, int size)
+    public int RandomPointRight(int location, int rows, int cols)
     {
-        int up = mapUtility.PointInDirection(location, 1, size);
-        int down = mapUtility.PointInDirection(location, 2, size);
-        // No points.
-        if (up < 0 && down < 0) { return location; }
-        if (up >= 0 && down < 0) { return up; }
-        if (up < 0 && down >= 0) { return down; }
-        int choice = mapRNGSeed.Range(0, 2);
-        if (choice == 0) { return up; }
-        return down;
+        List<int> points = mapUtility.GetRightDiagonalAdjacentTiles(location, rows, cols);
+        return points[Random.Range(0, points.Count)];
     }
 
-    public int RandomPointLeft(int location, int size)
+    public int RandomPointLeft(int location, int rows, int cols)
     {
-        int up = mapUtility.PointInDirection(location, 5, size);
-        int down = mapUtility.PointInDirection(location, 4, size);
-        // No points.
-        if (up < 0 && down < 0) { return location; }
-        if (up >= 0 && down < 0) { return up; }
-        if (up < 0 && down >= 0) { return down; }
-        int choice = mapRNGSeed.Range(0, 2);
-        if (choice == 0) { return up; }
-        return down;
+        List<int> points = mapUtility.GetLeftDiagonalAdjacentTiles(location, rows, cols);
+        return points[Random.Range(0, points.Count)];
     }
 
-    public List<int> CreatePath(int startPoint, int endPoint, int size, bool right = true)
+    public List<int> CreatePath(int startRow, int rows = 9, int cols = 17)
     {
         List<int> path = new List<int>();
-        path.Add(startPoint);
-        // Get the horizontal/vertical distance between the points.
-        int horiDist = size - 1;//Mathf.Abs(mapUtility.HorizontalDistanceBetweenTiles(startPoint, endPoint, size));
-        int vertDist = mapUtility.VerticalDistanceBetweenTiles(startPoint, endPoint, size);
-        int nextPoint = startPoint;
-        for (int i = horiDist - 1; i >= 1; i--)
+        int point = mapUtility.ReturnTileNumberFromRowCol(startRow, 0, cols);
+        path.Add(point);
+        for (int i = 0; i < cols - 1; i++)
         {
-            // Make sure you don't go too far up or down.
-            // Check if your verticality is too much.
-            vertDist = mapUtility.VerticalDistanceBetweenTiles(startPoint, endPoint, size);
-            if (Mathf.Abs(vertDist) > i / 2)
-            {
-                if (vertDist < 0)
-                {
-                    // Go up.
-                    if (right)
-                    {
-                        nextPoint = mapUtility.PointInDirection(nextPoint, 1, size);
-                    }
-                    else
-                    {
-                        nextPoint = mapUtility.PointInDirection(nextPoint, 5, size);
-                    }
-                }
-                else if (vertDist > 0)
-                {
-                    // Go down.
-                    if (right)
-                    {
-                        nextPoint = mapUtility.PointInDirection(nextPoint, 2, size);
-                    }
-                    else
-                    {
-                        nextPoint = mapUtility.PointInDirection(nextPoint, 4, size);
-                    }
-                }
-                else
-                {
-                    if (right)
-                    {
-                        nextPoint = RandomPointRight(nextPoint, size);
-                    }
-                    else
-                    {
-                        nextPoint = RandomPointLeft(nextPoint, size);
-                    }
-                }
-            }
-            else
-            {
-                // If not too far then distance go rightup or rightdown.
-                if (right)
-                {
-                    nextPoint = RandomPointRight(nextPoint, size);
-                }
-                else
-                {
-                    nextPoint = RandomPointLeft(nextPoint, size);
-                }
-            }
-            if (nextPoint < 0)
-            {
-                if (right)
-                {
-                    nextPoint = RandomPointRight(nextPoint, size);
-                }
-                else
-                {
-                    nextPoint = RandomPointLeft(nextPoint, size);
-                }
-            }
-            // Make sure the next point is adjacent to the previous point or restart.
-            if (mapUtility.DistanceBetweenTiles(nextPoint, path[path.Count - 1], size) > 1)
-            {
-                return CreatePath(startPoint, endPoint, size, right);
-            }
-            path.Add(nextPoint);
+            point = RandomPointRight(point, rows, cols);
+            path.Add(point);
         }
-        // Make sure the end point is adjacent to the next point or restart.
-        if (mapUtility.DistanceBetweenTiles(nextPoint, endPoint, size) > 1)
-        {
-            return CreatePath(startPoint, endPoint, size, right);
-        }
-        path.Add(endPoint);
         return path;
     }
 }

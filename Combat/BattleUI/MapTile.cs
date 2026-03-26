@@ -10,7 +10,7 @@ public class MapTile : MonoBehaviour
 {
     public int tileNumber;
     public void SetTileNumber(int newNumber){tileNumber = newNumber;}
-    public MapManager cMap;
+    public SimpleMapManager cMap;
     public GameObject mainObject;
     public int elevation = 0;
     public Image elevationImage;
@@ -249,6 +249,10 @@ public class MapTile : MonoBehaviour
 
     public void ClickTile()
     {
+        if (cMap == null)
+        {
+            return;
+        }
         cMap.ClickOnTile(tileNumber);
     }
 }

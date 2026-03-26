@@ -65,6 +65,7 @@ public class ActiveSkill : SkillEffect
         effect = "Passive";
         specifics = "";
         power = "1";
+        healthCost = "0";
     }
     public virtual void LoadSkill(List<string> skillData, string newName = "")
     {
@@ -85,6 +86,7 @@ public class ActiveSkill : SkillEffect
         effect = skillData[8];
         specifics = skillData[9];
         power = skillData[10];
+        healthCost = skillData[11];
     }
     public virtual void ApplyActorMods(TacticActor actor)
     {
@@ -97,6 +99,19 @@ public class ActiveSkill : SkillEffect
             switch (modDetails[1])
             {
                 default:
+                break;
+                case "Free":
+                energyCost = "0";
+                actionCost = "0";
+                break;
+                case "FirstFree":
+                // Check if the skill has been cast already.
+                if (actor.SkillUsedAlready(GetSkillName()))
+                {
+                    break;
+                }
+                energyCost = "0";
+                actionCost = "0";
                 break;
                 case "Power":
                 int powerInt = GetPower();
@@ -116,8 +131,14 @@ public class ActiveSkill : SkillEffect
                 case "Energy":
                 energyCost = Mathf.Max(0, int.Parse(energyCost) - 1).ToString();
                 break;
+                case "EnergyUp":
+                energyCost = Mathf.Max(0, int.Parse(energyCost) + 1).ToString();
+                break;
                 case "Action":
                 actionCost = Mathf.Max(0, int.Parse(actionCost) - 1).ToString();
+                break;
+                case "ActionUp":
+                energyCost = Mathf.Max(0, int.Parse(actionCost) + 1).ToString();
                 break;
                 case "Range":
                 // If it's a string then add a plus.
@@ -129,6 +150,18 @@ public class ActiveSkill : SkillEffect
                 else
                 {
                     range = (int.Parse(range) + 1).ToString();
+                }
+                break;
+                case "RangeDown":
+                // If it's a string then add a plus.
+                if (range.Length > 2)
+                {
+                    range = range + "-";
+                }
+                // Else add 1.
+                else
+                {
+                    range = (int.Parse(range) - 1).ToString();
                 }
                 break;
                 case "Span":
@@ -183,6 +216,12 @@ public class ActiveSkill : SkillEffect
             (int aCost, int eCost) = GetAdjustedCost(actor, map);
             cost = aCost;
         }
+        return cost;
+    }
+    public string healthCost;
+    public int GetHealthCost()
+    {
+        int cost = utility.SafeParseInt(healthCost);
         return cost;
     }
     protected int flatActionAdjust = 0;
@@ -289,17 +328,22 @@ public class ActiveSkill : SkillEffect
                 plusCount++;
                 rangeString = rangeString.Remove(i, 1);
             }
+            else if (range[i] == '-')
+            {
+                plusCount--;
+                rangeString = rangeString.Remove(i, 1);
+            }
         }
         switch (rangeString)
         {
             case "Move":
                 if (skillUser == null) { return 1; }
-                return skillUser.GetSpeed() + plusCount;
+                return Mathf.Max(0, skillUser.GetSpeed() + plusCount);
             case "AttackRange":
                 if (skillUser == null) { return 1; }
-                return skillUser.GetAttackRange() + plusCount;
+                return Mathf.Max(0, skillUser.GetAttackRange() + plusCount);
         }
-        return int.Parse(range);
+        return Mathf.Max(0, int.Parse(range));
     }
     public string rangeShape;
     public void SetRangeShape(string newInfo)

@@ -239,7 +239,6 @@ public class SceneMover : MonoBehaviour
         }
         else if (victory == 0 && rogueLike)
         {
-            rogueLikeData.ReturnFromWinningBattle();
             LoadScene(mainRogueLikeScene);
             // TODO Enter reward select.
             return;

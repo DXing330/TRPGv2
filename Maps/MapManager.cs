@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapManager : MonoBehaviour
+public class MapManager : SimpleMapManager
 {
     public GeneralUtility utility;
     public LoadingScreen loadingScreen;
@@ -11,7 +11,6 @@ public class MapManager : MonoBehaviour
     public MapCurrentTiles currentTileManager;
     public MapMaker mapMaker;
     public List<MapDisplayer> mapDisplayers;
-    public List<MapTile> mapTiles;
     [ContextMenu("Reset Tile Numbers")]
     public void ResetTileNumbers()
     {
@@ -185,8 +184,6 @@ public class MapManager : MonoBehaviour
             mapTiles[i].DisableLayers();
         }
     }
-    public List<int> currentTiles;
-    public List<string> mapInfo;
     public List<string> GetMapInfo(){return mapInfo;}
     public void SetMapInfo(List<string> newInfo)
     {
@@ -419,11 +416,6 @@ public class MapManager : MonoBehaviour
     {
         UpdateCurrentTiles();
         mapDisplayers[0].DisplayCurrentTiles(mapTiles, mapInfo, currentTiles);
-    }
-
-    public virtual void ClickOnTile(int tileNumber)
-    {
-        Debug.Log(tileNumber);
     }
 
     /*[ContextMenu("Move 0")]

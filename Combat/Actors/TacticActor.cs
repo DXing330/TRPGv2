@@ -432,6 +432,10 @@ public class TacticActor : ActorStats
     }
     public List<int> skillsEachRound;
     public List<string> skillsUsed;
+    public bool SkillUsedAlready(string skillName)
+    {
+        return skillsUsed.Contains(skillName);
+    }
     public List<string> tempSkillsUsed;
     public bool RemoveTempActive(string skillName)
     {

@@ -17,95 +17,22 @@ public class StSEnemyTracker : SavedData
     public List<string> enemyPool;
     public List<string> elitePool;
     public List<string> defaultAllies;
-    public int choiceCount = 3;
-    public List<string> ReturnCurrentChoices(bool rare = false)
-    {
-        List<string> choices = new List<string>();
-        string newChoice = "";
-        for (int i = 0; i < choiceCount; i++)
-        {
-            if (rare)
-            {
-                newChoice = GetRareAllyReward();
-            }
-            else
-            {
-                newChoice = GetAllyReward();
-            }
-            if (!choices.Contains(newChoice))
-            {
-                choices.Add(newChoice);
-            }
-            else
-            {
-                choices.Add(GetDefaultAlly());
-            }
-        }
-        return choices;
-    }
-    public string GetDefaultAlly()
-    {
-        return defaultAllies[UnityEngine.Random.Range(0, defaultAllies.Count)];
-    }
-    public List<string> allyPool;
-    public void AddToAllyPool(List<string> newAllies)
-    {
-        allyPool.AddRange(newAllies);
-        allyPool = new List<string>(allyPool.Distinct());
-        Save();
-    }
-    public string GetAllyReward()
-    {
-        if (allyPool.Count <= 0)
-        {
-            return GetDefaultAlly();
-        }
-        string ally = allyPool[UnityEngine.Random.Range(0, allyPool.Count)];
-        if (ally == "")
-        {
-            return GetDefaultAlly();
-        }
-        return ally;
-    }
-    public List<string> rareAllyPool;
-    public void AddToRareAllyPool(List<string> newAllies)
-    {
-        rareAllyPool.AddRange(newAllies);
-        rareAllyPool = new List<string>(rareAllyPool.Distinct());
-        Save();
-    }
-    public string GetRareAllyReward()
-    {
-        if (rareAllyPool.Count <= 0)
-        {
-            return GetAllyReward();
-        }
-        List<string> rareAllyChance = new List<string>(rareAllyPool);
-        rareAllyChance.AddRange(allyPool);
-        string ally = rareAllyChance[UnityEngine.Random.Range(0, rareAllyChance.Count)];
-        if (ally == "")
-        {
-            return GetAllyReward();
-        }
-        return ally;
-    }
     public string previousElite;
     public string floorBoss;
 
     public override void NewGame()
     {
-        enemyPool.Clear();
-        elitePool.Clear();
-        allyPool.Clear();
-        rareAllyPool.Clear();
-        floorBoss = "";
         previousElite = "";
+        int floor = stsState.GetFloor();
+        enemyPool = floorEnemies[floor - 1].GetAllKeys();
+        elitePool = floorElites[floor - 1].GetAllKeys();
+        floorBoss = floorBosses[floor - 1].ReturnKeyAtIndex(enemyRNGSeed.Range(0, floorBosses[floor - 1].keys.Count));
         Save();
     }
 
     public void NewFloor()
     {
-        int floor = stsState.GetCurrentFloor();
+        int floor = stsState.GetFloor();
         previousElite = "";
         enemyPool = floorEnemies[floor - 1].GetAllKeys();
         elitePool = floorElites[floor - 1].GetAllKeys();
@@ -115,7 +42,7 @@ public class StSEnemyTracker : SavedData
 
     public string RandomNewBoss()
     {
-        int floor = stsState.GetCurrentFloor();
+        int floor = stsState.GetFloor();
         string newBoss = floorBosses[floor - 1].ReturnKeyAtIndex(enemyRNGSeed.Range(0, floorBosses[floor - 1].keys.Count));
         if (newBoss != floorBoss)
         {
@@ -126,7 +53,7 @@ public class StSEnemyTracker : SavedData
 
     public List<string> GetBossData(bool additional = false)
     {
-        int floor = stsState.GetCurrentFloor();
+        int floor = stsState.GetFloor();
         if (additional)
         {
             // Generate another boss except the one that was just fought.
@@ -150,7 +77,7 @@ public class StSEnemyTracker : SavedData
 
     public string GetEnemyData(int difficulty)
     {
-        int floor = stsState.GetCurrentFloor();
+        int floor = stsState.GetFloor();
         List<string> possibleEnemies = new List<string>();
         for (int i = 0; i < enemyPool.Count; i++)
         {
@@ -179,8 +106,6 @@ public class StSEnemyTracker : SavedData
         allData = "";
         allData += String.Join(delimiterTwo, enemyPool) + delimiter;
         allData += String.Join(delimiterTwo, elitePool) + delimiter;
-        allData += String.Join(delimiterTwo, allyPool) + delimiter;
-        allData += String.Join(delimiterTwo, rareAllyPool) + delimiter;
         allData += previousElite + delimiter;
         allData += floorBoss + delimiter;
         File.WriteAllText(dataPath, allData);
@@ -202,11 +127,7 @@ public class StSEnemyTracker : SavedData
         string[] blocks = allData.Split(delimiter);
         enemyPool = blocks[0].Split(delimiterTwo).ToList();
         elitePool = blocks[1].Split(delimiterTwo).ToList();
-        allyPool = blocks[2].Split(delimiterTwo).ToList();
-        rareAllyPool = blocks[3].Split(delimiterTwo).ToList();
-        previousElite = blocks[4];
-        floorBoss = blocks[5];
-        utility.RemoveEmptyListItems(allyPool);
-        utility.RemoveEmptyListItems(rareAllyPool);
+        previousElite = blocks[2];
+        floorBoss = blocks[3];
     }
 }

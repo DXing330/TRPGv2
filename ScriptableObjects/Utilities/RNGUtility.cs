@@ -9,6 +9,8 @@ using System.Security.Cryptography;
 [CreateAssetMenu(fileName = "SavedData", menuName = "ScriptableObjects/Utility/SavedSeed", order = 1)]
 public class RNGUtility : SavedData
 {
+    public List<RNGUtility> subRNG;
+    public RNGUtility masterRNG;
     // SAVED SEED
     public ulong seed;
     public List<ulong> seedHistory;
@@ -21,7 +23,12 @@ public class RNGUtility : SavedData
         byte[] bytes = new byte[8];
         RandomNumberGenerator.Fill(bytes);
         seed = BitConverter.ToUInt64(bytes, 0);
+        seedHistory.Clear();
         Save();
+        for (int i = 0; i < subRNG.Count; i++)
+        {
+            subRNG[i].SetSeed(seed);
+        }
     }
     public void SetSeed(ulong newSeed)
     {

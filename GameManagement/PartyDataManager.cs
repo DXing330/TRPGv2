@@ -25,7 +25,6 @@ public class PartyDataManager : MonoBehaviour
     public EquipmentInventory equipmentInventory;
     public DungeonBag dungeonBag;
     public GuildCard guildCard;
-    public SavedCaravan caravan;
     public SpellBook spellBook;
 
     public void Save()
@@ -103,23 +102,6 @@ public class PartyDataManager : MonoBehaviour
     public virtual void Rest()
     {
         for (int i = 0; i < otherPartyData.Count; i++) { otherPartyData[i].Rest(); }
-        for (int i = 0; i < allParties.Count; i++)
-        {
-            for (int j = allParties[i].PartyCount() - 1; j >= 0; j--)
-            {
-                int hunger = 0;
-                if (caravan.FoodAvailable())
-                {
-                    caravan.ConsumeFood();
-                    allParties[i].Rest(j, true);
-                }
-                else
-                {
-                    allParties[i].Rest(j, false);
-                    hunger = allParties[i].Hunger(j);
-                }
-            }
-        }
     }
 
     public void NaturalRegeneration(List<string> regenPassives)
