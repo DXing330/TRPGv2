@@ -458,6 +458,30 @@ public class GeneralUtility : ScriptableObject
         return strings[0];
     }
 
+    public string ReturnValueBasedOnWeight(List<string> values, List<int> valueWeights, int weight)
+    {
+        if (values.Count <= 0){return "";}
+        if (weight < 0 || weight >= valueWeights.Sum()){return values[0];}
+        for (int i = 0; i < valueWeights.Count; i++)
+        {
+            if (weight < valueWeights[i]){return values[i];}
+            weight -= valueWeights[i];
+        }
+        return "";
+    }
+
+    public int ReturnIndexBasedOnWeight(List<int> valueWeights, int weight)
+    {
+        if (valueWeights.Count <= 0){return -1;}
+        if (weight < 0 || weight >= valueWeights.Sum()){return 0;}
+        for (int i = 0; i < valueWeights.Count; i++)
+        {
+            if (weight < valueWeights[i]){return i;}
+            weight -= valueWeights[i];
+        }
+        return 0;
+    }
+
     public List<int> ShuffleIntList(List<int> intList)
     {
         for (int i = 0; i < intList.Count; i++)

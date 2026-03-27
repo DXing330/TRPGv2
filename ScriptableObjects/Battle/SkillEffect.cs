@@ -104,6 +104,13 @@ public class SkillEffect : ScriptableObject
                     combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + effectDamage + " damage.");
                 }
                 break;
+            case "TrueDamage":
+                target.currentHealth -= int.Parse(effectSpecifics) * level;
+                if (combatLog != null)
+                {
+                    combatLog.UpdateNewestLog(target.GetPersonalName() + " takes " + int.Parse(effectSpecifics) * level + " damage.");
+                }
+                break;
             // ALL the elemental damage types go here as well.
             case "LightningDamage":
                 int lightningDamage = int.Parse(effectSpecifics) * level;
@@ -427,6 +434,9 @@ public class SkillEffect : ScriptableObject
             case "Amnesia":
                 target.RemoveRandomActiveSkill();
                 break;
+            case "Seal":
+                target.RemoveRecentActiveSkill();
+                break;
             case "Counter":
                 target.UpdateCounter(int.Parse(effectSpecifics));
                 break;
@@ -538,6 +548,9 @@ public class SkillEffect : ScriptableObject
                 break;
             case "Buffer":
                 target.GainBufferStack(int.Parse(effectSpecifics));
+                break;
+            case "Intangible":
+                target.GainIntangible(int.Parse(effectSpecifics));
                 break;
         }
     }

@@ -86,6 +86,7 @@ public class ActiveSkill : SkillEffect
         effect = skillData[8];
         specifics = skillData[9];
         power = skillData[10];
+        if (skillData.Count <= 11){return;}
         healthCost = skillData[11];
     }
     public virtual void ApplyActorMods(TacticActor actor)

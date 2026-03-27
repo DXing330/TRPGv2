@@ -37,7 +37,7 @@ public class ActiveDescriptionViewer : MonoBehaviour
     {
         return AED(activeSkill.GetEffect(), activeSkill.GetSpecifics(), activeSkill.GetPower().ToString());
     }
-    public string ReturnActiveDescriptionFromName(string activeName, TacticActor actor)
+    public string ReturnActiveDescriptionFromName(string activeName, TacticActor actor = null)
     {
         dummyActive.LoadSkillFromString(activeData.ReturnValue(activeName), actor);
         return ReturnActiveDescription(dummyActive, actor);
@@ -179,6 +179,8 @@ public class ActiveDescriptionViewer : MonoBehaviour
                 return "Try to change the target(s) mental state to " + ASD(s) + ".";
             case "Amnesia":
                 return "Try to make the target forget " + ASD(s) + " active skill(s).";
+            case "Seal":
+                return "Try to seal the target's " + ASD(s) + " most recently used skill(s).";
             case "Attack+Grapple":
                 return "Grapple the target and attack them.";
             case "Grapple":

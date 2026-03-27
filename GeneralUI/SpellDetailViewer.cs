@@ -7,6 +7,11 @@ public class SpellDetailViewer : ActiveDescriptionViewer
 {
     public MagicSpell dummySpell;
     public StatDatabase divineSpellData;
+    public string ReturnSpellDescriptionFromName(string activeName, TacticActor actor = null)
+    {
+        dummySpell.LoadSkillFromString(divineSpellData.ReturnValue(activeName), actor);
+        return ReturnSpellDescription(dummySpell, actor);
+    }
     public string spellData;
     public void SelectDivineSpell()
     {

@@ -66,6 +66,7 @@ public class StSStateManager : MonoBehaviour
     // STATE FUNCTIONS.
     public void MoveToTile(string tileType)
     {
+        string newScene = "";
         switch (tileType)
         {
             case "Enemy":
@@ -81,6 +82,10 @@ public class StSStateManager : MonoBehaviour
             case "Treasure":
             break;
         }
+        if (newScene != "")
+        {
+            MoveScenes(newScene);
+        }
     }
     public void CompleteBattle(string battleType)
     {
@@ -88,7 +93,9 @@ public class StSStateManager : MonoBehaviour
     public void CompleteFloor(int floor)
     {
     }
-    public void MoveScenes(string newSceneType)
+    public void MoveScenes(string newScene)
     {
+        Save();
+        sceneMover.LoadScene(newScene);
     }
 }

@@ -436,6 +436,22 @@ public class TacticActor : ActorStats
     {
         return skillsUsed.Contains(skillName);
     }
+    public void RemoveRecentActiveSkill()
+    {
+        // Check the latest used skill.
+        if (skillsUsed.Count <= 0)
+        {
+            RemoveRandomActiveSkill();
+            return;
+        }
+        string skillName = skillsUsed[skillsUsed.Count - 1];
+        // Try to remove it.
+        if (!RemoveActiveSkillByName(skillName))
+        {
+            // Else remove a random skill.
+            RemoveRandomActiveSkill();
+        }
+    }
     public List<string> tempSkillsUsed;
     public bool RemoveTempActive(string skillName)
     {

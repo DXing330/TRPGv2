@@ -290,6 +290,11 @@ public class ActorStats : ActorInitialStats
     }
     public virtual int TakeDamage(int damage, string type = "Physical")
     {
+        // Intangible reduces damage to 1.
+        if (intangible)
+        {
+            damage = 1;
+        }
         // Buffer stacks prevent damage.
         if (ConsumeBufferStack()){return 0;}
         WakeUp();
@@ -430,6 +435,13 @@ public class ActorStats : ActorInitialStats
     {
         activeSkills.RemoveAt(index);
     }
+    public bool RemoveActiveSkillByName(string skillName)
+    {
+        int indexOf = activeSkills.IndexOf(skillName);
+        if (indexOf < 0){return false;}
+        RemoveActiveSkill(indexOf);
+        return true;
+    }
     public void RemoveRandomActiveSkill()
     {
         if (tempActives.Count <= 0)
@@ -443,6 +455,7 @@ public class ActorStats : ActorInitialStats
         int tempIndex = UnityEngine.Random.Range(0, tempActives.Count);
         tempActives.RemoveAt(tempIndex);
     }
+
     public void AddActiveSkill(string skillName)
     {
         if (skillName.Length <= 1) { return; }
@@ -899,6 +912,26 @@ public class ActorStats : ActorInitialStats
         guardRange = 0;
     }
     // NULLIFY DAMAGE/STATUS/ETC Stacks
+    public bool intangible = false;
+    public bool GetIntangible(){return intangible;}
+    public int intangibleDuration;
+    public void GainIntangible(int duration)
+    {
+        intangible = true;
+        if (intangibleDuration < duration)
+        {
+            intangibleDuration = duration;
+        }
+    }
+    public void CheckIntangible()
+    {
+        (intangible, intangibleDuration) = utility.DecrementBoolDuration(intangible, intangibleDuration);
+    }
+    public void RemoveIntangible()
+    {
+        intangible = false;
+        intangibleDuration = 0;
+    }
     public int bufferStacks;
     public void GainBufferStack(int amount = 1)
     {

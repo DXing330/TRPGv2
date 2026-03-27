@@ -19,14 +19,16 @@ public class InventoryManager : MonoBehaviour
     public Inventory inventory;
     public ItemDetailViewer itemDetails;
     public PopUpMessage popUp;
-    // Keep track of how many items can be assigned to each party member here.
-    protected int maxAssignedItems = 2;
-    // Default is 2 (hands), but some feats can add more.
-    //public List<string> extraItemSlotPassives; // Is there only one or a list?
     public int selectedActorID;
     public void SetSelectedID(int newID)
     {
         selectedActorID = newID;
+    }
+    // Keep track of how many items can be assigned to each party member here.
+    public int selectedActorItemSlots;
+    public void SetActorItemSlots(int newValue)
+    {
+        selectedActorItemSlots = newValue;
     }
     public int selectedItemIndex;
     public void UnassignItem()
@@ -37,10 +39,10 @@ public class InventoryManager : MonoBehaviour
     }
     public void AssignToActor()
     {
-        // If the actor already has the max assigned, then give an error message.
+        // TODO get item slots from actor.
         if (itemSelectList.GetSelected() < 0){return;}
         int assignedCount = inventory.AssignedToIDCount(selectedActorID);
-        if (assignedCount >= maxAssignedItems)
+        if (assignedCount >= selectedActorItemSlots)
         {
             popUp.SetMessage("Cannot hold any more items at this time.");
             return;

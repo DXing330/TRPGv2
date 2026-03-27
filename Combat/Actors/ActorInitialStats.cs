@@ -138,6 +138,8 @@ public class ActorInitialStats : ActorPassives
                 return GetMaxMana().ToString();
             case "CustomSpells":
                 return GetCustomSpellsString();
+            case "ItemSlots":
+                return GetItemSlots().ToString();
             // PERSISTENT STATS
             case "CurrentMana":
                 return GetMana().ToString();
@@ -245,6 +247,9 @@ public class ActorInitialStats : ActorPassives
                 break;
             case "CustomSpells":
                 SetCustomSpells(newStat.Split(passiveDelimiter).ToList());
+                break;
+            case "ItemSlots":
+                SetItemSlots(utility.SafeParseInt(newStat));
                 break;
             case "CurrentMana":
                 SetMana(utility.SafeParseInt(newStat));
@@ -643,5 +648,15 @@ public class ActorInitialStats : ActorPassives
     public void RestoreMana(int amount)
     {
         currentMana += Mathf.Max(0, amount + manaEfficiency);
+    }
+    public int itemSlots;
+    public void SetItemSlots(int amount)
+    {
+        itemSlots = amount;
+    }
+    public int GetItemSlots(){return itemSlots;}
+    public void UpdateItemSlots(int amount)
+    {
+        itemSlots += amount;
     }
 }

@@ -102,6 +102,7 @@ public class ArmoryUI : MonoBehaviour
         inventoryObject.SetActive(true);
         inventoryManager.SetPartyData(partyData);
         inventoryManager.SetSelectedID(partyData.ReturnIDAtIndex(allActors.GetSelected()));
+        inventoryManager.SetActorItemSlots(partyData.ReturnActorAtIndex(allActors.GetSelected()).GetItemSlots());
     }
     public GameObject selectEquipObject;
     public SelectStatTextList selectEquipment;
