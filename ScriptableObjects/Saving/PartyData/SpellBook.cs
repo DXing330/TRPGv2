@@ -37,7 +37,7 @@ public class SpellBook : SavedData
     public override void Save()
     {
         dataPath = Application.persistentDataPath+"/"+filename;
-        allData = String.Join(",", books);
+        allData = "Books=" + String.Join(",", books);
         File.WriteAllText(dataPath, allData);
     }
     public override void Load()
@@ -49,7 +49,24 @@ public class SpellBook : SavedData
             NewGame();
             return;
         }
-        SetBooks(allData.Split(",").ToList());
+        dataList = allData.Split(delimiter).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
+    }
+    public void LoadStat(string stat)
+    {
+        string[] statData = stat.Split("=");
+        if (statData.Length < 2){return;}
+        string key = statData[0];
+        string value = statData[1];
+        switch (key)
+        {
+            case "Books":
+            SetBooks(value.Split(",").ToList());
+            break;
+        }
     }
     public StatDatabase spellComponents;
     public MagicSpell magicSpell;
