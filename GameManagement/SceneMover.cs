@@ -8,8 +8,7 @@ public class SceneMover : MonoBehaviour
     // Don't try to move scenes if you're already moving.
     public bool moving = false;
     public bool rogueLike = false;
-    public string mainRogueLikeScene = "StSMap";
-    public StSState rogueLikeData;
+    public StSStateManager roguelikeManager;
     public string mainMenuSceneName = "Start";
     public void ReturnToMainMenu()
     {
@@ -225,26 +224,25 @@ public class SceneMover : MonoBehaviour
         }
     }
 
-    public void ReturnFromBattle(int victory = 0)
+    public void ReturnFromBattle(int loss = 0)
     {
         // Reset the spawn patterns after battle, not before.
         battleState.ResetSpawnPatterns();
-        // If you die during the roguelike, then reset.
-        if (victory != 0 && rogueLike)
+        // If you die during the roguelike, then reset the game state.
+        if (loss != 0 && rogueLike)
         {
-            rogueLikeData.NewGame();
+            roguelikeManager.gameState.NewGame();
             sceneTracker.NewGame();
             ReturnToMainMenu();
             return;
         }
-        else if (victory == 0 && rogueLike)
+        else if (loss == 0 && rogueLike)
         {
-            LoadScene(mainRogueLikeScene);
-            // TODO Enter reward select.
+            roguelikeManager.WinBattle();
             return;
         }
         // Fail any quest in the dungeon.
-        if (victory != 0 && sceneTracker.GetPreviousScene() == dungeonSceneName)
+        if (loss != 0 && sceneTracker.GetPreviousScene() == dungeonSceneName)
         {
             mainParty.ClearAllStats();
             // If you die in the dungeon, basically game over, go back home.

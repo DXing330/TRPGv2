@@ -70,6 +70,7 @@ public class StSMap : SimpleMapManager
     public void MoveToTile(int tileNumber)
     {
         pathTaken.Add(tileNumber.ToString());
+        Save();
         manager.MoveToTile(mapInfo[tileNumber]);
     }
     // TODO Some tiles are quest/special tiles?
@@ -192,6 +193,7 @@ public class StSMap : SimpleMapManager
         {
             mapInfo.Add("");
         }
+        pathTaken.Clear();
     }
     [ContextMenu("GeneratePaths")]
     public void GeneratePaths()

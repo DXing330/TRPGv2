@@ -10,6 +10,7 @@ public class StSEnemyTracker : SavedData
 {
     public string delimiterTwo;
     public StSState stsState;
+    public StSMapSaveData mapState;
     public RNGUtility enemyRNGSeed;
     public List<StatDatabase> floorEnemies;
     public List<StatDatabase> floorElites;
@@ -75,22 +76,23 @@ public class StSEnemyTracker : SavedData
         return eliteData;
     }
 
-    public string GetEnemyData(int difficulty)
+    public string GetEnemyData()
     {
         int floor = stsState.GetFloor();
+        // Determine the difficultly based on how many fights you've taken.
+        // First two fights are easy, then start getting harder fights.
+        int battleCount = mapState.ReturnBattleCount();
+        int difficulty = 0;
+        if (battleCount > 2){difficulty = 1;}
         List<string> possibleEnemies = new List<string>();
         for (int i = 0; i < enemyPool.Count; i++)
         {
-            if (int.Parse(floorEnemies[floor - 1].ReturnValue(enemyPool[i])) <= difficulty)
+            if (int.Parse(floorEnemies[floor - 1].ReturnValue(enemyPool[i])) == difficulty)
             {
                 possibleEnemies.Add(enemyPool[i]);
             }
         }
-        if (possibleEnemies.Count <= 0 && difficulty > 0)
-        {
-            return GetEnemyData(difficulty - 1);
-        }
-        else if (possibleEnemies.Count <= 0 && difficulty <= 0)
+        if (possibleEnemies.Count <= 0 && difficulty <= 0)
         {
             return enemyPool[enemyRNGSeed.Range(0, enemyPool.Count)];
         }

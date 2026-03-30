@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
+    public PartyDataManager partyData;
     public BattleState battleState;
     public BattleMap map;
     public ActorAI actorAI;

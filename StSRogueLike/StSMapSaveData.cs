@@ -9,6 +9,29 @@ using UnityEngine;
 public class StSMapSaveData : SavedData
 {
     public string delimiter2 = ",";
+    // Need to know the current and the current tile info.
+    public List<string> mapInfo;
+    public List<string> pathInfo;
+    public int ReturnBattleCount()
+    {
+        Load();
+        int count = 0;
+        if (pathInfo.Count < 1){return 0;}
+        for (int i = 0; i < pathInfo.Count; i++)
+        {
+            if (mapInfo[int.Parse(pathInfo[i])] == "Battle")
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+    public string GetLatestTile()
+    {
+        Load();
+        if (pathInfo.Count < 1){return "";}
+        return mapInfo[int.Parse(pathInfo[pathInfo.Count - 1])];
+    }
     public override void Save()
     {
         // Don't bother saving if blank?
@@ -19,7 +42,29 @@ public class StSMapSaveData : SavedData
     public override void Load()
     {
         dataPath = Application.persistentDataPath + "/" + filename;
+        if (!File.Exists(dataPath)){return;}
         allData = File.ReadAllText(dataPath);
+        dataList = allData.Split(delimiter).ToList();
+        for (int i = 0; i < dataList.Count; i++)
+        {
+            LoadStat(dataList[i]);
+        }
+    }
+    public void LoadStat(string stat)
+    {
+        string[] statData = stat.Split("=");
+        if (statData.Length < 2){return;}
+        string key = statData[0];
+        string value = statData[1];
+        switch (key)
+        {
+            case "Map":
+            mapInfo = value.Split(delimiter2).ToList();
+            break;
+            case "Path":
+            pathInfo = value.Split(delimiter2).ToList();
+            break;
+        }
     }
     public void SaveMap(StSMap mapToSave)
     {

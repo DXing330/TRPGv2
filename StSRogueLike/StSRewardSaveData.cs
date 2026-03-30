@@ -148,7 +148,22 @@ public class StSRewardSaveData : SavedData
     }
     // Reward From Different Battle Types
     // Basic 1-1-30-0-0-0, Elite 1-1-60-1-0-0, Boss = 1-2-100-0-1-1, Event = 1-1-30-?-0-0
-    public void GenerateRewards(int skillBookCount = 1, int gold = 1, int itemChance = 30, int relicCount = 0, bool rare = false, int allyCount = 0, int skillBookChoices = 3)
+    public void GenerateBattleRewards(string battleType)
+    {
+        switch (battleType)
+        {
+            default:
+            GenerateRewards();
+            return;
+            case "Elite":
+            GenerateRewards(1,1,60,1);
+            return;
+            case "Boss":
+            GenerateRewards(1,2,100,0,1,1);
+            return;
+        }
+    }
+    public void GenerateRewards(int skillBookCount = 1, int gold = 1, int itemChance = 30, int relicCount = 0, int rare = 0, int allyCount = 0, int skillBookChoices = 3)
     {
         rewards.Clear();
         rewardSpecifics.Clear();
@@ -157,7 +172,7 @@ public class StSRewardSaveData : SavedData
         rewardSpecifics.Add(GenerateGold(gold).ToString());
         for (int i = 0; i < skillBookCount; i++)
         {
-            GenerateSkillBookChoices(skillBookChoices, rare);
+            GenerateSkillBookChoices(skillBookChoices, rare == 1);
         }
         if (rewardSeed.Range(0, 100) < itemChance)
         {

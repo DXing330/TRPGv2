@@ -1,3 +1,6 @@
+using System;
+using System.IO;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,14 +19,20 @@ public class StSStateManager : MonoBehaviour
             Load();
         }
     }
+    // Scene Names
+    public string rewardSceneName;
+    public string mapSceneName;
     // SUBMANAGERS
     public SceneMover sceneMover;
     public PartyDataManager stsParty;
-    public StSMap map;
-    public StSState gameState;
-    public StSEnemyTracker enemyTracker;
     public RNGUtility masterRNG;
+    public StSState gameState;
+    public StSMap map;
+    public StSMapSaveData mapState;
+    public StSEnemyTracker enemyTracker;
+    public StSRewardSaveData rewardTracker;
     public BattleState battleState; // Needed To Save Enemies To A Battle.
+    public CharacterList enemyList;
     // STATE DATA
     public List<SavedData> stsSavedState;
     public List<RNGUtility> stsRNG;
@@ -37,6 +46,10 @@ public class StSStateManager : MonoBehaviour
     }
     public void Save()
     {
+        if (map != null)
+        {
+            map.Save();
+        }
         for (int i = 0; i < stsSavedState.Count; i++)
         {
             stsSavedState[i].Save();
@@ -69,17 +82,42 @@ public class StSStateManager : MonoBehaviour
         string newScene = "";
         switch (tileType)
         {
+            // Generate Enemies/Battle.
             case "Enemy":
+            gameState.UpdateState("Battle");
+            string basicEnemy = enemyTracker.GetEnemyData();
+            string[] dataBlocks = basicEnemy.Split("-");
+            battleState.ForceTerrainType(dataBlocks[0]);
+            battleState.SetWeather(dataBlocks[1]);
+            battleState.SetTime(dataBlocks[2]);
+            enemyList.AddCharacters(dataBlocks[3].Split("|").ToList());
+            Save();
+            sceneMover.MoveToBattle();
             break;
             case "Event":
+            // Generate Event.
             break;
+            // Generate Enemies/Battle.
             case "Elite":
+            gameState.UpdateState("Battle");
+            string eliteEnemy = enemyTracker.GetEliteData();
+            string[] eliteBlocks = eliteEnemy.Split("-");
+            battleState.ForceTerrainType(eliteBlocks[0]);
+            battleState.SetWeather(eliteBlocks[1]);
+            battleState.SetTime(eliteBlocks[2]);
+            enemyList.AddCharacters(eliteBlocks[3].Split("|").ToList());
+            Save();
+            sceneMover.MoveToBattle();
             break;
             case "Shop":
+            // Generate Shop.
             break;
             case "Rest":
             break;
             case "Treasure":
+            // Generate Treasure.
+            break;
+            case "Boss":
             break;
         }
         if (newScene != "")
@@ -87,11 +125,26 @@ public class StSStateManager : MonoBehaviour
             MoveScenes(newScene);
         }
     }
-    public void CompleteBattle(string battleType)
+    public void WinBattle()
     {
+        // Get the Battle Type From the State.
+        string battleType = mapState.GetLatestTile();
+        // Boss Battles Override Other Types.
+        // TODO Double Bosses Means You Need To Move To The Next Boss Battle Instead.
+        if (gameState.GetState() == "Boss")
+        {
+            battleType = "Boss";
+        }
+        rewardTracker.GenerateBattleRewards(battleType);
+        // Some event battles also generate additional rewards.
+        MoveScenes(rewardSceneName);
     }
     public void CompleteFloor(int floor)
     {
+    }
+    public void ReturnToMap()
+    {
+        MoveScenes(mapSceneName);
     }
     public void MoveScenes(string newScene)
     {

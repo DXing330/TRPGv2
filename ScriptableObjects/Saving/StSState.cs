@@ -40,7 +40,7 @@ public class StSState : SavedState
         Save();
     }
     // Related To Scenes.
-    // Battle, Shop, Rest, Map, Boss, Ancient, Reward
+    // Battle/Shop/Rest/Map/Boss/Ancient/Reward
     public string state;
     public string previousState;
     public void UpdateState(string newState)
