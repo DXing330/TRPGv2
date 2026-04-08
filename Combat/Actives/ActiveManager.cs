@@ -470,7 +470,7 @@ public class ActiveManager : MonoBehaviour
             case "DelayedTileEffect":
                 for (int i = 0; i < targetedTiles.Count; i++)
                 {
-                    battle.map.AddDelayedEffect(specifics, targetedTiles[i], power);
+                    battle.map.AddAura(skillUser, targetedTiles[i], specifics, power);
                 }
                 return;
             case "Attack+TerrainEffect":

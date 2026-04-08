@@ -1077,6 +1077,8 @@ public class BattleMap : MapManager
     }
     public void RemoveAura(AuraEffect aura)
     {
+        // TODO Trigger Delayed Auras Here.
+        auraManager.TriggerRemoveAuraEffect(aura);
         auras.Remove(aura);
         aura = null;
     }
@@ -1136,98 +1138,6 @@ public class BattleMap : MapManager
         }
         // Display.
         UpdateHighlights(auraTiles);
-    }
-    public StatDatabase delayedEffectData;
-    public List<string> delayedEffects;
-    public List<int> delayedEffectTiles;
-    public List<int> delayedEffectTimers;
-    public void AddDelayedEffect(string effect, int tile, int timer)
-    {
-        delayedEffects.Add(effect);
-        delayedEffectTiles.Add(tile);
-        delayedEffectTimers.Add(timer);
-    }
-    public void RemoveDelayedEffect(int index)
-    {
-        delayedEffects.RemoveAt(index);
-        delayedEffectTiles.RemoveAt(index);
-        delayedEffectTimers.RemoveAt(index);
-    }
-    public void IncrementDelayedEffects()
-    {
-        for (int i = delayedEffects.Count - 1; i >= 0; i--)
-        {
-            delayedEffectTimers[i] = delayedEffectTimers[i] - 1;
-            if (delayedEffectTimers[i] <= 0)
-            {
-                // Apply the effect.
-                ActivateDelayedEffect(delayedEffects[i], delayedEffectTiles[i]);
-                RemoveDelayedEffect(i);
-            }
-        }
-    }
-    public void ActivateDelayedEffect(string effectKey, int tile)
-    {
-        string effectDetails = delayedEffectData.ReturnValue(effectKey);
-        if (effectDetails == "")
-        {
-            ApplyDelayedEffect(effectKey, tile);
-        }
-        else
-        {
-            ApplyDelayedEffect(effectDetails, tile, true, effectKey);
-        }
-    }
-    protected void ApplyDelayedEffect(string effect, int tile, bool setEffect = false, string effectName = "")
-    {
-        string[] blocks = effect.Split("|");
-        string[] targets = blocks[0].Split(",");
-        string[] effects = blocks[1].Split(",");
-        string[] specifics = blocks[2].Split(",");
-        for (int i = 0; i < targets.Length; i++)
-        {
-            switch (targets[i])
-            {
-                case "Actor":
-                    // Get the actor on the tile.
-                    TacticActor target = GetActorOnTile(tile);
-                    if (target == null)
-                    {
-                        break;
-                    }
-                    if (setEffect)
-                    {
-                        combatLog.UpdateNewestLog(effectName + " affects " + target.GetPersonalName());
-                    }
-                    passiveEffect.AffectActor(target, effects[i], specifics[i], 1, combatLog);
-                    break;
-                case "Tile":
-                    ChangeTerrain(tile, effects[i]);
-                    break;
-                case "Time":
-                    SetTime(effects[i]);
-                    break;
-                case "Weather":
-                    SetWeather(effects[i]);
-                    break;
-                case "Ritual Summon":
-                    TacticActor sacrifice = GetActorOnTile(tile);
-                    if (sacrifice == null)
-                    {
-                        combatLog.UpdateNewestLog("Ritual summoning failed!");
-                        break;
-                    }
-                    // Kill the target.
-                    combatLog.UpdateNewestLog(sacrifice.GetPersonalName() + " is consumed by the ritual.");
-                    sacrifice.SetCurrentHealth(-1);
-                    battleManager.ActiveDeathPassives(sacrifice);
-                    battlingActors.Remove(sacrifice);
-                    // Summon an enemy.
-                    battleManager.SpawnAndAddActor(tile, effects[i], sacrifice.GetTeam());
-                    combatLog.UpdateNewestLog("By offering " + sacrifice.GetPersonalName() + " a " + effects[i] + " is summoned.");
-                    break;
-            }
-        }
     }
     public List<string> highlightedTiles;
     public ColorDictionary colorDictionary;
@@ -2051,7 +1961,6 @@ public class BattleMap : MapManager
         {
             ChangeTEffect(removedEffects[i], "");
         }
-        IncrementDelayedEffects();
         AuraNextRound();
         UpdateMap();
     }
