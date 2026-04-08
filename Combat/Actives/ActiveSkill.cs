@@ -169,6 +169,13 @@ public class ActiveSkill : SkillEffect
                 if (span.Length <= 0){break;}
                 span = (int.Parse(span) + 1).ToString();
                 break;
+                // Requires a third string for specifics.
+                case "SpanShape":
+                shape = modDetails[2];
+                break;
+                case "RangeShape":
+                rangeShape = modDetails[2];
+                break;
             }
         }
     }

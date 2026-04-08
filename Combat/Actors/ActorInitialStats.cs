@@ -434,6 +434,32 @@ public class ActorInitialStats : ActorPassives
     // Active Mods Buff Power/Energy/Action/Range/Span
     // Each Active Can Have X(2+?) Mods But Each Mod Can Only Apply 1(2+?) Time To Each Active.
     public List<string> activeMods;
+    public bool ActiveUpgraded(string skillName)
+    {
+        for (int i = 0; i < activeMods.Count; i++)
+        {
+            string[] modDetails = activeMods[i].Split("_");
+            if (modDetails[0] != skillName){continue;}
+            if (modDetails[1] == "Power" || modDetails[1] == "Energy" || modDetails[1] == "Action")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool ActiveModified(string skillName)
+    {
+        for (int i = 0; i < activeMods.Count; i++)
+        {
+            string[] modDetails = activeMods[i].Split("_");
+            if (modDetails[0] != skillName){continue;}
+            if (modDetails[1] != "Power" && modDetails[1] != "Energy" && modDetails[1] != "Action")
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public List<string> GetActiveMods()
     {
         return activeMods;

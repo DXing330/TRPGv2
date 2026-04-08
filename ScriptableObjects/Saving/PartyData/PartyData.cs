@@ -27,7 +27,7 @@ public class PartyData : SavedData
         partyNames[index] = newName;
         Save();
     }
-    public List<string> GetNames() { return partyNames; }
+    public List<string> GetNames(){return partyNames;}
     public string GetNameAtIndex(int index)
     {
         return partyNames[index];

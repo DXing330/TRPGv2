@@ -21,6 +21,11 @@ public class SpellBook : SavedData
         if (indexOf < 0){return;}
         books.RemoveAt(indexOf);
     }
+    public void LoseBookAtIndex(int index)
+    {
+        if (index < 0 || index >= books.Count){return;}
+        books.RemoveAt(index);
+    }
     public void SetBooks(List<string> newBooks)
     {
         books.Clear();
@@ -29,6 +34,7 @@ public class SpellBook : SavedData
             GainBook(newBooks[i]);
         }
     }
+    public List<string> GetBooks(){return books;}
     public override void NewGame()
     {
         books.Clear();

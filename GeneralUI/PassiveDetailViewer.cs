@@ -48,6 +48,10 @@ public class PassiveDetailViewer : MonoBehaviour
     public List<string> passiveInfo;
     public List<string> passiveDescription;
     public MultiKeyStatDatabase passiveNameLevels;
+    public int GetMaxLevelFromPassiveName(string passiveName)
+    {
+        return passiveNameLevels.GetHighestLevelFromPassive(passiveName);
+    }
     public StatDatabase allPassives;
     public StatDatabase runePassives;
     public void ViewRunePassives(TacticActor actor)
@@ -116,6 +120,19 @@ public class PassiveDetailViewer : MonoBehaviour
     {
         string passiveName = passiveNameLevels.GetMultiKeyValue(group, (level).ToString());
         return ReturnPassiveDetails(allPassives.ReturnValue(passiveName));
+    }
+
+    public (List<string> names, List<string> details) ReturnAllPassiveLevelsFromName(string passiveName)
+    {
+        int maxLevel = GetMaxLevelFromPassiveName(passiveName);
+        List<string> allNames = new List<string>();
+        List<string> allDetails = new List<string>();
+        for (int i = 0; i < maxLevel; i++)
+        {
+            allNames.Add(passiveNameLevels.GetMultiKeyValue(passiveGroupName, (i+1).ToString()));
+            allDetails.Add(ReturnPassiveDetails(allPassives.ReturnValue(allNames[i])));
+        }
+        return (allNames, allDetails);
     }
 
     // Used to make the display popup and the text equal to the passive details.
@@ -188,6 +205,33 @@ public class PassiveDetailViewer : MonoBehaviour
         description += PassiveEffect(aura.effect, aura.effectSpecifics, aura.target);
         description += PassiveConditionText(aura.condition, aura.conditionSpecifics);
         return description;
+    }
+
+    public string ReturnPassiveDetailsFromName(string passiveName)
+    {
+        return ReturnPassiveDetails(allPassives.ReturnValue(passiveName));
+    }
+
+    public bool SpellGrantingPassive(string passiveName)
+    {
+        string newInfo = allPassives.ReturnValue(passiveName);
+        if (!newInfo.Contains("|"))
+        {
+            return false;
+        }
+        string[] blocks = newInfo.Split("|");
+        return blocks[4].Contains("Spell");
+    }
+
+    public bool SkillGrantingPassive(string passiveName)
+    {
+        string newInfo = allPassives.ReturnValue(passiveName);
+        if (!newInfo.Contains("|"))
+        {
+            return false;
+        }
+        string[] blocks = newInfo.Split("|");
+        return blocks[4].Contains("Skill");
     }
 
     public string ReturnPassiveDetails(string newInfo)
@@ -621,6 +665,10 @@ public class PassiveDetailViewer : MonoBehaviour
                 return " if the skill costs more than " + specifics + " actions";
             case "ActionCost<":
                 return " if the skill costs less than " + specifics + " actions";
+            case "SkillUpgraded":
+                return " if the skill has been upgraded";
+            case "SkillModded":
+                return " if the skill has been modified";
         }
         return "";
     }

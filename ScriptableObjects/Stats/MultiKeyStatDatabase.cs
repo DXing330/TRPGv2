@@ -12,6 +12,28 @@ public class MultiKeyStatDatabase : StatDatabase
     public List<string> secondKeys;
     public List<string> thirdKeys;
 
+    // Input first key, get second key.
+    public int GetHighestLevelFromPassive(string passiveName)
+    {
+        int level = 0;
+        List<string> passiveLevels = new List<string>();
+        for (int i = 0; i < keys.Count; i++)
+        {
+            if (keys[i] == passiveName)
+            {
+                passiveLevels.Add(secondKeys[i]);
+            }
+        }
+        for (int i = 0; i < passiveLevels.Count; i++)
+        {
+            if (int.Parse(passiveLevels[i]) > level)
+            {
+                level = int.Parse(passiveLevels[i]);
+            }
+        }
+        return level;
+    }
+
     public void SetAllSecondKeys(string newKeys)
     {
         allSecondKeys = newKeys;

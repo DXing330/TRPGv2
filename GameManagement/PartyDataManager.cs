@@ -642,6 +642,15 @@ public class PartyDataManager : MonoBehaviour
         SetFullParty();
     }
 
+    public List<string> GetAllPartyNames()
+    {
+        List<string> names = new List<string>();
+        names.AddRange(permanentPartyData.GetNames());
+        names.AddRange(mainPartyData.GetNames());
+        names.AddRange(tempPartyData.GetNames());
+        return names;
+    }
+
     [ContextMenu("SetParty")]
     public void SetFullParty()
     {

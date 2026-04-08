@@ -151,7 +151,7 @@ public class ArmoryUI : MonoBehaviour
         {
             string[] blocks = allPassives[i].Split("|");
             if (blocks.Length < 4){break;}
-            if (blocks[4] == "Skill")
+            if (blocks[4].Contains("Skill"))
             {
                 allActives.Add(blocks[5]);
             }

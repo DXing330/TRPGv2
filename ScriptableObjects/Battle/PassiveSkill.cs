@@ -376,6 +376,12 @@ public class PassiveSkill : SkillEffect
                 return skillData.GetActionCost() > int.Parse(specifics);
             case "ActionCost<":
                 return skillData.GetActionCost() > int.Parse(specifics);
+            // Energy / Actions / Power
+            case "SkillUpgraded":
+                return skillUser.ActiveUpgraded(skillData.GetSkillName());
+            // Everything else.
+            case "SkillModded":
+                return skillUser.ActiveModified(skillData.GetSkillName());
         }
         return CheckStartEndCondition(condition, specifics, skillUser, map);
     }

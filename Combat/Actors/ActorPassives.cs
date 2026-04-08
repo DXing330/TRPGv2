@@ -105,6 +105,15 @@ public class ActorPassives : MonoBehaviour
     {
         return passiveSkills;
     }
+    public List<string> GetPassiveSkillsAndLevels()
+    {
+        List<string> passivesAndLevels = new List<string>();
+        for (int i = 0; i < passiveSkills.Count; i++)
+        {
+            passivesAndLevels.Add(passiveSkills[i] + " - " + passiveLevels[i]);
+        }
+        return passivesAndLevels;
+    }
     public string GetPassiveString()
     {
         if (passiveSkills.Count == 0) { return ""; }
