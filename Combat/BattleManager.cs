@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
+    protected bool loadedCustomBattleMap = false;
+    protected List<int> customEnemyStartingLocations = new List<int>();
     public PartyDataManager partyData;
     public BattleState battleState;
     public BattleMap map;
@@ -99,11 +101,15 @@ public class BattleManager : MonoBehaviour
         combatLog.UpdateNewestLog("The weather is " + map.GetWeather());
         map.SetTime(battleState.GetTime());
         combatLog.UpdateNewestLog("The time is " + map.GetTime());
-        // Always plains default map tile.
-        map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
-        map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
-        interactableMaker.GetNewInteractables(map, battleMapFeatures.CurrentMapInteractables());
-        map.InitializeElevations();
+        loadedCustomBattleMap = TryLoadCustomBattleMap();
+        if (!loadedCustomBattleMap)
+        {
+            // Always plains default map tile.
+            map.GetNewMapFeatures(battleMapFeatures.CurrentMapFeatures());
+            map.GetNewTerrainEffects(battleMapFeatures.CurrentMapTerrainFeatures());
+            interactableMaker.GetNewInteractables(map, battleMapFeatures.CurrentMapInteractables());
+            map.InitializeElevations();
+        }
         moveManager.UpdateInfoFromBattleMap(map);
         actorMaker.SetMapSize(map.mapSize);
         // Spawn actors in patterns based on teams.
@@ -132,7 +138,14 @@ public class BattleManager : MonoBehaviour
             return;
         }
         // Start the combat.
-        map.RandomEnemyStartingPositions(battleState.GetEnemySpawnPattern());
+        if (loadedCustomBattleMap)
+        {
+            ApplyCustomEnemyStartingPositions();
+        }
+        else
+        {
+            map.RandomEnemyStartingPositions(battleState.GetEnemySpawnPattern());
+        }
         if (!setStartingPositions)
         {
             map.RandomAllyStartingPositions(battleState.GetAllySpawnPattern());
@@ -1127,7 +1140,7 @@ public class BattleManager : MonoBehaviour
         if (randomSkill && turnActor.GetActiveSkills().Count > 0)
         {
             List<string> turnActorSkills = turnActor.GetActiveSkills();
-            string rSkill = turnActorSkills[Random.Range(0, turnActorSkills.Count - 1)];
+            string rSkill = turnActorSkills[Random.Range(0, turnActorSkills.Count)];
             if (activeManager.SkillExists(rSkill))
             {
                 activeManager.SetSkillFromName(rSkill, turnActor);
@@ -1305,5 +1318,65 @@ public class BattleManager : MonoBehaviour
     public void Forfeit()
     {
         EndBattle(1, true);
+    }
+
+    protected bool TryLoadCustomBattleMap()
+    {
+        customEnemyStartingLocations.Clear();
+        if (!battleState.UsingCustomBattle() || battleState.savedBattles == null)
+        {
+            return false;
+        }
+        List<string> savedMapInfo;
+        List<string> savedTerrainEffects;
+        List<int> savedElevations;
+        List<string> savedBorders;
+        List<string> savedBuildings;
+        List<string> savedEnemies;
+        List<int> savedEnemyLocations;
+        string savedWeather;
+        string savedTime;
+        if (!battleState.savedBattles.TryLoadBattleData(battleState.GetCustomBattleName(), out savedMapInfo, out savedTerrainEffects, out savedElevations, out savedBorders, out savedBuildings, out savedEnemies, out savedEnemyLocations, out savedWeather, out savedTime))
+        {
+            return false;
+        }
+        map.SetMapInfo(savedMapInfo);
+        map.terrainEffectTiles = new List<string>(savedTerrainEffects);
+        map.mapElevations = new List<int>(savedElevations);
+        for (int i = 0; i < Mathf.Min(map.mapTiles.Count, savedBorders.Count); i++)
+        {
+            map.mapTiles[i].SetBorders(savedBorders[i].Split("|").ToList());
+            map.UpdateTileBorderSprites(i);
+        }
+        for (int i = 0; i < Mathf.Min(map.mapTiles.Count, savedElevations.Count); i++)
+        {
+            map.ChangeTileElevation(i, savedElevations[i]);
+        }
+        for (int i = 0; i < savedBuildings.Count; i++)
+        {
+            if (savedBuildings[i].Length <= 0){continue;}
+            map.AddBuilding(savedBuildings[i], i);
+        }
+        enemyParty.ResetLists();
+        enemyParty.AddCharacters(savedEnemies);
+        battleState.SetEnemyNames(savedEnemies);
+        customEnemyStartingLocations = new List<int>(savedEnemyLocations);
+        map.UpdateMap();
+        return true;
+    }
+
+    protected void ApplyCustomEnemyStartingPositions()
+    {
+        List<TacticActor> enemyTeam = map.AllTeamMembers(1);
+        if (customEnemyStartingLocations.Count <= 0)
+        {
+            map.RandomEnemyStartingPositions(battleState.GetEnemySpawnPattern());
+            return;
+        }
+        for (int i = 0; i < Mathf.Min(enemyTeam.Count, customEnemyStartingLocations.Count); i++)
+        {
+            enemyTeam[i].SetLocation(customEnemyStartingLocations[i]);
+        }
+        map.UpdateMap();
     }
 }

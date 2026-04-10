@@ -13,6 +13,7 @@ public class StSEnemyTracker : SavedData
     public StSMapSaveData mapState;
     public RNGUtility enemyRNGSeed;
     public List<StatDatabase> floorEnemies;
+    public List<StatDatabase> floorEnemyDifficulties;
     public List<StatDatabase> floorElites;
     public List<StatDatabase> floorBosses;
     public List<string> enemyPool;
@@ -64,19 +65,31 @@ public class StSEnemyTracker : SavedData
         return floorBosses[floor - 1].ReturnValue(floorBoss).Split("-").ToList();
     }
 
-    public string GetEliteData()
+    public string GetEliteData(string eliteName)
     {
-        string eliteData = elitePool[enemyRNGSeed.Range(0, elitePool.Count)];
-        if (eliteData == previousElite)
-        {
-            return GetEliteData();
-        }
-        previousElite = eliteData;
-        Save();
-        return eliteData;
+        int floor = stsState.GetFloor();
+        return floorElites[floor - 1].ReturnValue(eliteName);
     }
 
-    public string GetEnemyData()
+    public string GetEliteName()
+    {
+        string eliteName = elitePool[enemyRNGSeed.Range(0, elitePool.Count)];
+        if (eliteName == previousElite)
+        {
+            return GetEliteName();
+        }
+        previousElite = eliteName;
+        Save();
+        return eliteName;
+    }
+
+    public string GetEnemyData(string enemyName)
+    {
+        int floor = stsState.GetFloor();
+        return floorEnemies[floor - 1].ReturnValue(enemyName);
+    }
+
+    public string GetEnemyName()
     {
         int floor = stsState.GetFloor();
         // Determine the difficultly based on how many fights you've taken.
@@ -87,7 +100,7 @@ public class StSEnemyTracker : SavedData
         List<string> possibleEnemies = new List<string>();
         for (int i = 0; i < enemyPool.Count; i++)
         {
-            if (int.Parse(floorEnemies[floor - 1].ReturnValue(enemyPool[i])) == difficulty)
+            if (int.Parse(floorEnemyDifficulties[floor - 1].ReturnValue(enemyPool[i])) == difficulty)
             {
                 possibleEnemies.Add(enemyPool[i]);
             }
@@ -96,10 +109,10 @@ public class StSEnemyTracker : SavedData
         {
             return enemyPool[enemyRNGSeed.Range(0, enemyPool.Count)];
         }
-        string enemyData = possibleEnemies[enemyRNGSeed.Range(0, possibleEnemies.Count)];
-        enemyPool.Remove(enemyData);
+        string enemyName = possibleEnemies[enemyRNGSeed.Range(0, possibleEnemies.Count)];
+        enemyPool.Remove(enemyName);
         Save();
-        return enemyData;
+        return enemyName;
     }
 
     public override void Save()

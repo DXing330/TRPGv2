@@ -39,6 +39,9 @@ public class MapTile : MonoBehaviour
     public List<GameObject> layerObjects;
     // Tile, Character, Tile Effect, Highlight
     public List<Image> layers;
+    protected List<Color> defaultLayerColors;
+    protected List<Vector3> defaultLayerScales;
+    protected bool layerAppearanceInitialized = false;
     public List<GameObject> directionObjects;
     public List<string> borderDetails;
     public List<GameObject> borderObjects;
@@ -216,6 +219,41 @@ public class MapTile : MonoBehaviour
         layers[layer].sprite = newSprite;
     }
 
+    protected void InitializeLayerAppearance()
+    {
+        if (layerAppearanceInitialized){return;}
+        defaultLayerColors = new List<Color>();
+        defaultLayerScales = new List<Vector3>();
+        for (int i = 0; i < layers.Count; i++)
+        {
+            defaultLayerColors.Add(layers[i].color);
+            defaultLayerScales.Add(layers[i].rectTransform.localScale);
+        }
+        layerAppearanceInitialized = true;
+    }
+
+    public Color GetDefaultLayerColor(int layer)
+    {
+        if (layer < 0 || layer >= layers.Count) { return Color.white; }
+        InitializeLayerAppearance();
+        return defaultLayerColors[layer];
+    }
+
+    public void UpdateStyledLayerSprite(Sprite newSprite, Color newColor, float newScale = 1f, int layer = 0)
+    {
+        if (layer < 0 || layer >= layers.Count) { return; }
+        InitializeLayerAppearance();
+        if (newSprite == null)
+        {
+            layerObjects[layer].SetActive(false);
+            return;
+        }
+        layerObjects[layer].SetActive(true);
+        layers[layer].sprite = newSprite;
+        layers[layer].color = newColor;
+        layers[layer].rectTransform.localScale = defaultLayerScales[layer] * newScale;
+    }
+
     public void ResetAllLayers()
     {
         for (int i = 0; i < layerObjects.Count; i++)
@@ -226,7 +264,10 @@ public class MapTile : MonoBehaviour
 
     public void ResetLayerSprite(int layer)
     {
+        InitializeLayerAppearance();
         layerObjects[layer].SetActive(false);
+        layers[layer].color = defaultLayerColors[layer];
+        layers[layer].rectTransform.localScale = defaultLayerScales[layer];
     }
 
     public void ResetHighlight()

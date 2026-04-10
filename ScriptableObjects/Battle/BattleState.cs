@@ -41,7 +41,25 @@ public class BattleState : SavedState
     }
     public CharacterList partyList;
     public CharacterList enemyList;
+    public BattleMapEditorSaver savedBattles;
     public BattleMapFeatures battleMapFeatures;
+    public string customBattleName;
+    public void SetCustomBattleName(string newInfo)
+    {
+        customBattleName = newInfo;
+    }
+    public void ClearCustomBattleName()
+    {
+        customBattleName = "";
+    }
+    public string GetCustomBattleName()
+    {
+        return customBattleName;
+    }
+    public bool UsingCustomBattle()
+    {
+        return customBattleName.Length > 0;
+    }
     public List<string> enemies;
     public void AddEnemyName(string newName){enemies.Add(newName);}
     public void SetEnemyNames(List<string> newEnemies){enemies = new List<string>(newEnemies);}
@@ -193,7 +211,7 @@ public class BattleState : SavedState
         ForceTerrainType(dState.dungeon.GenerateTerrain());
         string newInfo = dState.dungeon.GetQuestBattleInfo();
         string[] blocks = newInfo.Split(dState.dungeon.bossQuestBattleDelimiter);
-        if (blocks.Length <= 5){return;}
+        if (blocks.Length <= 6){return;}
         ForceTerrainType(blocks[1]);
         SetWeather(blocks[2]);
         SetTime(blocks[3]);
@@ -237,6 +255,8 @@ public class BattleState : SavedState
         allData += "AltWinCon=" + alternateWinCondition;
         allData += delimiter;
         allData += "AltWinConSpecs=" + alternateWinConditionSpecifics;
+        allData += delimiter;
+        allData += "CustomBattle=" + customBattleName;
         allData += delimiter;
         File.WriteAllText(dataPath, allData);
     }
@@ -303,6 +323,9 @@ public class BattleState : SavedState
                 break;
             case "AltWinConSpecs":
                 SetAltWinConSpecifics(value);
+                break;
+            case "CustomBattle":
+                SetCustomBattleName(value);
                 break;
         }
     }

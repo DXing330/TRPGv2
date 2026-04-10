@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 
@@ -7,9 +8,73 @@ public class BattleMapEditor : MonoBehaviour
 {
     void Start()
     {
+        InitializeEnvironmentOptions();
         actorSelect.SetData(actorStats.GetAllKeys(), actorStats.GetAllKeys(), actorStats.GetAllValues());
         LoadBattle("TestBattle0");
     }
+    public BattleState battleState;
+    public SpinnerMenu weatherSelect;
+    public SpinnerMenu timeSelect;
+    public string battleWeather;
+    public string battleTime;
+    protected void InitializeEnvironmentOptions()
+    {
+        if (battleState == null){return;}
+        battleTime = "";
+        if (weatherSelect != null && battleState.weatherTypes.Count > 0)
+        {
+            weatherSelect.SetSelectables(battleState.weatherTypes);
+            battleWeather = weatherSelect.GetSelected();
+        }
+        if (timeSelect != null && battleState.timeOfDayTypes.Count > 0)
+        {
+            timeSelect.SetSelectables(battleState.timeOfDayTypes);
+            battleTime = timeSelect.GetSelected();
+        }
+    }
+    public void ResetBattleEnvironment()
+    {
+        InitializeEnvironmentOptions();
+    }
+    protected void UpdateEnvironmentSelectors()
+    {
+        if (weatherSelect != null && weatherSelect.selectables != null && weatherSelect.selectables.Count > 0)
+        {
+            int weatherIndex = weatherSelect.selectables.IndexOf(battleWeather);
+            weatherSelect.SetSelectedIndex(Mathf.Max(0, weatherIndex));
+            battleWeather = weatherSelect.GetSelected();
+        }
+        if (timeSelect != null && timeSelect.selectables != null && timeSelect.selectables.Count > 0)
+        {
+            int timeIndex = timeSelect.selectables.IndexOf(battleTime);
+            timeSelect.SetSelectedIndex(Mathf.Max(0, timeIndex));
+            battleTime = timeSelect.GetSelected();
+        }
+    }
+    public void ChangeWeather(bool right = true)
+    {
+        if (weatherSelect == null || weatherSelect.selectables.Count <= 0){return;}
+        weatherSelect.ChangeIndex(right);
+        battleWeather = weatherSelect.GetSelected();
+    }
+    public void ChangeTime(bool right = true)
+    {
+        if (timeSelect == null || timeSelect.selectables.Count <= 0){return;}
+        timeSelect.ChangeIndex(right);
+        battleTime = timeSelect.GetSelected();
+    }
+    public void SetBattleWeather(string newInfo)
+    {
+        battleWeather = newInfo;
+        UpdateEnvironmentSelectors();
+    }
+    public string GetBattleWeather(){return battleWeather;}
+    public void SetBattleTime(string newInfo)
+    {
+        battleTime = newInfo;
+        UpdateEnvironmentSelectors();
+    }
+    public string GetBattleTime(){return battleTime;}
     public string battleID;
     public void SetBattleID(string newID)
     {
@@ -34,6 +99,8 @@ public class BattleMapEditor : MonoBehaviour
     }
     public GameObject nRObject;
     public NameRater nameRater;
+    public StSEnemyTracker roguelikeEnemyTracker;
+    public GameObject battleNameSelectObject;
     enum NameRaterState
     {
         copying,
@@ -41,34 +108,69 @@ public class BattleMapEditor : MonoBehaviour
     }
     // Battle Name Rater State.
     NameRaterState bNRS;
-    public void NameRaterConfirm()
+    protected List<string> GetAllRoguelikeBattleNames()
     {
-        string newName = nameRater.ConfirmName();
-        if (newName.Length <= 0){return;}
-        switch (bNRS)
+        List<string> battleNames = new List<string>();
+        if (roguelikeEnemyTracker == null){return battleNames;}
+        for (int i = 0; i < roguelikeEnemyTracker.floorEnemies.Count; i++)
         {
-            case NameRaterState.newing:
-            // Make New Map.
-            LoadBattle(newName);
-            break;
-            case NameRaterState.copying:
-            // Copy To New Map.
-            SetBattleID(newName);
-            SaveBattle();
-            break;
+            battleNames.AddRange(roguelikeEnemyTracker.floorEnemies[i].GetAllKeys());
         }
+        for (int i = 0; i < roguelikeEnemyTracker.floorElites.Count; i++)
+        {
+            battleNames.AddRange(roguelikeEnemyTracker.floorElites[i].GetAllKeys());
+        }
+        for (int i = 0; i < roguelikeEnemyTracker.floorBosses.Count; i++)
+        {
+            battleNames.AddRange(roguelikeEnemyTracker.floorBosses[i].GetAllKeys());
+        }
+        return battleNames.Distinct().OrderBy(name => name).ToList();
+    }
+    protected bool RoguelikeBattleNameExists(string battleName)
+    {
+        if (roguelikeEnemyTracker == null){return true;}
+        return GetAllRoguelikeBattleNames().Contains(battleName);
     }
     public void NewBattle()
     {
         bNRS = NameRaterState.newing;
-        nRObject.SetActive(true);
+        ShowBattleNameSelector();
     }
     public void CopyBattle()
     {
         bNRS = NameRaterState.copying;
-        nRObject.SetActive(true);
+        ShowBattleNameSelector();
     }
     public SelectList battleSelectList;
+    protected void ShowBattleNameSelector()
+    {
+        List<string> roguelikeBattleNames = GetAllRoguelikeBattleNames();
+        if (battleNameSelectObject == null || battleSelectList == null || roguelikeBattleNames.Count <= 0)
+        {
+            return;
+        }
+        battleSelectList.SetSelectables(roguelikeBattleNames);
+        battleNameSelectObject.SetActive(true);
+    }
+    public void SelectBattleName()
+    {
+        if (battleSelectList == null || battleSelectList.GetSelected() < 0){return;}
+        string newName = battleSelectList.GetSelectedString();
+        switch (bNRS)
+        {
+            case NameRaterState.newing:
+                LoadBattle(newName);
+                break;
+            case NameRaterState.copying:
+                SetBattleID(newName);
+                SaveBattle();
+                break;
+        }
+        if (battleNameSelectObject != null)
+        {
+            battleNameSelectObject.SetActive(false);
+        }
+    }
     public void TryToLoadBattle()
     {
         battleSelectList.SetSelectables(savedBattles.savedKeys);
@@ -116,6 +218,7 @@ public class BattleMapEditor : MonoBehaviour
         mapEditor.InitializeNewMap();
         enemies.Clear();
         enemyLocations.Clear();
+        InitializeEnvironmentOptions();
     }
     public List<string> enemies;
     public List<string> enemyLocations;

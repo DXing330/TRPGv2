@@ -58,14 +58,32 @@ public class ActorStatCard : BattleUIBaseClass
     // Sprite in the middle.
     public GameObject actorSpriteObject;
     public Image actorSprite;
+    protected Color defaultActorSpriteColor = Color.white;
+    protected Vector3 defaultActorSpriteScale = Vector3.one;
+    protected bool actorSpriteAppearanceInitialized = false;
+    protected void InitializeActorSpriteAppearance()
+    {
+        if (actorSpriteAppearanceInitialized || actorSprite == null){return;}
+        defaultActorSpriteColor = actorSprite.color;
+        defaultActorSpriteScale = actorSprite.rectTransform.localScale;
+        actorSpriteAppearanceInitialized = true;
+    }
     public void ResetActor()
     {
         actorSpriteObject.SetActive(false);
     }
     public void UpdateActor()
     {
+        InitializeActorSpriteAppearance();
         actorSpriteObject.SetActive(true);
         actorSprite.sprite = characterSprites.SpriteDictionary(cardActor.GetSpriteName());
+        actorSprite.color = characterSprites.GetColor(cardActor.GetSpriteName(), defaultActorSpriteColor);
+        float scale = 1f;
+        if (!float.TryParse(characterSprites.GetSize(cardActor.GetSpriteName()), out scale))
+        {
+            scale = 1f;
+        }
+        actorSprite.rectTransform.localScale = defaultActorSpriteScale * scale;
     }
     // Attack / Defense / Speed on bottom. Speed Icon Changes With Movement Type.
     public Image moveTypeImage;

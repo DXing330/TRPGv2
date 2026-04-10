@@ -772,7 +772,7 @@ public class BattleMap : MapManager
         battleManager.moveManager.UpdateInfoFromBattleMap(this);
         UpdateMap();
     }
-    protected void ChangeTileElevation(int tileNumber, int newElevation)
+    public void ChangeTileElevation(int tileNumber, int newElevation)
     {
         mapElevations[tileNumber] = newElevation;
         mapTiles[tileNumber].SetElevation(mapElevations[tileNumber]);
@@ -1184,7 +1184,7 @@ public class BattleMap : MapManager
     public void UpdateActors()
     {
         GetActorTiles();
-        mapDisplayers[actorLayer].DisplayCurrentTiles(mapTiles, actorTiles, currentTiles, true, actorDirections);
+        mapDisplayers[actorLayer].DisplayCurrentStyledTiles(mapTiles, actorTiles, currentTiles, true, actorDirections);
     }
 
     public List<string> buildingTiles;

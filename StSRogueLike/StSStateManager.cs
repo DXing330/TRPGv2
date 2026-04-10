@@ -77,6 +77,34 @@ public class StSStateManager : MonoBehaviour
         }
     }
     // STATE FUNCTIONS.
+    protected bool TryUseSavedBattle(string battleName)
+    {
+        if (battleState.savedBattles == null || !battleState.savedBattles.BattleExists(battleName))
+        {
+            battleState.ClearCustomBattleName();
+            return false;
+        }
+        List<string> savedMapInfo;
+        List<string> savedTerrainEffects;
+        List<int> savedElevations;
+        List<string> savedBorders;
+        List<string> savedBuildings;
+        List<string> savedEnemies;
+        List<int> savedEnemyLocations;
+        string savedWeather;
+        string savedTime;
+        if (!battleState.savedBattles.TryLoadBattleData(battleName, out savedMapInfo, out savedTerrainEffects, out savedElevations, out savedBorders, out savedBuildings, out savedEnemies, out savedEnemyLocations, out savedWeather, out savedTime))
+        {
+            battleState.ClearCustomBattleName();
+            return false;
+        }
+        battleState.SetCustomBattleName(battleName);
+        battleState.SetWeather(savedWeather);
+        battleState.SetTime("");
+        enemyList.ResetLists();
+        enemyList.AddCharacters(savedEnemies);
+        return true;
+    }
     public void MoveToTile(string tileType)
     {
         string newScene = "";
@@ -85,12 +113,17 @@ public class StSStateManager : MonoBehaviour
             // Generate Enemies/Battle.
             case "Enemy":
             gameState.UpdateState("Battle");
-            string basicEnemy = enemyTracker.GetEnemyData();
-            string[] dataBlocks = basicEnemy.Split("-");
-            battleState.ForceTerrainType(dataBlocks[0]);
-            battleState.SetWeather(dataBlocks[1]);
-            battleState.SetTime(dataBlocks[2]);
-            enemyList.AddCharacters(dataBlocks[3].Split("|").ToList());
+            string basicEnemy = enemyTracker.GetEnemyName();
+            enemyList.ResetLists();
+            if (!TryUseSavedBattle(basicEnemy))
+            {
+                string enemyData = enemyTracker.GetEnemyData(basicEnemy);
+                string[] dataBlocks = enemyData.Split("-");
+                battleState.ForceTerrainType(dataBlocks[0]);
+                battleState.SetWeather(dataBlocks[1]);
+                battleState.SetTime(dataBlocks[2]);
+                enemyList.AddCharacters(dataBlocks[3].Split("|").ToList());
+            }
             Save();
             sceneMover.MoveToBattle();
             break;
@@ -100,12 +133,17 @@ public class StSStateManager : MonoBehaviour
             // Generate Enemies/Battle.
             case "Elite":
             gameState.UpdateState("Battle");
-            string eliteEnemy = enemyTracker.GetEliteData();
-            string[] eliteBlocks = eliteEnemy.Split("-");
-            battleState.ForceTerrainType(eliteBlocks[0]);
-            battleState.SetWeather(eliteBlocks[1]);
-            battleState.SetTime(eliteBlocks[2]);
-            enemyList.AddCharacters(eliteBlocks[3].Split("|").ToList());
+            string eliteEnemy = enemyTracker.GetEliteName();
+            enemyList.ResetLists();
+            if (!TryUseSavedBattle(eliteEnemy))
+            {
+                string eliteData = enemyTracker.GetEliteData(eliteEnemy);
+                string[] eliteBlocks = eliteData.Split("-");
+                battleState.ForceTerrainType(eliteBlocks[0]);
+                battleState.SetWeather(eliteBlocks[1]);
+                battleState.SetTime(eliteBlocks[2]);
+                enemyList.AddCharacters(eliteBlocks[3].Split("|").ToList());
+            }
             Save();
             sceneMover.MoveToBattle();
             break;
